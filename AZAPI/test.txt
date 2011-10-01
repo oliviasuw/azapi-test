@@ -1,0 +1,742 @@
+<table class="problem-vis-table" width="100%" height="100%">
+<tr>
+<th scope="col" rowspan="2" colspan="2"> Var/Dom </th>
+<th scope="col" colspan="5">0 </th>
+<th scope="col" colspan="5">1 </th>
+<th scope="col" colspan="5">2 </th>
+<th scope="col" colspan="5">3 </th>
+<th scope="col" colspan="5">4 </th>
+</tr>
+<tr>
+<th scope="col" colspan="1"> 0 </th>
+<th scope="col" colspan="1"> 1 </th>
+<th scope="col" colspan="1"> 2 </th>
+<th scope="col" colspan="1"> 3 </th>
+<th scope="col" colspan="1"> 4 </th>
+<th scope="col" colspan="1"> 0 </th>
+<th scope="col" colspan="1"> 1 </th>
+<th scope="col" colspan="1"> 2 </th>
+<th scope="col" colspan="1"> 3 </th>
+<th scope="col" colspan="1"> 4 </th>
+<th scope="col" colspan="1"> 0 </th>
+<th scope="col" colspan="1"> 1 </th>
+<th scope="col" colspan="1"> 2 </th>
+<th scope="col" colspan="1"> 3 </th>
+<th scope="col" colspan="1"> 4 </th>
+<th scope="col" colspan="1"> 0 </th>
+<th scope="col" colspan="1"> 1 </th>
+<th scope="col" colspan="1"> 2 </th>
+<th scope="col" colspan="1"> 3 </th>
+<th scope="col" colspan="1"> 4 </th>
+<th scope="col" colspan="1"> 0 </th>
+<th scope="col" colspan="1"> 1 </th>
+<th scope="col" colspan="1"> 2 </th>
+<th scope="col" colspan="1"> 3 </th>
+<th scope="col" colspan="1"> 4 </th>
+</tr>
+<tr>
+<th scope="row" rowspan="5"> 0 </th>
+<th scope="row"> 0 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">1 </td>
+<td class="tdcol21">7 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">15 </td>
+</tr>
+<tr>
+<th scope="row"> 1 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">7 </td>
+<td class="tdcol21">13 </td>
+<td class="tdcol22">7 </td>
+<td class="tdcol23">15 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 2 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">19 </td>
+<td class="tdcol21">2 </td>
+<td class="tdcol22">4 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 3 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">7 </td>
+<td class="tdcol22">15 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 4 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">10 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">9 </td>
+<td class="tdcol23">7 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row" rowspan="5"> 1 </th>
+<th scope="row"> 0 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 1 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 2 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 3 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 4 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row" rowspan="5"> 2 </th>
+<th scope="row"> 0 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">14 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">15 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">12 </td>
+</tr>
+<tr>
+<th scope="row"> 1 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">5 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">4 </td>
+</tr>
+<tr>
+<th scope="row"> 2 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">1 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 3 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">7 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 4 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">12 </td>
+<td class="tdcol23">18 </td>
+<td class="tdcol24">8 </td>
+</tr>
+<tr>
+<th scope="row" rowspan="5"> 3 </th>
+<th scope="row"> 0 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 1 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 2 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 3 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 4 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row" rowspan="5"> 4 </th>
+<th scope="row"> 0 </th>
+<td class="tdcol0">1 </td>
+<td class="tdcol1">7 </td>
+<td class="tdcol2">19 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">10 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">14 </td>
+<td class="tdcol11">5 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 1 </th>
+<td class="tdcol0">7 </td>
+<td class="tdcol1">13 </td>
+<td class="tdcol2">2 </td>
+<td class="tdcol3">7 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">0 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 2 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">7 </td>
+<td class="tdcol2">4 </td>
+<td class="tdcol3">15 </td>
+<td class="tdcol4">9 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">15 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">1 </td>
+<td class="tdcol13">7 </td>
+<td class="tdcol14">12 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 3 </th>
+<td class="tdcol0">0 </td>
+<td class="tdcol1">15 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">7 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">0 </td>
+<td class="tdcol11">0 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">18 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+<tr>
+<th scope="row"> 4 </th>
+<td class="tdcol0">15 </td>
+<td class="tdcol1">0 </td>
+<td class="tdcol2">0 </td>
+<td class="tdcol3">0 </td>
+<td class="tdcol4">0 </td>
+<td class="tdcol5">0 </td>
+<td class="tdcol6">0 </td>
+<td class="tdcol7">0 </td>
+<td class="tdcol8">0 </td>
+<td class="tdcol9">0 </td>
+<td class="tdcol10">12 </td>
+<td class="tdcol11">4 </td>
+<td class="tdcol12">0 </td>
+<td class="tdcol13">0 </td>
+<td class="tdcol14">8 </td>
+<td class="tdcol15">0 </td>
+<td class="tdcol16">0 </td>
+<td class="tdcol17">0 </td>
+<td class="tdcol18">0 </td>
+<td class="tdcol19">0 </td>
+<td class="tdcol20">0 </td>
+<td class="tdcol21">0 </td>
+<td class="tdcol22">0 </td>
+<td class="tdcol23">0 </td>
+<td class="tdcol24">0 </td>
+</tr>
+</table>

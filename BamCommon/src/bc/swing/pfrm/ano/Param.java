@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 public @interface Param {
     String name();
     String icon() default "";
-    ParamType type();
+    ParamType type() default ParamType.CUSTOM;
     String role() default "";
     String baseName() default "";
     Class<? extends ParamView> customView() default CustomPV.class;

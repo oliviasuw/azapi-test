@@ -8,6 +8,7 @@ package bc.swing.models;
 import bc.swing.pfrm.Action;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -107,11 +108,21 @@ public class GenericTreeModel<T> implements TreeModel, TreeSelectionListener{
     public static abstract class Node<T> {
         private T data;
         private String string;
+        private ImageIcon icon = null;
+        private boolean selected;
 
         public Node(T data) {
             this.data = data;
         }
 
+        public void setIcon(ImageIcon icon) {
+            this.icon = icon;
+        }
+
+        public ImageIcon getIcon() {
+            return icon;
+        }
+        
         public T getData() {
             return data;
         }
@@ -132,6 +143,14 @@ public class GenericTreeModel<T> implements TreeModel, TreeSelectionListener{
             this.string = string;
         }
 
+        public void setSelected(boolean selected) {
+            this.selected = selected;
+        }
+
+        public boolean isSelected() {
+            return selected;
+        }
+        
     }
 
     public static class LeafNode<T> extends Node<T>{

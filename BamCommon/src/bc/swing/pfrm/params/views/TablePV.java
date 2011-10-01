@@ -19,14 +19,13 @@ import bc.swing.pfrm.params.ParamView;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.util.LinkedList;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JPopupMenu;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
-import javax.swing.tree.TreePath;
 
 /**
  *
@@ -35,6 +34,7 @@ import javax.swing.tree.TreePath;
 public class TablePV extends javax.swing.JPanel implements ParamView {
 
     JPopupMenu pmenu;
+    private GenericTableModel innerModel;
 
     /** Creates new form TablePV2 */
     public TablePV() {
@@ -53,7 +53,18 @@ public class TablePV extends javax.swing.JPanel implements ParamView {
     }
 
     public List getItemList(final ParamModel model) {
-        return (List) model.getValue();
+        return (model.getValue() != null ? (List) model.getValue() : new LinkedList());
+    }
+
+    private void configureFirstColumnWidth(final ParamModel model) {
+        final int firstColumnWidth = model.getViewHints().firstColumnWidth();
+
+        if (firstColumnWidth >= 0) {
+            final TableColumn col0 = table.getColumnModel().getColumn(0);
+            col0.setPreferredWidth(firstColumnWidth);
+            col0.setMaxWidth(firstColumnWidth);
+            col0.setMinWidth(firstColumnWidth);
+        }
     }
 
     /** This method is called from within the constructor to
@@ -97,7 +108,7 @@ public class TablePV extends javax.swing.JPanel implements ParamView {
     private javax.swing.JTable table;
     // End of variables declaration//GEN-END:variables
 
-    protected void hideTableHeader(){
+    protected void hideTableHeader() {
         table.setTableHeader(null);
     }
 
@@ -105,7 +116,7 @@ public class TablePV extends javax.swing.JPanel implements ParamView {
         configurePopupMenu(model);
 
         DataExtractor extractort = getDataExtractor(model);
-        final GenericTableModel innerModel = new GenericTableModel(extractort);
+        innerModel = new GenericTableModel(extractort);
         innerModel.changeInnerList(getItemList(model));
 
         DataInserter inserter = getDataInserter(model);
@@ -122,22 +133,15 @@ public class TablePV extends javax.swing.JPanel implements ParamView {
                 model.fireSelectionChanged(newSelection);
             }
         });
-        final int firstColumnWidth = model.getViewHints().firstColumnWidth();
-
-        if (firstColumnWidth >= 0) {
-            final TableColumn col0 = table.getColumnModel().getColumn(0);
-            col0.setPreferredWidth(firstColumnWidth);
-            col0.setMaxWidth(firstColumnWidth);
-            col0.setMinWidth(firstColumnWidth);
-        }
+        configureFirstColumnWidth(model);
+        table.setRowSelectionAllowed(model.getViewHints().allowSelection());
     }
 
     public void reflectChanges(ParamModel to) {
-        //throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public void onChange(ParamModel source, Object newValue, Object deltaHint) {
-        //throw new UnsupportedOperationException("Not supported yet.");
+        innerModel.changeInnerList(getItemList(source));
     }
 
     private void configurePopupMenu(ParamModel model) {

@@ -18,7 +18,9 @@ import bc.swing.pfrm.ano.PageDef;
 import bc.swing.pfrm.ano.Param;
 import bc.swing.pfrm.params.ParamType;
 import bgu.csp.az.dev.frm.TestExpirement;
-import java.io.PrintStream;
+import bgu.csp.az.dev.pui.sgrp.StatisticsModel;
+import bgu.csp.az.dev.pui.stat.StatusModel;
+import bgu.csp.az.impl.infra.Expirament;
 import java.util.LinkedList;
 import javax.swing.DefaultBoundedRangeModel;
 
@@ -27,28 +29,30 @@ import javax.swing.DefaultBoundedRangeModel;
  * @author bennyl
  */
 @PageDef(view = AZView.class, name = "AgentZero Test Execution Analyzer")
-public class UIController extends Model implements TestExpirement.Listener{
+public class UIController extends Model implements TestExpirement.Listener {
 
     @Param(name = "Pages", type = ParamType.TABS, role = AZView.PAGES_ROLE)
-    List<Model> pages = new LinkedList<Model>();
-
-    @Param(name = "Execution Progress", type= ParamType.PROGRESS, role=AZView.PROGRESS_BAR_ROLE)
+    List<Model> models = new LinkedList<Model>();
+    @Param(name = "Execution Progress", type = ParamType.PROGRESS, role = AZView.PROGRESS_BAR_ROLE)
     DefaultBoundedRangeModel progress;
-    
-    @Param(name = "Output", type= ParamType.CONSOLE, role=AZView.CONSOLE_ROLE)
+    @Param(name = "Output", type = ParamType.CONSOLE, role = AZView.CONSOLE_ROLE)
     ConsoleModel console = new ConsoleModel();
-    
     TestExpirement te;
-    
-    
-    public void go(TestExpirement te){
+
+    public void go(TestExpirement te) {
         this.te = te;
         te.addListener(this);
-        
+
         progress = new DefaultBoundedRangeModel(0, 0, 0, te.getNumberOfLeftProblems());
+
+        final StatusModel statusModel = new StatusModel();
+        statusModel.setExpirement(te);
+        models.add(statusModel);
         
-        System.setOut(new PrintStream(console.createConsoleWritingStream()));
-        
+        final StatisticsModel statisticsModel = new StatisticsModel();
+        te.addListener(statisticsModel);
+        models.add(statisticsModel);
+
         SwingDSL.configureUI();
         PageDSL.showInFrame(this);
     }
@@ -74,7 +78,7 @@ public class UIController extends Model implements TestExpirement.Listener{
 
     @Override
     public void onNewProblemExecuted(Problem p) {
-        progress.setValue(progress.getValue()+1);
+        progress.setValue(progress.getValue() + 1);
     }
 
     @Override
@@ -84,5 +88,4 @@ public class UIController extends Model implements TestExpirement.Listener{
     @Override
     public void onStatisticsRetrived(Statistic root) {
     }
-
 }

@@ -100,6 +100,22 @@ public class ConsoleModel{
             public synchronized void  write(int b) throws IOException {
                 append("" + (char)b);
             }
+
+            @Override
+            public synchronized void flush() throws IOException {
+                super.flush();
+            }
+
+            @Override
+            public synchronized void write(byte[] b) throws IOException {
+                super.write(b);
+            }
+
+            @Override
+            public synchronized void write(byte[] b, int off, int len) throws IOException {
+                super.write(b, off, len);
+            }
+            
         };
         return ops;
     }

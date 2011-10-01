@@ -8,8 +8,9 @@
  *
  * Created on 03/07/2011, 02:04:55
  */
-package bc.swing.pfrm.params.views.ext;
+package bc.swing.renderers;
 
+import bc.swing.pfrm.params.views.ext.*;
 import bc.swing.models.GenericTreeModel.Node;
 import java.awt.Color;
 import javax.swing.ImageIcon;
@@ -23,18 +24,16 @@ import static bc.dsl.SwingDSL.*;
  *
  * @author bennyl
  */
-public class SimpleTreeRenderer extends javax.swing.JPanel implements TreeCellRenderer {
+public class DefaultTreeRenderer extends javax.swing.JPanel implements TreeCellRenderer {
 
     public static final ImageIcon CLOSED_FOLDER = resIcon("blue-folder-horizontal");
     public static final ImageIcon OPEN_FOLDER = resIcon("blue-folder-horizontal-open");
     public static final LineBorder SELECTED_BORDER = new LineBorder(Color.LIGHT_GRAY, 1);
     public static final LineBorder UNSELECTED_BORDER = new LineBorder(Color.white, 1);
-    private IconProvider leafIconProvider;
 
     /** Creates new form XMenuTreeCR */
-    public SimpleTreeRenderer(IconProvider iprov) {
+    public DefaultTreeRenderer() {
         initComponents();
-        leafIconProvider = iprov;
     }
 
     /** This method is called from within the constructor to
@@ -64,7 +63,7 @@ public class SimpleTreeRenderer extends javax.swing.JPanel implements TreeCellRe
 
         Node n = (Node) value;
         if (n.isLeaf()) {
-            txt.setIcon(leafIconProvider.getIcon(n.getData()));
+            txt.setIcon(n.getIcon());
         } else {
             if (expanded) {
                 txt.setIcon(OPEN_FOLDER);

@@ -100,7 +100,7 @@ public class ParamModel {
             if (view == null) {
                 view = viewClass.newInstance();
                 view.setModel(this);
-                addListener(view);
+                addChangeListener(view);
             }
 
             return (JComponent) view;
@@ -152,7 +152,7 @@ public class ParamModel {
         return icon;
     }
 
-    public void addListener(Listener l) {
+    public void addChangeListener(Listener l) {
         listeners.add(l);
     }
 

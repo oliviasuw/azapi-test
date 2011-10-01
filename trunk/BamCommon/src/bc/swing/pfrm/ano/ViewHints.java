@@ -55,10 +55,17 @@ public @interface ViewHints {
     boolean showDescription() default true;
 
     /**
+     * milis to auto sync the view every
+     */
+    int autoSyncEvery() default -1;
+    
+    /**
      * designed for the XObject
      * @return
      */
     String xmlMetadataPath() default "";
+
+    public boolean allowSelection() default true;
 
     public static enum Orianitation{
         UNDEF,

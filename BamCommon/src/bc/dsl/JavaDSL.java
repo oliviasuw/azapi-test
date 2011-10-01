@@ -221,7 +221,7 @@ public class JavaDSL {
         }
     }
 
-    public static <T, E> List<T> map(List<E> l, Fn1<T, E> fn) {
+    public static <T, E> List<T> map(Collection<E> l, Fn1<T, E> fn) {
         List<T> ret = new LinkedList<T>();
         for (E e : l) {
             ret.add(fn.invoke(e));

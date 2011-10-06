@@ -11,6 +11,8 @@ import bc.swing.models.GenericTreeModel.Node;
 import bc.swing.pfrm.Action;
 import bc.swing.pfrm.ano.ViewHints.DND;
 import bc.swing.pfrm.BaseParamModel;
+import bc.swing.pfrm.DeltaHint;
+import bc.swing.pfrm.FieldParamModel.ChangeListener;
 import bc.swing.renderers.DefaultTreeRenderer;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
@@ -36,6 +38,7 @@ public class TreeBase extends JTree {
 
     JPopupMenu pmenu;
     BaseParamModel pmodel;
+    protected boolean extractValueFromNodeOnSelection = true;
 
     public TreeBase() {
         this.pmenu = new JPopupMenu();
@@ -47,13 +50,17 @@ public class TreeBase extends JTree {
         configureMouse();
     }
 
+    protected void setExtractValueFromNodeOnSelection(boolean extractValueFromNodeOnSelection) {
+        this.extractValueFromNodeOnSelection = extractValueFromNodeOnSelection;
+    }
+    
     private void configureMouse() {
         this.addMouseListener(new MouseAdapter() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
 
-                if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() % 2 == 0){
+                if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() % 2 == 0) {
                     pmodel.executeDefaultAction();
                 }
 
@@ -97,7 +104,11 @@ public class TreeBase extends JTree {
 
             public void valueChanged(TreeSelectionEvent e) {
                 if (TreeBase.this.getSelectionPath() != null) {
-                    param.fireSelectionChanged(((Node) TreeBase.this.getSelectionPath().getLastPathComponent()).getData());
+                    if (extractValueFromNodeOnSelection){
+                        param.fireSelectionChanged(((Node) TreeBase.this.getSelectionPath().getLastPathComponent()).getData());
+                    }else {
+                        param.fireSelectionChanged(((Node) TreeBase.this.getSelectionPath().getLastPathComponent()));
+                    }
 
                 } else {
                     param.fireSelectionChanged(null);
@@ -118,6 +129,33 @@ public class TreeBase extends JTree {
         if (!param.getViewHints().dnd().equals(DND.UNDEF)) {
             defineDND(param);
         }
+
+        param.addChangeListener(new ChangeListener() {
+
+            public void onChange(BaseParamModel source, Object newValue, Object deltaHint) {
+                if (deltaHint != null && deltaHint instanceof DeltaHint) {
+                    DeltaHint dh = (DeltaHint) deltaHint;
+                    switch (dh.type) {
+                        case DeltaHint.ONE_ITEM_ADDED_TYPE:
+                            if (dh.item instanceof Node) {
+                                getModel().fireNodeAdded((Node) dh.item);
+                            } else {
+                                throw new UnsupportedOperationException();
+                            }
+                            break;
+                        case DeltaHint.ONE_ITEM_CHANGED_TYPE:
+                            if (dh.item instanceof Node) {
+                                getModel().fireNodeChanged((Node) dh.item);
+                            } else {
+                                throw new UnsupportedOperationException();
+                            }
+                            break;
+                        default:
+                            throw new UnsupportedOperationException();
+                    }
+                }
+            }
+        });
 
     }
 

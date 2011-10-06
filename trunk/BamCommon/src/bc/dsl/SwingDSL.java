@@ -149,11 +149,11 @@ public class SwingDSL {
     }
 
     public static void msgbox(String title, String message) {
-        JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE, resIcon("menui/dsl/img/msgbox-logo.png"));
+        JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE, resIcon("msgbox-logo"));
     }
 
     public static void errbox(String title, String message) {
-        JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE, resIcon("menui/dsl/img/errbox-logo.png"));
+        JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE, resIcon("errbox-logo"));
     }
 
     public static void configureUI() {

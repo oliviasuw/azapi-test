@@ -21,26 +21,26 @@ import java.awt.event.FocusListener;
  *
  * @author BLutati
  */
-public class FileTreeWithScrollbarPV extends javax.swing.JPanel implements ParamView{
+public class TreeWithScrollbarPV extends javax.swing.JPanel implements ParamView{
 
     TreePV tree;
 
     /** Creates new form FileTree2PV */
-    public FileTreeWithScrollbarPV() {
+    public TreeWithScrollbarPV() {
         initComponents();
         tree = new TreePV();
         tree.addFocusListener(new FocusAdapter() {
 
             @Override
             public void focusGained(FocusEvent e) {
-                for (FocusListener l : FileTreeWithScrollbarPV.this.getFocusListeners()){
+                for (FocusListener l : TreeWithScrollbarPV.this.getFocusListeners()){
                     l.focusGained(e);
                 }
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                for (FocusListener l : FileTreeWithScrollbarPV.this.getFocusListeners()){
+                for (FocusListener l : TreeWithScrollbarPV.this.getFocusListeners()){
                     l.focusLost(e);
                 }
             }

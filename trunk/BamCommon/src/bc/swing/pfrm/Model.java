@@ -54,7 +54,7 @@ public class Model {
         return this.getClass().getAnnotation(bc.swing.pfrm.ano.PageDef.class);
     }
 
-    public void syncToView(String param, ListChangeDeltaHint hint){
+    public void syncToView(String param, DeltaHint hint){
         if (getPage() == null) return;
 
         Page.get(this).syncParameterFromModel(param, hint);

@@ -14,7 +14,7 @@ import bc.swing.dnd.ObjectTransferHandler;
 import bc.swing.models.GenericListModel;
 import bc.swing.pfrm.Action;
 import bc.swing.pfrm.ano.ViewHints.DND;
-import bc.swing.pfrm.ListChangeDeltaHint;
+import bc.swing.pfrm.DeltaHint;
 import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.ParamView;
 import bc.swing.renderers.DefaultListRenderer;
@@ -169,17 +169,17 @@ public class ListPV extends javax.swing.JPanel implements ParamView {
     }
 
     public void onChange(BaseParamModel source, Object newValue, Object deltaHint) {
-        if (deltaHint != null && deltaHint instanceof ListChangeDeltaHint) {
-            ListChangeDeltaHint delta = (ListChangeDeltaHint) deltaHint;
+        if (deltaHint != null && deltaHint instanceof DeltaHint) {
+            DeltaHint delta = (DeltaHint) deltaHint;
             List nval = (List) newValue;
             switch (delta.type) {
-                case ListChangeDeltaHint.LAST_ITEM_ADDED_TYPE:
+                case DeltaHint.LAST_ITEM_ADDED_TYPE:
                     innerModel.addLast(nval.get(nval.size() - 1));
                     break;
-                case ListChangeDeltaHint.ONE_ITEM_REOMVED_TYPE:
+                case DeltaHint.ONE_ITEM_REOMVED_TYPE:
                     innerModel.remove(delta.item);
                     break;
-                case ListChangeDeltaHint.ONE_ITEM_CHANGED_TYPE:
+                case DeltaHint.ONE_ITEM_CHANGED_TYPE:
                     innerModel.fireItemChanged(delta.item);
                     break;
             }

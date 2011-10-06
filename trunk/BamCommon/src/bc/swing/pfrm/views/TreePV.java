@@ -39,15 +39,17 @@ public class TreePV extends TreeBase implements ParamView {
             setMapModel((Map) model.getValue(), model);
         } else if (root instanceof File){
             setFileModel((File)root);
+        } else if (root instanceof  Node){
+            setNodeModel((Node) root);
         }
     }
 
     private void setElementModel(Element root) {
-        setModel(new GenericTreeModel(new ElementNode(root)));
+        setModel(new GenericTreeModel(new ElementNode(root, null)));
     }
 
     private void setMapModel(Map map, final BaseParamModel model) {
-        setModel(new GenericTreeModel(new MapNode(model.getName(), map)));
+        setModel(new GenericTreeModel(new MapNode(model.getName(), map, null)));
         setCellRenderer(new SimpleTreeRenderer(new IconProvider() {
 
             public ImageIcon getIcon(Object item) {
@@ -57,7 +59,12 @@ public class TreePV extends TreeBase implements ParamView {
     }
 
     private void setFileModel(File file) {
-        setModel(new GenericTreeModel(new FileNode(file)));
+        setModel(new GenericTreeModel(new FileNode(file, null)));
+    }
+
+    private void setNodeModel(Node node) {
+        setExtractValueFromNodeOnSelection(false); //WE DONT WANT TO EXTRACT THE VALUES OF THE NODES AS THE NODES ARE THE VALUES
+        setModel(new GenericTreeModel(node));
     }
 
     
@@ -67,8 +74,8 @@ public class TreePV extends TreeBase implements ParamView {
          * the dictionary value
          */
         Object value;
-        public MapNode(Object data, Object value) {
-            super(data);
+        public MapNode(Object data, Object value, Node parent) {
+            super(data, parent);
             this.value = value;
         }
 
@@ -80,7 +87,7 @@ public class TreePV extends TreeBase implements ParamView {
 
                     @Override
                     public MapNode invoke(Object arg) {
-                        return new MapNode(arg, m.get(arg));
+                        return new MapNode(arg, m.get(arg), MapNode.this);
                     }
                 });
             }else {
@@ -92,8 +99,8 @@ public class TreePV extends TreeBase implements ParamView {
     
     public static class ElementNode extends Node<Element>{
 
-        public ElementNode(Element data) {
-            super(data);
+        public ElementNode(Element data, Node parent) {
+            super(data, parent);
         }
 
         @Override
@@ -102,7 +109,7 @@ public class TreePV extends TreeBase implements ParamView {
 
                 @Override
                 public Node<Element> invoke(Element arg) {
-                    return new ElementNode(arg);
+                    return new ElementNode(arg, ElementNode.this);
                 }
             });
         }
@@ -123,8 +130,8 @@ public class TreePV extends TreeBase implements ParamView {
 
         public static final ImageIcon FILE_ICON = resIcon("file");
 
-        public FileNode(File data) {
-            super(data);
+        public FileNode(File data, Node parent) {
+            super(data, parent);
         }
 
         @Override
@@ -154,7 +161,7 @@ public class TreePV extends TreeBase implements ParamView {
 
                 @Override
                 public Node<File> invoke(File arg) {
-                    return new FileNode(arg);
+                    return new FileNode(arg, FileNode.this);
                 }
             });
         }

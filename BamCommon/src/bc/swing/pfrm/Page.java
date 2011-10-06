@@ -231,7 +231,7 @@ public class Page implements Model.ParameterChangeListener {
         }
     }
 
-    public void syncParameterFromModel(String param, ListChangeDeltaHint hint) {
+    public void syncParameterFromModel(String param, DeltaHint hint) {
         BaseParamModel p = parameters.get(param);
         if (p != null) {
             p.fireValueChanged(hint);

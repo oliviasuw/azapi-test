@@ -12,7 +12,7 @@ package bc.swing.pfrm.views;
 
 import bc.swing.pfrm.Model;
 import bc.swing.pfrm.Page;
-import bc.swing.pfrm.ListChangeDeltaHint;
+import bc.swing.pfrm.DeltaHint;
 import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.ParamView;
 import java.util.List;
@@ -77,10 +77,10 @@ public class TabsPV extends javax.swing.JPanel implements ParamView {
 
     public void onChange(BaseParamModel source, Object newValue, Object deltaHint) {
         if (deltaHint != null) {
-            ListChangeDeltaHint dhint = (ListChangeDeltaHint) deltaHint;
+            DeltaHint dhint = (DeltaHint) deltaHint;
 
             switch (dhint.type) {
-                case ListChangeDeltaHint.LAST_ITEM_ADDED_TYPE:
+                case DeltaHint.LAST_ITEM_ADDED_TYPE:
                     List l = (List)newValue;
                     Page p = Page.get((Model)l.get(l.size()-1));
                     tabs.addTab(p.getName(), p.getIcon(), p.getView());

@@ -62,6 +62,8 @@ public @interface ViewHints {
      * @return
      */
     String xmlMetadataPath() default "";
+    
+    Alignment horizontalAlignment() default Alignment.UNDEF;
 
     public boolean allowSelection() default true;
 
@@ -69,6 +71,13 @@ public @interface ViewHints {
         UNDEF,
         HORIZONTAL,
         VERTICAL
+    }
+    
+    public static enum Alignment{
+        UNDEF,
+        LEFT,
+        RIGHT,
+        CENTER
     }
     
     public static enum DND{

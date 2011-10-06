@@ -79,6 +79,8 @@ public class DefaultTreeRenderer extends javax.swing.JPanel implements TreeCellR
 
         txt.setText(n.toString());
 
+        doLayout();
+        setComponentOrientation(tree.getComponentOrientation());
         return this;
     }
 }

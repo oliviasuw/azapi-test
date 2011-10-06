@@ -6,11 +6,12 @@
 package bc.swing.pfrm.viewtypes;
 
 import bc.swing.pfrm.ParamView;
+import bc.swing.pfrm.views.AgentLogPV;
 import bc.swing.pfrm.views.ChartPV;
 import bc.swing.pfrm.views.ConsolePV;
 import bc.swing.pfrm.views.CustomPV;
 import bc.swing.pfrm.views.FileSelectionPV;
-import bc.swing.pfrm.views.FileTreeWithScrollbarPV;
+import bc.swing.pfrm.views.TreeWithScrollbarPV;
 import bc.swing.pfrm.views.IPAddressPV;
 import bc.swing.pfrm.views.InfoPV;
 import bc.swing.pfrm.views.LabelPV;
@@ -30,8 +31,8 @@ import bc.swing.pfrm.views.XObjectPV;
  * @author BLutati
  */
 public enum ParamType {
+    AGENT_LOG(AgentLogPV.class),
     CHART(ChartPV.class),
-    TREE(TreePV.class),
     LABEL(LabelPV.class),
     PROGRESS(ProgressPV.class),
     FILE_SELECTION(FileSelectionPV.class),
@@ -47,7 +48,7 @@ public enum ParamType {
     PAGE(PagePV.class),
     IP (IPAddressPV.class),
     STRING (StringPV.class),
-    FILE_TREE(FileTreeWithScrollbarPV.class);
+    TREE(TreeWithScrollbarPV.class);
 
     Class<? extends ParamView> view;
 

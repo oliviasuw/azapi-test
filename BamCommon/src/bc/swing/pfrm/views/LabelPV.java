@@ -12,6 +12,7 @@ import bc.swing.pfrm.ParamView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
 /**
@@ -24,6 +25,8 @@ public class LabelPV extends JLabel implements ParamView {
         onChange(model, model.getValue(), null);
         ViewHints vh = model.getViewHints();
 
+        configureAlignment(vh);
+        
         if (vh.autoSyncEvery() > 0) {
             final Timer t = new Timer(vh.autoSyncEvery(), new ActionListener() {
 
@@ -55,5 +58,21 @@ public class LabelPV extends JLabel implements ParamView {
         String data = (newValue == null? "????" : newValue.toString());
         setText(data);
         setIcon(model.getIcon());
+    }
+
+    private void configureAlignment(ViewHints vh) {
+        switch (vh.horizontalAlignment()){
+            case UNDEF:
+                return;
+            case LEFT: 
+                setHorizontalAlignment(SwingConstants.LEFT);
+                break;
+            case RIGHT:
+                setHorizontalAlignment(SwingConstants.RIGHT);
+                break;
+            case CENTER:
+                setHorizontalAlignment(SwingConstants.CENTER);
+                break;
+        }
     }
 }

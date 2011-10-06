@@ -24,7 +24,6 @@ public @interface Param {
     String icon() default "";
     ParamType type() default ParamType.CUSTOM;
     String role() default "";
-    String baseName() default "";
     Class<? extends ParamView> customView() default CustomPV.class;
     ViewHints vhints() default @ViewHints;
 }

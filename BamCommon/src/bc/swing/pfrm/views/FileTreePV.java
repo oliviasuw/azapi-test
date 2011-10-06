@@ -47,7 +47,7 @@ public class FileTreePV extends JTree implements ParamView {
 
     public FileTreePV() {
         this.pmenu = new JPopupMenu();
-        this.setModel(new GenericTreeModel(new FileNode(new File("."))));
+        this.setModel(new GenericTreeModel(new FileNode(new File("."), null)));
         this.setRowHeight(20);
         this.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
         this.setCellRenderer(new SimpleTreeRenderer(new IconProvider() {
@@ -109,7 +109,7 @@ public class FileTreePV extends JTree implements ParamView {
     public void setParam(final BaseParamModel model) {
 
         File f = (File) model.getValue();
-        ftm = new GenericTreeModel<File>(new FileNode(f));
+        ftm = new GenericTreeModel<File>(new FileNode(f, null));
         this.setModel(ftm);
 
         this.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
@@ -174,8 +174,8 @@ public class FileTreePV extends JTree implements ParamView {
 
     public static class FileNode extends Node<File> {
 
-        public FileNode(File data) {
-            super(data);
+        public FileNode(File data, Node parent) {
+            super(data, parent);
         }
 
         @Override
@@ -200,7 +200,7 @@ public class FileTreePV extends JTree implements ParamView {
 
                 @Override
                 public Node<File> invoke(File arg) {
-                    return new FileNode(arg);
+                    return new FileNode(arg, FileNode.this);
                 }
             });
         }

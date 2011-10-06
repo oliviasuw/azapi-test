@@ -10,33 +10,29 @@
  */
 package bc.swing.pfrm.views;
 
-import bc.swing.models.ChartModel;
+import bc.dsl.SwingDSL;
+import bc.swing.models.chart.ChartModel;
 import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.ParamView;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.LogarithmicAxis;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.plot.Plot;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYAreaRenderer2;
 
 /**
  *
  * @author bennyl
  */
-public class ChartPV extends javax.swing.JPanel implements ParamView{
+public class ChartPV extends javax.swing.JPanel implements ParamView {
 
     private ChartPanel cpan;
     private ChartModel cmodel;
     private JFreeChart jfchart;
-    
+
     /** Creates new form ChartPV */
     public ChartPV() {
         initComponents();
+        nullLabel.setIcon(SwingDSL.resIcon("null"));
     }
 
     /** This method is called from within the constructor to
@@ -48,18 +44,21 @@ public class ChartPV extends javax.swing.JPanel implements ParamView{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        nullLabel = new javax.swing.JLabel();
+
+        setBackground(new java.awt.Color(255, 255, 255));
         setLayout(new java.awt.BorderLayout());
+
+        nullLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        nullLabel.setText("There is no data to show");
+        add(nullLabel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel nullLabel;
     // End of variables declaration//GEN-END:variables
 
     public void setParam(BaseParamModel param) {
-        cmodel = (ChartModel) param.getValue();
-        jfchart = cmodel.getChartType().getChart(cmodel);
-        cpan = new ChartPanel(jfchart);
-        removeAll();
-        add(cpan, BorderLayout.CENTER);
-        applyStyle();
+        onChange(param, param.getValue(), null);
     }
 
     public void reflectChangesToParam(BaseParamModel to) {
@@ -67,12 +66,31 @@ public class ChartPV extends javax.swing.JPanel implements ParamView{
     }
 
     public void onChange(BaseParamModel source, Object newValue, Object deltaHint) {
-//        throw new UnsupportedOperationException("Not supported yet.");
+        if (deltaHint == null) {
+            if (newValue == null) {
+                handleNullValue();
+            } else {
+                removeAll();
+                cmodel = (ChartModel) newValue;
+                jfchart = cmodel.generateView();
+                cpan = new ChartPanel(jfchart);
+                add(cpan, BorderLayout.CENTER);
+                applyStyle();
+            }
+            
+            validate();
+            repaint();
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     private void applyStyle() {
         jfchart.setBackgroundPaint(Color.white);
     }
 
-    
+    private void handleNullValue() {
+        removeAll();
+        add(nullLabel, BorderLayout.CENTER);
+    }
 }

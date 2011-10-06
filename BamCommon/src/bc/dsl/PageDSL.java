@@ -21,10 +21,9 @@ import javax.swing.JPanel;
  */
 public class PageDSL {
     public static void fillByRole(Page model, JPanel container, String role){
-        List<BaseParamModel> l = model.getParamsWithRole(role);
         container.setLayout(new BorderLayout());
         container.removeAll();
-        container.add(l.get(0).getDefaultView(), BorderLayout.CENTER);
+        insertToCenterByRole(model, container, role);
     }
     
     public static void fillByRole(Page model, JPanel container, String role, int insets){
@@ -37,6 +36,11 @@ public class PageDSL {
         con.weightx = 1;
         con.weighty = 1;
         container.add(l.get(0).getDefaultView(), con);
+    }
+    
+    public static void insertToCenterByRole(Page model, JPanel container, String role){
+        List<BaseParamModel> l = model.getParamsWithRole(role);
+        container.add(l.get(0).getDefaultView(), BorderLayout.CENTER);
     }
     
     public static void showInFrame(Model model){

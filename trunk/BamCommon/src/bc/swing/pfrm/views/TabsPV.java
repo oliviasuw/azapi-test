@@ -49,6 +49,7 @@ public class TabsPV extends javax.swing.JPanel implements ParamView {
         tabs = new javax.swing.JTabbedPane();
 
         setBackground(new java.awt.Color(255, 255, 255));
+        setOpaque(false);
         setLayout(new java.awt.GridBagLayout());
 
         tabs.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);

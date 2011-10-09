@@ -4,6 +4,7 @@
  */
 package bc.dsl;
 
+import bc.swing.comp.JCaptionToolbar;
 import bc.swing.pfrm.Model;
 import bc.swing.pfrm.Page;
 import bc.swing.pfrm.layouts.PageFrame;
@@ -13,6 +14,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.List;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 /**
@@ -21,9 +23,15 @@ import javax.swing.JPanel;
  */
 public class PageDSL {
     public static void fillByRole(Page model, JPanel container, String role){
-        container.setLayout(new BorderLayout());
+        container.setLayout(new GridBagLayout());
         container.removeAll();
-        insertToCenterByRole(model, container, role);
+        List<BaseParamModel> l = model.getParamsWithRole(role);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = gbc.BOTH;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        container.add(l.get(0).getDefaultView(), gbc);
+//        insertToCenterByRole(model, container, role);
     }
     
     public static void fillByRole(Page model, JPanel container, String role, int insets){
@@ -43,7 +51,12 @@ public class PageDSL {
         container.add(l.get(0).getDefaultView(), BorderLayout.CENTER);
     }
     
+    public static JComponent viewByRole(Page page, String role){
+        return page.getParamsWithRole(role).get(0).getDefaultView();
+    }
+    
     public static void showInFrame(Model model){
         PageFrame.show(Page.get(model));
     }
+    
 }

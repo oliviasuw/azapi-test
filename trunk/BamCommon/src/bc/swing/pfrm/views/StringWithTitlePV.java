@@ -34,14 +34,15 @@ public class StringWithTitlePV extends javax.swing.JPanel implements ParamView {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        title = new javax.swing.JLabel();
+        titleL = new javax.swing.JLabel();
         field = new javax.swing.JTextField();
+        titleR = new javax.swing.JLabel();
 
         setOpaque(false);
         setLayout(new java.awt.GridBagLayout());
 
-        title.setText("jLabel1");
-        add(title, new java.awt.GridBagConstraints());
+        titleL.setText("jLabel1");
+        add(titleL, new java.awt.GridBagConstraints());
 
         field.setText("jTextField1");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -49,16 +50,25 @@ public class StringWithTitlePV extends javax.swing.JPanel implements ParamView {
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         add(field, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        add(titleR, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField field;
-    private javax.swing.JLabel title;
+    private javax.swing.JLabel titleL;
+    private javax.swing.JLabel titleR;
     // End of variables declaration//GEN-END:variables
 
     public void setParam(BaseParamModel model) {
-        title.setText(model.getName());
-        title.setIcon(model.getIcon());
+        String[] nameLR = model.getName().split("\\$\\$");
+        
+        titleL.setText(nameLR[0]);
+        titleL.setIcon(model.getIcon());
         field.setText(model.getValue().toString());
+        if (nameLR.length > 1){
+            titleR.setText(nameLR[1]);
+        }
     }
 
     public void reflectChangesToParam(BaseParamModel to) {

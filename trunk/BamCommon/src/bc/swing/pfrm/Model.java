@@ -7,9 +7,8 @@ package bc.swing.pfrm;
 import bc.swing.pfrm.ano.PageDef.DefaultPageView;
 import bc.swing.pfrm.layouts.CenterLayout;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 
 /**
  *
@@ -66,6 +65,11 @@ public class Model {
         Page.get(this).syncParameterFromModel(param);
     }
 
+    public void syncFromView(){
+        if (getPage() == null) return;
+        Page.get(this).syncParametersFromView();
+    }
+    
     public void syncFromView(String param){
         if (getPage() == null) return;
 
@@ -81,7 +85,7 @@ public class Model {
     }
     
     public Class<? extends PageView> getPageDefaultView(){
-        Class<? extends PageView> v = getPageAnnotation().view();
+        Class<? extends PageView> v = getPageAnnotation().layout();
         if (v.equals(DefaultPageView.class)){
             String vname = getClass().getCanonicalName();
             if (vname.endsWith("Model")){
@@ -136,4 +140,9 @@ public class Model {
 
         void onChange(Model model, String propertyName, Object hint);
     }
+    
+    public void configurePageLayout(JPanel layout){
+        
+    }
+    
 }

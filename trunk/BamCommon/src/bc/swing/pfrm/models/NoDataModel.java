@@ -15,13 +15,19 @@ import bc.swing.pfrm.viewtypes.ParamType;
  *
  * @author bennyl
  */
-@PageDef(view=CenterLayout.class)
+@PageDef(layout=CenterLayout.class)
 public class NoDataModel extends Model{
     String noDataNotification;
 
     public NoDataModel(String noDataNotification) {
         this.noDataNotification = noDataNotification;
     }
+
+    public NoDataModel() {
+        noDataNotification = "No Data To Show.";
+    }
+    
+    
 
     @Param(type= ParamType.LABEL, name="No Data Notification", icon="null")
     @ViewHints(horizontalAlignment= ViewHints.Alignment.CENTER)

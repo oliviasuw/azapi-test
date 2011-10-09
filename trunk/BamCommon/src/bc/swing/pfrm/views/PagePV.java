@@ -41,6 +41,7 @@ public class PagePV extends javax.swing.JPanel implements ParamView {
     private void initComponents() {
 
         setBackground(new java.awt.Color(255, 255, 255));
+        setOpaque(false);
         setLayout(new java.awt.BorderLayout());
     }// </editor-fold>//GEN-END:initComponents
 

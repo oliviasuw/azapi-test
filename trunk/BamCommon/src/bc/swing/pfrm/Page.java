@@ -9,6 +9,7 @@ import bc.swing.pfrm.ano.ViewHints;
 import java.util.LinkedHashMap;
 import bc.dsl.SwingDSL;
 import bc.swing.pfrm.ano.Param;
+import bc.swing.pfrm.viewtypes.ParamType;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class Page implements Model.ParameterChangeListener {
     private ImageIcon icon;
     private List<Action> actions;
     private Map<String, BaseParamModel> parameters;
-    private Class<? extends PageView> viewClass;
+    private Class<? extends PageView> layoutClass;
     private WeakReference<PageView> view; //if the view is unused throw it automaticly away..
     private List<PageView> disposeList = new LinkedList<PageView>();
     private Model model;
@@ -114,7 +115,7 @@ public class Page implements Model.ParameterChangeListener {
     }
 
     public void setViewClass(Class<? extends PageView> viewClass) {
-        this.viewClass = viewClass;
+        this.layoutClass = viewClass;
     }
 
     protected void addParam(String name, BaseParamModel d) {
@@ -140,9 +141,9 @@ public class Page implements Model.ParameterChangeListener {
     }
 
     public JPanel getView() {
-        if (view == null || view.get() == null && viewClass != null) {
+        if (view == null || view.get() == null && layoutClass != null) {
             try {
-                final PageView temp = viewClass.newInstance(); //used as anchor do not delete!
+                final PageView temp = layoutClass.newInstance(); //used as anchor do not delete!
                 view = new WeakReference<PageView>(temp);
             } catch (InstantiationException ex) {
                 Logger.getLogger(Page.class.getName()).log(Level.SEVERE, null, ex);
@@ -150,6 +151,7 @@ public class Page implements Model.ParameterChangeListener {
                 Logger.getLogger(Page.class.getName()).log(Level.SEVERE, null, ex);
             }
             view.get().setPage(this);
+            model.configurePageLayout((JPanel)view.get());
         }
 
         return (JPanel) view.get();
@@ -259,7 +261,7 @@ public class Page implements Model.ParameterChangeListener {
                 Logger.getLogger(Page.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         for (Method f : methods) {
             dano = f.getAnnotation(Param.class);
             try {
@@ -276,7 +278,7 @@ public class Page implements Model.ParameterChangeListener {
      * dont use regulary - very heavy update :(
      */
     public void syncParametersFromModel() {
-        for (BaseParamModel p : parameters.values()){
+        for (BaseParamModel p : parameters.values()) {
             p.fireValueChanged();
         }
     }
@@ -297,7 +299,13 @@ public class Page implements Model.ParameterChangeListener {
     }
 
     private BaseParamModel generateParam(Param dano, Field field, Model m) {
-        FieldParamModel pmod = new FieldParamModel(dano.name(), SwingDSL.resIcon(dano.icon()), dano.type().getViewClass());
+        FieldParamModel pmod = null;
+        if (dano.type().equals(ParamType.CUSTOM)) {
+            pmod = new FieldParamModel(dano.name(), SwingDSL.resIcon(dano.icon()), dano.customView());
+        } else {
+            pmod = new FieldParamModel(dano.name(), SwingDSL.resIcon(dano.icon()), dano.type().getViewClass());
+        }
+        
         pmod.setField(field);
 
         ViewHints vh = null;
@@ -312,10 +320,17 @@ public class Page implements Model.ParameterChangeListener {
     }
 
     private BaseParamModel generateParam(Param dano, Method mtd, Model m) {
-        MethodParamModel pmod = new MethodParamModel(dano.name(), SwingDSL.resIcon(dano.icon()), dano.type().getViewClass());
+
+        MethodParamModel pmod = null;
+        if (dano.type().equals(ParamType.CUSTOM)) {
+            pmod = new MethodParamModel(dano.name(), SwingDSL.resIcon(dano.icon()), dano.customView());
+        } else {
+            pmod = new MethodParamModel(dano.name(), SwingDSL.resIcon(dano.icon()), dano.type().getViewClass());
+        }
+        
         Method mtds = null;
-        if (pmod.getName().startsWith("get")) {
-            String setterName = "set" + pmod.getName().substring("get".length());
+        if (mtd.getName().startsWith("get")) {
+            String setterName = "set" + mtd.getName().substring("get".length());
             mtds = ReflectionDSL.methodByName(m.getClass(), setterName);
         }
 

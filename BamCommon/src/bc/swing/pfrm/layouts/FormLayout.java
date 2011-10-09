@@ -14,7 +14,6 @@ import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.Page;
 import bc.swing.pfrm.PageView;
 import bc.swing.pfrm.ano.ViewHints;
-import bc.swing.pfrm.FieldParamModel;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -26,6 +25,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 /**
  *
@@ -35,12 +35,44 @@ public class FormLayout extends javax.swing.JPanel implements PageView {
 
     Page model;
     public Set<String> exclude;
+    Color labelBackColor = new Color(245, 245, 245);
+    private JPanel sidepan;
+    private boolean colorLabels = true;
+    private boolean heightTaken = false;
+    private boolean takeAllHeight = false;
 
-    
     /** Creates new form PageForm */
     public FormLayout() {
         initComponents();
         exclude = new HashSet<String>();
+    }
+
+    public void setTakeAllHeight(boolean takeAllHeight) {
+        this.takeAllHeight = takeAllHeight;
+    }
+
+    public boolean isTakeAllHeight() {
+        return takeAllHeight;
+    }
+
+    public void setColorLabels(boolean colorLabels) {
+        this.colorLabels = colorLabels;
+        if (sidepan != null) {
+            sidepan.setOpaque(colorLabels);
+        }
+    }
+
+    public boolean isColorLabels() {
+        return colorLabels;
+    }
+
+    public void setLabelBackColor(Color labelBackColor) {
+        this.labelBackColor = labelBackColor;
+        if (sidepan != null) {
+            sidepan.setBackground(labelBackColor);
+            repaint();
+        }
+
     }
 
     /**
@@ -61,6 +93,8 @@ public class FormLayout extends javax.swing.JPanel implements PageView {
     private void initComponents() {
 
         setBackground(new java.awt.Color(255, 255, 255));
+        setOpaque(false);
+        setPreferredSize(new java.awt.Dimension(1000, 1000));
         setLayout(new java.awt.GridBagLayout());
     }// </editor-fold>//GEN-END:initComponents
 
@@ -69,8 +103,18 @@ public class FormLayout extends javax.swing.JPanel implements PageView {
         List<BaseParamModel> params = model.getParams();
         for (BaseParamModel param : params) {
             if (!exclude.contains(param.getName())) {
-                addLabel(param.getName(), param.getIcon());
-                addValueView(param.getDefaultView(), param.getViewHints());
+                String[] nameLR = param.getName().split("\\$\\$");
+
+                if (nameLR[0].startsWith("#")) {
+                    addValueView(param.getDefaultView(), param.getViewHints(), 3);
+                } else {
+                    addLabel(nameLR[0], param.getIcon());
+                    addValueView(param.getDefaultView(), param.getViewHints(), 3 - nameLR.length);
+                    if (nameLR.length > 1) {
+                        addTrailLabel(nameLR[1], null);
+                    }
+
+                }
             }
         }
 
@@ -81,40 +125,63 @@ public class FormLayout extends javax.swing.JPanel implements PageView {
 
     private void addLabel(String name, ImageIcon icon) {
         JLabel lbl = new JLabel();
-        lbl.setOpaque(true);
         lbl.setText(name);
         lbl.setIcon(icon);
-        lbl.setBackground(new Color(245, 245, 245));
+//        lbl.setVerticalAlignment(SwingConstants.TOP);
         GridBagConstraints cons = new GridBagConstraints();
         cons.fill = GridBagConstraints.BOTH;
         cons.gridx = 0;
+//        cons.anchor = GridBagConstraints.NORTH;
         cons.insets = new Insets(5, 5, 0, 5);
         add(lbl, cons);
     }
 
-    
-    private void addValueView(JComponent defaultView, ViewHints viewHints) {
+    private void addTrailLabel(String name, ImageIcon icon) {
+        JLabel lbl = new JLabel();
+        lbl.setText(name);
+        lbl.setIcon(icon);
+//        lbl.setVerticalAlignment(SwingConstants.TOP);
         GridBagConstraints cons = new GridBagConstraints();
-        cons.gridx = 1;
+        cons.fill = GridBagConstraints.BOTH;
+        cons.gridx = 2;
+        cons.insets = new Insets(5, 5, 0, 5);
+        add(lbl, cons);
+    }
+
+    private void addValueView(JComponent defaultView, ViewHints viewHints, int columns) {
+        GridBagConstraints cons = new GridBagConstraints();
+        if (columns == 3) {
+            cons.gridx = 0;
+        } else {
+            cons.gridx = 1;
+        }
         cons.insets = new Insets(5, 5, 0, 5);
         cons.weightx = 1;
+        cons.gridwidth = columns;
         cons.fill = GridBagConstraints.BOTH;
-        if (viewHints.heightExpandPrecentage() > 0){
-            cons.weighty = 100.0/viewHints.heightExpandPrecentage();
+        if (viewHints.heightExpandPrecentage() > 0) {
+            cons.weighty = 100.0 / viewHints.heightExpandPrecentage();
+            heightTaken = true;
         }
-        
+
         add(defaultView, cons);
     }
-    
-    private void sealLayout(){
-        JPanel sidepan = new JPanel();
-        sidepan.setBackground(new java.awt.Color(245, 245, 245));
+
+    private void sealLayout() {
+        sidepan = new JPanel();
+        sidepan.setBackground(labelBackColor);
+        sidepan.setOpaque(isColorLabels());
         GridBagConstraints gbc = new java.awt.GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridheight = 500;
         gbc.fill = java.awt.GridBagConstraints.BOTH;
         gbc.insets = new Insets(5, 0, 0, 0);
+
+        if (!heightTaken && takeAllHeight) {
+            gbc.weighty = 1;
+        }
+
         add(sidepan, gbc);
     }
 

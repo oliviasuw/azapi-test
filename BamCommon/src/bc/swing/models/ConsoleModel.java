@@ -20,7 +20,7 @@ import javax.swing.text.PlainDocument;
  *
  * @author BLutati
  */
-@PageDef(view=ConsolePV.class)
+@PageDef(layout=ConsolePV.class)
 public class ConsoleModel extends Model{
 
     String consoleName;

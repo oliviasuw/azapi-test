@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
 public @interface PageDef {
     String name() default "UNKNOWN";
     String icon() default "";
-    Class<? extends PageView> view() default DefaultPageView.class;
+    Class<? extends PageView> layout() default DefaultPageView.class;
 
 
     public static abstract class DefaultPageView implements PageView{}

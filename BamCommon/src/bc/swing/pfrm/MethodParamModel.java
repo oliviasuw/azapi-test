@@ -58,6 +58,7 @@ public class MethodParamModel extends BaseParamModel {
         if (setter != null) {
             try {
                 setter.invoke(model, value);
+                fireValueChanged();
             } catch (IllegalAccessException ex) {
                 Logger.getLogger(MethodParamModel.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalArgumentException ex) {

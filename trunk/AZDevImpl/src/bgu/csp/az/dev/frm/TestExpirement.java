@@ -4,17 +4,16 @@
  */
 package bgu.csp.az.dev.frm;
 
+import bc.dsl.XNavDSL;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.ExecutionResult;
 import bgu.csp.az.api.tools.Assignment;
 import bgu.csp.az.dev.alg.IterativeCSPSolver.Status;
+import bgu.csp.az.dev.frm.TestExecution.LogListner;
 import bgu.csp.az.dev.slog.ScenarioLogger;
 import java.util.List;
-import bam.utils.FileUtils;
 import bgu.csp.az.dev.Round;
 import bgu.csp.az.api.Problem;
-import java.io.IOException;
-import java.util.Date;
 import java.io.File;
 import bgu.csp.az.api.Algorithm;
 import bgu.csp.az.api.Statistic;
@@ -25,12 +24,10 @@ import bgu.csp.az.api.tools.IdleDetector;
 import bgu.csp.az.dev.alg.BranchAndBound;
 import bgu.csp.az.dev.alg.MACSolver;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nu.xom.Element;
 import nu.xom.ParsingException;
 
-import static bam.utils.XNavUtils.*;
+import static bc.dsl.XNavDSL.*;
 import static bam.utils.JavaUtils.*;
 
 /**
@@ -52,6 +49,7 @@ import static bam.utils.JavaUtils.*;
  */
 public class TestExpirement extends Expirament {
 
+    public static final boolean USE_SCENARIO_LOGGER = false;
     public static final String NEW_PROBLEM_EVENT = "test-expirament-new-problem";
     public static final String NEW_ROUND_EVENT = "test-expirament-new-round";
     public static final String TEMP_SCENARIO_LOG_DB_PATH = "temp/jdb";
@@ -63,6 +61,7 @@ public class TestExpirement extends Expirament {
     ProblemSequence currentRound;
     boolean saveFaildProblem = true;
     LinkedList<Listener> listeners = new LinkedList<Listener>();
+    LinkedList<TestExecution.LogListner> logListeners = new LinkedList<LogListner>();
 
     /**
      * @param metadata the test metadata - a parsed xml file contains the definitions of all the rounds.
@@ -87,6 +86,10 @@ public class TestExpirement extends Expirament {
         }
     }
 
+    public void addLogListener(LogListner logListener) {
+        logListeners.add(logListener);
+    }
+
     /**
      * @param p - a single problem ( a new round will be constracted from this single proble and be executed)
      * @param alg  - the algorithm to test this proglem against
@@ -105,7 +108,7 @@ public class TestExpirement extends Expirament {
         fireExpirementStarted();
         super.run();
     }
-    
+
     /**
      * if this expirement fails it can save the executed problem 
      * if this variable is set it will get saved in the given directory, 
@@ -122,6 +125,8 @@ public class TestExpirement extends Expirament {
         TestExecution te = new TestExecution();
         te.setAlgorithm(alg);
 
+        te.setLogListners(logListeners);
+
         if (currentRound == null || !currentRound.hasNext()) {
             final Round r = roundsLeft.remove(0);
             currentRound = r.generateProblemSequance();
@@ -131,7 +136,7 @@ public class TestExpirement extends Expirament {
         final Problem p = currentRound.next();
         te.setGlobalProblem(p);
         te.setMailer(new TestMailer(te));
-        if (alg.isUseIdleDetector()){
+        if (alg.isUseIdleDetector()) {
             te.setIdleDetector(new IdleDetector(p.getNumberOfVariables(), te.getMailer()));
         }
 
@@ -171,6 +176,19 @@ public class TestExpirement extends Expirament {
                             attr(p, "type"),
                             cfloat(attr(p, "p1")),
                             rnum++);
+
+                    if (hasAttr(p, "p2-tick")) {
+                        r.setP2Tick(cfloat(attr(p, "p2-tick")));
+                    }
+
+                    if (hasAttr(p, "p2-start")) {
+                        r.setP2Start(cfloat(attr(p, "p2-start")));
+                    }
+
+                    if (hasAttr(p, "p2-end")) {
+                        r.setP2End(cfloat(attr(p, "p2-end")));
+                    }
+
                     roundsLeft.add(r);
                 } else {
                     throw new ParsingException("dont know how to generate problems from type " + c.getLocalName());
@@ -220,10 +238,10 @@ public class TestExpirement extends Expirament {
     protected void whenExpirementEndedBecauseExecutionCrushed(Exception ex) {
         ScenarioLogger log = ((TestExecution) getCurrentExecution()).getLogger();
         log.logCrush(ex);
-        fireExecutionCrushed((TestExecution)getCurrentExecution(), ex);
+        fireExecutionCrushed((TestExecution) getCurrentExecution(), ex);
         //saveCurrentScenarioAndStop();
     }
-    
+
     @Override
     protected void whenExecutionEndedSuccessfully() {
         fireExecutionEndedSuccesfully();
@@ -232,37 +250,47 @@ public class TestExpirement extends Expirament {
     @Override
     protected void whenExpirementEndedBecauseOfWrongResults(Assignment wrong, Assignment right) {
         System.out.println("Wrong Assignment : " + wrong + ", Optional Good Assignment: " + right);
-        if (right == null){
+        if (right == null) {
             System.out.println("Wrong Assignment Cost Was: " + wrong.calcCost(getCurrentExecution().getGlobalProblem()));
             System.out.println("While The Right Solution is 'Imposible'");
-        }else if (wrong == null){
+        } else if (wrong == null) {
             System.out.println("Wrong Assignment Was 'Imposible'");
             System.out.println("While The Right Solution cost is: " + right.calcCost(getCurrentExecution().getGlobalProblem()));
-        }else{
+        } else {
             System.out.println("The Right Solution cost is: " + right.calcCost(getCurrentExecution().getGlobalProblem()));
             System.out.println("The Wrong Solution cost is: " + wrong.calcCost(getCurrentExecution().getGlobalProblem()));
         }
-        fireExecutionEndedWrongly((TestExecution)getCurrentExecution(), wrong, right);
+        fireExecutionEndedWrongly((TestExecution) getCurrentExecution(), wrong, right);
     }
 
     private void fireRoundChanged(Round r) {
-        for (Listener l : listeners) l.onNewRoundStarted(r);
+        for (Listener l : listeners) {
+            l.onNewRoundStarted(r);
+        }
     }
 
     private void fireExecutionEndedWrongly(TestExecution currentExecution, Assignment wrong, Assignment right) {
-       for (Listener l : listeners) l.onExecutionEndedWithWrongResult(currentExecution, wrong, right);
+        for (Listener l : listeners) {
+            l.onExecutionEndedWithWrongResult(currentExecution, wrong, right);
+        }
     }
 
     private void fireNewProblemExecuting(Problem p) {
-        for (Listener l : listeners) l.onNewProblemExecuted(p);
+        for (Listener l : listeners) {
+            l.onNewProblemExecuted(p);
+        }
     }
 
     private void fireExecutionCrushed(TestExecution currentExecution, Exception ex) {
-        for (Listener l : listeners) l.onExecutionCrushed(currentExecution, ex);
+        for (Listener l : listeners) {
+            l.onExecutionCrushed(currentExecution, ex);
+        }
     }
 
     private void fireExecutionEndedSuccesfully() {
-        for (Listener l : listeners) l.onExpirementEndedSuccessfully();
+        for (Listener l : listeners) {
+            l.onExpirementEndedSuccessfully();
+        }
     }
 
     public void addListener(Listener l) {
@@ -270,7 +298,9 @@ public class TestExpirement extends Expirament {
     }
 
     private void fireExpirementStarted() {
-        for (Listener l : listeners) l.onExpirementStarted();
+        for (Listener l : listeners) {
+            l.onExpirementStarted();
+        }
     }
 
     @Override
@@ -279,15 +309,17 @@ public class TestExpirement extends Expirament {
     }
 
     private void fireStatisticsRetrived(Statistic statisticsTree) {
-        for (Listener l : listeners) l.onStatisticsRetrived(statisticsTree);
+        for (Listener l : listeners) {
+            l.onStatisticsRetrived(statisticsTree);
+        }
     }
 
     public int getNumberOfLeftProblems() {
-        int sum=0;
-        for (Round r : roundsLeft){
+        int sum = 0;
+        for (Round r : roundsLeft) {
             sum += r.getLength();
         }
-        
+
         return sum;
     }
 
@@ -304,11 +336,11 @@ public class TestExpirement extends Expirament {
         void onNewProblemExecuted(Problem p);
 
         void onNewRoundStarted(Round r);
-        
+
         void onStatisticsRetrived(Statistic root);
     }
-    
-    public static class Handler implements Listener{
+
+    public static class Handler implements Listener {
 
         @Override
         public void onExpirementEndedSuccessfully() {
@@ -337,8 +369,5 @@ public class TestExpirement extends Expirament {
         @Override
         public void onStatisticsRetrived(Statistic root) {
         }
-        
     }
-
-    
 }

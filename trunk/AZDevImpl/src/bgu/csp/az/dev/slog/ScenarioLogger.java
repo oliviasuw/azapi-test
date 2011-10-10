@@ -94,7 +94,7 @@ public class ScenarioLogger {
      */
     public long logScenarioPart(int agent, long messageid) {
         ScenarioPartLog spart = new ScenarioPartLog();
-        spart.currentCC = currentCC.sumChilds();
+//        spart.currentCC = currentCC.sumChilds();
         spart.messageId = messageid;
         this.parts[agent].add(spart);
         lastScenarioPartIdPerAgent[agent] = messageid;

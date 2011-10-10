@@ -13,7 +13,7 @@ package bgu.csp.az.dev.pui;
 import bc.dsl.PageDSL;
 import bc.swing.pfrm.Page;
 import bc.swing.pfrm.PageView;
-import bc.swing.pfrm.params.ParamModel;
+import bc.swing.pfrm.FieldParamModel;
 import java.awt.BorderLayout;
 import java.util.List;
 
@@ -49,7 +49,6 @@ public class AZView extends javax.swing.JPanel implements PageView{
         jSeparator1 = new javax.swing.JSeparator();
         jLabel2 = new javax.swing.JLabel();
         tabs = new javax.swing.JPanel();
-        pcons = new javax.swing.JPanel();
         pbar = new javax.swing.JPanel();
 
         pinstripePainter1.setCacheable(true);
@@ -112,14 +111,6 @@ public class AZView extends javax.swing.JPanel implements PageView{
         gridBagConstraints.insets = new java.awt.Insets(5, 3, 5, 3);
         contentPan.add(tabs, gridBagConstraints);
 
-        pcons.setMinimumSize(new java.awt.Dimension(10, 50));
-        pcons.setLayout(new java.awt.BorderLayout());
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 5);
-        contentPan.add(pcons, gridBagConstraints);
-
         pbar.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         pbar.setPreferredSize(new java.awt.Dimension(0, 24));
         pbar.setLayout(new java.awt.BorderLayout());
@@ -151,16 +142,15 @@ public class AZView extends javax.swing.JPanel implements PageView{
     private javax.swing.JLabel jLabel2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPanel pbar;
-    private javax.swing.JPanel pcons;
     private org.jdesktop.swingx.painter.PinstripePainter pinstripePainter1;
     private javax.swing.JPanel tabs;
     private javax.swing.JPanel topPanel;
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void setModel(Page model) {
+    public void setPage(Page model) {
         PageDSL.fillByRole(model, tabs, PAGES_ROLE);
-        PageDSL.fillByRole(model, pcons, CONSOLE_ROLE);
+//        PageDSL.fillByRole(model, pcons, CONSOLE_ROLE);
         PageDSL.fillByRole(model, pbar, PROGRESS_BAR_ROLE, 3);
     }
 

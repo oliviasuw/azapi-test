@@ -22,6 +22,9 @@ public class Round {
     int maxCost;
     String type;
     float p1;
+    float p2Tick = 0.1f;
+    float p2Start = 0.1f;
+    float p2End = 0.9f;
     int number;
     Problem fromProblem = null;
 
@@ -33,6 +36,30 @@ public class Round {
         this.type = type;
         this.p1 = p1;
         this.number = number;
+    }
+
+    public void setP2End(float p2End) {
+        this.p2End = p2End;
+    }
+
+    public void setP2Start(float p2Start) {
+        this.p2Start = p2Start;
+    }
+
+    public void setP2Tick(float p2Tick) {
+        this.p2Tick = p2Tick;
+    }
+
+    public float getP2End() {
+        return p2End;
+    }
+
+    public float getP2Start() {
+        return p2Start;
+    }
+
+    public float getP2Tick() {
+        return p2Tick;
     }
 
     public Round(Problem p) {
@@ -81,36 +108,45 @@ public class Round {
 
     public ProblemSequence generateProblemSequance() {
         if (fromProblem != null) {
-            return new ProblemSequence() {
-
-                boolean hnext = true;
-
-                @Override
-                public Problem next() {
-                    hnext = false;
-                    return fromProblem;
-                }
-
-                @Override
-                public boolean hasNext() {
-                    return hnext;
-                }
-            };
+            return generateProblemSequanceFromAProblem();
         }
 
         return new ProblemSequence() {
 
             int current = 0;
-
+            float steps = (p2End - p2Start)/p2Tick + 1;
+            int split = (int) Math.ceil(length / steps);
+            float cp2 = p2Start;
+            
             @Override
             public Problem next() {
                 current++;
-                return new RandomProblemSequence(p1, (float) current / length, maxCost, n, d, System.currentTimeMillis(), 1).next();
+                if (current % split == 0) cp2 += p2Tick;
+                return new RandomProblemSequence(p1, cp2, maxCost, n, d, System.currentTimeMillis(), 1).next();
             }
 
             @Override
             public boolean hasNext() {
                 return current <= length;
+            }
+        }
+        ;
+    }
+
+    private ProblemSequence generateProblemSequanceFromAProblem() {
+        return new ProblemSequence() {
+
+            boolean hnext = true;
+
+            @Override
+            public Problem next() {
+                hnext = false;
+                return fromProblem;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return hnext;
             }
         };
     }

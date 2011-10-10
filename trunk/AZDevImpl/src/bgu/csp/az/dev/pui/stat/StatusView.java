@@ -11,10 +11,10 @@
 package bgu.csp.az.dev.pui.stat;
 
 import bc.swing.pfrm.Page;
-import bgu.csp.az.dev.ui.pages.*;
 import bc.dsl.PageDSL;
+import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.PageView;
-import bc.swing.pfrm.params.ParamModel;
+import bc.swing.pfrm.FieldParamModel;
 import bgu.csp.az.dev.Round;
 
 /**
@@ -293,18 +293,18 @@ public class StatusView extends javax.swing.JPanel implements PageView{
     }
 
     @Override
-    public void setModel(Page model) {
-        PageDSL.fillByRole(model, roundsPan, ROUNDS_ROLE);
-        PageDSL.fillByRole(model, execTimePan, EXECUTION_TIME_ROLE);
-        PageDSL.fillByRole(model, algoPan, ALGORITHM_NAME_ROLE);
-        PageDSL.fillByRole(model, statusPan, EXECUTION_STATUS_ROLE);
+    public void setPage(Page page) {
+        PageDSL.fillByRole(page, roundsPan, ROUNDS_ROLE);
+        PageDSL.fillByRole(page, execTimePan, EXECUTION_TIME_ROLE);
+        PageDSL.fillByRole(page, algoPan, ALGORITHM_NAME_ROLE);
+        PageDSL.fillByRole(page, statusPan, EXECUTION_STATUS_ROLE);
         
         //current Execution
-        ParamModel rp = model.getParam(StatusModel.CURRENT_ROUND_PARAM);
-        rp.addChangeListener(new ParamModel.Listener() {
+        BaseParamModel rp = page.getParam(StatusModel.CURRENT_ROUND_PARAM);
+        rp.addChangeListener(new FieldParamModel.ChangeListener() {
 
             @Override
-            public void onChange(ParamModel source, Object newValue, Object deltaHint) {
+            public void onChange(BaseParamModel source, Object newValue, Object deltaHint) {
                 changeRound((Round)newValue);
             }
         });

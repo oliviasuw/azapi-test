@@ -48,7 +48,7 @@ public class AgentWorkRatePart extends StatisticalPagePart{
     @Override
     public void onStatisticalDataReceived(ExecutionStatisticalPage source, Statistic tree) {
         Statistic child = tree.getChild(Agent.MESSAGES_RECEIVED_PER_AGENT_STATISTIC);
-        for (Entry<String, Statistic> c : child.getChilds().entrySet()){
+        for (Entry<String, Statistic> c : child.getChildren().entrySet()){
             barChartModel.avg(c.getKey(), c.getValue().getValue());
         }
     }

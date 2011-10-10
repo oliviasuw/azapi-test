@@ -17,13 +17,13 @@ import java.util.HashMap;
  * @author bennyl
  */
 public class TestMailer implements Mailer {
+
     public static final String RECEPIENT_MESSAGE_METADATA = "__RECIPIENT__";
     public static final String MESSAGE_ID_METADATA = "__MESSAGE_ID__";
-
     private MailRegistery registery;
     private final HashMap<Integer, Object> waitingPoll;
     private TestExecution exec;
-    
+
     public TestMailer(TestExecution exec) {
         registery = new MailRegistery();
         waitingPoll = new HashMap<Integer, Object>();
@@ -33,12 +33,12 @@ public class TestMailer implements Mailer {
     @Override
     public void register(Agent agent) {
         registery.register(agent);
-        exec.fire("mailer-agent-registered", "id", ""+agent.getId());
-        
+        exec.fire("mailer-agent-registered", "id", "" + agent.getId());
+
         synchronized (waitingPoll) {
-            if (waitingPoll.containsKey(agent.getId())){
+            if (waitingPoll.containsKey(agent.getId())) {
                 Object bed = waitingPoll.get(agent.getId());
-                synchronized (bed){
+                synchronized (bed) {
                     bed.notifyAll();
                 }
                 waitingPoll.remove(agent.getId());
@@ -59,10 +59,14 @@ public class TestMailer implements Mailer {
         }
 
         Message mcopy = msg.copy();
-        long mid = exec.getLogger().logMessageSent(msg.getSender(), to, mcopy);
+
+        if (TestExpirement.USE_SCENARIO_LOGGER) {
+            long mid = exec.getLogger().logMessageSent(msg.getSender(), to, mcopy);
+            mcopy.getMetadata().put(MESSAGE_ID_METADATA, mid);
+        }
+
         mcopy.getMetadata().put(RECEPIENT_MESSAGE_METADATA, to);
-        mcopy.getMetadata().put(MESSAGE_ID_METADATA, mid);
-        
+
         PlatformOps apops = Agent.PlatformOperationsExtractor.extract(a);
         apops.receive(mcopy);
     }
@@ -91,12 +95,12 @@ public class TestMailer implements Mailer {
     @Override
     public void waitFor(int id) throws InterruptedException {
         Object bed = null;
-        
+
         synchronized (waitingPoll) {
             if (isRegistered(id)) {
                 return;
             }
-            
+
             bed = waitingPoll.get(id);
             if (bed == null) {
                 bed = new Object();
@@ -113,10 +117,12 @@ public class TestMailer implements Mailer {
 
     @Override
     public boolean isAllMailBoxesAreEmpty() {
-        for (Agent a : registery.all()){
-            if (a.hasPendingMessages()) return false;
+        for (Agent a : registery.all()) {
+            if (a.hasPendingMessages()) {
+                return false;
+            }
         }
-        
+
         return true;
     }
 }

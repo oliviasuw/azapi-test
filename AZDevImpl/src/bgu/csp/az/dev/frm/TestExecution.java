@@ -10,8 +10,10 @@ import bgu.csp.az.impl.infra.AbstractExecution;
 import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.agt.SimpleAgent;
+import bgu.csp.az.dev.Agent0Tester;
 import bgu.csp.az.dev.slog.ScenarioLogger;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -28,6 +30,7 @@ public class TestExecution extends AbstractExecution {
     ExecutorService exec;
     private long mstart;
     private ScenarioLogger logger;
+    LinkedList<LogListner> logListners = new LinkedList<LogListner>();
 
     /**
      * 
@@ -35,6 +38,14 @@ public class TestExecution extends AbstractExecution {
      * @param prob 
      */
     public TestExecution() {
+    }
+
+    public void addLogListener(LogListner l) {
+        logListners.add(l);
+    }
+
+    public void setLogListners(LinkedList<LogListner> logListners) {
+        this.logListners = logListners;
     }
 
     public ScenarioLogger getLogger() {
@@ -50,7 +61,11 @@ public class TestExecution extends AbstractExecution {
     public void _run() {
 
         try {
-            logger = new ScenarioLogger(this, getGlobalProblem().getNumberOfVariables());
+
+            if (TestExpirement.USE_SCENARIO_LOGGER) {
+                logger = new ScenarioLogger(this, getGlobalProblem().getNumberOfVariables());
+            }
+
             mstart = new Date().getTime();
             Agent[] agents = new Agent[getGlobalProblem().getNumberOfVariables()];
             Mailer tmailer = getMailer();
@@ -119,12 +134,18 @@ public class TestExecution extends AbstractExecution {
 
     @Override
     public void log(int agent, String data) {
-        super.log(agent, data);
-        logger.logAgentLog(agent, data);
+        for (LogListner l : logListners) {
+            l.onLog(agent, data);
+        }
     }
 
     @Override
     public void stop() {
         exec.shutdownNow();
+    }
+
+    public static interface LogListner {
+
+        public void onLog(int agent, String msg);
     }
 }

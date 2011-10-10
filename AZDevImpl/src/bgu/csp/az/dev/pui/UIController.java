@@ -12,15 +12,14 @@ import bgu.csp.az.dev.Round;
 import bgu.csp.az.dev.frm.TestExecution;
 import java.util.List;
 import bc.dsl.SwingDSL;
-import bc.swing.models.ConsoleModel;
+import bc.swing.models.AgentLogConsoleModel;
 import bc.swing.pfrm.Model;
 import bc.swing.pfrm.ano.PageDef;
 import bc.swing.pfrm.ano.Param;
-import bc.swing.pfrm.params.ParamType;
+import bc.swing.pfrm.viewtypes.ParamType;
 import bgu.csp.az.dev.frm.TestExpirement;
-import bgu.csp.az.dev.pui.sgrp.StatisticsModel;
+import bgu.csp.az.dev.pui.scha.StatisticsModel;
 import bgu.csp.az.dev.pui.stat.StatusModel;
-import bgu.csp.az.impl.infra.Expirament;
 import java.util.LinkedList;
 import javax.swing.DefaultBoundedRangeModel;
 
@@ -28,17 +27,16 @@ import javax.swing.DefaultBoundedRangeModel;
  *
  * @author bennyl
  */
-@PageDef(view = AZView.class, name = "AgentZero Test Execution Analyzer")
+@PageDef(layout = AZView.class, name = "AgentZero Test Execution Analyzer")
 public class UIController extends Model implements TestExpirement.Listener {
 
     @Param(name = "Pages", type = ParamType.TABS, role = AZView.PAGES_ROLE)
     List<Model> models = new LinkedList<Model>();
     @Param(name = "Execution Progress", type = ParamType.PROGRESS, role = AZView.PROGRESS_BAR_ROLE)
     DefaultBoundedRangeModel progress;
-    @Param(name = "Output", type = ParamType.CONSOLE, role = AZView.CONSOLE_ROLE)
-    ConsoleModel console = new ConsoleModel();
     TestExpirement te;
 
+    
     public void go(TestExpirement te) {
         this.te = te;
         te.addListener(this);
@@ -52,7 +50,16 @@ public class UIController extends Model implements TestExpirement.Listener {
         final StatisticsModel statisticsModel = new StatisticsModel();
         te.addListener(statisticsModel);
         models.add(statisticsModel);
+        
+        
+        te.addLogListener(new TestExecution.LogListner() {
 
+            @Override
+            public void onLog(int agent, String msg) {
+                System.out.println("Agent: " + agent + ": " + msg);
+            }
+        });
+        
         SwingDSL.configureUI();
         PageDSL.showInFrame(this);
     }

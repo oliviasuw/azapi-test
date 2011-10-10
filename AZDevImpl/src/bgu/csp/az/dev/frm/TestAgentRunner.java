@@ -1,6 +1,5 @@
 package bgu.csp.az.dev.frm;
 
-import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.AgentRunner;
 import bgu.csp.az.api.agt.SimpleMessage;
 import bgu.csp.az.api.agt.SimpleAgent;
@@ -16,7 +15,6 @@ import java.util.logging.Logger;
  */
 public class TestAgentRunner implements AgentRunner, IdleDetector.Listener {
 
-    public static final Logger LOG = Logger.getAnonymousLogger();
     private SimpleAgent a;
     private TestExecution exec;
     private ScenarioLogger logger;
@@ -41,7 +39,9 @@ public class TestAgentRunner implements AgentRunner, IdleDetector.Listener {
 
         try {
 
-            a.hookIn(createScenarioChangedHook());
+            if (TestExpirement.USE_SCENARIO_LOGGER) {
+                a.hookIn(createScenarioChangedHook());
+            }
 
             //START THE AGENT
             a.start();
@@ -64,7 +64,7 @@ public class TestAgentRunner implements AgentRunner, IdleDetector.Listener {
             }
 
             //AFTER PROCESSING MESASGE THAT CAN BE THAT THE ALGORITHM INTERUPTED
-            //BECAUSE OF AN PANIC OR FINISH(ASSIGNMENT) SO REPORT IT
+            //BECAUSE OF AN PANIC SOME OTHER USER ACTIONS
             if (cthread.isInterrupted()) {
                 System.out.println("Agent " + a.getId() + " Interupted - Terminating.");
             }
@@ -74,8 +74,7 @@ public class TestAgentRunner implements AgentRunner, IdleDetector.Listener {
             exec.reportCrushAndStop(ex, "Agent " + a.getId() + " Cause An Error!");
             //BECAUSE THE AGENT RUNNER WILL RUN INSIDE EXECUTION SERVICE 
             //THIS IS THE LAST POINT THAT EXCEPTION CAN BE PRINTED
-            //AFTER THIS POINT THE EXCEPTION WILL BE LOST (BUT CAN BE RETRIVED VIA THE RESULT OF THIS ALGORITHM 
-            //BECAUSE OF THE CALL TO reportCrushAndStop.
+            //AFTER THIS POINT THE EXCEPTION WILL BE LOST (BUT CAN BE RETRIVED VIA THE RESULT OF THIS ALGORITHM)) 
             ex.printStackTrace();
 
         } finally {

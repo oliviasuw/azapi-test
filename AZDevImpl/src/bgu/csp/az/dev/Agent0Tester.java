@@ -53,7 +53,6 @@ public class Agent0Tester extends TestExpirement.Handler{
     File prob;
 
     public void go() throws ParsingException, IOException, MalformedURLException, ClassNotFoundException {
-        //System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "warn"); //DISABLE ORMLITE LOG
         System.setProperty(LocalLog.LOCAL_LOG_FILE_PROPERTY, "log.out");
         
         TestExpirement expirament = null;

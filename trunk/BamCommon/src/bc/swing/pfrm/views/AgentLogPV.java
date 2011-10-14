@@ -14,7 +14,7 @@ import bc.swing.models.AgentLogConsoleModel;
 import bc.swing.models.ConsoleModel;
 import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.Page;
-import bc.swing.pfrm.PageView;
+import bc.swing.pfrm.PageLayout;
 import bc.swing.pfrm.ParamView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -81,7 +81,7 @@ public class AgentLogPV extends javax.swing.JPanel implements ParamView, Console
         t.setRepeats(true);
         t.start();
         
-        param.getPage().addToDisposeList(new PageView() {
+        param.getPage().addToDisposeList(new PageLayout() {
 
             public void setPage(Page page) {
             }

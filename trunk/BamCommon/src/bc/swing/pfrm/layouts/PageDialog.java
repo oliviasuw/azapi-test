@@ -11,7 +11,7 @@
 package bc.swing.pfrm.layouts;
 
 import bc.swing.pfrm.Page;
-import bc.swing.pfrm.PageView;
+import bc.swing.pfrm.PageLayout;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.JDialog;
@@ -21,7 +21,7 @@ import javax.swing.JFrame;
  *
  * @author BLutati
  */
-public class PageDialog extends javax.swing.JDialog implements PageView {
+public class PageDialog extends javax.swing.JDialog implements PageLayout {
 
     Page model;
 
@@ -185,7 +185,7 @@ public class PageDialog extends javax.swing.JDialog implements PageView {
         diag.setLocationRelativeTo(null);
         diag.setResizable(true);
 
-        p.addToDisposeList(new PageView() {
+        p.addToDisposeList(new PageLayout() {
 
             public void setPage(Page model) {
                 //
@@ -211,7 +211,7 @@ public class PageDialog extends javax.swing.JDialog implements PageView {
         diag.setResizable(true);
 
 
-        p.addToDisposeList(new PageView() {
+        p.addToDisposeList(new PageLayout() {
 
             public void setPage(Page model) {
                 //

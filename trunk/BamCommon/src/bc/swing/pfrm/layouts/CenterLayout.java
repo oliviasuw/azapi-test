@@ -12,7 +12,7 @@ package bc.swing.pfrm.layouts;
 
 import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.Page;
-import bc.swing.pfrm.PageView;
+import bc.swing.pfrm.PageLayout;
 import bc.swing.pfrm.FieldParamModel;
 import java.awt.BorderLayout;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @author bennyl
  */
-public class CenterLayout extends javax.swing.JPanel implements PageView{
+public class CenterLayout extends javax.swing.JPanel implements PageLayout{
 
     /** Creates new form PagePanel */
     public CenterLayout() {

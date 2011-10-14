@@ -12,7 +12,7 @@ package bc.swing.pfrm.layouts;
 
 import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.Page;
-import bc.swing.pfrm.PageView;
+import bc.swing.pfrm.PageLayout;
 import bc.swing.pfrm.ano.ViewHints;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author bennyl
  */
-public class StackLayout extends javax.swing.JPanel implements PageView {
+public class StackLayout extends javax.swing.JPanel implements PageLayout {
 
     /** Creates new form StackLayout */
     public StackLayout() {

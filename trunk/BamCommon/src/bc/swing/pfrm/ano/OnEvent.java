@@ -12,13 +12,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * will get invoked like this m.invoke(getPage().getModel(), dataName, from)
+ *
  * @author BLutati
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Inherited
-public @interface DataExtractor {
-    String[] columns() default {};
-    String param();
+public @interface OnEvent {
+    String name();
+    String[] extract() default {};
 }

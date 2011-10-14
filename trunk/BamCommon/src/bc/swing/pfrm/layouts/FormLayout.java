@@ -12,13 +12,16 @@ package bc.swing.pfrm.layouts;
 
 import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.Page;
-import bc.swing.pfrm.PageView;
+import bc.swing.pfrm.PageLayout;
 import bc.swing.pfrm.ano.ViewHints;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.swing.ImageIcon;
@@ -31,7 +34,7 @@ import javax.swing.SwingConstants;
  *
  * @author BLutati
  */
-public class FormLayout extends javax.swing.JPanel implements PageView {
+public class FormLayout extends javax.swing.JPanel implements PageLayout {
 
     Page model;
     public Set<String> exclude;
@@ -40,6 +43,7 @@ public class FormLayout extends javax.swing.JPanel implements PageView {
     private boolean colorLabels = true;
     private boolean heightTaken = false;
     private boolean takeAllHeight = false;
+    private List<JLabel> labes = new LinkedList<JLabel>();
 
     /** Creates new form PageForm */
     public FormLayout() {
@@ -101,6 +105,12 @@ public class FormLayout extends javax.swing.JPanel implements PageView {
     public void setPage(Page model) {
         this.model = model;
         List<BaseParamModel> params = model.getParams();
+        Collections.sort(params, new Comparator<BaseParamModel> () {
+
+            public int compare(BaseParamModel o1, BaseParamModel o2) {
+                return o1.getNumber() - o2.getNumber();
+            }
+        });
         for (BaseParamModel param : params) {
             if (!exclude.contains(param.getName())) {
                 String[] nameLR = param.getName().split("\\$\\$");
@@ -125,6 +135,7 @@ public class FormLayout extends javax.swing.JPanel implements PageView {
 
     private void addLabel(String name, ImageIcon icon) {
         JLabel lbl = new JLabel();
+        labes.add(lbl);
         lbl.setText(name);
         lbl.setIcon(icon);
 //        lbl.setVerticalAlignment(SwingConstants.TOP);
@@ -138,6 +149,7 @@ public class FormLayout extends javax.swing.JPanel implements PageView {
 
     private void addTrailLabel(String name, ImageIcon icon) {
         JLabel lbl = new JLabel();
+        labes.add(lbl);
         lbl.setText(name);
         lbl.setIcon(icon);
 //        lbl.setVerticalAlignment(SwingConstants.TOP);
@@ -189,4 +201,10 @@ public class FormLayout extends javax.swing.JPanel implements PageView {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
+
+    public void setLabelsForeground(Color col) {
+        for (JLabel j : this.labes){
+            j.setForeground(col);
+        }
+    }
 }

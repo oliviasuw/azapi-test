@@ -4,9 +4,9 @@
  */
 package bc.dsl;
 
+import java.util.List;
 import java.awt.Desktop;
 import java.awt.Font;
-import java.awt.TrayIcon.MessageType;
 import java.io.File;
 import java.io.IOException;
 import java.util.EnumSet;
@@ -114,6 +114,15 @@ public class SwingDSL {
         return cn;
     }
 
+    public static JComboBox fill(JComboBox cn, List aopt) {
+        DefaultComboBoxModel dbom = new DefaultComboBoxModel();
+        for (Object e : aopt) {
+            dbom.addElement(e);
+        }
+        cn.setModel(dbom);
+        return cn;
+    }
+
     public static JComboBox append(JComboBox combo, Object obj) {
         ((DefaultComboBoxModel) combo.getModel()).addElement(obj);
         return combo;
@@ -148,6 +157,11 @@ public class SwingDSL {
         }
     }
 
+    public static boolean ynqbox(String title, String message) {
+        int result = JOptionPane.showConfirmDialog(null, message, title,JOptionPane.YES_NO_OPTION ,JOptionPane.INFORMATION_MESSAGE, resIcon("ynqbox-logo"));
+        return result == JOptionPane.YES_OPTION;
+    }
+    
     public static void msgbox(String title, String message) {
         JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE, resIcon("msgbox-logo"));
     }

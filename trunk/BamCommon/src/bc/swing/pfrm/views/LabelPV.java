@@ -5,7 +5,7 @@
 package bc.swing.pfrm.views;
 
 import bc.swing.pfrm.Page;
-import bc.swing.pfrm.PageView;
+import bc.swing.pfrm.PageLayout;
 import bc.swing.pfrm.ano.ViewHints;
 import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.ParamView;
@@ -38,7 +38,7 @@ public class LabelPV extends JLabel implements ParamView {
             t.setRepeats(true);
             t.start();
 
-            model.getPage().addToDisposeList(new PageView() {
+            model.getPage().addToDisposeList(new PageLayout() {
 
                 public void setPage(Page model) {
                 }

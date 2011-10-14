@@ -18,11 +18,13 @@ import bc.swing.pfrm.views.InfoPV;
 import bc.swing.pfrm.views.LabelPV;
 import bc.swing.pfrm.views.ListPV;
 import bc.swing.pfrm.views.MapPV;
+import bc.swing.pfrm.views.NumberRangePV;
 import bc.swing.pfrm.views.OptionsPV;
 import bc.swing.pfrm.views.PagePV;
 import bc.swing.pfrm.views.PasswordFieldPV;
 import bc.swing.pfrm.views.PortletsPV;
 import bc.swing.pfrm.views.ProgressPV;
+import bc.swing.pfrm.views.RadioGroupPV;
 import bc.swing.pfrm.views.TabsPV;
 import bc.swing.pfrm.views.StringPV;
 import bc.swing.pfrm.views.StringWithTitlePV;
@@ -34,11 +36,12 @@ import bc.swing.pfrm.views.XObjectPV;
  * @author BLutati
  */
 public enum ParamType {
+    RADIO_GROUP(RadioGroupPV.class),
+    NUMMERIC_RANGE(NumberRangePV.class),
     OPTIONS(OptionsPV.class),
     DATE_AND_TIME(DateAndTimePV.class),
     PASSWORD(PasswordFieldPV.class),
     PORTLETS(PortletsPV.class),
-    AGENT_LOG(AgentLogPV.class),
     CHART(ChartPV.class),
     LABEL(LabelPV.class),
     PROGRESS(ProgressPV.class),

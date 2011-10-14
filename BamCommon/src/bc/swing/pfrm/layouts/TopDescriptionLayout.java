@@ -11,7 +11,7 @@
 package bc.swing.pfrm.layouts;
 
 import bc.swing.pfrm.Page;
-import bc.swing.pfrm.PageView;
+import bc.swing.pfrm.PageLayout;
 import bc.swing.pfrm.BaseParamModel;
 import java.awt.BorderLayout;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author bennyl
  */
-public class TopDescriptionLayout extends javax.swing.JPanel implements PageView{
+public class TopDescriptionLayout extends javax.swing.JPanel implements PageLayout{
 
     public static final String INFO_ROLE = "DESCRIPTION";
     public static final String CONTENT_ROLE = "CONTENT";

@@ -35,9 +35,9 @@ public class Page implements Model.ParameterChangeListener {
     private ImageIcon icon;
     private List<Action> actions;
     private Map<String, BaseParamModel> parameters;
-    private Class<? extends PageView> layoutClass;
-    private WeakReference<PageView> view; //if the view is unused throw it automaticly away..
-    private List<PageView> disposeList = new LinkedList<PageView>();
+    private Class<? extends PageLayout> layoutClass;
+    private WeakReference<PageLayout> view; //if the view is unused throw it automaticly away..
+    private List<PageLayout> disposeList = new LinkedList<PageLayout>();
     private Model model;
 
     public Page(String name, ImageIcon icon) {
@@ -86,18 +86,18 @@ public class Page implements Model.ParameterChangeListener {
         model.setPage(this);
     }
 
-    public Page(String name, ImageIcon icon, Class<? extends PageView> viewClass) {
+    public Page(String name, ImageIcon icon, Class<? extends PageLayout> viewClass) {
         this(name, icon);
         setViewClass(viewClass);
     }
 
-    public void addToDisposeList(PageView who) {
+    public void addToDisposeList(PageLayout who) {
         disposeList.add(who);
     }
 
     public void disposeView() {
         if (view != null) {
-            PageView got = view.get();
+            PageLayout got = view.get();
             if (got != null) {
                 view.get().onDispose();
             }
@@ -108,13 +108,13 @@ public class Page implements Model.ParameterChangeListener {
             param.disposeView();
         }
 
-        for (PageView d : disposeList) {
+        for (PageLayout d : disposeList) {
             d.onDispose();
         }
         disposeList.clear();
     }
 
-    public void setViewClass(Class<? extends PageView> viewClass) {
+    public void setViewClass(Class<? extends PageLayout> viewClass) {
         this.layoutClass = viewClass;
     }
 
@@ -143,8 +143,8 @@ public class Page implements Model.ParameterChangeListener {
     public JPanel getView() {
         if (view == null || view.get() == null && layoutClass != null) {
             try {
-                final PageView temp = layoutClass.newInstance(); //used as anchor do not delete!
-                view = new WeakReference<PageView>(temp);
+                final PageLayout temp = layoutClass.newInstance(); //used as anchor do not delete!
+                view = new WeakReference<PageLayout>(temp);
             } catch (InstantiationException ex) {
                 Logger.getLogger(Page.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalAccessException ex) {
@@ -288,6 +288,7 @@ public class Page implements Model.ParameterChangeListener {
         pmod.setModel(m);
         pmod.setRole(dano.role());
         pmod.setVhints(vh);
+        pmod.setNumber(dano.num());
 
         //ADD ACTIONS
         for (Method mtd : ReflectionDSL.getAllMethodsWithAnnotation(m.getClass(), bc.swing.pfrm.ano.Action.class)) {

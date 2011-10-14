@@ -5,7 +5,9 @@
 
 package bc.swing.pfrm.ano;
 
+import java.awt.Color;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -16,6 +18,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.METHOD})
+@Inherited
 public @interface ViewHints {
     Orianitation orianitation() default Orianitation.UNDEF;
     int minimumHeight() default -1;
@@ -62,6 +65,8 @@ public @interface ViewHints {
      * @return
      */
     String xmlMetadataPath() default "";
+    
+    int[] foreground() default {0,0,0};
     
     Alignment horizontalAlignment() default Alignment.UNDEF;
 

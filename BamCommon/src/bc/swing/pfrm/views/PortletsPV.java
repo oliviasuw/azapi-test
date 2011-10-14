@@ -14,8 +14,10 @@ import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.Model;
 import bc.swing.pfrm.Page;
 import bc.swing.pfrm.ParamView;
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.List;
+import javax.swing.JPanel;
 
 /**
  *
@@ -38,6 +40,7 @@ public class PortletsPV extends javax.swing.JPanel implements ParamView{
     private void initComponents() {
 
         setBackground(new java.awt.Color(255, 255, 255));
+        setOpaque(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -55,13 +58,18 @@ public class PortletsPV extends javax.swing.JPanel implements ParamView{
 
     public void setParam(BaseParamModel param) {
         List data = (List) param.getValue();
-        int rows = (int) Math.floor(Math.log(data.size())/Math.log(2));
+        int rows = Math.max(1, (int) Math.floor(Math.log(data.size())/Math.log(2)));
         int cols = (int) Math.ceil((double) data.size() / rows);
         
         setLayout(new GridLayout(rows, cols));
         for (Object o : data){
             Model m = (Model) o;
-            add(Page.get(m).getView());
+            JPanel pan = new JPanel();
+            pan.setLayout(new BorderLayout());
+            pan.add(Page.get(m).getView(), BorderLayout.CENTER);
+            pan.setOpaque(false);
+            pan.setBorder(new org.jdesktop.swingx.border.DropShadowBorder());
+            add(pan);
         }
         
         validate();

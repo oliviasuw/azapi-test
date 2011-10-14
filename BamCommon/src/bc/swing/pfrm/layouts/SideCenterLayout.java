@@ -12,7 +12,7 @@ package bc.swing.pfrm.layouts;
 
 import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.Page;
-import bc.swing.pfrm.PageView;
+import bc.swing.pfrm.PageLayout;
 import bc.swing.pfrm.ano.Param;
 import bc.swing.pfrm.FieldParamModel;
 import java.awt.BorderLayout;
@@ -23,7 +23,7 @@ import javax.naming.directory.InvalidAttributesException;
  *
  * @author BLutati
  */
-public class SideCenterLayout extends javax.swing.JPanel implements PageView {
+public class SideCenterLayout extends javax.swing.JPanel implements PageLayout {
 
     public static final String SIDE_ROLE = "SIDE";
     Page model;

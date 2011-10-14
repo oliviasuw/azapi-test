@@ -7,7 +7,7 @@ package bc.swing.pfrm.views;
 import bc.swing.comp.Console;
 import bc.swing.models.ConsoleModel;
 import bc.swing.pfrm.Page;
-import bc.swing.pfrm.PageView;
+import bc.swing.pfrm.PageLayout;
 import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.FieldParamModel;
 import bc.swing.pfrm.ParamView;
@@ -16,7 +16,7 @@ import bc.swing.pfrm.ParamView;
  *
  * @author bennyl
  */
-public class ConsolePV extends Console implements ParamView, PageView {
+public class ConsolePV extends Console implements ParamView, PageLayout {
 
     public void setParam(BaseParamModel model) {
         ConsoleModel comodel = (ConsoleModel) model.getValue();

@@ -9,7 +9,7 @@ package bc.swing.pfrm;
  *
  * @author BLutati
  */
-public interface PageView {
+public interface PageLayout {
     public void setPage(Page page);
     public void onDispose();
 }

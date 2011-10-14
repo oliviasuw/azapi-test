@@ -11,7 +11,7 @@
 package bc.swing.pfrm.layouts;
 
 import bc.swing.pfrm.Page;
-import bc.swing.pfrm.PageView;
+import bc.swing.pfrm.PageLayout;
 import bc.swing.pfrm.BaseParamModel;
 import java.awt.BorderLayout;
 
@@ -19,7 +19,7 @@ import java.awt.BorderLayout;
  *
  * @author BLutati
  */
-public class SideSplitCenterLayout extends javax.swing.JPanel implements PageView {
+public class SideSplitCenterLayout extends javax.swing.JPanel implements PageLayout {
 
     public static final String SIDE_ROLE = "SIDE";
     public static final String TOP_ROLE = "TOP";

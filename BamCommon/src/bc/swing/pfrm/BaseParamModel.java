@@ -36,7 +36,8 @@ public abstract class BaseParamModel {
     protected ViewHints vhints;
     protected List<Action> actions = new LinkedList<Action>();
     protected Object selectedItem = null;
-
+    protected int number = 0;
+    
     public BaseParamModel(String name, ImageIcon icon, Class<? extends ParamView> view) {
         this.name = name;
         this.icon = icon;
@@ -47,6 +48,14 @@ public abstract class BaseParamModel {
                 selectedItem = newValue;
             }
         });
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public int getNumber() {
+        return number;
     }
 
     public Object dragFilter(Object dragged) {

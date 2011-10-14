@@ -11,7 +11,7 @@
 package bc.swing.pfrm.layouts;
 
 import bc.swing.pfrm.Page;
-import bc.swing.pfrm.PageView;
+import bc.swing.pfrm.PageLayout;
 import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.FieldParamModel;
 import java.awt.CardLayout;
@@ -24,7 +24,7 @@ import javax.swing.JPanel;
  *
  * @author bennyl
  */
-public class PageWizard extends javax.swing.JPanel implements PageView {
+public class PageWizard extends javax.swing.JPanel implements PageLayout {
 
     public static final String WIZARD_PAGE_ROLE = "WIZARD_PAGE";
     

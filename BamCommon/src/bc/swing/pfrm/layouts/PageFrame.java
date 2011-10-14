@@ -11,7 +11,7 @@
 package bc.swing.pfrm.layouts;
 
 import bc.swing.pfrm.Page;
-import bc.swing.pfrm.PageView;
+import bc.swing.pfrm.PageLayout;
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
 
@@ -19,7 +19,7 @@ import javax.swing.JFrame;
  *
  * @author bennyl
  */
-public class PageFrame extends javax.swing.JFrame implements PageView{
+public class PageFrame extends javax.swing.JFrame implements PageLayout{
 
     /** Creates new form PageFrame */
     public PageFrame() {

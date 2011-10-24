@@ -11,7 +11,7 @@ import org.jfree.data.general.Dataset;
  *
  * @author bennyl
  */
-public abstract class ChartModel {
+public abstract class ChartModel{
     private Dataset dataset;
     private String title = "Untitled";
     private String domainAxisLabel = "X";

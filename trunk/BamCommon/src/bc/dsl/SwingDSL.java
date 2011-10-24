@@ -33,6 +33,7 @@ public class SwingDSL {
     private static HashMap<String, ImageIcon> icons = new HashMap<String, ImageIcon>();
 
     public static ImageIcon resIcon(Class loc, String path) {
+        if (path == null) return null;
         String rpath = loc.getResource(path).toString();
 
         if (!icons.containsKey(rpath)) {
@@ -44,6 +45,7 @@ public class SwingDSL {
     }
 
     public static ImageIcon resIcon(String absolutePath) {
+        if (absolutePath == null) return null;
         if (absolutePath.isEmpty()) {
             return null;
         }

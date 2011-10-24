@@ -80,6 +80,7 @@ public class DateAndTimePV extends javax.swing.JPanel implements ParamView{
         t.setTime((Date) tp.getValue());
         
         cd.set(d.get(Calendar.YEAR), d.get(Calendar.MONTH), d.get(Calendar.DATE), t.get(Calendar.HOUR_OF_DAY), t.get(Calendar.MINUTE));
+        to.setValue(cd);
     }
 
     public void onChange(BaseParamModel source, Object newValue, Object deltaHint) {

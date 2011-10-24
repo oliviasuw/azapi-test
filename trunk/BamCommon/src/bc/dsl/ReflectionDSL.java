@@ -7,8 +7,10 @@ package bc.dsl;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -28,6 +30,33 @@ public class ReflectionDSL {
         return null;
     }
 
+    public static Set<Class> getClassGraph(Class c){
+        Set<Class> ret = new HashSet<Class>();
+        LinkedList<Class> investigateQ = new LinkedList<Class>();
+        investigateQ.add(c);
+        while (!investigateQ.isEmpty()){
+            Class i = investigateQ.removeFirst();
+            
+            if (ret.contains(i)) continue;
+            ret.add(i);
+            
+            Class[] interfaces = i.getInterfaces();
+            Class superclass = i.getSuperclass();
+            
+            if (superclass != null && !ret.contains(superclass)){
+                investigateQ.add(superclass);
+            }
+            
+            for (Class inter : interfaces){
+                if (!ret.contains(inter)){
+                    investigateQ.add(inter);
+                }
+            }
+        }
+        
+        return ret;
+    }
+    
     public static List<Method> getAllMethodsWithAnnotation(Class aClass, Class<? extends Annotation> ano) {
         LinkedList<Method> ret = new LinkedList<Method>();
         for (Method m : aClass.getDeclaredMethods()) {
@@ -59,6 +88,14 @@ public class ReflectionDSL {
                 m.setAccessible(true);
                 return m;
             }
+        }
+        
+        return null;
+    }
+    
+    public static Method methodByNameAndNArgs(Class aClass, String name, int nargs){
+        for (Method m : methodsByName(aClass, name)){
+            if (m.getParameterTypes().length == nargs) return m;
         }
         
         return null;

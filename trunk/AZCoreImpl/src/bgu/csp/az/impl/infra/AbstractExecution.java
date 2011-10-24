@@ -23,8 +23,7 @@ import java.util.Map;
  */
 public abstract class AbstractExecution extends ProcessImpl implements Execution {
 
-    private Statistic statTree;
-    
+    private Statistic statTree; //will get constracted when the global problem is setted.
     private Problem problem;
     private Mailer mailer;
     private boolean shuttingdown; //this variable is used to check that the execution is doing the process of shuting down only once.
@@ -38,7 +37,6 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
      */
     public AbstractExecution() {
         parameterValues = new HashMap<String, Object>();
-        statTree = new Statistic();
         shuttingdown = false;
         parameterValues.clear();
     }
@@ -55,11 +53,16 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
             setResult(new ExecutionResult(ex));
             shuttingdown = true;
             stop();
-            
+
             if (error != null) {
                 System.out.println("PANIC! " + error);
             }
         }
+    }
+
+    @Override
+    public void reportFinalAssignment(Assignment answer) {
+        result = new ExecutionResult(answer);
     }
 
     public IdleDetector getIdleDetector() {
@@ -68,20 +71,6 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
 
     public void setIdleDetector(IdleDetector idet) {
         this.idet = idet;
-    }
-
-    /**
-     * will stop the current execution represented by this runtime object
-     * and raise execution done event, this particular method variant will assignment as the returned answer
-     * @param answer 
-     */
-    @Override
-    public void stop(Assignment answer) {
-        if (!shuttingdown) {
-            shuttingdown = true;
-            stop();
-            result = new ExecutionResult(answer);
-        }
     }
 
     /**
@@ -97,6 +86,7 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
      */
     protected void setGlobalProblem(Problem p) {
         this.problem = p;
+        statTree = new Statistic(p.getMetadata());
     }
 
     /**
@@ -125,7 +115,7 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
     public void setMailer(Mailer ml) {
         this.mailer = ml;
     }
-    
+
     /**
      * cause the executed environment to log the given data
      * this implementation only print the data into the screen
@@ -133,7 +123,7 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
      * @param data
      */
     @Override
-    public void log(int agent, String data){
+    public void log(int agent, String data) {
         System.out.println("Agent " + agent + ": " + data);
     }
 
@@ -166,5 +156,4 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
     public Object getParameterValue(String name) {
         return parameterValues.get(name);
     }
-
 }

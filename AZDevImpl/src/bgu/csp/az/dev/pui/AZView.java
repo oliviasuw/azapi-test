@@ -11,11 +11,12 @@
 package bgu.csp.az.dev.pui;
 
 import bc.dsl.PageDSL;
+import bc.swing.comp.JActionView;
 import bc.swing.pfrm.Page;
 import bc.swing.pfrm.PageLayout;
-import bc.swing.pfrm.FieldParamModel;
 import java.awt.BorderLayout;
-import java.util.List;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 /**
  *
@@ -152,6 +153,11 @@ public class AZView extends javax.swing.JPanel implements PageLayout{
         PageDSL.fillByRole(model, tabs, PAGES_ROLE);
 //        PageDSL.fillByRole(model, pcons, CONSOLE_ROLE);
         PageDSL.fillByRole(model, pbar, PROGRESS_BAR_ROLE, 3);
+        JActionView stopAndSave = new JActionView(model.getAction(UIController.STOP_AND_SAVE_ACTION));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.insets = new Insets(3, 3, 3, 3);
+        pbar.add(stopAndSave, gbc);
     }
 
     @Override

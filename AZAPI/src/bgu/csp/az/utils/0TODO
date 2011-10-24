@@ -1,6 +1,0 @@
-*DONE* DeepCopyUtils using Java serialization as it main copying tool -
-  need to be replaced with karyo - but still need to meet the one jar api requirment, 
-  
-* the code of deepcopy utils was replaced with deep copy framework, but we loose the one jar, 
-  to accomplish the one jar property we will have to store the other jars inside this jar using 
-  the method described here: http://java.sun.com/developer/technicalArticles/java_warehouse/single_jar/

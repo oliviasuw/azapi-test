@@ -19,7 +19,7 @@ import javax.swing.JFrame;
  *
  * @author bennyl
  */
-public class PageFrame extends javax.swing.JFrame implements PageLayout{
+public class PageFrame extends javax.swing.JFrame implements PageLayout {
 
     /** Creates new form PageFrame */
     public PageFrame() {
@@ -61,17 +61,25 @@ public class PageFrame extends javax.swing.JFrame implements PageLayout{
         repaint();
         model.addToDisposeList(this);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        
+
     }
 
     public void onDispose() {
         setVisible(false);
     }
-    
-    public static void show(Page p){
-        PageFrame pf = new  PageFrame();
+
+    public static void show(Page p) {
+        PageFrame pf = new PageFrame();
         pf.setTitle(p.getName());
         pf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pf.setPage(p);
+        pf.setVisible(true);
+    }
+
+    public static void showDontExit(Page p) {
+        PageFrame pf = new PageFrame();
+        pf.setTitle(p.getName());
+        pf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         pf.setPage(p);
         pf.setVisible(true);
     }

@@ -18,7 +18,6 @@ import java.util.EnumSet;
 import java.util.Enumeration;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
-import javax.swing.ButtonModel;
 import javax.swing.JRadioButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -68,6 +67,10 @@ public class RadioGroupPV extends javax.swing.JPanel implements ParamView, Chang
         Enum e = (Enum) param.getValue();
         for (Object ee : EnumSet.allOf(e.getClass())){
             addRadio(ee.toString());
+        }
+        
+        if (group.getButtonCount() > 0){
+            group.getElements().nextElement().setSelected(true);
         }
         
     }

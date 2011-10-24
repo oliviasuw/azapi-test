@@ -77,12 +77,12 @@ public class Page implements Model.ParameterChangeListener {
     }
 
     public void setModel(Model model) {
-        if (this.model != null) {
-            this.model.removeParameterChangedListener(this);
-        }
+//        if (this.model != null) {
+//            this.model.removeParameterChangedListener(this);
+//        }
 
         this.model = model;
-        model.addParameterChangedListener(this);
+//        model.addParameterChangedListener(this);
         model.setPage(this);
     }
 

@@ -26,7 +26,6 @@ import javax.swing.JPanel;
  */
 public class Model {
 
-    private LinkedList<ParameterChangeListener> listeners = new LinkedList<ParameterChangeListener>();
     private Page page;
 
     public Model() {
@@ -60,12 +59,6 @@ public class Model {
                     }
                 }
             });
-        }
-    }
-
-    public void fireParamChanged(String propertyName) {
-        for (ParameterChangeListener l : listeners) {
-            l.onChange(this, propertyName, null);
         }
     }
 
@@ -160,14 +153,6 @@ public class Model {
         } else {
             return v;
         }
-    }
-
-    public void addParameterChangedListener(ParameterChangeListener l) {
-        listeners.add(l);
-    }
-
-    public void removeParameterChangedListener(ParameterChangeListener l) {
-        listeners.remove(l);
     }
 
     public Page getPage() {

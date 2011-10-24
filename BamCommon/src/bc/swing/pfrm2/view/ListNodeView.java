@@ -8,7 +8,7 @@
  *
  * Created on 11/09/2011, 15:13:09
  */
-package bc.swing.pfrm.views;
+package bc.swing.pfrm2.view;
 
 import bc.swing.dnd.ObjectTransferHandler;
 import bc.swing.models.GenericListModel;
@@ -16,9 +16,9 @@ import bc.swing.pfrm.Action;
 import bc.swing.pfrm.ano.ViewHints.DND;
 import bc.swing.pfrm.DeltaHint;
 import bc.swing.pfrm.BaseParamModel;
-import bc.swing.pfrm.FieldParamModel.ChangeListener;
-import bc.swing.pfrm.ParamView;
-import bc.swing.renderers.DefaultListRenderer;
+import bc.swing.pfrm2.Att;
+import bc.swing.pfrm2.Node;
+import bc.swing.pfrm2.NodeView;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
@@ -36,19 +36,18 @@ import javax.swing.JList;
 import javax.swing.JPopupMenu;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  *
  * @author bennyl
  */
-public class ListPV extends javax.swing.JPanel implements ParamView {
+public class ListNodeView extends javax.swing.JPanel implements NodeView {
 
     private GenericListModel innerModel;
     JPopupMenu pmenu;
 
     /** Creates new form ListPV */
-    public ListPV() {
+    public ListNodeView() {
         initComponents();
         pmenu = new JPopupMenu();
 
@@ -70,9 +69,9 @@ public class ListPV extends javax.swing.JPanel implements ParamView {
         });
     }
 
-    private void configurePopupMenu(BaseParamModel model) {
+    private void configurePopupMenu(Node node) {
         pmenu.removeAll();
-        for (final Action a : model.getActions()) {
+        for (final Action a : node.actionsList()) {
             pmenu.add(new AbstractAction(a.getName(), a.getIcon()) {
 
                 public void actionPerformed(ActionEvent e) {
@@ -123,7 +122,7 @@ public class ListPV extends javax.swing.JPanel implements ParamView {
 
         jScrollPane1.setBorder(null);
 
-        lst.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255), 5));
+        lst.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(245, 245, 245)));
         lst.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
@@ -137,35 +136,6 @@ public class ListPV extends javax.swing.JPanel implements ParamView {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JList lst;
     // End of variables declaration//GEN-END:variables
-
-    public void setParam(final BaseParamModel param) {
-        configurePopupMenu(param);
-        innerModel = new GenericListModel();
-
-        List val = (List) param.getValue();
-
-        innerModel.fillWith(val);
-        lst.setModel(innerModel);
-
-        lst.addListSelectionListener(new ListSelectionListener() {
-
-            public void valueChanged(ListSelectionEvent e) {
-                param.fireSelectionChanged(lst.getSelectedValue());
-            }
-        });
-
-        if (!param.getViewHints().dnd().equals(DND.UNDEF)) {
-            setDND(param);
-        }
-
-        if (param.getViewHints().allowDeleteSelection()) {
-            allowDeleteSelection();
-        }
-
-        final DefaultListRenderer renderer = new DefaultListRenderer();
-        renderer.setModel(param);
-        lst.setCellRenderer(renderer);
-    }
 
     public void reflectChangesToParam(BaseParamModel to) {
         List tol = (List) to.getValue();
@@ -195,8 +165,8 @@ public class ListPV extends javax.swing.JPanel implements ParamView {
         }
     }
 
-    private void setDND(final BaseParamModel pmodel) {
-        if (pmodel.getViewHints().dnd().equals(DND.DROP)) {
+    private void setDND(final Node node) {
+        if (node.getAtt(Att.USE_DND).equals(DND.DROP)) {
 
             lst.setDropMode(DropMode.ON_OR_INSERT);
             lst.setTransferHandler(new ObjectTransferHandler(ObjectTransferHandler.DragSupport.MOVE, true, false) {
@@ -216,7 +186,7 @@ public class ListPV extends javax.swing.JPanel implements ParamView {
                         }
 
                         GenericListModel model = (GenericListModel) lst.getModel();
-                        model.add(index, pmodel.dropFilter(data));
+                        model.add(index, node.dropFilter(data));
 
                         return true;
 
@@ -250,5 +220,44 @@ public class ListPV extends javax.swing.JPanel implements ParamView {
         });
 
 
+    }
+
+    public void setNode(final Node node) {
+        configurePopupMenu(node);
+        innerModel = new GenericListModel();
+
+        
+        
+        List val = node.childrenList();
+
+        innerModel.fillWith(val);
+        lst.setModel(innerModel);
+
+        lst.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                node.putAtt(Att.SELECTION, lst.getSelectedValue());
+            }
+        });
+        
+        if (node.getAtt(Att.USE_DND, DND.UNDEF) != DND.UNDEF) {
+            setDND(node);
+        }
+
+        if (node.getBooleanAtt(Att.ALLOW_DELETE_OF_SELECTION, false)) {
+            allowDeleteSelection();
+        }
+
+        final DefaultListRenderer renderer = new DefaultListRenderer();
+        renderer.setModel(node);
+        lst.setCellRenderer(renderer);
+
+    }
+
+    public void syncFromView(Node c) {
+//        
+    }
+
+    public void syncToView(Node c) {
+//        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

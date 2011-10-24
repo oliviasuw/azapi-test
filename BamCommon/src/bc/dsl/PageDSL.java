@@ -69,6 +69,11 @@ public class PageDSL {
     public static void showInFrame(Model model) {
         PageFrame.show(Page.get(model));
     }
+    
+    public static void showInNonClosingFrame(Model model) {
+        PageFrame.showDontExit(Page.get(model));
+    }
+    
 
     public static void appendActions(List<Action> actions, JPanel pan) {
         for (Action a : actions) {

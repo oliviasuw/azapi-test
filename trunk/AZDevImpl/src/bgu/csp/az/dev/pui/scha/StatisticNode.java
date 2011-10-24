@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 
 /**
  *
@@ -22,7 +23,7 @@ public class StatisticNode extends Node {
     List<Statistic> roots = new LinkedList<Statistic>();
     List<StatisticNode> children = new LinkedList<StatisticNode>();
     LinkedList<Listener> listeners = new LinkedList<Listener>();
-    
+
     public List<Statistic> getRoots() {
         return roots;
     }
@@ -30,17 +31,19 @@ public class StatisticNode extends Node {
     public StatisticNode(String name, Node parent) {
         super(name, parent);
     }
-    
-    public void addListener(Listener l){
+
+    public void addListener(Listener l) {
         listeners.add(l);
     }
-    
-    public void clearListeners(){
+
+    public void clearListeners() {
         listeners = new LinkedList<Listener>();
     }
-    
-    public void fireRootAdded(Statistic root){
-        for (Listener l : listeners) l.onRootAdded(root);
+
+    public void fireRootAdded(Statistic root) {
+        for (Listener l : listeners) {
+            l.onRootAdded(root);
+        }
     }
 
     public synchronized void addStatisticRoot(Statistic root) {
@@ -52,16 +55,23 @@ public class StatisticNode extends Node {
 
         Iterator<StatisticNode> myChildI = children.iterator();
         for (Statistic child : root.getChildren().values()) {
-            myChildI.next().addStatisticRoot(child);
+            try {
+                myChildI.next().addStatisticRoot(child);
+            } catch (NoSuchElementException exe) {
+                exe.printStackTrace();
+                //TODO WHY????
+            }
         }
-        
+
         fireRootAdded(root);
     }
 
-    public synchronized void safeStatisticsIteration(Fn1<Void, Statistic> fn){
-        for (Statistic r : roots) fn.invoke(r);
+    public synchronized void safeStatisticsIteration(Fn1<Void, Statistic> fn) {
+        for (Statistic r : roots) {
+            fn.invoke(r);
+        }
     }
-    
+
     @Override
     public List<StatisticNode> getChildren() {
         return children;
@@ -73,8 +83,9 @@ public class StatisticNode extends Node {
             this.children.add(statisticNode);
         }
     }
-    
-    public static interface Listener{
+
+    public static interface Listener {
+
         void onRootAdded(Statistic root);
     }
 }

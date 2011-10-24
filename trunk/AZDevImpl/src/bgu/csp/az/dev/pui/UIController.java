@@ -12,8 +12,8 @@ import bgu.csp.az.dev.Round;
 import bgu.csp.az.dev.frm.TestExecution;
 import java.util.List;
 import bc.dsl.SwingDSL;
-import bc.swing.models.AgentLogConsoleModel;
 import bc.swing.pfrm.Model;
+import bc.swing.pfrm.ano.Action;
 import bc.swing.pfrm.ano.PageDef;
 import bc.swing.pfrm.ano.Param;
 import bc.swing.pfrm.viewtypes.ParamType;
@@ -29,6 +29,7 @@ import javax.swing.DefaultBoundedRangeModel;
  */
 @PageDef(layout = AZView.class, name = "AgentZero Test Execution Analyzer")
 public class UIController extends Model implements TestExpirement.Listener {
+    public static final String STOP_AND_SAVE_ACTION = "Stop and save";
 
     @Param(name = "Pages", type = ParamType.TABS, role = AZView.PAGES_ROLE)
     List<Model> models = new LinkedList<Model>();
@@ -62,6 +63,11 @@ public class UIController extends Model implements TestExpirement.Listener {
         
         SwingDSL.configureUI();
         PageDSL.showInFrame(this);
+    }
+
+    @Action(name=STOP_AND_SAVE_ACTION, icon="cross-circle")
+    private void handleStopAndSave(){
+        te.stop();
     }
 
     @Override

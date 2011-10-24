@@ -222,8 +222,8 @@ public class ScenarioLogger {
             //WRITE TO DB
             for (List part : parts) {
                 for (Object l : part) {
-                    dao = DaoManager.createDao(connsource, l.getClass());
-                    dao.create(l);
+//                    dao = DaoManager.createDao(connsource, l.getClass());
+  //                  dao.create(l);
                 }
             }
 

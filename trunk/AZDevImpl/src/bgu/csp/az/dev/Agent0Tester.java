@@ -22,6 +22,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nu.xom.ParsingException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -152,7 +156,16 @@ public class Agent0Tester extends TestExpirement.Handler{
     }
 
     private void handleBadEnding(TestExecution ex) {
-        FileUtils.delete(new File(TestExpirement.TEMP_SCENARIO_LOG_DB_PATH));
-        ex.getLogger().exportToDB(TestExpirement.TEMP_SCENARIO_LOG_DB_PATH);
+        //SAVE THE BAD PROBLEM AND STOP ...
+        Problem p = ex.getGlobalProblem();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd'-'MM'-'yyyy' 'HH'.'mm'.'ss");
+        String fileName = sdf.format(new Date()) + " " + p.getNumberOfVariables() + "X" + p.getDomainSize(0) + ".prob";
+        System.err.println("Trying to save problematic probem to file " + fileName);
+        try {
+            FileUtils.persistObject(failedProblemsDir, fileName, p);
+            System.err.println("Problem saved successfully - you can now debug it.");
+        } catch (IOException ex1) {
+            Logger.getLogger(Agent0Tester.class.getName()).log(Level.SEVERE, "while trying to save failed problem.", ex1);
+        }
     }
 }

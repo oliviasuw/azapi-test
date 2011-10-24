@@ -52,6 +52,14 @@ public class SimpleMessage extends Message {
         ret.flag = flag;
         return ret;
     }
-    
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Object a : args){
+            sb.append(a.toString()).append(", ");
+        }
+        return "[" + getName() + (args.length > 0? ": " + sb.deleteCharAt(sb.length()-2).toString() + "]" : "]");
+    }
     
 }

@@ -5,6 +5,7 @@
 package bgu.csp.az.api.tools;
 
 import bgu.csp.az.api.Agent;
+import bgu.csp.az.api.DeepCopyable;
 import bgu.csp.az.api.Message;
 import bgu.csp.az.api.agt.SimpleAgent;
 import bgu.csp.az.api.Hooks.BeforeMessageProcessingHook;
@@ -59,15 +60,17 @@ import java.util.Arrays;
  * 
  * @author bennyl
  */
-public class TimeStamp implements Comparable<TimeStamp>, Serializable {
+public class TimeStamp implements Serializable, DeepCopyable {
 
     private int[] id;
     private int usingAgentId;
 
-    public TimeStamp(Agent a) {
+    public TimeStamp(SimpleAgent a) {
         this.id = new int[a.getNumberOfVariables()];
         this.usingAgentId = a.getId();
     }
+
+    private TimeStamp(){}
 
     public void register(final SimpleAgent a, final OldMessageHandlingPolicy policy) {
         a.hookIn(new BeforeMessageSentHook() {
@@ -84,13 +87,13 @@ public class TimeStamp implements Comparable<TimeStamp>, Serializable {
             public void hook(SimpleMessage msg) {
                 final TimeStamp ts = (TimeStamp) msg.getMetadata().get("TimeStamp");
                 final TimeStamp timestamp = TimeStamp.this;
-                if (timestamp.compareTo(ts) > 0
+                if (timestamp.compare(ts, a) > 0
                         && !msg.getName().equals("NEW_SOLUTION")) {
                     a.log("Dumping Message - timestamp older then mine");
                     msg.flag(policy.flag);
                 }
 
-                if (timestamp.compareTo(ts) < 0) {
+                if (timestamp.compare(ts, a) < 0) {
                     timestamp.set(ts);
                 }
 
@@ -125,9 +128,14 @@ public class TimeStamp implements Comparable<TimeStamp>, Serializable {
         return sb.toString();
     }
 
-    @Override
-    public int compareTo(TimeStamp o) {
-        for (int i = 0; i < this.id.length; i++) {
+    /**
+     * 
+     * @param o
+     * @param asking
+     * @return 1 if this > other, 0 if equals and -1 otherwise.
+     */
+    public int compare(TimeStamp o, Agent asking){
+        for (int i = 0; i < asking.getId(); i++) {
             if (this.id[i] > o.id[i]) {
                 return 1;
             }
@@ -157,6 +165,16 @@ public class TimeStamp implements Comparable<TimeStamp>, Serializable {
             }
             this.id[i] = t.id[i];
         }
+    }
+
+    @Override
+    public Object deepCopy() {
+        TimeStamp deep = new TimeStamp();
+        deep.id = new int[id.length];
+        System.arraycopy(id, 0, deep.id, 0, id.length);
+        deep.usingAgentId = usingAgentId;
+
+        return deep;
     }
 
     public static enum OldMessageHandlingPolicy {

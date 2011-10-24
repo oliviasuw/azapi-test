@@ -236,8 +236,10 @@ public class TestExpirement extends Expirament {
 
     @Override
     protected void whenExpirementEndedBecauseExecutionCrushed(Exception ex) {
-        ScenarioLogger log = ((TestExecution) getCurrentExecution()).getLogger();
-        log.logCrush(ex);
+        if (USE_SCENARIO_LOGGER) {
+            ScenarioLogger log = ((TestExecution) getCurrentExecution()).getLogger();
+            log.logCrush(ex);
+        }
         fireExecutionCrushed((TestExecution) getCurrentExecution(), ex);
         //saveCurrentScenarioAndStop();
     }

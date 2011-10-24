@@ -12,7 +12,7 @@ package bgu.csp.az.dev.pui;
 
 import bc.dsl.PageDSL;
 import bc.swing.pfrm.Page;
-import bc.swing.pfrm.PageView;
+import bc.swing.pfrm.PageLayout;
 import bc.swing.pfrm.FieldParamModel;
 import java.awt.BorderLayout;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @author bennyl
  */
-public class AZView extends javax.swing.JPanel implements PageView{
+public class AZView extends javax.swing.JPanel implements PageLayout{
     public static final String CONSOLE_ROLE = "CONSOLE ROLE";
     public static final String PAGES_ROLE = "PAGES ROLE";
     public static final String PROGRESS_BAR_ROLE = "PROGRESS BAR ROLE";

@@ -13,7 +13,7 @@ package bgu.csp.az.dev.pui.stat;
 import bc.swing.pfrm.Page;
 import bc.dsl.PageDSL;
 import bc.swing.pfrm.BaseParamModel;
-import bc.swing.pfrm.PageView;
+import bc.swing.pfrm.PageLayout;
 import bc.swing.pfrm.FieldParamModel;
 import bgu.csp.az.dev.Round;
 
@@ -21,7 +21,7 @@ import bgu.csp.az.dev.Round;
  *
  * @author bennyl
  */
-public class StatusView extends javax.swing.JPanel implements PageView{
+public class StatusView extends javax.swing.JPanel implements PageLayout{
     public static final String ALGORITHM_NAME_ROLE = "ALGORITHM NAME ROLE";
     public static final String EXECUTION_STATUS_ROLE = "EXECUTION STATUS ROLE";
     public static final String EXECUTION_TIME_ROLE = "EXECUTION TIME ROLE";

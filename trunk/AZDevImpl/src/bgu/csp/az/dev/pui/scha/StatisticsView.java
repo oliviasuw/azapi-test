@@ -14,7 +14,7 @@ import bc.dsl.PageDSL;
 import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.FieldParamModel.ChangeListener;
 import bc.swing.pfrm.Page;
-import bc.swing.pfrm.PageView;
+import bc.swing.pfrm.PageLayout;
 import java.awt.Color;
 import org.jdesktop.swingx.painter.RectanglePainter;
 
@@ -22,7 +22,7 @@ import org.jdesktop.swingx.painter.RectanglePainter;
  *
  * @author bennyl
  */
-public class StatisticsView extends javax.swing.JPanel implements PageView {
+public class StatisticsView extends javax.swing.JPanel implements PageLayout {
 
     public static final String GRAPHS_TREE_ROLE = "GRAPHS TREE ROLE";
     public static final String MASTER_GRAPH_ROLE = "MASTER GRAPH ROLE";

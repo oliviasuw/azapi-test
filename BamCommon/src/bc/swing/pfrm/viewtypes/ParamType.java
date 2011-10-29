@@ -6,7 +6,6 @@
 package bc.swing.pfrm.viewtypes;
 
 import bc.swing.pfrm.ParamView;
-import bc.swing.pfrm.views.AgentLogPV;
 import bc.swing.pfrm.views.ChartPV;
 import bc.swing.pfrm.views.ConsolePV;
 import bc.swing.pfrm.views.CustomPV;

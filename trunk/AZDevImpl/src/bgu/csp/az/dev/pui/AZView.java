@@ -50,6 +50,7 @@ public class AZView extends javax.swing.JPanel implements PageLayout{
         jSeparator1 = new javax.swing.JSeparator();
         jLabel2 = new javax.swing.JLabel();
         tabs = new javax.swing.JPanel();
+        consolePan = new javax.swing.JPanel();
         pbar = new javax.swing.JPanel();
 
         pinstripePainter1.setCacheable(true);
@@ -111,6 +112,12 @@ public class AZView extends javax.swing.JPanel implements PageLayout{
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 3, 5, 3);
         contentPan.add(tabs, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipady = 80;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 5);
+        contentPan.add(consolePan, gridBagConstraints);
 
         pbar.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         pbar.setPreferredSize(new java.awt.Dimension(0, 24));
@@ -138,6 +145,7 @@ public class AZView extends javax.swing.JPanel implements PageLayout{
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.jdesktop.swingx.JXPanel backPan;
+    private javax.swing.JPanel consolePan;
     private org.jdesktop.swingx.JXPanel contentPan;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -158,6 +166,8 @@ public class AZView extends javax.swing.JPanel implements PageLayout{
         gbc.gridx = 1;
         gbc.insets = new Insets(3, 3, 3, 3);
         pbar.add(stopAndSave, gbc);
+        
+        PageDSL.fillByRole(model, consolePan, CONSOLE_ROLE);
     }
 
     @Override

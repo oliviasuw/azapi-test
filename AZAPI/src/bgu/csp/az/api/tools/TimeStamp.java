@@ -6,11 +6,7 @@ package bgu.csp.az.api.tools;
 
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.DeepCopyable;
-import bgu.csp.az.api.Message;
 import bgu.csp.az.api.agt.SimpleAgent;
-import bgu.csp.az.api.Hooks.BeforeMessageProcessingHook;
-import bgu.csp.az.api.Hooks.BeforeMessageSentHook;
-import bgu.csp.az.api.agt.SimpleMessage;
 import java.io.Serializable;
 import java.util.Arrays;
 

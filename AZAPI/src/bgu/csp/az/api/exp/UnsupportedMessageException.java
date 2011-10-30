@@ -1,20 +1,40 @@
 package bgu.csp.az.api.exp;
 
+/**
+ * 
+ * @author bennyl
+ */
 public class UnsupportedMessageException extends RuntimeException{
 
-	public UnsupportedMessageException() {
+    /**
+     * 
+     */
+    public UnsupportedMessageException() {
 		super();
 	}
 
-	public UnsupportedMessageException(String message, Throwable cause) {
+        /**
+         * 
+         * @param message
+         * @param cause
+         */
+        public UnsupportedMessageException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public UnsupportedMessageException(String message) {
+        /**
+         * 
+         * @param message
+         */
+        public UnsupportedMessageException(String message) {
 		super(message);
 	}
 
-	public UnsupportedMessageException(Throwable cause) {
+        /**
+         * 
+         * @param cause
+         */
+        public UnsupportedMessageException(Throwable cause) {
 		super(cause);
 	}
 	

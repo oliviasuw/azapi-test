@@ -10,18 +10,34 @@ package bgu.csp.az.api.exp;
  */
 public class PanicedAgentException extends RuntimeException{
 
+    /**
+     * 
+     * @param cause
+     */
     public PanicedAgentException(Throwable cause) {
         super(cause);
     }
 
+    /**
+     * 
+     * @param message
+     * @param cause
+     */
     public PanicedAgentException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * 
+     * @param message
+     */
     public PanicedAgentException(String message) {
         super(message);
     }
 
+    /**
+     * 
+     */
     public PanicedAgentException() {
     }
     

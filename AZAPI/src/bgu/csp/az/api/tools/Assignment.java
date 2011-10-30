@@ -1,6 +1,7 @@
 package bgu.csp.az.api.tools;
 
 import bgu.csp.az.api.Agent;
+import bgu.csp.az.api.DeepCopyable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
@@ -10,11 +11,18 @@ import bgu.csp.az.api.ds.ImmutableSet;
 import java.io.Serializable;
 import java.util.Collection;
 
-public class Assignment implements Serializable{
+/**
+ * 
+ * @author bennyl
+ */
+public class Assignment implements Serializable, DeepCopyable{
 
     private HashMap<Integer, Integer> assignment;
     private transient double cachedCost = -1;
 
+    /**
+     * constracting new empty assignment
+     */
     public Assignment() {
         this.assignment = new HashMap<Integer, Integer>();
 
@@ -69,6 +77,7 @@ public class Assignment implements Serializable{
     }
 
     /**
+     * @param p 
      * @return the cost of this assignment
      */
     public double calcCost(Problem p) {
@@ -99,6 +108,7 @@ public class Assignment implements Serializable{
     /**
      * @param var
      * @param val
+     * @param p 
      * @return the cost that will be added to this assignment by assigning 
      * 		   var <- val in the problem p
      */
@@ -190,8 +200,13 @@ public class Assignment implements Serializable{
         return -1;
     }
     
+    /**
+     * 
+     * @return a deep copy of this assignment (same as calling deepCopy)
+     */
+    @Deprecated
     public Assignment copy() {
-        return new Assignment(this);
+        return deepCopy();
     }
     
     /**
@@ -257,5 +272,10 @@ public class Assignment implements Serializable{
             return "{" + sb.toString().substring(2) + "}";
         }
         return "{}";
+    }
+
+    @Override
+    public Assignment deepCopy() {
+        return new Assignment(this);
     }
 }

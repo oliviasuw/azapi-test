@@ -28,6 +28,7 @@ public class Statistic implements Serializable {
 
     /**
      * 
+     * @param problemMetadata the metadata of the problem - this is saved via the statistic for later analyzing
      */
     public Statistic(Map problemMetadata) {
         this.cnt = new NonBlockingCounter();
@@ -35,6 +36,9 @@ public class Statistic implements Serializable {
         this.problemMetadata = problemMetadata;
     }
 
+    /**
+     * @return the saved problem metadata
+     */
     public Map getProblemMetadata() {
         return problemMetadata;
     }

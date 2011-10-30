@@ -31,6 +31,8 @@ public interface Execution extends Process {
     Object getParameterValue(String name);
 
     ExecutionResult getResult();
+    
+    ExecutionResult getPartialResult();
 
     /**
      * @return the statistics tree - a tree contains statistics about this execution
@@ -56,6 +58,8 @@ public interface Execution extends Process {
     void reportPartialAssignment(int var, int val);
 
     void reportFinalAssignment(Assignment answer);
+    
+    void swapPartialAssignmentToFullAssignment();
     
     /**
      * will stop the execution - interupting all the agent runners!

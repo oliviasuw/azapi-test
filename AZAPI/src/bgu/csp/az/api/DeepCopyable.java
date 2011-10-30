@@ -18,7 +18,7 @@ package bgu.csp.az.api;
  * if not we use a generic Deep Copy framework to copy them - can be preaty slow but avg speed is ok..
  * @author bennyl
  */
-public interface DeepCopyable {
+public interface DeepCopyable{
 
     /**
      * @return an exact copy of the object with no shared fields or sub fields (unless it immuteable)

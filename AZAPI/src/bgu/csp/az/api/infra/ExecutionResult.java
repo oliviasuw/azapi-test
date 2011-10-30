@@ -4,13 +4,14 @@
  */
 package bgu.csp.az.api.infra;
 
+import bgu.csp.az.api.DeepCopyable;
 import bgu.csp.az.api.tools.Assignment;
 
 /**
  *
  * @author bennyl
  */
-public class ExecutionResult {
+public class ExecutionResult implements DeepCopyable{
 
     private Assignment finalAssignment = null;
     private Exception crush = null;
@@ -44,7 +45,7 @@ public class ExecutionResult {
         this.finalAssignment = finalAssignment;
     }
 
-    public Assignment getFinalAssignment() {
+    public Assignment getAssignment() {
         return finalAssignment;
     }
 
@@ -58,6 +59,14 @@ public class ExecutionResult {
     
     public Exception getCrushReason(){
         return crush;
+    }
+
+    @Override
+    public ExecutionResult deepCopy() {
+        ExecutionResult ret = new ExecutionResult();
+        ret.crush = this.crush;
+        ret.finalAssignment = (this.finalAssignment == null? null: this.finalAssignment.copy());
+        return ret;
     }
 
 }

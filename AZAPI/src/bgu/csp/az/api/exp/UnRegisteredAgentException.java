@@ -10,18 +10,34 @@ package bgu.csp.az.api.exp;
  */
 public class UnRegisteredAgentException extends RuntimeException {
 
+    /**
+     * 
+     * @param cause
+     */
     public UnRegisteredAgentException(Throwable cause) {
         super(cause);
     }
 
+    /**
+     * 
+     * @param message
+     * @param cause
+     */
     public UnRegisteredAgentException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * 
+     * @param message
+     */
     public UnRegisteredAgentException(String message) {
         super(message);
     }
 
+    /**
+     * 
+     */
     public UnRegisteredAgentException() {
     }
     

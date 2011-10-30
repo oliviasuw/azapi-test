@@ -12,16 +12,22 @@ import bgu.csp.az.dev.Round;
 import bgu.csp.az.dev.frm.TestExecution;
 import java.util.List;
 import bc.dsl.SwingDSL;
+import bc.swing.models.BatchDocument;
+import bc.swing.models.LimitedBatchDocument;
 import bc.swing.pfrm.Model;
 import bc.swing.pfrm.ano.Action;
 import bc.swing.pfrm.ano.PageDef;
 import bc.swing.pfrm.ano.Param;
 import bc.swing.pfrm.viewtypes.ParamType;
+import bc.utils.PokedWorker;
 import bgu.csp.az.dev.frm.TestExpirement;
 import bgu.csp.az.dev.pui.scha.StatisticsModel;
 import bgu.csp.az.dev.pui.stat.StatusModel;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultBoundedRangeModel;
+import javax.swing.text.BadLocationException;
 
 /**
  *
@@ -36,12 +42,14 @@ public class UIController extends Model implements TestExpirement.Listener {
     @Param(name = "Execution Progress", type = ParamType.PROGRESS, role = AZView.PROGRESS_BAR_ROLE)
     DefaultBoundedRangeModel progress;
     TestExpirement te;
-
+    //BatchDocument bdoc = new LimitedBatchDocument();
+    AgentLogDocument bdoc = new AgentLogDocument();
     
     public void go(TestExpirement te) {
         this.te = te;
         te.addListener(this);
-
+        
+        
         progress = new DefaultBoundedRangeModel(0, 0, 0, te.getNumberOfLeftProblems());
 
         final StatusModel statusModel = new StatusModel();
@@ -53,11 +61,30 @@ public class UIController extends Model implements TestExpirement.Listener {
         models.add(statisticsModel);
         
         
+        final PokedWorker pw = new PokedWorker(100) {
+
+            @Override
+            public void work() {
+                try {
+                    bdoc.processBatchUpdates();
+                    
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(UIController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        
+        new Thread(pw).start();
+        
         te.addLogListener(new TestExecution.LogListner() {
 
             @Override
             public void onLog(int agent, String msg) {
-                System.out.println("Agent: " + agent + ": " + msg);
+                bdoc.addLog(""+agent,msg, Level.INFO);
+                //bdoc.appendBatchString("Agent: " + agent + ": " + msg, null);
+                //bdoc.appendBatchLineFeed(null);
+                pw.poke();
+//                System.out.println("Agent: " + agent + ": " + msg);
             }
         });
         
@@ -68,6 +95,11 @@ public class UIController extends Model implements TestExpirement.Listener {
     @Action(name=STOP_AND_SAVE_ACTION, icon="cross-circle")
     private void handleStopAndSave(){
         te.stop();
+    }
+
+    @Param(name="console", customView=Console.class, role=AZView.CONSOLE_ROLE)
+    public BatchDocument getBatchdoc() {
+        return bdoc;
     }
 
     @Override

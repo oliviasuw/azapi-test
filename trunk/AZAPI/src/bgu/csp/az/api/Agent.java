@@ -67,6 +67,9 @@ public abstract class Agent extends Agt0DSL {
      * H O O K S
      */
     protected List<Hooks.BeforeMessageSentHook> beforeMessageSentHooks;
+    /**
+     * collection of hooks that will get called before message processing on this agent.
+     */
     protected List<Hooks.BeforeMessageProcessingHook> beforeMessageProcessingHooks;
 
     /**
@@ -103,6 +106,11 @@ public abstract class Agent extends Agt0DSL {
         return ret;
     }
 
+    /**
+     * override this function in the case you want to make some action every time before sending a message
+     * this is a great place to write logs, attach timestamps to the message etc.
+     * @param m
+     */
     protected void beforeMessageSending(SimpleMessage m) {
         //do nothing - derived classes can implement this if they want
     }
@@ -279,6 +287,14 @@ public abstract class Agent extends Agt0DSL {
     protected void finishWithNoSolution() {
         finish(null);
     }
+    
+    /**
+     * will collect all the partial assignments that got submited (from all the agents) into an assignment 'a' and 
+     * then will act as if you called to finish(a) :- see finish(Assignment) for more details.
+     */
+    protected void finishWithAccumulationOfSubmitedPartialAssignments(){
+        finish(pops.getExecution().getPartialResult().getAssignment());
+    }
 
     /**
      * stop execution of <b> current </b> agent - will not affect other agents
@@ -309,18 +325,28 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
+     * remove the submitted current assignment
+     */
+    protected void unSubmitCurrentAssignmenr() {
+        final Assignment partialAssignment = exec.getPartialResult().getAssignment();
+        if (partialAssignment != null) {
+            partialAssignment.unassign(this);
+        }
+    }
+    
+    /**
      * @return the last submitted assignment
      * will throw InvalideValueException if called before ever call submitCurrentAssignment
      */
-    protected Integer getSubmitedCurrentAssignment(){
-        final Assignment finalAssignment = exec.getResult().getFinalAssignment();
-        if (finalAssignment != null){
+    protected Integer getSubmitedCurrentAssignment() {
+        final Assignment finalAssignment = exec.getResult().getAssignment();
+        if (finalAssignment != null) {
             return finalAssignment.getAssignment(getId());
         }
-        
+
         throw new InvalidValueException("Agent called 'getSubmitedCurrentAssignment' before he ever called 'submitCurrentAssignment'");
     }
-    
+
     /**
      * this function called once on each agent when the algorithm is started 
      */
@@ -457,6 +483,15 @@ public abstract class Agent extends Agt0DSL {
         execution.getMailer().broadcast(createMessage(msg, args));
     }
 
+    /**
+     * this class contains all the "hidden but public" methods,
+     * because the user should extend the agent class all the "platform" operations 
+     * can be called mistekanly by him, 
+     * instead of making those operations private and then access them via reflection - what will create a decrease in the
+     * performance - we just hiding them in this inner class, one object of this class are held by each agent 
+     * and its private, in order for the platform to obtain this instance it uses another inner class 'PlatformOperationsExtractor'
+     * this class contains a static method that extract the private field - because it also defined inside the agent it not have to use reflection to do so.
+     */
     public class PlatformOps {
 
         /**
@@ -497,8 +532,16 @@ public abstract class Agent extends Agt0DSL {
         }
     }
 
+    /**
+     * See documentation of PlatformOps.
+     */
     public static class PlatformOperationsExtractor {
 
+        /**
+         * extracting the hidden Platform Operations object from the given agent.
+         * @param a
+         * @return
+         */
         public static PlatformOps extract(Agent a) {
             return a.pops;
         }

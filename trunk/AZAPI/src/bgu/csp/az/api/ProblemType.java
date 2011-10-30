@@ -9,6 +9,12 @@ package bgu.csp.az.api;
  * @author bennyl
  */
 public enum ProblemType {
+    /**
+     * Constraint Setisfaction Problem
+     */
     CSP,
+    /**
+     * Constraint Optimization Problem
+     */
     COP
 }

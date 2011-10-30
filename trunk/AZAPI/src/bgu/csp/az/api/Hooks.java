@@ -13,10 +13,16 @@ import bgu.csp.az.api.agt.SimpleMessage;
 public class Hooks {
     
     
+    /**
+     * callback that will get called before message sent - can be attached to simple agent.
+     */
     public static interface BeforeMessageSentHook{
         void hook(SimpleMessage msg);
     }
     
+    /**
+     * callback that will get called before message processed by the attached agent - can be attachd to simple agent.
+     */
     public static interface BeforeMessageProcessingHook{
         void hook(SimpleMessage msg);
     }

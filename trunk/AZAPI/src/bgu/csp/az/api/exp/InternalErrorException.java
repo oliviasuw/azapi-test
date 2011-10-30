@@ -1,20 +1,40 @@
 package bgu.csp.az.api.exp;
 
+/**
+ * 
+ * @author bennyl
+ */
 public class InternalErrorException extends RuntimeException{
 
-	public InternalErrorException() {
+    /**
+     * 
+     */
+    public InternalErrorException() {
 		super();
 	}
 
-	public InternalErrorException(String message, Throwable cause) {
+    /**
+     * 
+     * @param message
+     * @param cause
+     */
+    public InternalErrorException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public InternalErrorException(String message) {
+        /**
+         * 
+         * @param message
+         */
+        public InternalErrorException(String message) {
 		super(message);
 	}
 
-	public InternalErrorException(Throwable cause) {
+        /**
+         * 
+         * @param cause
+         */
+        public InternalErrorException(Throwable cause) {
 		super(cause);
 	}
 	

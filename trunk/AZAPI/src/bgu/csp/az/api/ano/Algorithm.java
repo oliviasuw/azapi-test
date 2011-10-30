@@ -28,6 +28,10 @@ public @interface Algorithm {
      */
     ProblemType solve() default ProblemType.COP;
 
+    /**
+     * if this set to true the algorithm requires an idle detector
+     * @See bgu.csp.az.api.tools.IdleDetector
+     */
     public boolean useIdleDetector() default false;
 
 }

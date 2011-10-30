@@ -4,11 +4,12 @@
  */
 package bgu.csp.az.api;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Simulator Domain Specific Language Object is a group of functions that simplify some programming tasks
@@ -19,6 +20,9 @@ import java.util.List;
  */
 public class Agt0DSL {
 
+    private static final Pattern nummericPattern = Pattern.compile("[-+]?\\d+(\\.\\d*)?$");
+    private static final Pattern integericPattern = Pattern.compile("[-+]?\\d+$");
+    
     /**
      * returns a collection of numbers in the range of start to end (includes start and end)
      * @param start
@@ -86,6 +90,11 @@ public class Agt0DSL {
         return false;
     }
 
+    /**
+     * return a string representation for the collection col.
+     * @param col
+     * @return
+     */
     public static String str(Collection col) {
         if (col == null) {
             return "![]";
@@ -103,6 +112,13 @@ public class Agt0DSL {
         return sb.toString();
     }
 
+    /**
+     * if sum is possitive - return from without the first 'sum' chars
+     * if is negative return only the last 'sum' chars of 'from'
+     * @param from
+     * @param sum
+     * @return
+     */
     public static String drop(String from, int sum) {
         if (sum < 0) {
             sum = from.length() + sum;
@@ -111,6 +127,13 @@ public class Agt0DSL {
         return from.substring(sum);
     }
 
+    /**
+     * if sum is positive: return the first $sum letters from $from
+     * if sum is negative: return all chars from $from but the last $sum
+     * @param from
+     * @param sum
+     * @return
+     */
     public static String take(String from, int sum) {
         if (sum < 0) {
             sum = from.length() + sum;
@@ -119,30 +142,46 @@ public class Agt0DSL {
         return from.substring(0, sum);
     }
 
+    /**
+     * return true if the given char is nummeric
+     * @param who
+     * @return 
+     */
     public static boolean isNummeric(char who) {
         return who >= '0' && who <= '9';
     }
 
+    /**
+     * return true if the given string is nummeric
+     * @param who
+     * @return 
+     */
     public static boolean isNummeric(String who) {
-        if (who.isEmpty()) {
-            return false;
-        }
-        for (char c : who.toCharArray()) {
-            if (!isNummeric(c)) {
-                return false;
-            }
-        }
-        return true;
+        return nummericPattern.matcher(who).matches();
     }
 
+    /**
+     * @param who
+     * @return true if the given string represents an integer number
+     */
     public static boolean isIntegeric(String who) {
-        return who.length() < 10 && isNummeric(who);
+        return integericPattern.matcher(who).matches();
     }
 
+    /**
+     * @param who
+     * @param a
+     * @param b
+     * @return true if $who is between $a and $b: $a <= $who <= $b.
+     */
     public static boolean between(int who, int a, int b) {
         return who >= a && who <= b;
     }
 
+    /**
+     * @param text
+     * @return the given string in lower case
+     */
     public static String lc(String text) {
         return text == null ? null : text.toLowerCase();
     }
@@ -165,12 +204,13 @@ public class Agt0DSL {
         return null;
     }
 
+    /**
+     * @param <T>
+     * @param data
+     * @return - the collection of the given objects grouped in a list.
+     */
     public static <T> List<T> list(T... data) {
-        ArrayList al = new ArrayList(data.length);
-        for (T d : data) {
-            al.add(d);
-        }
-        return al;
+        return Arrays.asList(data);
     }
 
     /**

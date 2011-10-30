@@ -65,41 +65,16 @@ public class TimeStamp implements Serializable, DeepCopyable {
     private int[] id;
     private int usingAgentId;
 
+    /**
+     * 
+     * @param a
+     */
     public TimeStamp(SimpleAgent a) {
         this.id = new int[a.getNumberOfVariables()];
         this.usingAgentId = a.getId();
     }
 
     private TimeStamp(){}
-
-    public void register(final SimpleAgent a, final OldMessageHandlingPolicy policy) {
-        a.hookIn(new BeforeMessageSentHook() {
-
-            @Override
-            public void hook(SimpleMessage msg) {
-                msg.getMetadata().put("TimeStamp", TimeStamp.this);
-            }
-        });
-
-        a.hookIn(new BeforeMessageProcessingHook() {
-
-            @Override
-            public void hook(SimpleMessage msg) {
-                final TimeStamp ts = (TimeStamp) msg.getMetadata().get("TimeStamp");
-                final TimeStamp timestamp = TimeStamp.this;
-                if (timestamp.compare(ts, a) > 0
-                        && !msg.getName().equals("NEW_SOLUTION")) {
-                    a.log("Dumping Message - timestamp older then mine");
-                    msg.flag(policy.flag);
-                }
-
-                if (timestamp.compare(ts, a) < 0) {
-                    timestamp.set(ts);
-                }
-
-            }
-        });
-    }
 
     @Override
     public boolean equals(Object obj) {
@@ -146,19 +121,35 @@ public class TimeStamp implements Serializable, DeepCopyable {
         return 0;
     }
 
+    /**
+     * @return the local time of the usingAgent (the agent that created this timeStamp)
+     */
     public int getLocalTime() {
         return id[usingAgentId];
     }
 
+    /**
+     * set the local time of the creating agent
+     * @param localTime
+     */
     public void setLocalTime(int localTime) {
         id[usingAgentId] = localTime;
     }
 
+    /**
+     * add 1 to the creating agent local time
+     */
     public void incLocalTime() {
         id[usingAgentId]++;
     }
 
-    public void set(TimeStamp t) {
+    /**
+     * copying the timestamp from the given timestamp , 
+     * the idea is that the localtimes of all the agents up to the crating agent of this timestamp
+     * are copyied (all the rest are irelevant for the given agent, the creating agent stays as it was - no other modifications are occured)
+     * @param t
+     */
+    public void copyFrom(TimeStamp t) {
         for (int i = 0; i < t.id.length; i++) {
             if (i == usingAgentId) {
                 continue;
@@ -175,22 +166,5 @@ public class TimeStamp implements Serializable, DeepCopyable {
         deep.usingAgentId = usingAgentId;
 
         return deep;
-    }
-
-    public static enum OldMessageHandlingPolicy {
-
-        DISCARD_OLD_MESSAGES(Message.DISCARDED),
-        FLAG_OLD_MESSAGES_AS_OLD(Message.OLD);
-        
-        int flag;
-
-        private OldMessageHandlingPolicy(int flag) {
-            this.flag = flag;
-        }
-
-        public int getFlag() {
-            return flag;
-        }
-        
     }
 }

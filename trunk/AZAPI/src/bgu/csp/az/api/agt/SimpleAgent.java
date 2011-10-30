@@ -1,7 +1,6 @@
 package bgu.csp.az.api.agt;
 
 import bgu.csp.az.api.Agent;
-import bgu.csp.az.api.Hooks;
 import bgu.csp.az.api.Message;
 import bgu.csp.az.api.Hooks.BeforeMessageProcessingHook;
 import bgu.csp.az.api.ano.WhenReceived;
@@ -22,9 +21,6 @@ public abstract class SimpleAgent extends Agent {
 
     private HashMap<String, Method> msgToMethod;
 
-    /**
-     * automatic statistics
-     */
     public SimpleAgent() {
         msgToMethod = new HashMap<String, Method>();
         scanMethods();
@@ -86,7 +82,8 @@ public abstract class SimpleAgent extends Agent {
      * usage: send("MESSAGE_NAME", ARG1, ARG2, ..., ARGn).to(OTHER_AGENT_ID)
      * 
      * @param msg the message name
-     * @param args the list (variadic) of arguments that belongs to this message 
+     * @param args the list (variadic) of arguments that belongs to this message
+     * @return continuation class 
      */
     public SendbleObject send(String msg, Object... args) {
         final Execution execution = PlatformOperationsExtractor.extract(this).getExecution();
@@ -107,6 +104,10 @@ public abstract class SimpleAgent extends Agent {
         return msg;
     }
     
+    /**
+     * this function called when a SYS_TERMINATION Message Arrived -> it just calls finish on the agent, 
+     * you can override it to make your own termination handling.
+     */
     @WhenReceived(Agent.SYS_TERMINATION_MESSAGE)
     public void handleTermination(){
         finish();

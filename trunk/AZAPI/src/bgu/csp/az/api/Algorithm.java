@@ -28,6 +28,11 @@ public class Algorithm {
         this.useIdleDetector = false;
     }
     
+    /**
+     * constract an algorithm metadata from an agent class 
+     * the agent class must be annotated by @Algorithm annotation.
+     * @param agentClass
+     */
     public Algorithm(Class<? extends Agent> agentClass){
         bgu.csp.az.api.ano.Algorithm a = agentClass.getAnnotation(bgu.csp.az.api.ano.Algorithm.class);
         if (a == null){

@@ -12,7 +12,7 @@ public class TestMain {
     public static void main(String[] args){
         Agent0Tester.main(new String[]{
                 "-f", "C:\\Users\\bennyl\\runtime-EclipseApplication\\SBB2\\test.xml",
-                "-a", "ext.sim.agents.AFBAgent",
+                "-a", "ext.sim.agents.SBTAgent",
                 "--cp", "C:\\Users\\bennyl\\runtime-EclipseApplication\\SBB2\\bin",
                 "--gui"
         });

@@ -10,13 +10,11 @@ import bgu.csp.az.api.Message;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.Statistic;
 import bgu.csp.az.api.agt.SimpleAgent;
-import bgu.csp.az.api.agt.SimpleMessage;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.tools.Assignment;
 import bgu.csp.az.dev.frm.TestExecution;
 import bgu.csp.az.impl.pseq.RandomProblemSequence;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.db.DerbyEmbeddedDatabaseType;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
@@ -138,9 +136,7 @@ public class ScenarioLogger {
         message.sender = sender;
         parts[sender].add(message);
 
-        if (msg instanceof SimpleMessage) {
-            logMessageArguments(sender, message.id, (SimpleMessage) msg);
-        }
+        logMessageArguments(sender, message.id, msg);
 
         return message.id;
     }
@@ -154,7 +150,7 @@ public class ScenarioLogger {
         parts[agent].add(log);
     }
 
-    private void logMessageArguments(int sendAgent, long id, SimpleMessage msg) {
+    private void logMessageArguments(int sendAgent, long id, Message msg) {
         byte idx = 0;
         for (Object arg : msg.getArgs()) {
             MessageArgumentLog mal = new MessageArgumentLog();
@@ -223,7 +219,7 @@ public class ScenarioLogger {
             for (List part : parts) {
                 for (Object l : part) {
 //                    dao = DaoManager.createDao(connsource, l.getClass());
-  //                  dao.create(l);
+                    //                  dao.create(l);
                 }
             }
 

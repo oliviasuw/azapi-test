@@ -56,8 +56,8 @@ public class AgentLogDocument extends LimitedBatchDocument {
             lastAgent = agentName;
         }
 
-        StringBuilder sb = parseLogText(text);
-        appendBatchString(sb.toString()+"\n\n", styleText(lvl));
+        //StringBuilder sb = parseLogText(text);
+        appendBatchString(text+"\n", styleText(lvl));
 //        appendBatchLineFeed(null);
     }
 

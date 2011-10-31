@@ -15,6 +15,7 @@ import bc.swing.comp.JActionView;
 import bc.swing.pfrm.Page;
 import bc.swing.pfrm.PageLayout;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
@@ -104,6 +105,7 @@ public class AZView extends javax.swing.JPanel implements PageLayout{
         gridBagConstraints.weightx = 1.0;
         contentPan.add(topPanel, gridBagConstraints);
 
+        tabs.setBackground(new java.awt.Color(255, 255, 255));
         tabs.setLayout(new java.awt.BorderLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -159,13 +161,13 @@ public class AZView extends javax.swing.JPanel implements PageLayout{
     @Override
     public void setPage(Page model) {
         PageDSL.fillByRole(model, tabs, PAGES_ROLE);
-//        PageDSL.fillByRole(model, pcons, CONSOLE_ROLE);
         PageDSL.fillByRole(model, pbar, PROGRESS_BAR_ROLE, 3);
         JActionView stopAndSave = new JActionView(model.getAction(UIController.STOP_AND_SAVE_ACTION));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.insets = new Insets(3, 3, 3, 3);
         pbar.add(stopAndSave, gbc);
+        stopAndSave.setForeground(Color.BLUE);
         
         PageDSL.fillByRole(model, consolePan, CONSOLE_ROLE);
     }

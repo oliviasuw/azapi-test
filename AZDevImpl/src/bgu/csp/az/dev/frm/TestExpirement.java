@@ -23,6 +23,7 @@ import bgu.csp.az.api.pseq.ProblemSequence;
 import bgu.csp.az.api.tools.IdleDetector;
 import bgu.csp.az.dev.alg.BranchAndBound;
 import bgu.csp.az.dev.alg.MACSolver;
+import bgu.csp.az.impl.DefaultMailer;
 import java.util.LinkedList;
 import nu.xom.Element;
 import nu.xom.ParsingException;
@@ -95,10 +96,10 @@ public class TestExpirement extends Expirament {
      * @param alg  - the algorithm to test this proglem against
      */
     public TestExpirement(Problem p, Algorithm alg) {
-        roundsLeft = new LinkedList<Round>();
+        this.roundsLeft = new LinkedList<Round>();
         Round single = new Round(p);
-        roundsLeft.add(single);
-        allRounds = new LinkedList<Round>(roundsLeft);
+        this.roundsLeft.add(single);
+        this.allRounds = new LinkedList<Round>(roundsLeft);
         this.alg = alg;
         this.saveFaildProblem = false;
     }
@@ -135,7 +136,7 @@ public class TestExpirement extends Expirament {
 
         final Problem p = currentRound.next();
         te.setGlobalProblem(p);
-        te.setMailer(new TestMailer(te));
+        te.setMailer(new DefaultMailer(te));
         if (alg.isUseIdleDetector()) {
             te.setIdleDetector(new IdleDetector(p.getNumberOfVariables(), te.getMailer()));
         }
@@ -241,7 +242,6 @@ public class TestExpirement extends Expirament {
             log.logCrush(ex);
         }
         fireExecutionCrushed((TestExecution) getCurrentExecution(), ex);
-        //saveCurrentScenarioAndStop();
     }
 
     @Override

@@ -66,16 +66,16 @@ public abstract class Expirament extends ProcessImpl {
                 correct = safeSolve(currentExecution.getGlobalProblem());
                 if (correct != null) {
                     if (result.hasSolution() == true && correct.hasSolution() == true) {
-                        goodc = correct.getFinalAssignment().calcCost(currentExecution.getGlobalProblem());
-                        gotc = result.getFinalAssignment().calcCost(currentExecution.getGlobalProblem());
+                        goodc = correct.getAssignment().calcCost(currentExecution.getGlobalProblem());
+                        gotc = result.getAssignment().calcCost(currentExecution.getGlobalProblem());
                         if (goodc != gotc) {
-                            whenExpirementEndedBecauseOfWrongResults(result.getFinalAssignment(), correct.getFinalAssignment());
+                            whenExpirementEndedBecauseOfWrongResults(result.getAssignment(), correct.getAssignment());
                             return;
                         }
                     } else if (result.hasSolution() == false && correct.hasSolution() == false) {
                         //great!
                     } else {
-                        whenExpirementEndedBecauseOfWrongResults(result.getFinalAssignment(), correct.getFinalAssignment());
+                        whenExpirementEndedBecauseOfWrongResults(result.getAssignment(), correct.getAssignment());
                         return;
                     }
                 }

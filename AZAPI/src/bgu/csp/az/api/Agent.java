@@ -1,15 +1,16 @@
 package bgu.csp.az.api;
 
 import bgu.csp.az.api.Hooks.BeforeMessageSentHook;
-import bgu.csp.az.api.agt.SimpleMessage;
+import bgu.csp.az.api.agt.SendbleObject;
 import bgu.csp.az.api.ds.ImmutableSet;
 import bgu.csp.az.api.exp.InvalidValueException;
 import bgu.csp.az.api.exp.PanicedAgentException;
+import bgu.csp.az.api.exp.RepeatedCallingException;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.tools.Assignment;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Agent is the main building block for a CP algorithms, it includes the algorithms
@@ -50,12 +51,13 @@ public abstract class Agent extends Agt0DSL {
     public static final String SYS_TERMINATION_MESSAGE = "__TERMINATE__";
     private int id; //The Agent ID
     private Execution exec; //The Execution That This Agent Is Currently Running Within
-    private LinkedBlockingDeque<Message> mailbox; //This Agent Mailbox
+    private BlockingQueue<Message> mailbox; //This Agent Mailbox
     private Problem prob; // The Agent Local Problem
     private boolean finished = false; //The Status of the current Agent - TODO: TRANSFORM INTO A STATUS ENUM SO WE CAN BE ABLE TO QUERY THE AGENT ABOUT IT CURRENT STATUS
     private Message currentMessage = null; //The Current Message (The Last Message That was taken from the mailbox
     private Message peekedMessage; // when peeking a message it will get to here so that next time you will request a message this is the message that you will get
     private PlatformOps pops;
+    private String mailGroupKey = getClass().getName(); // The Mail Group Key  - when sending mail the mail will get only to the relevant group
     /*
      * S T A T I S T I C S
      */
@@ -78,11 +80,9 @@ public abstract class Agent extends Agt0DSL {
     public Agent() {
         this.id = -1;
         this.exec = null;
-        this.mailbox = new LinkedBlockingDeque<Message>();
         beforeMessageSentHooks = new LinkedList<Hooks.BeforeMessageSentHook>();
         beforeMessageProcessingHooks = new LinkedList<Hooks.BeforeMessageProcessingHook>();
         this.pops = new PlatformOps();
-
     }
 
     /**
@@ -96,7 +96,7 @@ public abstract class Agent extends Agt0DSL {
      * @return 
      */
     protected Message createMessage(String name, Object[] args) {
-        SimpleMessage ret = new SimpleMessage(name, getId(), args);
+        Message ret = new Message(name, getId(), args);
         ret.getMetadata().put("nccc", nccc);
         ret.getMetadata().put("ncsc", ncsc);
         for (BeforeMessageSentHook hook : beforeMessageSentHooks) {
@@ -111,7 +111,7 @@ public abstract class Agent extends Agt0DSL {
      * this is a great place to write logs, attach timestamps to the message etc.
      * @param m
      */
-    protected void beforeMessageSending(SimpleMessage m) {
+    protected void beforeMessageSending(Message m) {
         //do nothing - derived classes can implement this if they want
     }
 
@@ -287,12 +287,12 @@ public abstract class Agent extends Agt0DSL {
     protected void finishWithNoSolution() {
         finish(null);
     }
-    
+
     /**
      * will collect all the partial assignments that got submited (from all the agents) into an assignment 'a' and 
      * then will act as if you called to finish(a) :- see finish(Assignment) for more details.
      */
-    protected void finishWithAccumulationOfSubmitedPartialAssignments(){
+    protected void finishWithAccumulationOfSubmitedPartialAssignments() {
         finish(pops.getExecution().getPartialResult().getAssignment());
     }
 
@@ -333,7 +333,7 @@ public abstract class Agent extends Agt0DSL {
             partialAssignment.unassign(this);
         }
     }
-    
+
     /**
      * @return the last submitted assignment
      * will throw InvalideValueException if called before ever call submitCurrentAssignment
@@ -480,7 +480,25 @@ public abstract class Agent extends Agt0DSL {
      */
     public void broadcast(String msg, Object... args) {
         final Execution execution = PlatformOperationsExtractor.extract(this).getExecution();
-        execution.getMailer().broadcast(createMessage(msg, args));
+        execution.getMailer().broadcast(createMessage(msg, args), mailGroupKey);
+    }
+
+    /**
+     * sends a new message 
+     * the message should have a name and any number of arguments
+     * the message will be sent received by an agent in the method that 
+     * defines @WhenReceived with the name of the message (case sensitive!)
+     * and the arguments will be inserted to the parameters of that method
+     * 
+     * usage: send("MESSAGE_NAME", ARG1, ARG2, ..., ARGn).to(OTHER_AGENT_ID)
+     * 
+     * @param msg the message name
+     * @param args the list (variadic) of arguments that belongs to this message
+     * @return continuation class 
+     */
+    public SendbleObject send(String msg, Object... args) {
+        final Execution execution = pops.getExecution();
+        return new SendbleObject(createMessage(msg, args), execution.getMailer(), execution.getGlobalProblem(), mailGroupKey);
     }
 
     /**
@@ -494,14 +512,8 @@ public abstract class Agent extends Agt0DSL {
      */
     public class PlatformOps {
 
-        /**
-         * add a message to this agent mailbox
-         * @param msg
-         */
-        public void receive(Message msg) {
-            mailbox.addLast(msg);
-        }
-
+        private int numberOfSetIdCalls = 0;
+        
         /**
          * attach an execution to this agent - this execution need to already contains global problem 
          * as this is the step that it being taken
@@ -516,10 +528,17 @@ public abstract class Agent extends Agt0DSL {
         /**
          * set the agent id - this method is called by the execution environment 
          * to set the agent id and should not be called by hand / by an algorithm implementer
+         * this function should only be called once and will throw Repeated Calling Exception upon repeated calls.
          * @param id 
          */
         public void setId(int id) {
+            numberOfSetIdCalls++;
+            if (numberOfSetIdCalls != 1){
+                throw new RepeatedCallingException("you can only call setId once.");
+            }
+            
             Agent.this.id = id;
+            mailbox = getExecution().getMailer().register(Agent.this, mailGroupKey);
         }
 
         /**
@@ -529,6 +548,10 @@ public abstract class Agent extends Agt0DSL {
          */
         public Execution getExecution() {
             return exec;
+        }
+        
+        public String getMailGroupKey(){
+            return mailGroupKey;
         }
     }
 

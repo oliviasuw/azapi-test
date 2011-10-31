@@ -18,11 +18,13 @@ public class SendbleObject {
     private Message msg;
     private Mailer mailer;
     private Problem curp;
+    private String agentGroupKey;
 
-    public SendbleObject(Message msg, Mailer mailer, Problem curp) {
+    public SendbleObject(Message msg, Mailer mailer, Problem curp, String agentGroupKey) {
         this.msg = msg;
         this.mailer = mailer;
         this.curp = curp;
+        this.agentGroupKey = agentGroupKey;
     }
 
     /**
@@ -31,7 +33,7 @@ public class SendbleObject {
      */
     public void to(int... agents) {
         for (int a : agents) {
-            mailer.send(msg, a);
+            mailer.send(msg, a, agentGroupKey);
         }
     }
 

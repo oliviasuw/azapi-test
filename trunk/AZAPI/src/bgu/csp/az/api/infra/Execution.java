@@ -4,6 +4,8 @@
  */
 package bgu.csp.az.api.infra;
 
+import bgu.csp.az.api.Agent;
+import bgu.csp.az.api.AgentRunner;
 import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.Statistic;
@@ -33,6 +35,8 @@ public interface Execution extends Process {
     ExecutionResult getResult();
     
     ExecutionResult getPartialResult();
+    
+    AgentRunner getAgentRunnerFor(Agent a);
 
     /**
      * @return the statistics tree - a tree contains statistics about this execution
@@ -59,7 +63,7 @@ public interface Execution extends Process {
 
     void reportFinalAssignment(Assignment answer);
     
-    void swapPartialAssignmentToFullAssignment();
+    void swapPartialAssignmentWithFullAssignment();
     
     /**
      * will stop the execution - interupting all the agent runners!

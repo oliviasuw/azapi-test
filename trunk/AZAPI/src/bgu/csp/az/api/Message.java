@@ -1,6 +1,5 @@
 package bgu.csp.az.api;
 
-import bgu.csp.az.api.ds.NonBlockingCounter;
 import bgu.csp.az.utils.DeepCopyUtil;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -17,14 +16,19 @@ public class Message implements Serializable {
      * a temporary flag this flag will get deprecated after all the algorithms will be transformed to work with deep copy
      */
     public static boolean USE_DEEP_COPY = true;
+    
     /**
-     * optional flag -> means that this message is descided to be discarded (the agent should ignore it..)
+     * the message not contains the recepient in its fields this field is a metadata of the message 
+     * and it is accessable via this key
      */
-    public static final int DISCARDED = 1;
+    public static final String RECEPIENT_METADATA = "RECEPIENT";
+    
     /**
-     * optional flag -> means that this message is irelevant (most of the time because its time stamp is too old)
+     * TODO - > it will be faster if it is a field or an argument to the mailer.. 
      */
-    public static final int OLD = 2;
+    public static final String RECEPIENT_TYPE_METADATA = "RECEPIENT TYPE";
+    
+    
     private String name; //the message name (= type)
     private int from; //the sender of the message
     /**
@@ -33,34 +37,55 @@ public class Message implements Serializable {
      * think about it at the content on the envelop of the message - you may want to write the timestamp there etc.
      */
     protected Map<String, Object> metadata;
+
     /**
-     * the collection of flags this message flagged with (bitmap)
+     * collection of the message arguments 
+     * the arguments are unnamed -> TODO: FIGUREOUT A WAY TO NAME THEM FOR DEBUGGING PORPUSE -> MAYBE COMPILE TIME PROCESSING USING APT.. 
      */
-    protected int flag;
+    protected Object[] args;
 
     /**
      * @param name the message name / type
      * @param from the agent sending this message
      */
-    public Message(String name, int from) {
+    public Message(String name, int from, Object[] args) {
         this.name = name;
         this.from = from;
         this.metadata = new HashMap<String, Object>();
+        this.args = args;
     }
 
     /**
-     * remark: if the use deep copy static variable is false then this function return this message unchanged.
-     * @return a deep copy of this message.
+     * @return the arguments of this message
      */
-    public Message copy() {
-        if (!USE_DEEP_COPY) {
-            return this;
-        }
-
-        Message athis = DeepCopyUtil.deepCopy(this);
-        return athis;
+    public Object[] getArgs() {
+        return args;
     }
 
+    public Message copy() {
+        Object[] cargs = new Object[this.args.length]; 
+        for (int i=0; i<args.length; i++){
+            Object a = args[i];
+            if (a instanceof DeepCopyable){
+                cargs[i] = ((DeepCopyable)a).deepCopy();
+            }else {
+                cargs[i] = DeepCopyUtil.deepCopy(a);
+            }
+        }
+        Message ret = new Message(getName(), getSender(), cargs);
+        ret.metadata = new HashMap<String, Object> (metadata);
+        return ret;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Object a : args){
+            sb.append(a.toString()).append(", ");
+        }
+        return "[" + getName() + (args.length > 0? ": " + sb.deleteCharAt(sb.length()-2).toString() + "]" : "]");
+    }
+    
     /**
      * @return the name of this message (can be reffered as type)
      */
@@ -98,27 +123,4 @@ public class Message implements Serializable {
         this.name = name;
     }
 
-    /**
-     * flag this message with the given flag - available flags are static variables of this class.
-     * @param flag 
-     */
-    public void flag(int flag) {
-        this.flag |= flag;
-    }
-
-    /**
-     * remove the flag from the message flag collection
-     * @param flag 
-     */
-    public void unFlag(int flag) {
-        this.flag &= ~flag;
-    }
-
-    /**
-     * @param flag
-     * @return true if the message is flagged with the given flag.
-     */
-    public boolean isFlaged(int flag) {
-        return (this.flag & flag) != 0;
-    }
 }

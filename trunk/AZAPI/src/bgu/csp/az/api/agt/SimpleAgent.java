@@ -44,7 +44,7 @@ public abstract class SimpleAgent extends Agent {
         Message msgcpy;
 
         msgcpy = DeepCopyUtil.deepCopy(msg);//msg.copy();
-        SimpleMessage smsg = (SimpleMessage) msg;
+        Message smsg = (Message) msg;
 
         for (BeforeMessageProcessingHook hook : beforeMessageProcessingHooks) {
             hook.hook(smsg);
@@ -73,34 +73,13 @@ public abstract class SimpleAgent extends Agent {
     }
 
     /**
-     * sends a new message 
-     * the message should have a name and any number of arguments
-     * the message will be sent received by an agent in the method that 
-     * defines @WhenReceived with the name of the message (case sensitive!)
-     * and the arguments will be inserted to the parameters of that method
-     * 
-     * usage: send("MESSAGE_NAME", ARG1, ARG2, ..., ARGn).to(OTHER_AGENT_ID)
-     * 
-     * @param msg the message name
-     * @param args the list (variadic) of arguments that belongs to this message
-     * @return continuation class 
-     */
-    public SendbleObject send(String msg, Object... args) {
-        final Execution execution = PlatformOperationsExtractor.extract(this).getExecution();
-        return new SendbleObject(createMessage(msg, args), execution.getMailer(), execution.getGlobalProblem());
-    }
-
-    /**
      * you can override this method to perform preprocessing before messages arrive to their functions
      * you can change the message or even return completly other one - if you will return null 
      * the message is rejected and dumped.
      * @param msg
      * @return 
      */
-    protected SimpleMessage beforeMessageProcessing(SimpleMessage msg) {
-        if (msg.isFlaged(Message.DISCARDED)) {
-            return null;
-        }
+    protected Message beforeMessageProcessing(Message msg) {
         return msg;
     }
     

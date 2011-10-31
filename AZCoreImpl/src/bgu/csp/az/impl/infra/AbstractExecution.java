@@ -1,5 +1,6 @@
 package bgu.csp.az.impl.infra;
 
+import bgu.csp.az.api.AgentRunner;
 import bgu.csp.az.api.Algorithm;
 import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.Problem;
@@ -28,6 +29,7 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
     private Mailer mailer;
     private boolean shuttingdown; //this variable is used to check that the execution is doing the process of shuting down only once.
     private ExecutionResult result = new ExecutionResult();
+    private ExecutionResult partialResult = new ExecutionResult();
     private Map<String, Object> parameterValues;
     private Algorithm alg;
     private IdleDetector idet;
@@ -144,16 +146,34 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
         this.alg = alg;
     }
 
+    
+    /**
+     * ugly synchronization - replace with semaphore..
+     * @param var
+     * @param val 
+     */
     @Override
-    public void reportPartialAssignment(int var, int val) {
-        if (result.getFinalAssignment() == null) {
-            result = new ExecutionResult(new Assignment());
+    public synchronized void reportPartialAssignment(int var, int val) {
+        if (partialResult.getAssignment() == null) {
+            partialResult = new ExecutionResult(new Assignment());
         }
-        result.getFinalAssignment().assign(var, val);
+        partialResult.getAssignment().assign(var, val);
     }
+    
 
     @Override
     public Object getParameterValue(String name) {
         return parameterValues.get(name);
     }
+
+    @Override
+    public ExecutionResult getPartialResult() {
+        return partialResult;
+    }
+
+    @Override
+    public void swapPartialAssignmentWithFullAssignment() {
+        result = partialResult.deepCopy();
+    }
+    
 }

@@ -6,12 +6,12 @@ package bgu.csp.az.dev.frm;
 
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.Agent.PlatformOps;
+import bgu.csp.az.api.AgentRunner;
 import bgu.csp.az.impl.infra.AbstractExecution;
-import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.agt.SimpleAgent;
-import bgu.csp.az.dev.Agent0Tester;
 import bgu.csp.az.dev.slog.ScenarioLogger;
+import bgu.csp.az.impl.DefaultAgentRunner;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
@@ -27,10 +27,11 @@ import java.util.logging.Logger;
  */
 public class TestExecution extends AbstractExecution {
 
-    ExecutorService exec;
+    private ExecutorService exec;
     private long mstart;
     private ScenarioLogger logger;
-    LinkedList<LogListner> logListners = new LinkedList<LogListner>();
+    private LinkedList<LogListner> logListners = new LinkedList<LogListner>();
+    private AgentRunner[] runners;
 
     /**
      * 
@@ -67,8 +68,9 @@ public class TestExecution extends AbstractExecution {
             }
 
             mstart = new Date().getTime();
-            Agent[] agents = new Agent[getGlobalProblem().getNumberOfVariables()];
-            Mailer tmailer = getMailer();
+            final int numberOfVariables = getGlobalProblem().getNumberOfVariables();
+            Agent[] agents = new Agent[numberOfVariables];
+            runners = new AgentRunner[numberOfVariables];
             PlatformOps apops;
 
             try {
@@ -77,7 +79,7 @@ public class TestExecution extends AbstractExecution {
                     apops = Agent.PlatformOperationsExtractor.extract(agents[i]);
                     apops.setExecution(this);
                     apops.setId(i);
-                    tmailer.register(agents[i]);
+                    runners[i] = new DefaultAgentRunner(agents[i], this);
                 }
             } catch (InstantiationException ex) {
                 Logger.getLogger(TestExecution.class.getName()).log(Level.SEVERE, "every agent must have empty constractor", ex);
@@ -93,13 +95,13 @@ public class TestExecution extends AbstractExecution {
             while (true) {
                 exec = Executors.newFixedThreadPool(getGlobalProblem().getNumberOfVariables());
                 try {
-                    for (Agent a : agents) {
-                        System.out.println("Executing Agent: " + a.getId());
-                        exec.execute(new TestAgentRunner((SimpleAgent) a, this));
+                    for (int i = 0; i < numberOfVariables; i++) {
+                        System.out.println("Executing Agent: " + agents[i].getId());
+                        exec.execute(runners[i]);
                     }
                     break;
                 } catch (RejectedExecutionException exec) {
-                    //THIS EXCEPTION WAS BEEN THROWED PROBABLY BECAUSE WE STARTING AND KILL EXECUTORS TOO FAST
+                    //THIS EXCEPTION HAS BEEN THROWED PROBABLY BECAUSE WE STARTING AND KILL EXECUTORS TOO FAST
                     //NEXT VERSION OF AZ SHOULD CONTAIN ITS OWN THREAD POOL IMPLEMENTATION THAT ACTUALY WORK...
                     killExec();
                 }
@@ -142,6 +144,11 @@ public class TestExecution extends AbstractExecution {
     @Override
     public void stop() {
         exec.shutdownNow();
+    }
+
+    @Override
+    public AgentRunner getAgentRunnerFor(Agent a) {
+        return runners[a.getId()];
     }
 
     public static interface LogListner {

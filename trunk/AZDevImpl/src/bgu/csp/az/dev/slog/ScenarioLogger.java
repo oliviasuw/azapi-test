@@ -228,16 +228,4 @@ public class ScenarioLogger {
             Logger.getLogger(ScenarioLogger.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    public static void main(String[] args) throws SQLException {
-        TestExecution exec = new TestExecution();
-        exec.setGlobalProblem(new RandomProblemSequence(0.5f, 0.5f, 50, 20, 10, 1234, 1).next());
-        ScenarioLogger slog = new ScenarioLogger(exec, 20);
-        final File tempd = new File("temp");
-        FileUtils.delete(tempd);
-        tempd.mkdirs();
-        slog.logAgentLog(7, "whats up!");
-        slog.logScenarioPart(11, 47);
-        slog.exportToDB("temp/jdb");
-    }
 }

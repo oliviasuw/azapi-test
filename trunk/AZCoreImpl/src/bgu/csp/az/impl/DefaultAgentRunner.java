@@ -5,6 +5,9 @@ import bgu.csp.az.api.AgentRunner;
 import bgu.csp.az.api.agt.SimpleAgent;
 import bgu.csp.az.api.tools.IdleDetector;
 import bgu.csp.az.impl.infra.AbstractExecution;
+import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * this class should receive an agent and just run it simply - no schedualing what so ever..
@@ -21,28 +24,40 @@ public class DefaultAgentRunner implements AgentRunner, IdleDetector.Listener {
      * using this flag we can know that a nested agent was crushed and in response we shuld recrush..
      */
     private boolean crushed = false;
-    private boolean firstRun = true;
     private boolean useIdleDetector; //see note about using idle detector within nested agents in AgentRunner.nest
+    /**
+     * indicating the current nest level
+     */
+    private int nestLevel = 0;
+    /**
+     * used for the join method -> using a semaphore means that we are only allowing 1 joining thread, 
+     * this is the case currently but if we will want more than one - a different solution should be applied.
+     */
+    private Semaphore block = new Semaphore(1);
 
     public DefaultAgentRunner(Agent a, AbstractExecution exec) {
         this.exec = exec;
         currentExecutedAgent = a;
+        try {
+            block.acquire();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(DefaultAgentRunner.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
     public void run() {
 
-        if (firstRun) {
+        if (nestLevel == 0) {
             cthread = Thread.currentThread();
             useIdleDetector = false;
             if (exec.getIdleDetector() != null) {
                 exec.getIdleDetector().addListener(this);
                 useIdleDetector = true;
             }
-
-            firstRun = false;
         }
 
+        nestLevel++;
         try {
             //START THE AGENT
             currentExecutedAgent.start();
@@ -53,7 +68,7 @@ public class DefaultAgentRunner implements AgentRunner, IdleDetector.Listener {
                     if (useIdleDetector) {
                         if (!currentExecutedAgent.hasPendingMessages()) {
                             exec.getIdleDetector().dec();
-                            currentExecutedAgent.peekNextMessage();
+                            currentExecutedAgent.waitForNewMessages();
                             exec.getIdleDetector().inc();
                         }
                     }
@@ -80,6 +95,11 @@ public class DefaultAgentRunner implements AgentRunner, IdleDetector.Listener {
 
         } finally {
             System.out.println("Agent " + currentExecutedAgent.getId() + " Terminated.");
+            nestLevel--;
+            
+            if (nestLevel == 0){
+                block.release();
+            }
         }
     }
 
@@ -97,5 +117,10 @@ public class DefaultAgentRunner implements AgentRunner, IdleDetector.Listener {
         currentExecutedAgent = nestedAgent;
         run();
         currentExecutedAgent = backUp;
+    }
+
+    @Override
+    public void join() throws InterruptedException {
+        block.acquire();
     }
 }

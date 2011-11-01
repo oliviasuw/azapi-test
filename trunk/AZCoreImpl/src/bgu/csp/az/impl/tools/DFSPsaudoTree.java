@@ -161,8 +161,7 @@ public class DFSPsaudoTree extends NesteableTool implements PsaudoTree {
             if (parent >= 0) { // not root
                 send("SET_CHILD", seperator, descendants).to(parent);
             }
-            broadcast("DONE");
-            handleDone();
+            send("DONE").toAll(range(0, getProblem().getNumberOfVariables()-1));
         }
 
         @WhenReceived("VISIT")

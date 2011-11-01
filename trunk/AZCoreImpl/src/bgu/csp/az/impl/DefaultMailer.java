@@ -5,10 +5,8 @@
 package bgu.csp.az.impl;
 
 import bgu.csp.az.api.Agent;
-import bgu.csp.az.api.Agent.PlatformOps;
 import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.Message;
-import bgu.csp.az.api.exp.UnRegisteredAgentException;
 import bgu.csp.az.api.infra.Execution;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +43,7 @@ public class DefaultMailer implements Mailer {
         BlockingQueue<Message> q = takeQueues(groupKey)[to];
         Message mcopy = msg.copy();
         mcopy.getMetadata().put(RECEPIENT_MESSAGE_METADATA, to);
-        q.add(msg);
+        q.add(mcopy);
     }
 
     @Override

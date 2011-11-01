@@ -34,7 +34,7 @@ import org.kohsuke.args4j.Option;
  *
  * @author bennyl
  */
-public class Agent0Tester extends TestExpirement.Handler{
+public class Agent0Tester extends TestExpirement.Handler {
 
     public static TestExpirement exp;
     @Option(name = "--es", usage = "opening a [pooling] server that will transmit events in json form.")
@@ -58,13 +58,13 @@ public class Agent0Tester extends TestExpirement.Handler{
 
     public void go() throws ParsingException, IOException, MalformedURLException, ClassNotFoundException {
         System.setProperty(LocalLog.LOCAL_LOG_FILE_PROPERTY, "log.out");
-        
+
         TestExpirement expirament = null;
 
         //TYPE OF EXECUTION
         if (executionMode.equals("run")) {
             expirament = new TestExpirement(xload(test).getRootElement(), loadAlgorithm());
-            FileUtils.delete(new File(TestExpirement.TEMP_SCENARIO_LOG_DB_PATH));
+            //FileUtils.delete(new File(TestExpirement.TEMP_SCENARIO_LOG_DB_PATH));
         } else {
             if (failedProblemsDir == null && prob == null) {
                 System.out.println("Cannot use debug mode without option --sfp or --prob given");
@@ -78,14 +78,21 @@ public class Agent0Tester extends TestExpirement.Handler{
             if (selectedProblem == null) {
                 SwingDSL.configureUI();
                 ProblemSelectionModel selectPModel = selectProblemByGUI();
-                selectedProblem = selectPModel.getSelectedProblemFile() == null ? null : selectPModel.getSelectedProblem();
+
+                if (selectPModel.isDebugFullTest()) {
+                    expirament = new TestExpirement(xload(test).getRootElement(), loadAlgorithm());
+                } else {
+                    selectedProblem = selectPModel.getSelectedProblemFile() == null ? null : selectPModel.getSelectedProblem();
+                }
             }
             if (selectedProblem != null) {
                 expirament = new TestExpirement(selectedProblem, loadAlgorithm());
-            } else {
-                System.out.println("User Termination.");
-                System.exit(0);
             }
+        }
+
+        if (expirament == null) {
+            System.out.println("User Termination.");
+            System.exit(0);
         }
 
         expirament.addListener(this);
@@ -116,7 +123,7 @@ public class Agent0Tester extends TestExpirement.Handler{
     public void onExecutionEndedWithWrongResult(TestExecution execution, Assignment wrong, Assignment right) {
         handleBadEnding(execution);
     }
-    
+
     private ProblemSelectionModel selectProblemByGUI() {
         ProblemSelectionModel selectPModel = new ProblemSelectionModel(failedProblemsDir.getAbsolutePath());
         ProblemSelectionDialog diag = new ProblemSelectionDialog(null, true);

@@ -25,6 +25,8 @@ import bgu.csp.az.dev.alg.BranchAndBound;
 import bgu.csp.az.dev.alg.MACSolver;
 import bgu.csp.az.impl.DefaultMailer;
 import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import nu.xom.Element;
 import nu.xom.ParsingException;
 
@@ -63,6 +65,7 @@ public class TestExpirement extends Expirament {
     boolean saveFaildProblem = true;
     LinkedList<Listener> listeners = new LinkedList<Listener>();
     LinkedList<TestExecution.LogListner> logListeners = new LinkedList<LogListner>();
+    ExecutorService es = Executors.newCachedThreadPool();
 
     /**
      * @param metadata the test metadata - a parsed xml file contains the definitions of all the rounds.
@@ -123,7 +126,7 @@ public class TestExpirement extends Expirament {
 
     @Override
     protected AbstractExecution nextExecution() {
-        TestExecution te = new TestExecution();
+        TestExecution te = new TestExecution(es);
         te.setAlgorithm(alg);
 
         te.setLogListners(logListeners);

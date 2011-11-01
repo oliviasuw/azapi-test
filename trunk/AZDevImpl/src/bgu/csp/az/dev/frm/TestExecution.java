@@ -38,7 +38,8 @@ public class TestExecution extends AbstractExecution {
      * @param alg can be null and setted later..
      * @param prob 
      */
-    public TestExecution() {
+    public TestExecution(ExecutorService exec) {
+        this.exec = exec;
     }
 
     public void addLogListener(LogListner l) {
@@ -93,44 +94,25 @@ public class TestExecution extends AbstractExecution {
 
             System.out.println("Number Of Agents Is: " + getGlobalProblem().getNumberOfVariables());
             while (true) {
-                exec = Executors.newFixedThreadPool(getGlobalProblem().getNumberOfVariables());
-                try {
-                    for (int i = 0; i < numberOfVariables; i++) {
-                        System.out.println("Executing Agent: " + agents[i].getId());
-                        exec.execute(runners[i]);
-                    }
-                    break;
-                } catch (RejectedExecutionException exec) {
-                    //THIS EXCEPTION HAS BEEN THROWED PROBABLY BECAUSE WE STARTING AND KILL EXECUTORS TOO FAST
-                    //NEXT VERSION OF AZ SHOULD CONTAIN ITS OWN THREAD POOL IMPLEMENTATION THAT ACTUALY WORK...
-                    killExec();
+                for (int i = 0; i < numberOfVariables; i++) {
+                    System.out.println("Executing Agent: " + agents[i].getId());
+                    exec.execute(runners[i]);
                 }
+                break;
             }
 
-            exec.shutdown();
-            while (!exec.isTerminated()) {
+            for (AgentRunner runner : runners) {
                 try {
-                    exec.awaitTermination(1, TimeUnit.DAYS);
-                    getStatisticsTree().getChild("Total Running Time (ms)").setValue(new Date().getTime() - mstart);
+                    runner.join();
                 } catch (InterruptedException ex) {
                     Logger.getLogger(TestExecution.class.getName()).log(Level.SEVERE, null, ex);
                     reportCrushAndStop(ex, "interupted while waiting for all agents to finish");
                 }
             }
+
         } finally {
-            killExec();
-
+            //TODO: MEYBE FORCE AEGNT RUNNER TO DIE?
             System.out.println("Execution Ended!\n\n");
-        }
-    }
-
-    private void killExec() {
-        //KILLING THE EXECUTION QUEUE - SOMTIMES THE POOL IS STIL ACTIVE EVEN THOUGH ITS TERMINATED FLAG IS ON.. 
-        exec.shutdownNow();
-        try {
-            exec.awaitTermination(1, TimeUnit.DAYS);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(TestExecution.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

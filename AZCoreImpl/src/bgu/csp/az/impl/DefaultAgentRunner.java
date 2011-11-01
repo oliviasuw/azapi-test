@@ -105,8 +105,9 @@ public class DefaultAgentRunner implements AgentRunner, IdleDetector.Listener {
 
     @Override
     public void onIdleDetected() {
-        System.out.println("Idle Detected - Agent " + currentExecutedAgent.getId() + " Interupting.");
-        cthread.interrupt();
+        System.out.println("Idle Detected - Agent " + currentExecutedAgent.getId() + " Being Notified.");
+        currentExecutedAgent.onIdleDetected();
+        //cthread.interrupt();
     }
 
     @Override

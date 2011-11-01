@@ -34,13 +34,6 @@ public class LimitedBatchDocument extends BatchDocument{
         int toDelete = (delta>0? Math.max(delta, minDelSize): 0);
 
         this.remove(0, toDelete);
-        //System.out.println("TEST Removing " + toDelete + " from doc of size " + len + " now the length is " + getLength());
-        
-        //System.out.println("TEST Before Inserting length is " + getLength() + " adding " + getBatchSize());
     }
-    
-    
-    
-    
     
 }

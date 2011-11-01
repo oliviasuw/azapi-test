@@ -2,6 +2,7 @@ package bgu.csp.az.api;
 
 import bgu.csp.az.api.Hooks.BeforeMessageSentHook;
 import bgu.csp.az.api.agt.SendbleObject;
+import bgu.csp.az.api.ano.WhenReceived;
 import bgu.csp.az.api.ds.ImmutableSet;
 import bgu.csp.az.api.exp.InvalidValueException;
 import bgu.csp.az.api.exp.PanicedAgentException;
@@ -263,8 +264,7 @@ public abstract class Agent extends Agt0DSL {
     protected void finish(Assignment ans) {
         log("Calling Finish with assignment: " + ans + ", Starting shutdown sequence.");
         exec.reportFinalAssignment(ans);
-        broadcast(SYS_TERMINATION_MESSAGE);
-        finish();
+        send(SYS_TERMINATION_MESSAGE).toAll(range(0, getNumberOfVariables() - 1));
     }
 
     /**
@@ -487,9 +487,18 @@ public abstract class Agent extends Agt0DSL {
         final Execution execution = pops.getExecution();
         return new SendbleObject(createMessage(msg, args), execution.getMailer(), execution.getGlobalProblem(), mailGroupKey);
     }
-    
-    public void onIdleDetected(){
+
+    public void onIdleDetected() {
         throw new UnsupportedOperationException("if you are using IdleDetected feature you must implements Agent.onIdleDetected method");
+    }
+
+    /**
+     * this function called when a SYS_TERMINATION Message Arrived -> it just calls finish on the agent, 
+     * you can override it to make your own termination handling.
+     */
+    @WhenReceived(Agent.SYS_TERMINATION_MESSAGE)
+    public void handleTermination() {
+        finish();
     }
 
     /**
@@ -543,7 +552,7 @@ public abstract class Agent extends Agt0DSL {
 
         public String getMailGroupKey() {
             return mailGroupKey;
-        }        
+        }
     }
 
     /**

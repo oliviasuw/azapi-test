@@ -15,7 +15,7 @@ import java.util.concurrent.Semaphore;
 public class IdleDetector {
 
     private int version = 0;
-    private int waiting;
+    private volatile int waiting;
     private Semaphore s = new Semaphore(1);
     private Mailer m;
     private LinkedList<Listener> listeners = new LinkedList<Listener>();
@@ -42,12 +42,12 @@ public class IdleDetector {
         try {
             s.acquire();
             version++;
+            oversion = version;
             waiting--;
             s.release();
 
             
             if (waiting == 0) {
-                oversion = version;
                 if (m.isAllMailBoxesAreEmpty()) {
                     s.acquire();
                     if (oversion == version) {

@@ -38,6 +38,7 @@ public class Agt0DSL {
         for (int i = start; i <= end; i++) {
             ret.add(i);
         }
+        
         return ret;
     }
 
@@ -241,5 +242,14 @@ public class Agt0DSL {
         }
 
         return args[min];
+    }
+    
+    public static void throwUncheked(Throwable e) {
+        Agt0DSL.<RuntimeException>throwAny(e);
+    }
+   
+    @SuppressWarnings("unchecked")
+    private static <E extends Throwable> void throwAny(Throwable e) throws E {
+        throw (E)e;
     }
 }

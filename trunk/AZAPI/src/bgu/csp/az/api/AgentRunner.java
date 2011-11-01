@@ -29,4 +29,10 @@ public interface AgentRunner extends Runnable {
      * @param nestedAgent 
      */
     public void nest(int originalAgentId, SimpleAgent nestedAgent);
+    
+    /**
+     * this method will block the calling thread until this agent runner will finish it current work
+     * this method is designed to not be depended on the thread join - so that the thread can be reused (and thus not get finished)
+     */
+    public void join() throws InterruptedException;
 }

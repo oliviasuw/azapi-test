@@ -50,6 +50,7 @@ public class ProblemSelectionDialog extends javax.swing.JDialog {
         plist = new javax.swing.JList();
         jPanel7 = new javax.swing.JPanel();
         jXHyperlink2 = new org.jdesktop.swingx.JXHyperlink();
+        jXHyperlink4 = new org.jdesktop.swingx.JXHyperlink();
         jXHyperlink3 = new org.jdesktop.swingx.JXHyperlink();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -57,7 +58,7 @@ public class ProblemSelectionDialog extends javax.swing.JDialog {
         jPanel1.setBackground(new java.awt.Color(245, 245, 245));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        captionLabel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        captionLabel.setFont(new java.awt.Font("Tahoma", 1, 11));
         captionLabel.setForeground(new java.awt.Color(51, 51, 51));
         captionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/gnome-glchess.png"))); // NOI18N
         captionLabel.setText("Faild Problem Selection");
@@ -121,6 +122,18 @@ public class ProblemSelectionDialog extends javax.swing.JDialog {
         });
         jPanel7.add(jXHyperlink2);
 
+        jXHyperlink4.setBackground(new java.awt.Color(245, 245, 245));
+        jXHyperlink4.setForeground(new java.awt.Color(0, 51, 204));
+        jXHyperlink4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/full-run.png"))); // NOI18N
+        jXHyperlink4.setText("Debug full test file");
+        jXHyperlink4.setClickedColor(new java.awt.Color(0, 51, 204));
+        jXHyperlink4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jXHyperlink4ActionPerformed(evt);
+            }
+        });
+        jPanel7.add(jXHyperlink4);
+
         jXHyperlink3.setForeground(new java.awt.Color(0, 51, 204));
         jXHyperlink3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/cross-circle.png"))); // NOI18N
         jXHyperlink3.setText("Cancel");
@@ -150,6 +163,11 @@ public class ProblemSelectionDialog extends javax.swing.JDialog {
         model.setSelectedProblemFile((File)plist.getSelectedValue());
     }//GEN-LAST:event_plistValueChanged
 
+    private void jXHyperlink4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink4ActionPerformed
+        model.setDebugFullTest(true);
+        setVisible(false);
+    }//GEN-LAST:event_jXHyperlink4ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -177,6 +195,7 @@ public class ProblemSelectionDialog extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane1;
     private org.jdesktop.swingx.JXHyperlink jXHyperlink2;
     private org.jdesktop.swingx.JXHyperlink jXHyperlink3;
+    private org.jdesktop.swingx.JXHyperlink jXHyperlink4;
     private org.jdesktop.swingx.painter.MattePainter mattePainter1;
     private javax.swing.JList plist;
     // End of variables declaration//GEN-END:variables

@@ -58,7 +58,8 @@ public class StatisticNode extends Node {
             try {
                 myChildI.next().addStatisticRoot(child);
             } catch (NoSuchElementException exe) {
-                exe.printStackTrace();
+                System.err.println("StatisticNode Calculation Got Exception, TODO - figure out why...");
+//                exe.printStackTrace();
                 //TODO WHY????
             }
         }

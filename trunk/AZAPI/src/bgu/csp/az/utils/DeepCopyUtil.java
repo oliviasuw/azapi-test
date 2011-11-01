@@ -4,6 +4,7 @@
  */
 package bgu.csp.az.utils;
 
+import bgu.csp.az.api.Agt0DSL;
 import com.ajexperience.utils.DeepCopyException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,8 +39,8 @@ public class DeepCopyUtil {
         try {
             return dcu.deepCopy(orig);//cloner.deepClone(orig);
         } catch (DeepCopyException ex) {
-            Logger.getLogger(DeepCopyUtil.class.getName()).log(Level.SEVERE, null, ex);
-            return orig;
+            Agt0DSL.throwUncheked(ex);
+            return null; //SHOULD NEVER HAPPENED...
         }
     }
 }

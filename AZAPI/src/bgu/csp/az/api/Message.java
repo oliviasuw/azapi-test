@@ -1,5 +1,6 @@
 package bgu.csp.az.api;
 
+import bgu.csp.az.api.exp.DeepCopyFailedException;
 import bgu.csp.az.utils.DeepCopyUtil;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -64,14 +65,26 @@ public class Message implements Serializable {
 
     public Message copy() {
         Object[] cargs = new Object[this.args.length]; 
+        
         for (int i=0; i<args.length; i++){
             Object a = args[i];
             if (a instanceof DeepCopyable){
                 cargs[i] = ((DeepCopyable)a).deepCopy();
             }else {
+                try{
                 cargs[i] = DeepCopyUtil.deepCopy(a);
+                }catch(Exception ex){
+                    if (ex instanceof InterruptedException){
+                        Thread.currentThread().interrupt();
+                        Agt0DSL.throwUncheked(ex);
+                    }else {
+                        throw new DeepCopyFailedException("Cannot figure out how to deep copy " + cargs[i].getClass().getName() + " class please implement the DeepCopyable interface on this class.", ex);
+                    }
+                }
             }
         }
+        
+        
         Message ret = new Message(getName(), getSender(), cargs);
         ret.metadata = new HashMap<String, Object> (metadata);
         return ret;

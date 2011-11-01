@@ -10,8 +10,6 @@ import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.tools.Assignment;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.Semaphore;
 
 /**
  * Agent is the main building block for a CP algorithms, it includes the algorithms
@@ -56,8 +54,7 @@ public abstract class Agent extends Agt0DSL {
     private Problem prob; // The Agent Local Problem
     private boolean finished = false; //The Status of the current Agent - TODO: TRANSFORM INTO A STATUS ENUM SO WE CAN BE ABLE TO QUERY THE AGENT ABOUT IT CURRENT STATUS
     private Message currentMessage = null; //The Current Message (The Last Message That was taken from the mailbox
-    //private Message peekedMessage; // when peeking a message it will get to here so that next time you will request a message this is the message that you will get
-    private PlatformOps pops;
+    private PlatformOps pops; //Hidden Platform Operation 
     private String mailGroupKey = getClass().getName(); // The Mail Group Key  - when sending mail the mail will get only to the relevant group
     /*
      * S T A T I S T I C S
@@ -490,6 +487,10 @@ public abstract class Agent extends Agt0DSL {
         final Execution execution = pops.getExecution();
         return new SendbleObject(createMessage(msg, args), execution.getMailer(), execution.getGlobalProblem(), mailGroupKey);
     }
+    
+    public void onIdleDetected(){
+        throw new UnsupportedOperationException("if you are using IdleDetected feature you must implements Agent.onIdleDetected method");
+    }
 
     /**
      * this class contains all the "hidden but public" methods,
@@ -542,7 +543,7 @@ public abstract class Agent extends Agt0DSL {
 
         public String getMailGroupKey() {
             return mailGroupKey;
-        }
+        }        
     }
 
     /**

@@ -31,6 +31,10 @@ public class DeepCopyUtil {
      * @return deep copy of orig using a generic deep copy framework
      */
     public static <T> T deepCopy(T orig){
+        if (orig instanceof Enum || orig instanceof Throwable){
+            return orig;
+        }
+        
         try {
             return dcu.deepCopy(orig);//cloner.deepClone(orig);
         } catch (DeepCopyException ex) {

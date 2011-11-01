@@ -4,14 +4,12 @@ import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.Message;
 import bgu.csp.az.api.Hooks.BeforeMessageProcessingHook;
 import bgu.csp.az.api.ano.WhenReceived;
-import bgu.csp.az.api.infra.Execution;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
 import bgu.csp.az.api.exp.InternalErrorException;
 import bgu.csp.az.api.exp.UnsupportedMessageException;
-import bgu.csp.az.utils.DeepCopyUtil;
 
 /**
  * SimpleAgent is an agent that uses annotations instead of multiple message objects and manages a major parts of the algorithm tasks by its own. 
@@ -78,14 +76,6 @@ public abstract class SimpleAgent extends Agent {
         return msg;
     }
     
-    /**
-     * this function called when a SYS_TERMINATION Message Arrived -> it just calls finish on the agent, 
-     * you can override it to make your own termination handling.
-     */
-    @WhenReceived(Agent.SYS_TERMINATION_MESSAGE)
-    public void handleTermination(){
-        finish();
-    }
 
 
 }

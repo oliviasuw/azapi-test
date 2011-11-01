@@ -3,6 +3,7 @@ package bgu.csp.az.api.agt;
 import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.Message;
 import bgu.csp.az.api.Problem;
+import bgu.csp.az.api.exp.UnRegisteredAgentException;
 import java.util.Collection;
 
 /**
@@ -33,8 +34,13 @@ public class SendbleObject {
      */
     public void to(int... agents) {
         for (int a : agents) {
-            mailer.send(msg, a, agentGroupKey);
+            try {
+                mailer.send(msg, a, agentGroupKey);
+            } catch (IndexOutOfBoundsException ex) {
+                throw new UnRegisteredAgentException("the agent with the id " + a + " is not registered (" + agentGroupKey + ")", ex);
+            }
         }
+
     }
 
     /**

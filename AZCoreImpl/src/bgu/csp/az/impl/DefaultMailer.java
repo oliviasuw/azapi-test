@@ -7,6 +7,7 @@ package bgu.csp.az.impl;
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.Message;
+import bgu.csp.az.api.MessageQueue;
 import bgu.csp.az.api.infra.Execution;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,14 +23,14 @@ public class DefaultMailer implements Mailer {
 
     public static final String RECEPIENT_MESSAGE_METADATA = "DefaultMailer.RECEPIENT_MESSAGE_METADATA";
     private final Execution exec;
-    private Map<String, NotGenericMessageQueue[]> mailBoxes = new HashMap<String, NotGenericMessageQueue[]>();
+    private Map<String, MessageQueue[]> mailBoxes = new HashMap<String, MessageQueue[]>();
 
     public DefaultMailer(Execution exec) {
         this.exec = exec;
     }
 
     @Override
-    public BlockingQueue<Message> register(Agent agent, String groupKey) {
+    public MessageQueue register(Agent agent, String groupKey) {
         return takeQueues(groupKey)[agent.getId()];
     }
 
@@ -40,7 +41,7 @@ public class DefaultMailer implements Mailer {
 
     @Override
     public void send(Message msg, int to, String groupKey) {
-        BlockingQueue<Message> q = takeQueues(groupKey)[to];
+        MessageQueue q = takeQueues(groupKey)[to];
         Message mcopy = msg.copy();
         mcopy.getMetadata().put(RECEPIENT_MESSAGE_METADATA, to);
         q.add(mcopy);
@@ -58,10 +59,10 @@ public class DefaultMailer implements Mailer {
 
     @Override
     public void unRegister(int id, String groupKey) {
-        BlockingQueue<Message>[] qs = takeQueues(groupKey);
+        MessageQueue[] qs = takeQueues(groupKey);
         qs[id] = null;
         
-        for (BlockingQueue<Message> q : qs){
+        for (MessageQueue q : qs){
             if (q != null) return;
         }
         
@@ -70,33 +71,26 @@ public class DefaultMailer implements Mailer {
 
     @Override
     public boolean isAllMailBoxesAreEmpty() {
-        for (Entry<String, NotGenericMessageQueue[]> e : mailBoxes.entrySet()){
-            for (NotGenericMessageQueue q : e.getValue()){
-                if (!q.isEmpty()) return false;
+        for (Entry<String, MessageQueue[]> e : mailBoxes.entrySet()){
+            for (MessageQueue q : e.getValue()){
+                if (q.size() > 0) return false;
             }
         }
 
         return true;
     }
 
-    private BlockingQueue<Message>[] takeQueues(String groupKey) {
-        NotGenericMessageQueue[] qs = mailBoxes.get(groupKey);
+    private MessageQueue[] takeQueues(String groupKey) {
+        MessageQueue[] qs = mailBoxes.get(groupKey);
         if (qs == null) {
             final int numberOfVariables = exec.getGlobalProblem().getNumberOfVariables();
-            qs = new NotGenericMessageQueue[numberOfVariables];
+            qs = new MessageQueue[numberOfVariables];
             for (int i = 0; i < numberOfVariables; i++) {
-                qs[i] = new NotGenericMessageQueue();
+                qs[i] = new MessageQueue();
             }
             mailBoxes.put(groupKey, qs);
         }
 
         return qs;
-    }
-
-    /**
-     * this class is intended for handling with the java generics type erasure 
-     * in order to let us use arrays of queues instaed of complex much slower data stractures..
-     */
-    private static class NotGenericMessageQueue extends LinkedBlockingQueue<Message> {
     }
 }

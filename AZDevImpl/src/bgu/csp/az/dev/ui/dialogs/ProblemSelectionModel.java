@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 public class ProblemSelectionModel {
     GenericListModel<File> problemsModel;
     File selectedProblem;
+    boolean debugFullTest = false;
 
     public ProblemSelectionModel(String problemPath) {
         problemsModel = new GenericListModel<File>();
@@ -29,6 +30,14 @@ public class ProblemSelectionModel {
                 problemsModel.addLast(f);
             }
         }
+    }
+
+    public boolean isDebugFullTest() {
+        return debugFullTest;
+    }
+
+    public void setDebugFullTest(boolean debugFullTest) {
+        this.debugFullTest = debugFullTest;
     }
 
     public GenericListModel<File> getProblemsModel() {

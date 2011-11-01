@@ -171,7 +171,7 @@ public abstract class Agent extends Agt0DSL {
      * @throws InterruptedException
      * @return the processed message
      */
-    public abstract Message processNextMessage() throws InterruptedException;
+    public abstract void processNextMessage() throws InterruptedException;
 
     /**
      * @return true if this agent have messages in its mailbox

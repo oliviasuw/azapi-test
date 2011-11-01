@@ -39,36 +39,31 @@ public abstract class SimpleAgent extends Agent {
     }
 
     @Override
-    public Message processNextMessage() throws InterruptedException {
+    public void processNextMessage() throws InterruptedException {
         Message msg = nextMessage();
-        Message msgcpy;
-
-        msgcpy = DeepCopyUtil.deepCopy(msg);//msg.copy();
-        Message smsg = (Message) msg;
-
         for (BeforeMessageProcessingHook hook : beforeMessageProcessingHooks) {
-            hook.hook(smsg);
+            hook.hook(msg);
         }
-        smsg = beforeMessageProcessing(smsg);
-        if (smsg == null) {
-            return msgcpy; //DUMPING MESSAGE..
+        msg = beforeMessageProcessing(msg);
+        if (msg == null) {
+            return; //DUMPING MESSAGE..
         }
-        Method mtd = msgToMethod.get(smsg.getName());
+        Method mtd = msgToMethod.get(msg.getName());
         if (mtd == null) {
-            throw new UnsupportedMessageException("no method to handle message: '" + smsg.getName() + "' was found (use @WhenReceived on PUBLIC functions only)");
+            throw new UnsupportedMessageException("no method to handle message: '" + msg.getName() + "' was found (use @WhenReceived on PUBLIC functions only)");
         }
         try {
-            mtd.invoke(this, smsg.getArgs());
-            return msgcpy;
+            mtd.invoke(this, msg.getArgs());
+            return;
         } catch (IllegalArgumentException e) {
             //e.printStackTrace();
-            throw new UnsupportedMessageException("wrong parameters passed with the message " + smsg.getName());
+            throw new UnsupportedMessageException("wrong parameters passed with the message " + msg.getName());
         } catch (IllegalAccessException e) {
             //e.printStackTrace();
-            throw new InternalErrorException("internal error while processing message: '" + smsg.getName() + "' in agent " + getId(), e);
+            throw new InternalErrorException("internal error while processing message: '" + msg.getName() + "' in agent " + getId(), e);
         } catch (InvocationTargetException e) {
             //e.printStackTrace();
-            throw new InternalErrorException("internal error while processing message: '" + smsg.getName() + "' in agent " + getId() + ": " + e.getCause().getMessage() + " (see cause)", e.getCause());
+            throw new InternalErrorException("internal error while processing message: '" + msg.getName() + "' in agent " + getId() + ": " + e.getCause().getMessage() + " (see cause)", e.getCause());
         }
     }
 

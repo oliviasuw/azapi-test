@@ -19,6 +19,8 @@ public class BatchDocument extends DefaultStyledDocument {
      */
     private static final char[] EOL_ARRAY = {'\n'};
     private int batchSize = 0;
+    private boolean start = false;
+    
     /**
      * Batched ElementSpecs
      */
@@ -50,12 +52,38 @@ public class BatchDocument extends DefaultStyledDocument {
 
     }
     
+    public synchronized void appendBatchString(String str,
+            AttributeSet a){
+        
+        
+        if (str.isEmpty()) return;
+        
+        
+        
+        int idx = -1;
+        while (!str.isEmpty()) {
+            idx = str.indexOf("\n");
+            if (idx >= 0){
+                String line = str.substring(0, idx);
+                _appendBatchString(line, a);
+                appendBatchLineFeed(null);
+                str = str.substring(idx+1);
+            }else {
+                _appendBatchString(str, a);
+                str = "";
+            }
+        }
+        
+    }
+            
+            
     /**
      * Adds a String (assumed to not contain linefeeds) for
      * later batch insertion.
      */
-    public synchronized void appendBatchString(String str,
+    protected synchronized void _appendBatchString(String str,
             AttributeSet a) {
+        
         // We could synchronize this if multiple threads
         // would be in here. Since we're trying to boost speed,
         // we'll leave it off for now.
@@ -63,6 +91,7 @@ public class BatchDocument extends DefaultStyledDocument {
         // Make a copy of the attributes, since we will hang onto
         // them indefinitely and the caller might change them
         // before they are processed.
+        
         a = a == null ? a : a.copyAttributes();
         char[] chars = str.toCharArray();
         batch.add(new ElementSpec(
@@ -80,8 +109,8 @@ public class BatchDocument extends DefaultStyledDocument {
         // isn't synchronized.
 
         // Add a spec with the linefeed characters
-        batch.add(new ElementSpec(
-                a, ElementSpec.ContentType, EOL_ARRAY, 0, 1));
+        batch.add(new ElementSpec(a, ElementSpec.ContentType, EOL_ARRAY, 0, 1));
+        
 
         // Then add attributes for element start/end tags. Ideally
         // we'd get the attributes for the current position, but we
@@ -103,7 +132,7 @@ public class BatchDocument extends DefaultStyledDocument {
         // there was a chance multiple threads would be in here.
         //ElementSpec[] inserts = new ElementSpec[batch.size()];
         //batch.toArray(inserts);
-
+        this.appendBatchLineFeed(null);
         ArrayList<ElementSpec> l = new ArrayList<ElementSpec>(100);
         batchSize = 0;
         batch.drainTo(l);

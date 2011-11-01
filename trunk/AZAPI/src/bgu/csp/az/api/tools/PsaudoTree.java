@@ -32,7 +32,6 @@ public interface PsaudoTree {
     
     public int getDepth();
 
-    public void calculate(Agent a, RootSelectionAlgorithm rsa);
 
     /**
      * the separator of xi: the set of ancestors of xi which are directly connected

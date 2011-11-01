@@ -29,7 +29,10 @@ public class Assignment implements Serializable, DeepCopyable{
     }
 
     private Assignment(Assignment a) {
-        this.assignment = new HashMap<Integer, Integer>(a.assignment);
+        this.assignment = new HashMap<Integer, Integer>();
+        for (Entry<Integer, Integer> e : a.assignment.entrySet()){
+            this.assignment.put(e.getKey(), e.getValue());
+        }
     }
 
     /**

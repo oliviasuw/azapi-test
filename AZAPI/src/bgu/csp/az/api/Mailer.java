@@ -1,7 +1,7 @@
 package bgu.csp.az.api;
 
 import bgu.csp.az.api.exp.UnRegisteredAgentException;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * This is a familiar concept, an Interface for designing mailers – the mailer is attached to the Execution object – what means that you should be able to attach different mailers to test the algorithm with (some mailers can help with producing algorithm visualization and some can be used for debugging).
@@ -14,7 +14,7 @@ public interface Mailer {
      * the mailbox can only send messages to registered agents 
      * @param agent
      */
-    BlockingQueue<Message> register(Agent agent, String groupKey);
+    MessageQueue register(Agent agent, String groupKey);
 
     /**
      * remove all registered agents 

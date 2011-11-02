@@ -69,6 +69,11 @@ public class DefaultAgentRunner implements AgentRunner, IdleDetector.Listener {
             //PROCESS MESSAGE LOOP
             try {
                 while (!currentExecutedAgent.isFinished() && !Thread.currentThread().isInterrupted() && !crushed) {
+
+                    if (!currentExecutedAgent.hasPendingMessages()) {
+                        onCurrentExecutedAgentOutOfMessages();
+                    }
+
                     if (useIdleDetector && nestLevel == 1) {
                         if (!currentExecutedAgent.hasPendingMessages()) {
                             exec.getIdleDetector().dec();
@@ -130,5 +135,11 @@ public class DefaultAgentRunner implements AgentRunner, IdleDetector.Listener {
     @Override
     public void join() throws InterruptedException {
         block.acquire();
+    }
+
+    /**
+     * designmed to be override by derrived classes like LocalSearchAgentRunner
+     */
+    protected void onCurrentExecutedAgentOutOfMessages() {
     }
 }

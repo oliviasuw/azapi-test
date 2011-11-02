@@ -1,7 +1,9 @@
 package bgu.csp.az.impl.infra;
 
+import bgu.csp.az.api.Agent;
+import bgu.csp.az.api.Agent.PlatformOps;
 import bgu.csp.az.api.AgentRunner;
-import bgu.csp.az.api.Algorithm;
+import bgu.csp.az.api.AlgorithmMetadata;
 import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.Statistic;
@@ -10,7 +12,11 @@ import bgu.csp.az.api.infra.ExecutionResult;
 import bgu.csp.az.api.tools.Assignment;
 import bgu.csp.az.api.tools.IdleDetector;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This is the object that represents the run time environment for a single algorithm execution, can be reused with the use of 
@@ -31,16 +37,21 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
     private ExecutionResult result = new ExecutionResult();
     private ExecutionResult partialResult = new ExecutionResult();
     private Map<String, Object> parameterValues;
-    private Algorithm alg;
-    private IdleDetector idet;
+    private AlgorithmMetadata algorithmMetadata;
+    private IdleDetector idleDetector;
+    private ExecutorService executorService;
+    private AgentRunner[] agentRunners;
+    private Agent[] agents;
+    private LinkedList<LogListener> logListeners = new LinkedList<LogListener>();
 
     /**
      * 
      */
-    public AbstractExecution() {
+    public AbstractExecution(ExecutorService exec) {
         parameterValues = new HashMap<String, Object>();
         shuttingdown = false;
         parameterValues.clear();
+        this.executorService = exec;
     }
 
     /**
@@ -61,6 +72,50 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
             }
         }
     }
+    
+    public void addLogListener(LogListener ll){
+        this.logListeners.add(ll);
+    }
+    
+    public void removeLogListener(LogListener ll){
+        this.logListeners.remove(ll);
+    }
+
+    @Override
+    public AgentRunner getAgentRunnerFor(Agent a) {
+        return agentRunners[a.getId()];
+    }
+
+    protected void generateAgents() throws InstantiationException, IllegalAccessException {
+        agents = new Agent[getGlobalProblem().getNumberOfVariables()];
+        for (int i = 0; i < agents.length; i++) {
+            getAgents()[i] = getAlgorithm().getAgentClass().newInstance();
+            PlatformOps apops = Agent.PlatformOperationsExtractor.extract(getAgents()[i]);
+            apops.setExecution(this);
+            apops.setId(i);
+        }
+    }
+
+    @Override
+    public void stop() {
+        executorService.shutdownNow();
+    }
+
+    protected ExecutorService getExecutorService() {
+        return executorService;
+    }
+
+    protected void setAgentRunners(AgentRunner[] runners) {
+        this.agentRunners = runners;
+    }
+
+    protected Agent[] getAgents() {
+        return agents;
+    }
+
+    protected AgentRunner[] getRunners() {
+        return agentRunners;
+    }
 
     @Override
     public void reportFinalAssignment(Assignment answer) {
@@ -68,11 +123,11 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
     }
 
     public IdleDetector getIdleDetector() {
-        return idet;
+        return idleDetector;
     }
 
     public void setIdleDetector(IdleDetector idet) {
-        this.idet = idet;
+        this.idleDetector = idet;
     }
 
     /**
@@ -86,7 +141,7 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
     /**
      * @param p
      */
-    protected void setGlobalProblem(Problem p) {
+    public void setGlobalProblem(Problem p) {
         this.problem = p;
         statTree = new Statistic(p.getMetadata());
     }
@@ -125,8 +180,8 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
      * @param data
      */
     @Override
-    public void log(int agent, String data) {
-        System.out.println("Agent " + agent + ": " + data);
+    public void log(int agent, String mailGroupKey, String data) {
+        for (LogListener ll : logListeners) ll.onLog(agent, mailGroupKey, data);
     }
 
     protected void setResult(ExecutionResult result) {
@@ -138,15 +193,14 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
         return result;
     }
 
-    public Algorithm getAlgorithm() {
-        return alg;
+    public AlgorithmMetadata getAlgorithm() {
+        return algorithmMetadata;
     }
 
-    public void setAlgorithm(Algorithm alg) {
-        this.alg = alg;
+    public void setAlgorithm(AlgorithmMetadata alg) {
+        this.algorithmMetadata = alg;
     }
 
-    
     /**
      * ugly synchronization - replace with semaphore..
      * @param var
@@ -159,7 +213,6 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
         }
         partialResult.getAssignment().assign(var, val);
     }
-    
 
     @Override
     public Object getParameterValue(String name) {
@@ -175,5 +228,37 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
     public void swapPartialAssignmentWithFullAssignment() {
         result = partialResult.deepCopy();
     }
-    
+
+    @Override
+    protected void _run() {
+        try {
+            configure();
+            startExecution();
+            finish();
+        } finally {
+            System.out.println("Execution Ended.");
+        }
+    }
+
+    protected void startExecution() {
+        while (true) {
+            for (int i = 0; i < agentRunners.length; i++) {
+                System.out.println("Executing Agent: " + getAgents()[i].getId());
+                getExecutorService().execute(getRunners()[i]);
+            }
+            break;
+        }
+
+        for (AgentRunner runner : getRunners()) {
+            try {
+                runner.join();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CompleteSearchExecution.class.getName()).log(Level.SEVERE, null, ex);
+                reportCrushAndStop(ex, "interupted while waiting for all agents to finish");
+            }
+        }
+    }
+
+    protected abstract void configure();
+    protected abstract void finish();
 }

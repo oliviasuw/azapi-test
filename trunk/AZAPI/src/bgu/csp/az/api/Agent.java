@@ -253,7 +253,7 @@ public abstract class Agent extends Agt0DSL {
      * @param what 
      */
     public void log(String what) {
-        exec.log(id, what);
+        exec.log(id, this.mailGroupKey, what);
     }
 
     /**

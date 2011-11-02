@@ -48,7 +48,7 @@ public interface Execution extends Process {
      * @param agent
      * @param data
      */
-    void log(int agent, String data);
+    void log(int agent, String mailGroupKey, String data);
 
     /**
      * will stop the current execution represented by this runtime object

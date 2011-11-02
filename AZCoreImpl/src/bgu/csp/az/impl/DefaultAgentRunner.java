@@ -10,7 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * this class should receive an agent and just run it simply - no schedualing what so ever..
+ * this class should receive an agent and just run it simply - no schedualing
+ * what so ever..
+ *
  * @author bennyl
  *
  */
@@ -20,8 +22,9 @@ public class DefaultAgentRunner implements AgentRunner, IdleDetector.Listener {
     private Thread cthread;
     private AbstractExecution exec;
     /**
-     * a flag designed to be a crush state that is saved between nested execution 
-     * using this flag we can know that a nested agent was crushed and in response we shuld recrush..
+     * a flag designed to be a crush state that is saved between nested
+     * execution using this flag we can know that a nested agent was crushed and
+     * in response we shuld recrush..
      */
     private boolean crushed = false;
     private boolean useIdleDetector; //see note about using idle detector within nested agents in AgentRunner.nest
@@ -30,8 +33,9 @@ public class DefaultAgentRunner implements AgentRunner, IdleDetector.Listener {
      */
     private int nestLevel = 0;
     /**
-     * used for the join method -> using a semaphore means that we are only allowing 1 joining thread, 
-     * this is the case currently but if we will want more than one - a different solution should be applied.
+     * used for the join method -> using a semaphore means that we are only
+     * allowing 1 joining thread, this is the case currently but if we will want
+     * more than one - a different solution should be applied.
      */
     private Semaphore block = new Semaphore(1);
 
@@ -65,7 +69,7 @@ public class DefaultAgentRunner implements AgentRunner, IdleDetector.Listener {
             //PROCESS MESSAGE LOOP
             try {
                 while (!currentExecutedAgent.isFinished() && !Thread.currentThread().isInterrupted() && !crushed) {
-                    if (useIdleDetector) {
+                    if (useIdleDetector && nestLevel == 1) {
                         if (!currentExecutedAgent.hasPendingMessages()) {
                             exec.getIdleDetector().dec();
                             currentExecutedAgent.waitForNewMessages();
@@ -74,6 +78,7 @@ public class DefaultAgentRunner implements AgentRunner, IdleDetector.Listener {
                     }
 
                     currentExecutedAgent.processNextMessage();
+
                 }
             } catch (InterruptedException ex) {
                 cthread.interrupt(); //REFLAGING THE CURRENT THREAD.
@@ -96,8 +101,8 @@ public class DefaultAgentRunner implements AgentRunner, IdleDetector.Listener {
         } finally {
             System.out.println("Agent " + currentExecutedAgent.getId() + " Terminated.");
             nestLevel--;
-            
-            if (nestLevel == 0){
+
+            if (nestLevel == 0) {
                 block.release();
             }
         }
@@ -116,7 +121,9 @@ public class DefaultAgentRunner implements AgentRunner, IdleDetector.Listener {
         //if in the future java will have some sort of FAST thread context saver we can switch to it
         Agent backUp = currentExecutedAgent;
         currentExecutedAgent = nestedAgent;
+        System.out.println("** Nested agent " + nestedAgent.getClass().getName() + " activated on agent " + originalAgentId);
         run();
+        System.out.println("** Nested agent " + nestedAgent.getClass().getName() + " deactivated on agent " + originalAgentId);
         currentExecutedAgent = backUp;
     }
 

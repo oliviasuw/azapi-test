@@ -6,6 +6,7 @@ package bgu.csp.az.impl.tools;
 
 import java.util.Set;
 import bgu.csp.az.api.Agent;
+import bgu.csp.az.api.Message;
 import bgu.csp.az.api.agt.SimpleAgent;
 import bgu.csp.az.api.ano.WhenReceived;
 import bgu.csp.az.api.tools.NesteableTool;
@@ -30,7 +31,7 @@ public class DFSPsaudoTree extends NesteableTool implements PsaudoTree {
     private Integer parent;
     private int root = 0;
     private int vertexId;
-    private ArrayList<Integer> pparents;
+    private List<Integer> pparents;
     private Set<Integer> seperator;
     private RootSelectionAlgorithm lsa;
     private int depth = 0;
@@ -41,7 +42,7 @@ public class DFSPsaudoTree extends NesteableTool implements PsaudoTree {
         children = new LinkedList<Integer>();
         pchildren = new LinkedList<Integer>();
         parent = -1;
-        pparents = new ArrayList<Integer>();
+        pparents = new LinkedList<Integer>();
         seperator = new HashSet<Integer>();
         descendants = new LinkedList<Integer>();
         pParentsDepths = new LinkedList<Integer>();
@@ -119,6 +120,8 @@ public class DFSPsaudoTree extends NesteableTool implements PsaudoTree {
 
         @Override
         public void start() {
+              
+//            log("starting dfs");
             vertexId = this.getId();
             dones = new boolean[getNumberOfVariables()];
             for (int i = 0; i < dones.length; i++) {
@@ -127,12 +130,14 @@ public class DFSPsaudoTree extends NesteableTool implements PsaudoTree {
             root = 0;//lsa.select(callingAgent);
 
             if (this.getId() == root) {
+//                log("starting dfsVisit");
                 dfsVisit();
             }
         }
 
         @Override
         public void handleTermination() {
+//            log("terminating");
             super.handleTermination();
             descendants.remove(this.getId());
         }
@@ -144,46 +149,65 @@ public class DFSPsaudoTree extends NesteableTool implements PsaudoTree {
                 neighbors.remove(parent);
             }
             neighbors.removeAll(pparents);
+//            log("starting visitNext2");
             visitNextNeighbor();
         }
 
         private void visitNextNeighbor() {
+//            log("in visitNext");
             if (neighbors.size() > 0) {
+//                log("sending VISIT to" + neighbors.get(0));
                 send("VISIT", depth + 1).to(neighbors.get(0));
             } else {
+//                log("starting noMoreNeighbors");
                 noMoreNeighbors();
             }
         }
 
+        @Override
+        protected Message beforeMessageProcessing(Message msg) {
+        
+//            log("got: " + msg);
+            return super.beforeMessageProcessing(msg);
+        }
+
+        
+        
         private void noMoreNeighbors() {
             color = COLOR_BLACK;
             dones[getId()] = true;
             if (parent >= 0) { // not root
                 send("SET_CHILD", seperator, descendants).to(parent);
+//                log("sending SET_CHILD to parent");
             }
             send("DONE").toAll(range(0, getProblem().getNumberOfVariables()-1));
+//            log("sending DONE to "+ range(0, getProblem().getNumberOfVariables()-1).toString());
         }
 
         @WhenReceived("VISIT")
         public void handleVisit(int pDepth) {
             final int sendingAgent = getCurrentMessage().getSender();
-
+//            log("visiting");
             if (color == COLOR_WHITE) {
                 parent = sendingAgent;
                 depth = pDepth;
                 seperator.add(parent);
+//                log("starting DFSVisit");
                 dfsVisit();
             } else if (color == COLOR_BLACK) {
                 insertPseudoParent(sendingAgent, depth);
                 seperator.add(sendingAgent);
                 send("SET_PSAUDO_CHILD", descendants).to(sendingAgent);
+//                log("sending SET_PSAUDO_CHILD to "+ sendingAgent);
             } else {
                 send("REFUSE_VISIT").to(sendingAgent);
+//                log("sending REFUSE_VISIT to "+ sendingAgent);
             }
         }
 
         @WhenReceived("DONE")
         public void handleDone() {
+//            log("handling DONE");
             if (!isRoot() && getCurrentMessage().getSender() == root && !dones[this.getId()]) {
                 panic(new NotConnectivityGraphException("The recived problem not represents a conetivity graph"));
             }
@@ -191,16 +215,18 @@ public class DFSPsaudoTree extends NesteableTool implements PsaudoTree {
             final Integer node = getCurrentMessage().getSender();
             dones[getCurrentMessage().getSender()] = true;
             if (allDone()) {
+//                log("finishing");
                 finish();//finish = true;
             } else if (color == COLOR_GRAY && neighbors.get(0) == node) {
                 neighbors.remove(node);
+//                log("starting visitNext1");
                 visitNextNeighbor();
             }
         }
 
         @WhenReceived("SET_CHILD")
         public void handleSetChild(Set<Integer> childSeperator, LinkedList<Integer> childDescendants) {
-
+//            log ("starting setChild");
             final Integer node = getCurrentMessage().getSender();
             children.add(node);
 
@@ -216,6 +242,7 @@ public class DFSPsaudoTree extends NesteableTool implements PsaudoTree {
 
         @WhenReceived("SET_PSAUDO_CHILD")
         public void handleSetPsaudoChild(LinkedList<Integer> childDescendants) {
+//            log("handling SET_PSAUDO_CHILD");
             final Integer node = getCurrentMessage().getSender();
             pchildren.add(node);
 
@@ -225,13 +252,16 @@ public class DFSPsaudoTree extends NesteableTool implements PsaudoTree {
             descendants.add(node);
             descendants.addAll(childDescendants);
             handleDone();
+//            log("End handling SET_PSAUDO_CHILD");
         }
 
         @WhenReceived("REFUSE_VISIT")
         public void handleRefuseVisit() {
+//            log("handling REFUSE_VISIT");
             final Integer node = getCurrentMessage().getSender();
             neighbors.remove(node);
             visitNextNeighbor();
+//            log("End handling REFUSE_VISIT");
         }
 
         private boolean allDone() {
@@ -244,6 +274,7 @@ public class DFSPsaudoTree extends NesteableTool implements PsaudoTree {
         }
 
         public void insertPseudoParent(int agentIdx, int depth) {
+//            log("inserting pp");
             int index = findInsertionIdx(depth);
             pParentsDepths.add(index, depth);
             pparents.add(index, agentIdx);

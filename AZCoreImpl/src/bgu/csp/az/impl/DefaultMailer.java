@@ -1,18 +1,20 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in
+ * the editor.
  */
 package bgu.csp.az.impl;
 
 import bgu.csp.az.api.Agent;
+import bgu.csp.az.api.Agt0DSL;
 import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.Message;
 import bgu.csp.az.api.infra.Execution;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -23,6 +25,7 @@ public class DefaultMailer implements Mailer {
     public static final String RECEPIENT_MESSAGE_METADATA = "DefaultMailer.RECEPIENT_MESSAGE_METADATA";
     private final Execution exec;
     private Map<String, DefaultMessageQueue[]> mailBoxes = new HashMap<String, DefaultMessageQueue[]>();
+    Semaphore mailBoxModifierKey = new Semaphore(1);
 
     public DefaultMailer(Execution exec) {
         this.exec = exec;
@@ -43,6 +46,8 @@ public class DefaultMailer implements Mailer {
         DefaultMessageQueue q = takeQueues(groupKey)[to];
         Message mcopy = msg.copy();
         mcopy.getMetadata().put(RECEPIENT_MESSAGE_METADATA, to);
+
+        //System.out.println("Mailer got message to send to agent " + to + " in group " + groupKey);
         q.add(mcopy);
     }
 
@@ -60,19 +65,22 @@ public class DefaultMailer implements Mailer {
     public void unRegister(int id, String groupKey) {
         DefaultMessageQueue[] qs = takeQueues(groupKey);
         qs[id] = null;
-        
-        for (DefaultMessageQueue q : qs){
-            if (q != null) return;
+
+        for (DefaultMessageQueue q : qs) {
+            if (q != null) {
+                return;
+            }
         }
-        
+
         mailBoxes.remove(groupKey);
     }
 
     @Override
-    public boolean isAllMailBoxesAreEmpty() {
-        for (Entry<String, DefaultMessageQueue[]> e : mailBoxes.entrySet()){
-            for (DefaultMessageQueue q : e.getValue()){
-                if (q.size() > 0) return false;
+    public boolean isAllMailBoxesAreEmpty(String groupKey) {
+        DefaultMessageQueue[] qs = takeQueues(groupKey);
+        for (DefaultMessageQueue q : qs) {
+            if (q.size() > 0) {
+                return false;
             }
         }
 
@@ -80,22 +88,31 @@ public class DefaultMailer implements Mailer {
     }
 
     private DefaultMessageQueue[] takeQueues(String groupKey) {
-        DefaultMessageQueue[] qs = mailBoxes.get(groupKey);
-        if (qs == null) {
-            final int numberOfVariables = exec.getGlobalProblem().getNumberOfVariables();
-            qs = new DefaultMessageQueue[numberOfVariables];
-            for (int i = 0; i < numberOfVariables; i++) {
-                qs[i] = new DefaultMessageQueue();
+        try {
+            DefaultMessageQueue[] qs = mailBoxes.get(groupKey);
+            if (qs == null) {
+                mailBoxModifierKey.acquire();
+                if (!mailBoxes.containsKey(groupKey)) { //maybe someone already modified it..
+                    final int numberOfVariables = exec.getGlobalProblem().getNumberOfVariables();
+                    qs = new DefaultMessageQueue[numberOfVariables];
+                    for (int i = 0; i < numberOfVariables; i++) {
+                        qs[i] = new DefaultMessageQueue();
+                    }
+                    mailBoxes.put(groupKey, qs);
+                } else {
+                    qs = mailBoxes.get(groupKey);
+                }
+                mailBoxModifierKey.release();
             }
-            mailBoxes.put(groupKey, qs);
-        }
 
-        return qs;
+            return qs;
+        } catch (InterruptedException ex) {
+            Agt0DSL.throwUncheked(ex);
+            return null;
+        }
     }
 
     /*package*/ Map<String, DefaultMessageQueue[]> getMailBoxes() {
         return mailBoxes;
     }
-    
-    
 }

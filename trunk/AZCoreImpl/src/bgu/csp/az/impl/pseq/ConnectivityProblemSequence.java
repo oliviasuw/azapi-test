@@ -50,6 +50,7 @@ public class ConnectivityProblemSequence extends RandomProblemSequence {
         int val1 = rnd.nextInt(p.getDomainSize(var1));
         double cost = rnd.nextInt(super.maxCost - 1) + 1;
         p.setConstraintCost(var1, val1, var2, val2, cost);
+        p.setConstraintCost(var2, val2, var1, val1, cost);
     }
 
     private void calcConnectivity(Problem p, int root, boolean[] discovered) {

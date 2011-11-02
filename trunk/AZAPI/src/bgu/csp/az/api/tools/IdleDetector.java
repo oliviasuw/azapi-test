@@ -19,10 +19,12 @@ public class IdleDetector {
     private Semaphore s = new Semaphore(1);
     private Mailer m;
     private LinkedList<Listener> listeners = new LinkedList<Listener>();
+    private String groupKey;
 
-    public IdleDetector(int waiting, Mailer m) {
+    public IdleDetector(int waiting, Mailer m, String groupKey) {
         this.waiting = waiting;
         this.m = m;
+        this.groupKey = groupKey;
     }
 
     public void inc() {
@@ -48,7 +50,7 @@ public class IdleDetector {
 
             
             if (waiting == 0) {
-                if (m.isAllMailBoxesAreEmpty()) {
+                if (m.isAllMailBoxesAreEmpty(groupKey)) {
                     s.acquire();
                     if (oversion == version) {
                         fireIdleDetected();

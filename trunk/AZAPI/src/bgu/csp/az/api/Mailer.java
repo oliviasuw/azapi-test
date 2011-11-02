@@ -45,5 +45,5 @@ public interface Mailer {
     /**
      * @return true if all the registered mailboxed are empty
      */
-    public boolean isAllMailBoxesAreEmpty();
+    public boolean isAllMailBoxesAreEmpty(String groupKey);
 }

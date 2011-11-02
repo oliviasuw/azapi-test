@@ -9,6 +9,7 @@ import bgu.csp.az.api.pseq.ProblemSequence;
 import bgu.csp.az.impl.pseq.RandomProblemSequence;
 
 import static bam.utils.JavaUtils.*;
+import bgu.csp.az.impl.pseq.ConnectivityProblemSequence;
 
 /**
  *
@@ -66,9 +67,9 @@ public class Round {
         this(1, //Round Length
                 p.getNumberOfVariables(),
                 p.getDomainSize(0),
-                cint(p.getMetadata().get(RandomProblemSequence.MAX_COST_PROBLEM_METADATA)),
+                cint(p.getMetadata().get(ConnectivityProblemSequence.MAX_COST_PROBLEM_METADATA)),
                 "Resurected Problem",
-                cfloat(p.getMetadata().get(RandomProblemSequence.P1_PROBLEM_METADATA)),
+                cfloat(p.getMetadata().get(ConnectivityProblemSequence.P1_PROBLEM_METADATA)),
                 0);//Round Number
         this.fromProblem = p;
     }
@@ -122,7 +123,7 @@ public class Round {
             public Problem next() {
                 current++;
                 if (current % split == 0) cp2 += p2Tick;
-                return new RandomProblemSequence(p1, cp2, maxCost, n, d, System.currentTimeMillis(), 1).next();
+                return new ConnectivityProblemSequence(p1, cp2, maxCost, n, d, System.currentTimeMillis(), 1).next();
             }
 
             @Override

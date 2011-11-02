@@ -11,9 +11,9 @@ package bgu.csp.az.dev;
 public class TestMain {
     public static void main(String[] args){
         Agent0Tester.main(new String[]{
-                "-f", "C:\\Users\\bennyl\\runtime-EclipseApplication\\NestedCheck\\test.xml",
-                "-a", "ext.sim.agents.AFCAgent",
-                "--cp", "C:\\Users\\bennyl\\runtime-EclipseApplication\\NestedCheck\\bin",
+                "-f", "C:\\Users\\Inna\\workspace\\DPOP\\test.xml",
+                "-a", "ext.sim.agents.DPOPAgent",
+                "--cp", "C:\\Users\\Inna\\workspace\\DPOP\\bin",
                 "--gui"
         });
     }

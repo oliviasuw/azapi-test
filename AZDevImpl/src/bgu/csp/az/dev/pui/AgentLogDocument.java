@@ -20,8 +20,9 @@ import javax.swing.text.StyleConstants;
  * @author bennyl
  */
 public class AgentLogDocument extends LimitedBatchDocument {
-    public static final String LEFT_JUSTIFIED_SPACED_FORMAT = "%-10s";
+    public static final String LEFT_JUSTIFIED_SPACED_FORMAT = "%-18s";
     public static final String REPEAT_INDICATOR_STRING = "#";
+    private static final Color AGENT_NAME_BACKGROUND = new Color(245,245,245);
 
     private String lastAgent = "";
     private HashMap<String, SimpleAttributeSet> AttributeSets;
@@ -43,6 +44,12 @@ public class AgentLogDocument extends LimitedBatchDocument {
     }
 
     public synchronized void addLog(String agentName, String text, Level lvl) {
+        for (String t : text.split("\n")){
+            addSingleLineLog(agentName, " " + t, lvl);
+        }
+    }
+    
+    private synchronized void addSingleLineLog(String agentName, String text, Level lvl){
         addColor(agentName);
 
 
@@ -51,25 +58,15 @@ public class AgentLogDocument extends LimitedBatchDocument {
             appendBatchString(newAgentName, styleRepeatSpacing(agentName));
 
         } else {
-            String newAgentName = createToken(LEFT_JUSTIFIED_SPACED_FORMAT, "Agent " + agentName + ":");
+            String newAgentName = createToken(LEFT_JUSTIFIED_SPACED_FORMAT, agentName + ":");
             appendBatchString(newAgentName, styleAgentName(agentName));
             lastAgent = agentName;
         }
 
+        
         //StringBuilder sb = parseLogText(text);
         appendBatchString(text+"\n", styleText(lvl));
 //        appendBatchLineFeed(null);
-    }
-
-    private StringBuilder parseLogText(String text) {
-        String[] lines = text.split("\n");
-        StringBuilder sb = new StringBuilder();
-        sb.append(lines[0]).append("\n");
-        String prefix = createToken(LEFT_JUSTIFIED_SPACED_FORMAT, REPEAT_INDICATOR_STRING);
-        for (int i = 1; i < lines.length; i++) {
-            sb.append(prefix).append(lines[i]).append("\n");
-        }
-        return sb;
     }
 
     private void generateColors() {
@@ -115,21 +112,11 @@ public class AgentLogDocument extends LimitedBatchDocument {
     private AttributeSet styleAgentName(String agentName) {
         SimpleAttributeSet ans = this.AttributeSets.get(agentName);
         StyleConstants.setUnderline(ans, false);
+        StyleConstants.setBackground(ans, AGENT_NAME_BACKGROUND);
 
 //        StyleConstants.setUnderline(ans, true);
         return ans;
 
-    }
-
-    private String spacing(String agentName) {
-        int size = agentName.length();
-        int mod = size % 4;
-        String ans = "";
-        for (int i = 3 - mod; i > 0; i--) {
-            ans += " ";
-        }
-
-        return ans;
     }
 
     private AttributeSet styleText(Level lvl) {

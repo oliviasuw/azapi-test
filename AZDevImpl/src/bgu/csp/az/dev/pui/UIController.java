@@ -9,7 +9,6 @@ import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.Statistic;
 import bgu.csp.az.api.tools.Assignment;
 import bgu.csp.az.dev.Round;
-import bgu.csp.az.dev.frm.TestExecution;
 import java.util.List;
 import bc.dsl.SwingDSL;
 import bc.swing.models.BatchDocument;
@@ -20,9 +19,11 @@ import bc.swing.pfrm.ano.PageDef;
 import bc.swing.pfrm.ano.Param;
 import bc.swing.pfrm.viewtypes.ParamType;
 import bc.utils.PokedWorker;
+import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.dev.frm.TestExpirement;
 import bgu.csp.az.dev.pui.scha.StatisticsModel;
 import bgu.csp.az.dev.pui.stat.StatusModel;
+import bgu.csp.az.impl.infra.LogListener;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,16 +77,12 @@ public class UIController extends Model implements TestExpirement.Listener {
         
         new Thread(pw).start();
         
-        te.addLogListener(new TestExecution.LogListner() {
+        te.addLogListener(new LogListener() {
 
             @Override
-            public void onLog(int agent, String msg) {
-                bdoc.addLog(""+agent,msg, Level.INFO);
-                
-                //bdoc.appendBatchString("Agent: " + agent + ": " + msg, null);
-                //bdoc.appendBatchLineFeed(null);
+            public void onLog(int agent, String mailGroupKey, String log) {
+                bdoc.addLog("[" + mailGroupKey.substring(mailGroupKey.lastIndexOf(".") +1) + "] " +agent,log, Level.INFO);
                 pw.poke();
-                System.out.println("Agent: " + agent + ": " + msg);
             }
         });
         
@@ -109,12 +106,12 @@ public class UIController extends Model implements TestExpirement.Listener {
     }
 
     @Override
-    public void onExecutionEndedWithWrongResult(TestExecution execution, Assignment wrong, Assignment right) {
+    public void onExecutionEndedWithWrongResult(Execution execution, Assignment wrong, Assignment right) {
         SwingDSL.errbox("Bad News...", "Execution ended with wrong results");
     }
 
     @Override
-    public void onExecutionCrushed(TestExecution ex, Exception exc) {
+    public void onExecutionCrushed(Execution ex, Exception exc) {
         SwingDSL.errbox("Bad News...", "Execution crushed with the exception:\n" + exc.getClass().getSimpleName() + ": " + exc.getMessage());
     }
 

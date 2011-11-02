@@ -130,8 +130,8 @@ public class Round {
             public boolean hasNext() {
                 return current <= length;
             }
-        }
-        ;
+        };
+        
     }
 
     private ProblemSequence generateProblemSequanceFromAProblem() {
@@ -148,6 +148,7 @@ public class Round {
             @Override
             public boolean hasNext() {
                 return hnext;
+      
             }
         };
     }

@@ -4,7 +4,6 @@
  */
 package bgu.csp.az.dev.slog;
 
-import bam.utils.FileUtils;
 import bgu.csp.az.api.Constraint;
 import bgu.csp.az.api.Message;
 import bgu.csp.az.api.Problem;
@@ -12,8 +11,6 @@ import bgu.csp.az.api.Statistic;
 import bgu.csp.az.api.agt.SimpleAgent;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.tools.Assignment;
-import bgu.csp.az.dev.frm.TestExecution;
-import bgu.csp.az.impl.pseq.RandomProblemSequence;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.db.DerbyEmbeddedDatabaseType;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;

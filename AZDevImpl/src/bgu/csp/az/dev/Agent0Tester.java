@@ -6,14 +6,14 @@ package bgu.csp.az.dev;
 
 import bc.dsl.SwingDSL;
 import bgu.csp.az.api.tools.Assignment;
-import bgu.csp.az.dev.frm.TestExecution;
 import bgu.csp.az.dev.frm.TestExpirement;
 import java.io.File;
 import static bc.dsl.XNavDSL.*;
 import bc.utils.FileUtils;
-import bgu.csp.az.api.Algorithm;
+import bgu.csp.az.api.AlgorithmMetadata;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.infra.EventPipe;
+import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.dev.pui.UIController;
 import bgu.csp.az.dev.ui.dialogs.ProblemSelectionDialog;
 import bgu.csp.az.dev.ui.dialogs.ProblemSelectionModel;
@@ -115,12 +115,12 @@ public class Agent0Tester extends TestExpirement.Handler {
     }
 
     @Override
-    public void onExecutionCrushed(TestExecution ex, Exception exc) {
+    public void onExecutionCrushed(Execution ex, Exception exc) {
         handleBadEnding(ex);
     }
 
     @Override
-    public void onExecutionEndedWithWrongResult(TestExecution execution, Assignment wrong, Assignment right) {
+    public void onExecutionEndedWithWrongResult(Execution execution, Assignment wrong, Assignment right) {
         handleBadEnding(execution);
     }
 
@@ -132,14 +132,14 @@ public class Agent0Tester extends TestExpirement.Handler {
         return selectPModel;
     }
 
-    private Algorithm loadAlgorithm() throws MalformedURLException, ClassNotFoundException {
+    private AlgorithmMetadata loadAlgorithm() throws MalformedURLException, ClassNotFoundException {
         ClassLoader ldr = ClassLoader.getSystemClassLoader();
         if (agentClassPath != null) {
             ldr = new URLClassLoader(new URL[]{new File(agentClassPath).toURI().toURL()});
         }
 
         Class agt = ldr.loadClass(agentClass);
-        return new Algorithm(agt);
+        return new AlgorithmMetadata(agt);
     }
 
     public static void main(String[] args) {
@@ -162,7 +162,7 @@ public class Agent0Tester extends TestExpirement.Handler {
         }
     }
 
-    private void handleBadEnding(TestExecution ex) {
+    private void handleBadEnding(Execution ex) {
         //SAVE THE BAD PROBLEM AND STOP ...
         Problem p = ex.getGlobalProblem();
         SimpleDateFormat sdf = new SimpleDateFormat("dd'-'MM'-'yyyy' 'HH'.'mm'.'ss");

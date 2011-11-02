@@ -10,39 +10,35 @@ import bgu.csp.az.api.exp.InvalidValueException;
  * 
  * @author bennyl
  */
-public class Algorithm {
+public class AlgorithmMetadata {
 
     private String name; //the algorithm name
     private Class<? extends Agent> agentClass; //the class of the agent that implements this algorithm
     private ProblemType problemType;
     private boolean useIdleDetector;
+    private SearchType searchType;
 
-    /**
-     * @param name this algorithm name`
-     * @param agentClass the agent class that can run this algorithm
-     */
-    public Algorithm(String name, Class<? extends Agent> agentClass) {
-        this.name = name;
-        this.agentClass = agentClass;
-        this.problemType = ProblemType.COP;
-        this.useIdleDetector = false;
-    }
     
     /**
      * constract an algorithm metadata from an agent class 
      * the agent class must be annotated by @Algorithm annotation.
      * @param agentClass
      */
-    public Algorithm(Class<? extends Agent> agentClass){
+    public AlgorithmMetadata(Class<? extends Agent> agentClass){
         bgu.csp.az.api.ano.Algorithm a = agentClass.getAnnotation(bgu.csp.az.api.ano.Algorithm.class);
         if (a == null){
             throw new InvalidValueException("no algorithm annotation used on the given agent class");
         }
         
-        this.name = a.value();
+        this.name = a.name();
         this.agentClass = agentClass;
-        this.problemType = a.solve();
+        this.problemType = a.problemType();
         this.useIdleDetector = a.useIdleDetector();
+        this.searchType = a.searchType();
+    }
+
+    public SearchType getSearchType() {
+        return searchType;
     }
 
     /**

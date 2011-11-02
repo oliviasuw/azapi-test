@@ -5,9 +5,7 @@
 package bgu.csp.az.dev.pui.scha;
 
 import bc.dsl.SwingDSL;
-import bc.swing.models.chart.ChartModel;
 import bc.swing.models.GenericTreeModel.ListNode;
-import bc.swing.models.chart.AreaChartModel;
 import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.DeltaHint;
 import bc.swing.pfrm.FieldParamModel.ChangeListener;
@@ -18,12 +16,11 @@ import bc.swing.pfrm.ano.Param;
 import bc.swing.pfrm.viewtypes.ParamType;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.Statistic;
+import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.tools.Assignment;
 import bgu.csp.az.dev.Round;
-import bgu.csp.az.dev.frm.TestExecution;
 import bgu.csp.az.dev.frm.TestExpirement;
 import bgu.csp.az.dev.pui.sgrp.StatisticsView;
-import java.util.LinkedList;
 import javax.swing.ImageIcon;
 
 /**
@@ -85,11 +82,11 @@ public class StatisticsModel extends Model implements TestExpirement.Listener {
     }
 
     @Override
-    public void onExecutionEndedWithWrongResult(TestExecution execution, Assignment wrong, Assignment right) {
+    public void onExecutionEndedWithWrongResult(Execution execution, Assignment wrong, Assignment right) {
     }
 
     @Override
-    public void onExecutionCrushed(TestExecution ex, Exception exc) {
+    public void onExecutionCrushed(Execution ex, Exception exc) {
     }
 
     @Override

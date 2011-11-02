@@ -4,10 +4,10 @@
  */
 package bgu.csp.az.dev.ui;
 
+import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.Statistic;
 import bgu.csp.az.api.tools.Assignment;
-import bgu.csp.az.dev.frm.TestExecution;
 import bgu.csp.az.dev.ui.pages.CrushAnalyzerPage;
 import bgu.csp.az.dev.Round;
 import bam.utils.SwingUtils;
@@ -87,7 +87,7 @@ public class UIController extends TestExpirement.Handler {
 
     }
 
-    private void handleCrush(TestExecution exec) {
+    private void handleCrush(Execution exec) {
         JdbcConnectionSource conn = ScenarioLogger.getNewDataBaseConnection(TestExpirement.TEMP_SCENARIO_LOG_DB_PATH);
         final CrushAnalyzerPage crushAnalyzerPage = new CrushAnalyzerPage();
         crushAnalyzerPage.setDBConnection(conn);
@@ -107,13 +107,13 @@ public class UIController extends TestExpirement.Handler {
     }
 
     @Override
-    public void onExecutionCrushed(TestExecution ex, Exception exc) {
+    public void onExecutionCrushed(Execution ex, Exception exc) {
         errbox("execution status", "Execution Crushed: " + exc.getMessage());
         handleCrush(ex);
     }
 
     @Override
-    public void onExecutionEndedWithWrongResult(TestExecution execution, Assignment wrong, Assignment right) {
+    public void onExecutionEndedWithWrongResult(Execution execution, Assignment wrong, Assignment right) {
         errbox("execution status", "Execution Ended With Wrong Results.");
         handleCrush(execution);
     }

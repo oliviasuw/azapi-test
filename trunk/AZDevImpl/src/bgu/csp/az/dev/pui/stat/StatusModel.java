@@ -14,9 +14,9 @@ import bc.swing.pfrm.ano.ViewHints;
 import bc.swing.pfrm.viewtypes.ParamType;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.Statistic;
+import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.tools.Assignment;
 import bgu.csp.az.dev.Round;
-import bgu.csp.az.dev.frm.TestExecution;
 import bgu.csp.az.dev.frm.TestExpirement;
 import java.util.List;
 
@@ -95,12 +95,12 @@ public class StatusModel extends Model implements TestExpirement.Listener {
     }
 
     @Override
-    public void onExecutionEndedWithWrongResult(TestExecution execution, Assignment wrong, Assignment right) {
+    public void onExecutionEndedWithWrongResult(Execution execution, Assignment wrong, Assignment right) {
         setExecutionEnded("Finished with wrong results");
     }
 
     @Override
-    public void onExecutionCrushed(TestExecution ex, Exception exc) {
+    public void onExecutionCrushed(Execution ex, Exception exc) {
         setExecutionEnded("Crushed because of " + exc.getClass().getSimpleName());
     }
 

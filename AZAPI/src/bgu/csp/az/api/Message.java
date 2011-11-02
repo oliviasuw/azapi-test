@@ -78,7 +78,7 @@ public class Message implements Serializable {
                         Thread.currentThread().interrupt();
                         Agt0DSL.throwUncheked(ex);
                     }else {
-                        throw new DeepCopyFailedException("Cannot figure out how to deep copy " + cargs[i].getClass().getName() + " class please implement the DeepCopyable interface on this class.", ex);
+                        throw new DeepCopyFailedException("Cannot figure out how to deep copy " + a.getClass().getName() + " class please implement the DeepCopyable interface on this class.", ex);
                     }
                 }
             }

@@ -60,8 +60,8 @@ public class LocalSearchMailer implements Mailer, SystemClock.TickListener {
     }
 
     @Override
-    public boolean isAllMailBoxesAreEmpty() {
-        return mainMailer.isAllMailBoxesAreEmpty() && nextStepMailer.isAllMailBoxesAreEmpty();
+    public boolean isAllMailBoxesAreEmpty(String groupKey) {
+        return mainMailer.isAllMailBoxesAreEmpty(groupKey) && nextStepMailer.isAllMailBoxesAreEmpty(groupKey);
     }
 
     @Override

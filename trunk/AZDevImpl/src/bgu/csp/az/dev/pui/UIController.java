@@ -81,10 +81,11 @@ public class UIController extends Model implements TestExpirement.Listener {
             @Override
             public void onLog(int agent, String msg) {
                 bdoc.addLog(""+agent,msg, Level.INFO);
+                
                 //bdoc.appendBatchString("Agent: " + agent + ": " + msg, null);
                 //bdoc.appendBatchLineFeed(null);
                 pw.poke();
-//                System.out.println("Agent: " + agent + ": " + msg);
+                System.out.println("Agent: " + agent + ": " + msg);
             }
         });
         

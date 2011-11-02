@@ -9,15 +9,11 @@ import bgu.csp.az.api.Agent.PlatformOps;
 import bgu.csp.az.api.AgentRunner;
 import bgu.csp.az.impl.infra.AbstractExecution;
 import bgu.csp.az.api.Problem;
-import bgu.csp.az.api.agt.SimpleAgent;
 import bgu.csp.az.dev.slog.ScenarioLogger;
 import bgu.csp.az.impl.DefaultAgentRunner;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

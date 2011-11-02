@@ -141,7 +141,7 @@ public class TestExpirement extends Expirament {
         te.setGlobalProblem(p);
         te.setMailer(new DefaultMailer(te));
         if (alg.isUseIdleDetector()) {
-            te.setIdleDetector(new IdleDetector(p.getNumberOfVariables(), te.getMailer()));
+            te.setIdleDetector(new IdleDetector(p.getNumberOfVariables(), te.getMailer(), alg.getAgentClass().getName()));
         }
 
         fireNewProblemExecuting(p);

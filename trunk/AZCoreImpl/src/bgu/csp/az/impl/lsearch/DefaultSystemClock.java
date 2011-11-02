@@ -9,8 +9,6 @@ import bgu.csp.az.api.lsearch.SystemClock;
 import java.util.LinkedList;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *

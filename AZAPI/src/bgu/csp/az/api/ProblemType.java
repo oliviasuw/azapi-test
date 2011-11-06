@@ -16,5 +16,7 @@ public enum ProblemType {
     /**
      * Constraint Optimization Problem
      */
-    COP
+    COP,
+    
+    CONNECTED_COP
 }

@@ -6,6 +6,8 @@ package bgu.csp.az.api.tools;
 
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.DeepCopyable;
+import bgu.csp.az.api.Hooks.BeforeMessageSentHook;
+import bgu.csp.az.api.Message;
 import bgu.csp.az.api.agt.SimpleAgent;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -58,6 +60,7 @@ import java.util.Arrays;
  */
 public class TimeStamp implements Serializable, DeepCopyable {
 
+    public static final String TIME_STAMP_METADATA = "TimeStamp.TIME_STAMP_METADATA";
     private int[] id;
     private int usingAgentId;
 
@@ -70,7 +73,22 @@ public class TimeStamp implements Serializable, DeepCopyable {
         this.usingAgentId = a.getId();
     }
 
-    private TimeStamp(){}
+    public void registerToSendInOutgoingMessages(Agent a) {
+        a.hookIn(new BeforeMessageSentHook() {
+
+            @Override
+            public void hook(Message msg) {
+                msg.getMetadata().put(TIME_STAMP_METADATA, TimeStamp.this);
+            }
+        });
+    }
+    
+    public static TimeStamp extract(Message m){
+        return (TimeStamp) m.getMetadata().get(TIME_STAMP_METADATA);
+    }
+
+    private TimeStamp() {
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -105,7 +123,7 @@ public class TimeStamp implements Serializable, DeepCopyable {
      * @param asking
      * @return 1 if this > other, 0 if equals and -1 otherwise.
      */
-    public int compare(TimeStamp o, Agent asking){
+    public int compare(TimeStamp o, Agent asking) {
         for (int i = 0; i < asking.getId(); i++) {
             if (this.id[i] > o.id[i]) {
                 return 1;

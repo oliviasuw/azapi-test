@@ -1,8 +1,5 @@
-package bgu.csp.az.api.agt;
+package bgu.csp.az.api;
 
-import bgu.csp.az.api.Mailer;
-import bgu.csp.az.api.Message;
-import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.exp.UnRegisteredAgentException;
 import java.util.Collection;
 
@@ -14,14 +11,14 @@ import java.util.Collection;
  * @author bennyl
  *
  */
-public class SendbleObject {
+public class SendMediator {
 
     private Message msg;
     private Mailer mailer;
     private Problem curp;
     private String agentGroupKey;
 
-    public SendbleObject(Message msg, Mailer mailer, Problem curp, String agentGroupKey) {
+    public SendMediator(Message msg, Mailer mailer, Problem curp, String agentGroupKey) {
         this.msg = msg;
         this.mailer = mailer;
         this.curp = curp;
@@ -82,7 +79,7 @@ public class SendbleObject {
      * @param val
      * @return
      */
-    public SendbleObject withMeta(String name, Object val) {
+    public SendMediator withMeta(String name, Object val) {
         msg.getMetadata().put(name, val);
         return this;
     }

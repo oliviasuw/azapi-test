@@ -1,7 +1,6 @@
 package bgu.csp.az.api;
 
 import bgu.csp.az.api.Hooks.BeforeMessageSentHook;
-import bgu.csp.az.api.agt.SendbleObject;
 import bgu.csp.az.api.ano.WhenReceived;
 import bgu.csp.az.api.ds.ImmutableSet;
 import bgu.csp.az.api.exp.InvalidValueException;
@@ -473,10 +472,14 @@ public abstract class Agent extends Agt0DSL {
      * @param args
      */
     public void broadcast(String msg, Object... args) {
-        final Execution execution = PlatformOperationsExtractor.extract(this).getExecution();
-        execution.getMailer().broadcast(createMessage(msg, args), mailGroupKey);
+        broadcast(createMessage(msg, args));
     }
 
+    public void broadcast(Message msg){
+        final Execution execution = PlatformOperationsExtractor.extract(this).getExecution();
+        execution.getMailer().broadcast(msg, mailGroupKey);
+    }
+    
     /**
      * sends a new message 
      * the message should have a name and any number of arguments
@@ -490,9 +493,13 @@ public abstract class Agent extends Agt0DSL {
      * @param args the list (variadic) of arguments that belongs to this message
      * @return continuation class 
      */
-    public SendbleObject send(String msg, Object... args) {
+    public SendMediator send(String msg, Object... args) {
+        return send(createMessage(msg, args));
+    }
+    
+    public SendMediator send(Message msg){
         final Execution execution = pops.getExecution();
-        return new SendbleObject(createMessage(msg, args), execution.getMailer(), execution.getGlobalProblem(), mailGroupKey);
+        return new SendMediator(msg, execution.getMailer(), execution.getGlobalProblem(), mailGroupKey);
     }
 
     public void onIdleDetected() {
@@ -508,11 +515,6 @@ public abstract class Agent extends Agt0DSL {
         finish();
     }
     
-    @WhenReceived(Agent.SYS_TICK_MESSAGE)
-    public void handleTick(){
-        //DO NOTHING THIS MESSAGE ONLY RESPONSIBLE TO WAKE UP THE AGENT..
-    }
-
     /**
      * this class contains all the "hidden but public" methods,
      * because the user should extend the agent class all the "platform" operations 

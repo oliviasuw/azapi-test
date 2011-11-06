@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.csp.az.impl;
+package bgu.csp.az.impl.lsearch;
 
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.Agt0DSL;
@@ -12,7 +12,10 @@ import bgu.csp.az.api.MessageQueue;
 import bgu.csp.az.api.exp.UnRegisteredAgentException;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.lsearch.SystemClock;
+import bgu.csp.az.impl.DefaultMailer;
+import bgu.csp.az.impl.DefaultMessageQueue;
 import java.util.Map.Entry;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  *
@@ -23,10 +26,15 @@ public class LocalSearchMailer implements Mailer, SystemClock.TickListener {
     private DefaultMailer mainMailer;
     private DefaultMailer nextStepMailer;
     private SystemClock clock;
+    private ReentrantReadWriteLock lock;
 
-    public LocalSearchMailer(SystemClock clock, Execution ex) {
-        this.mainMailer = new DefaultMailer(ex);
-        this.nextStepMailer = new DefaultMailer(ex);
+    public LocalSearchMailer() {
+        this.mainMailer = new DefaultMailer();
+        this.nextStepMailer = new DefaultMailer();
+        lock = new ReentrantReadWriteLock();
+    }
+
+    public void setClock(SystemClock clock) {
         this.clock = clock;
         this.clock.addTickListener(this);
     }
@@ -45,12 +53,22 @@ public class LocalSearchMailer implements Mailer, SystemClock.TickListener {
 
     @Override
     public void send(Message msg, int to, String groupKey) throws UnRegisteredAgentException {
-        nextStepMailer.send(msg, to, groupKey);
+        lock.readLock().lock();
+        try {
+            nextStepMailer.send(msg, to, groupKey);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public void broadcast(Message msg, String groupKey) {
-        nextStepMailer.broadcast(msg, groupKey);
+        lock.readLock().lock();
+        try {
+            nextStepMailer.broadcast(msg, groupKey);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
@@ -66,9 +84,14 @@ public class LocalSearchMailer implements Mailer, SystemClock.TickListener {
 
     @Override
     public void onTickHappend(SystemClock sender) {
+        lock.writeLock().lock();
         try {
+            Message tickMessage = new Message(Agent.SYS_TICK_MESSAGE, -1/*SYSTEM ID*/, new Object[0]);
             for (Entry<String, DefaultMessageQueue[]> e : nextStepMailer.getMailBoxes().entrySet()) {
                 for (int i = 0; i < e.getValue().length; i++) {
+                    //FIRST SEND THE TICK MESSAGE 
+                    mainMailer.send(tickMessage, i, e.getKey());
+                    //THEN SEND THE CACHED MESSAGES
                     final DefaultMessageQueue q = e.getValue()[i];
                     while (q.size() > 0) {
                         mainMailer.send(q.take(), i, e.getKey());
@@ -78,6 +101,14 @@ public class LocalSearchMailer implements Mailer, SystemClock.TickListener {
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             Agt0DSL.throwUncheked(ex);
+        } finally{
+            lock.writeLock().unlock();
         }
+    }
+
+    @Override
+    public void setExecution(Execution exec) {
+        nextStepMailer.setExecution(exec);
+        mainMailer.setExecution(exec);
     }
 }

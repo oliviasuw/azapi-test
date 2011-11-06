@@ -2,14 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.csp.az.impl;
+package bgu.csp.az.impl.lsearch;
 
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.Agt0DSL;
 import bgu.csp.az.api.lsearch.SystemClock;
+import bgu.csp.az.impl.DefaultAgentRunner;
 import bgu.csp.az.impl.infra.AbstractExecution;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -27,6 +26,7 @@ public class LocalSearchAgentRunner extends DefaultAgentRunner {
     @Override
     protected void onCurrentExecutedAgentOutOfMessages() {
         try {
+            System.out.println("LocalSearchAgentRunner.onCurrentExecutedAgentOutOfMessages: ticking " + super.getRunningAgentId());
             clock.tick();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();

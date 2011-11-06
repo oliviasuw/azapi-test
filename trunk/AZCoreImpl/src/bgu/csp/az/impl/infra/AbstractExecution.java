@@ -47,11 +47,15 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
     /**
      * 
      */
-    public AbstractExecution(ExecutorService exec) {
-        parameterValues = new HashMap<String, Object>();
-        shuttingdown = false;
-        parameterValues.clear();
+    public AbstractExecution(ExecutorService exec, Problem p, Mailer m, AlgorithmMetadata a) {
+        this.parameterValues = new HashMap<String, Object>();
+        this.shuttingdown = false;
+        this.parameterValues.clear();
         this.executorService = exec;
+        this.mailer = m;
+        this.problem = p;
+        this.statTree = new Statistic(p.getMetadata());
+        this.algorithmMetadata = a;
     }
 
     /**
@@ -72,12 +76,12 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
             }
         }
     }
-    
-    public void addLogListener(LogListener ll){
+
+    public void addLogListener(LogListener ll) {
         this.logListeners.add(ll);
     }
-    
-    public void removeLogListener(LogListener ll){
+
+    public void removeLogListener(LogListener ll) {
         this.logListeners.remove(ll);
     }
 
@@ -86,13 +90,25 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
         return agentRunners[a.getId()];
     }
 
-    protected void generateAgents() throws InstantiationException, IllegalAccessException {
-        agents = new Agent[getGlobalProblem().getNumberOfVariables()];
-        for (int i = 0; i < agents.length; i++) {
-            getAgents()[i] = getAlgorithm().getAgentClass().newInstance();
-            PlatformOps apops = Agent.PlatformOperationsExtractor.extract(getAgents()[i]);
-            apops.setExecution(this);
-            apops.setId(i);
+    protected boolean generateAgents() {
+        try {
+            agents = new Agent[getGlobalProblem().getNumberOfVariables()];
+            for (int i = 0; i < agents.length; i++) {
+                getAgents()[i] = getAlgorithm().getAgentClass().newInstance();
+                PlatformOps apops = Agent.PlatformOperationsExtractor.extract(getAgents()[i]);
+                apops.setExecution(this);
+                apops.setId(i);
+
+            }
+            return true;
+        } catch (InstantiationException ex) {
+            Logger.getLogger(CompleteSearchExecution.class.getName()).log(Level.SEVERE, "every agent must have empty constractor", ex);
+            reportCrushAndStop(ex, "execution failed on initial state - every agent must have empty constractor");
+            return false;
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(CompleteSearchExecution.class.getName()).log(Level.SEVERE, "agent cannot be abstract/ cannot have a private constractor", ex);
+            reportCrushAndStop(ex, "execution failed on initial state - agent cannot be abstract/ cannot have a private constractor");
+            return false;
         }
     }
 
@@ -139,14 +155,6 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
     }
 
     /**
-     * @param p
-     */
-    public void setGlobalProblem(Problem p) {
-        this.problem = p;
-        statTree = new Statistic(p.getMetadata());
-    }
-
-    /**
      * @return the global problem - 
      * each agent have its own "version" of problem that is based on the global problem 
      * using the global problem is reserved to the execution environment or to the execution tools - do not use it inside 
@@ -166,14 +174,6 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
     }
 
     /**
-     * attach a mailer to this execution.
-     * @param ml
-     */
-    public void setMailer(Mailer ml) {
-        this.mailer = ml;
-    }
-
-    /**
      * cause the executed environment to log the given data
      * this implementation only print the data into the screen
      * @param agent
@@ -181,7 +181,9 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
      */
     @Override
     public void log(int agent, String mailGroupKey, String data) {
-        for (LogListener ll : logListeners) ll.onLog(agent, mailGroupKey, data);
+        for (LogListener ll : logListeners) {
+            ll.onLog(agent, mailGroupKey, data);
+        }
     }
 
     protected void setResult(ExecutionResult result) {
@@ -195,10 +197,6 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
 
     public AlgorithmMetadata getAlgorithm() {
         return algorithmMetadata;
-    }
-
-    public void setAlgorithm(AlgorithmMetadata alg) {
-        this.algorithmMetadata = alg;
     }
 
     /**
@@ -232,11 +230,20 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
     @Override
     protected void _run() {
         try {
+            doStaticConfigurations();
             configure();
             startExecution();
             finish();
         } finally {
             System.out.println("Execution Ended.");
+        }
+    }
+
+    private void doStaticConfigurations() {
+        mailer.setExecution(this);
+
+        if (getAlgorithm().isUseIdleDetector()) {
+            setIdleDetector(new IdleDetector(getGlobalProblem().getNumberOfVariables(), getMailer(), getAlgorithm().getAgentClass().getName()));
         }
     }
 
@@ -260,5 +267,6 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
     }
 
     protected abstract void configure();
+
     protected abstract void finish();
 }

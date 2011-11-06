@@ -9,32 +9,47 @@ import bgu.csp.az.api.lsearch.SystemClock;
 import java.util.LinkedList;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Semaphore;
 
 /**
  *
  * @author bennyl
  */
-public class DefaultSystemClock implements SystemClock{
+public class DefaultSystemClock implements SystemClock {
+
     private CyclicBarrier barrier;
+    private Semaphore updateListenersLock;
     private Execution exc;
     private volatile long time;
     private LinkedList<TickListener> tickListeners;
-    
+
     public DefaultSystemClock(Execution exc) {
         this.exc = exc;
         this.barrier = new CyclicBarrier(exc.getGlobalProblem().getNumberOfVariables());
         this.time = 0;
         this.tickListeners = new LinkedList<TickListener>();
+        this.updateListenersLock = new Semaphore(1);
     }
-    
+
     @Override
     public void tick() throws InterruptedException {
         try {
             long nextTime = time + 1;
             barrier.await();
-            if (time < nextTime) {
-                time = nextTime;
-                fireTickHappend();
+            try {
+                /**
+                 * stop the agents untill all the listeners are updated
+                 * needed as only after the listener was updated the agents allowed to continue running 
+                 * so we will not get retick before the message queue will get updated..
+                 */
+                updateListenersLock.acquire();
+                if (time < nextTime) {
+                    time = nextTime;
+                    System.out.println("TICK: " + time);
+                    fireTickHappend();
+                }
+            } finally {
+                updateListenersLock.release();
             }
         } catch (BrokenBarrierException ex) {
             System.err.println("got BrokenBarrierException, translating it to InterruptedException (DefaultSystemClock)");
@@ -46,7 +61,7 @@ public class DefaultSystemClock implements SystemClock{
     public long time() {
         return time;
     }
-    
+
     @Override
     public void addTickListener(TickListener tickListener) {
         this.tickListeners.add(tickListener);
@@ -58,7 +73,8 @@ public class DefaultSystemClock implements SystemClock{
     }
 
     private void fireTickHappend() {
-        for (TickListener l : tickListeners) l.onTickHappend(this);
+        for (TickListener l : tickListeners) {
+            l.onTickHappend(this);
+        }
     }
-    
 }

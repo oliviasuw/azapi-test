@@ -23,19 +23,20 @@ import java.util.logging.Logger;
 public class DefaultMailer implements Mailer {
 
     public static final String RECEPIENT_MESSAGE_METADATA = "DefaultMailer.RECEPIENT_MESSAGE_METADATA";
-    private final Execution exec;
+    private Execution exec;
     private Map<String, DefaultMessageQueue[]> mailBoxes = new HashMap<String, DefaultMessageQueue[]>();
     Semaphore mailBoxModifierKey = new Semaphore(1);
-
-    public DefaultMailer(Execution exec) {
-        this.exec = exec;
-    }
 
     @Override
     public DefaultMessageQueue register(Agent agent, String groupKey) {
         return takeQueues(groupKey)[agent.getId()];
     }
 
+    @Override
+    public void setExecution(Execution exec) {
+        this.exec = exec;
+    }
+    
     @Override
     public void unregisterAll() {
         mailBoxes.clear();
@@ -112,7 +113,7 @@ public class DefaultMailer implements Mailer {
         }
     }
 
-    /*package*/ Map<String, DefaultMessageQueue[]> getMailBoxes() {
+    public Map<String, DefaultMessageQueue[]> getMailBoxes() {
         return mailBoxes;
     }
 }

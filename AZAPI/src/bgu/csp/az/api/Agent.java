@@ -332,7 +332,7 @@ public abstract class Agent extends Agt0DSL {
      * will throw InvalideValueException if called before ever call submitCurrentAssignment
      */
     protected Integer getSubmitedCurrentAssignment() {
-        final Assignment finalAssignment = exec.getResult().getAssignment();
+        final Assignment finalAssignment = exec.getPartialResult().getAssignment();
         if (finalAssignment != null) {
             return finalAssignment.getAssignment(getId());
         }

@@ -7,6 +7,8 @@ package bgu.csp.az.impl;
 import bgu.csp.az.api.Message;
 import bgu.csp.az.api.MessageQueue;
 import bgu.csp.az.api.exp.InternalErrorException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 
@@ -46,6 +48,13 @@ public class DefaultMessageQueue implements MessageQueue {
         count.acquire();
         count.release();
         //System.out.println("Done Waiting for messages");
-
+    }
+    
+    public List<Message> retriveAll(){
+        LinkedList<Message> all = new LinkedList<Message>();
+        
+        q.drainTo(all);
+        
+        return all;
     }
 }

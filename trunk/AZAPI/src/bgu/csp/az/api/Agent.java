@@ -46,9 +46,16 @@ public abstract class Agent extends Agt0DSL {
     /**
      * the name for the system termination message 
      * the system termination message is getting sent only by the abstract agent 
-     * and if we decide to drop it we should drop that constant too.
      */
     public static final String SYS_TERMINATION_MESSAGE = "__TERMINATE__";
+    
+    /**
+     * the name for the system tick message 
+     * the system tick message is getting sent only by the local search mailer when the system clock performed a 'tick'
+     * its what wakes up the agent even if he dosent have any messages - in order for him to retick the clock
+     */
+    public static final String SYS_TICK_MESSAGE = "__TICK__";
+    
     private int id; //The Agent ID
     private Execution exec; //The Execution That This Agent Is Currently Running Within
     private MessageQueue mailbox; //This Agent Mailbox
@@ -499,6 +506,11 @@ public abstract class Agent extends Agt0DSL {
     @WhenReceived(Agent.SYS_TERMINATION_MESSAGE)
     public void handleTermination() {
         finish();
+    }
+    
+    @WhenReceived(Agent.SYS_TICK_MESSAGE)
+    public void handleTick(){
+        //DO NOTHING THIS MESSAGE ONLY RESPONSIBLE TO WAKE UP THE AGENT..
     }
 
     /**

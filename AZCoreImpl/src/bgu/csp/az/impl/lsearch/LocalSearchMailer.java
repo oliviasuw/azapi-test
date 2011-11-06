@@ -11,6 +11,7 @@ import bgu.csp.az.api.Message;
 import bgu.csp.az.api.MessageQueue;
 import bgu.csp.az.api.exp.UnRegisteredAgentException;
 import bgu.csp.az.api.infra.Execution;
+import bgu.csp.az.api.lsearch.Messages;
 import bgu.csp.az.api.lsearch.SystemClock;
 import bgu.csp.az.impl.DefaultMailer;
 import bgu.csp.az.impl.DefaultMessageQueue;
@@ -86,22 +87,15 @@ public class LocalSearchMailer implements Mailer, SystemClock.TickListener {
     public void onTickHappend(SystemClock sender) {
         lock.writeLock().lock();
         try {
-            Message tickMessage = new Message(Agent.SYS_TICK_MESSAGE, -1/*SYSTEM ID*/, new Object[0]);
             for (Entry<String, DefaultMessageQueue[]> e : nextStepMailer.getMailBoxes().entrySet()) {
                 for (int i = 0; i < e.getValue().length; i++) {
-                    //FIRST SEND THE TICK MESSAGE 
-                    mainMailer.send(tickMessage, i, e.getKey());
-                    //THEN SEND THE CACHED MESSAGES
                     final DefaultMessageQueue q = e.getValue()[i];
-                    while (q.size() > 0) {
-                        mainMailer.send(q.take(), i, e.getKey());
-                    }
+                    Message tickMessage = new Message(Agent.SYS_TICK_MESSAGE, -1/*SYSTEM ID*/, new Object[]{sender.time(), new Messages(q.retriveAll())});
+                    //SEND THE TICK MESSAGE 
+                    mainMailer.send(tickMessage, i, e.getKey());
                 }
             }
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            Agt0DSL.throwUncheked(ex);
-        } finally{
+        } finally {
             lock.writeLock().unlock();
         }
     }

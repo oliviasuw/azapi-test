@@ -9,25 +9,34 @@ import bgu.csp.az.api.AgentRunner;
 import bgu.csp.az.api.AlgorithmMetadata;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.Statistic;
-import bgu.csp.az.impl.DefaultAgentRunner;
-import bgu.csp.az.impl.DefaultMailer;
+import bgu.csp.az.api.lsearch.SystemClock;
+import bgu.csp.az.impl.lsearch.LocalSearchAgentRunner;
+import bgu.csp.az.impl.lsearch.LocalSearchMailer;
+import bgu.csp.az.impl.lsearch.DefaultSystemClock;
 import java.util.concurrent.ExecutorService;
 
 /**
  *
  * @author bennyl
  */
-public class CompleteSearchExecution extends AbstractExecution {
+public class LocalSearchExecution extends AbstractExecution {
 
     private TimeDelta timeDelta;
     private Statistic timeDeltaStatistic;
+    private SystemClock clock;
 
-    public CompleteSearchExecution(ExecutorService exec, Problem p, AlgorithmMetadata a) {
-        super(exec, p, new DefaultMailer(), a);
+    public LocalSearchExecution(ExecutorService exec, Problem p, AlgorithmMetadata a) {
+        super(exec, p, new LocalSearchMailer(), a);
+    }
+
+    public SystemClock getClock() {
+        return clock;
     }
 
     @Override
     protected void configure() {
+        clock = new DefaultSystemClock(this);
+        ((LocalSearchMailer) getMailer()).setClock(clock);
         timeDelta = new TimeDelta();
         timeDelta.setStart();
         timeDeltaStatistic = getStatisticsTree().getChild("Physical Running Time (Mili seconds)");
@@ -43,7 +52,7 @@ public class CompleteSearchExecution extends AbstractExecution {
         }
         
         for (int i = 0; i < getAgents().length; i++) {
-            getRunners()[i] = new DefaultAgentRunner(getAgents()[i], this);
+            getRunners()[i] = new LocalSearchAgentRunner(getAgents()[i], this, clock);
         }
     }
 

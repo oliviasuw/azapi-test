@@ -137,6 +137,10 @@ public class DefaultAgentRunner implements AgentRunner, IdleDetector.Listener {
         block.acquire();
     }
 
+    protected int getRunningAgentId(){
+        return this.currentExecutedAgent.getId();
+    }
+    
     /**
      * designmed to be override by derrived classes like LocalSearchAgentRunner
      */

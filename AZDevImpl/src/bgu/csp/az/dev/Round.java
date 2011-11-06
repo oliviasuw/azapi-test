@@ -4,6 +4,7 @@
  */
 package bgu.csp.az.dev;
 
+import bgu.csp.az.api.AlgorithmMetadata;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.pseq.ProblemSequence;
 import bgu.csp.az.impl.pseq.RandomProblemSequence;
@@ -21,7 +22,6 @@ public class Round {
     int n;
     int d;
     int maxCost;
-    String type;
     float p1;
     float p2Tick = 0.1f;
     float p2Start = 0.1f;
@@ -29,12 +29,11 @@ public class Round {
     int number;
     Problem fromProblem = null;
 
-    public Round(int length, int n, int d, int maxCost, String type, float p1, int number) {
+    public Round(int length, int n, int d, int maxCost, float p1, int number) {
         this.length = length;
         this.n = n;
         this.d = d;
         this.maxCost = maxCost;
-        this.type = type;
         this.p1 = p1;
         this.number = number;
     }
@@ -67,11 +66,11 @@ public class Round {
         this(1, //Round Length
                 p.getNumberOfVariables(),
                 p.getDomainSize(0),
-                cint(p.getMetadata().get(ConnectivityProblemSequence.MAX_COST_PROBLEM_METADATA)),
-                "Resurected Problem",
-                cfloat(p.getMetadata().get(ConnectivityProblemSequence.P1_PROBLEM_METADATA)),
+                cint(p.getMetadata().get(RandomProblemSequence.MAX_COST_PROBLEM_METADATA)),
+                cfloat(p.getMetadata().get(RandomProblemSequence.P1_PROBLEM_METADATA)),
                 0);//Round Number
         this.fromProblem = p;
+
     }
 
     public float getP1() {
@@ -98,16 +97,12 @@ public class Round {
         return number;
     }
 
-    public String getType() {
-        return type;
-    }
-
     @Override
     public String toString() {
         return "Round #" + number;
     }
 
-    public ProblemSequence generateProblemSequance() {
+    public ProblemSequence generateProblemSequance(final AlgorithmMetadata alg) {
         if (fromProblem != null) {
             return generateProblemSequanceFromAProblem();
         }
@@ -115,15 +110,27 @@ public class Round {
         return new ProblemSequence() {
 
             int current = 0;
-            float steps = (p2End - p2Start)/p2Tick + 1;
+            float steps = (p2End - p2Start) / p2Tick + 1;
             int split = (int) Math.ceil(length / steps);
             float cp2 = p2Start;
-            
+
             @Override
             public Problem next() {
                 current++;
-                if (current % split == 0) cp2 += p2Tick;
-                return new ConnectivityProblemSequence(p1, cp2, maxCost, n, d, System.currentTimeMillis(), 1).next();
+                if (current % split == 0) {
+                    cp2 += p2Tick;
+                }
+                switch (alg.getProblemType()) {
+                    case CSP: 
+                        maxCost = 1;
+                        //INTENDED FALL DOWN - DONT PUT BREAK HERE!
+                    case COP:
+                        return new RandomProblemSequence(p1, cp2, maxCost, n, d, System.currentTimeMillis(), 1).next();
+                    case CONNECTED_COP:
+                        return new ConnectivityProblemSequence(p1, cp2, maxCost, n, d, System.currentTimeMillis(), 1).next();                       
+                    default:
+                        throw new UnsupportedOperationException("Not Supporting this problem type: " + alg.getProblemType());
+                }
             }
 
             @Override
@@ -131,7 +138,7 @@ public class Round {
                 return current <= length;
             }
         };
-        
+
     }
 
     private ProblemSequence generateProblemSequanceFromAProblem() {
@@ -148,7 +155,7 @@ public class Round {
             @Override
             public boolean hasNext() {
                 return hnext;
-      
+
             }
         };
     }

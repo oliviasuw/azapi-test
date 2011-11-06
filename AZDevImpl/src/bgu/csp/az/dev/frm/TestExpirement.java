@@ -4,16 +4,17 @@
  */
 package bgu.csp.az.dev.frm;
 
+import bgu.csp.az.impl.DefaultMailer;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.ExecutionResult;
 import bgu.csp.az.api.tools.Assignment;
 import bgu.csp.az.dev.alg.IterativeCSPSolver.Status;
-import bgu.csp.az.dev.slog.ScenarioLogger;
 import java.util.List;
 import bgu.csp.az.dev.Round;
 import bgu.csp.az.api.Problem;
 import java.io.File;
 import bgu.csp.az.api.AlgorithmMetadata;
+import bgu.csp.az.api.SearchType;
 import bgu.csp.az.api.Statistic;
 import bgu.csp.az.impl.infra.AbstractExecution;
 import bgu.csp.az.impl.infra.Expirament;
@@ -21,8 +22,8 @@ import bgu.csp.az.api.pseq.ProblemSequence;
 import bgu.csp.az.api.tools.IdleDetector;
 import bgu.csp.az.dev.alg.BranchAndBound;
 import bgu.csp.az.dev.alg.MACSolver;
-import bgu.csp.az.impl.DefaultMailer;
 import bgu.csp.az.impl.infra.CompleteSearchExecution;
+import bgu.csp.az.impl.infra.LocalSearchExecution;
 import bgu.csp.az.impl.infra.LogListener;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
@@ -126,25 +127,24 @@ public class TestExpirement extends Expirament {
 
     @Override
     protected AbstractExecution nextExecution() {
-        CompleteSearchExecution te = new CompleteSearchExecution(es);
-        te.setAlgorithm(alg);
-
-        for (LogListener ll : logListeners) te.addLogListener(ll);
 
         if (currentRound == null || !currentRound.hasNext()) {
             final Round r = roundsLeft.remove(0);
-            currentRound = r.generateProblemSequance();
+            currentRound = r.generateProblemSequance(alg);
             fireRoundChanged(r);
         }
-
-        final Problem p = currentRound.next();
-        te.setGlobalProblem(p);
-        te.setMailer(new DefaultMailer(te));
-        if (alg.isUseIdleDetector()) {
-            te.setIdleDetector(new IdleDetector(p.getNumberOfVariables(), te.getMailer(), alg.getAgentClass().getName()));
+        
+        AbstractExecution te = null;
+        if (alg.getSearchType() == SearchType.COMPLEATE) {
+            te = new CompleteSearchExecution(es, currentRound.next(), alg);
+        } else {
+            te = new LocalSearchExecution(es, currentRound.next(), alg);
         }
-
-        fireNewProblemExecuting(p);
+        
+        for (LogListener ll : logListeners) {
+            te.addLogListener(ll);
+        }
+        fireNewProblemExecuting(te.getGlobalProblem());
 
         return te;
     }
@@ -177,7 +177,6 @@ public class TestExpirement extends Expirament {
                             cint(attr(p, "n")),
                             cint(attr(p, "d")),
                             cint(attr(p, "max-cost")),
-                            attr(p, "type"),
                             cfloat(attr(p, "p1")),
                             rnum++);
 

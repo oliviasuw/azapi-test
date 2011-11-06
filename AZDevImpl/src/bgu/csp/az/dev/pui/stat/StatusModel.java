@@ -60,7 +60,7 @@ public class StatusModel extends Model implements TestExpirement.Listener {
     }
 
     @DataExtractor(param = ROUNDS_PARAM,
-    columns = {"Length", "#Vars", "|Domain|", "Max Cost", "P(Constraint Between Two Variables)", "Problem Type"})
+    columns = {"Length", "#Vars", "|Domain|", "Max Cost", "P(Constraint Between Two Variables)"})
     public String extractRound(String column, Round from) {
         if ("Length".equals(column)) {
             return "" + from.getLength();
@@ -72,8 +72,6 @@ public class StatusModel extends Model implements TestExpirement.Listener {
             return "" + from.getMaxCost();
         } else if ("P(Constraint Between Two Variables)".equals(column)) {
             return "" + from.getP1();
-        } else if ("Problem Type".equals(column)) {
-            return "" + from.getType();
         } else {
             return "????????";
         }

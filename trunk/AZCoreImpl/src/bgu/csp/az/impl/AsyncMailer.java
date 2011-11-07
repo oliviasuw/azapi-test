@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  *
  * @author bennyl
  */
-public class DefaultMailer implements Mailer {
+public class AsyncMailer implements Mailer {
 
     public static final String RECEPIENT_MESSAGE_METADATA = "DefaultMailer.RECEPIENT_MESSAGE_METADATA";
     private Execution exec;

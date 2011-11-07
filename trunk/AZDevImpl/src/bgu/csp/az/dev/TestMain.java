@@ -12,7 +12,7 @@ public class TestMain {
     public static void main(String[] args){
         Agent0Tester.main(new String[]{
                 "-f", "C:\\Users\\bennyl\\runtime-EclipseApplication\\NestedCheck\\test.xml",
-                "-a", "ext.sim.agents.SBBAgent",
+                "-a", "ext.sim.agents.NestedCheckAgent",
                 "--cp", "C:\\Users\\bennyl\\runtime-EclipseApplication\\NestedCheck\\bin",
                 "--gui"
         });

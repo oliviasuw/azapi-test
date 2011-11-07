@@ -1,18 +1,20 @@
 package ext.sim.agents;
 
 import ext.sim.tools.Util;
+import bgu.csp.az.api.Continuation;
+import bgu.csp.az.api.ProblemType;
 import bgu.csp.az.api.agt.SimpleAgent;
 import bgu.csp.az.api.ano.Algorithm;
 import bgu.csp.az.api.ano.WhenReceived;
 import bgu.csp.az.api.tools.Assignment;
 import bgu.csp.az.impl.tools.DFSPsaudoTree;
 
-@Algorithm(value="DPOP", useIdleDetector=true)
+@Algorithm(name="DPOP", useIdleDetector=true, problemType=ProblemType.CONNECTED_COP)
 public class DPOPAgent extends SimpleAgent {
 
-	private DFSPsaudoTree tree;
-	private Util util;
-	private Assignment cpa;
+	protected DFSPsaudoTree tree;
+	protected Util util;
+	protected Assignment cpa;
 	
 		
     @Override
@@ -24,13 +26,19 @@ public class DPOPAgent extends SimpleAgent {
 //    	log("util is done");
     	cpa = new Assignment();
 //    	log("cpa done");
-    	tree.calculate(this);
+    	tree.calculate(this).andWhenDoneDo(new Continuation() {
+			
+			@Override
+			public void doContinue() {
+				if (tree.isLeaf()) {
+//		    		log("im a leaf");
+//		            log("processing");
+		    		process();
+				}		
+			}
+		});
 //    	log("tree calculated");
-    	if (tree.isLeaf()) {
-//    		log("im a leaf");
-//            log("processing");
-    		process();
-        }
+    	
     }
 
     private int ChooseOptimalValue() {
@@ -95,6 +103,7 @@ public class DPOPAgent extends SimpleAgent {
         }
 //        log("ending handle utilMessage");
 	}
+	
 	
 	@Override
 	public void onIdleDetected() {

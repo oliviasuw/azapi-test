@@ -4,7 +4,6 @@
  */
 package bgu.csp.az.dev.frm;
 
-import bgu.csp.az.impl.AsyncMailer;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.ExecutionResult;
 import bgu.csp.az.api.tools.Assignment;
@@ -22,8 +21,6 @@ import bgu.csp.az.api.pseq.ProblemSequence;
 import bgu.csp.az.api.tools.IdleDetector;
 import bgu.csp.az.dev.alg.BranchAndBound;
 import bgu.csp.az.dev.alg.MACSolver;
-import bgu.csp.az.impl.infra.CompleteSearchExecution;
-import bgu.csp.az.impl.lsearch.LocalSearchExecution;
 import bgu.csp.az.impl.infra.LogListener;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
@@ -33,6 +30,8 @@ import nu.xom.ParsingException;
 
 import static bc.dsl.XNavDSL.*;
 import static bam.utils.JavaUtils.*;
+import bgu.csp.az.impl.async.AsyncExecution;
+import bgu.csp.az.impl.sync.SyncExecution;
 
 /**
  * This Is An Expirement Designed for Testing porpuse 
@@ -135,10 +134,10 @@ public class TestExpirement extends Expirament {
         }
         
         AbstractExecution te = null;
-        if (alg.getSearchType() == SearchType.COMPLEATE) {
-            te = new CompleteSearchExecution(es, currentRound.next(), alg);
+        if (alg.getSearchType() == SearchType.ASYNCHRONIZED) {
+            te = new AsyncExecution(es, currentRound.next(), alg);
         } else {
-            te = new LocalSearchExecution(es, currentRound.next(), alg);
+            te = new SyncExecution(es, currentRound.next(), alg);
         }
         
         for (LogListener ll : logListeners) {

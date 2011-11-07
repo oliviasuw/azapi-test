@@ -1,5 +1,6 @@
 package bgu.csp.az.impl.infra;
 
+import bgu.csp.az.impl.async.AsyncExecution;
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.Agent.PlatformOps;
 import bgu.csp.az.api.AgentRunner;
@@ -9,6 +10,7 @@ import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.Statistic;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.ExecutionResult;
+import bgu.csp.az.api.lsearch.SystemClock;
 import bgu.csp.az.api.tools.Assignment;
 import bgu.csp.az.api.tools.IdleDetector;
 import java.util.HashMap;
@@ -43,6 +45,7 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
     private AgentRunner[] agentRunners;
     private Agent[] agents;
     private LinkedList<LogListener> logListeners = new LinkedList<LogListener>();
+    private SystemClock clock;
 
     /**
      * 
@@ -75,6 +78,15 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
         }
     }
 
+    @Override
+    public SystemClock getSystemClock() {
+        return this.clock;
+    }
+
+    public void setSystemClock(SystemClock clock) {
+        this.clock = clock;
+    }
+
     public void addLogListener(LogListener ll) {
         this.logListeners.add(ll);
     }
@@ -100,11 +112,11 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
             }
             return true;
         } catch (InstantiationException ex) {
-            Logger.getLogger(CompleteSearchExecution.class.getName()).log(Level.SEVERE, "every agent must have empty constractor", ex);
+            Logger.getLogger(AsyncExecution.class.getName()).log(Level.SEVERE, "every agent must have empty constractor", ex);
             reportCrushAndStop(ex, "execution failed on initial state - every agent must have empty constractor");
             return false;
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(CompleteSearchExecution.class.getName()).log(Level.SEVERE, "agent cannot be abstract/ cannot have a private constractor", ex);
+            Logger.getLogger(AsyncExecution.class.getName()).log(Level.SEVERE, "agent cannot be abstract/ cannot have a private constractor", ex);
             reportCrushAndStop(ex, "execution failed on initial state - agent cannot be abstract/ cannot have a private constractor");
             return false;
         }
@@ -258,7 +270,7 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
             try {
                 runner.join();
             } catch (InterruptedException ex) {
-                Logger.getLogger(CompleteSearchExecution.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AsyncExecution.class.getName()).log(Level.SEVERE, null, ex);
                 reportCrushAndStop(ex, "interupted while waiting for all agents to finish");
             }
         }

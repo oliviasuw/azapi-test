@@ -57,4 +57,12 @@ public class DefaultMessageQueue implements MessageQueue {
         
         return all;
     }
+    
+    public boolean isEmpty(){
+        return this.q.isEmpty();
+    }
+    
+    public boolean isNotEmpty(){
+        return !this.q.isEmpty();
+    }
 }

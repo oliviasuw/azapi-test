@@ -1,4 +1,4 @@
-package bgu.csp.az.impl;
+package bgu.csp.az.impl.async;
 
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.AgentRunner;

@@ -222,9 +222,10 @@ public class TestExpirement extends Expirament {
     protected ExecutionResult safeSolve(Problem currentProblem) {
         Status stat;
         switch (alg.getProblemType()) {
+            case CONNECTED_COP:
             case COP:
                 return new ExecutionResult(BranchAndBound.solve(currentProblem));
-            case CONNECTED_COP:
+            
             case CSP:
                 final MACSolver msolver = new MACSolver();
                 stat = msolver.solve(currentProblem);

@@ -4,6 +4,7 @@
  */
 package bgu.csp.az.dev.frm;
 
+import bgu.csp.az.impl.async.AsyncMailer;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.ExecutionResult;
 import bgu.csp.az.api.tools.Assignment;
@@ -21,6 +22,8 @@ import bgu.csp.az.api.pseq.ProblemSequence;
 import bgu.csp.az.api.tools.IdleDetector;
 import bgu.csp.az.dev.alg.BranchAndBound;
 import bgu.csp.az.dev.alg.MACSolver;
+import bgu.csp.az.impl.async.AsyncExecution;
+import bgu.csp.az.impl.sync.SyncExecution;
 import bgu.csp.az.impl.infra.LogListener;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;

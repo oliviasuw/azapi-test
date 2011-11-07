@@ -4,7 +4,7 @@
  */
 package bgu.csp.az.dev.frm;
 
-import bgu.csp.az.impl.DefaultMailer;
+import bgu.csp.az.impl.AsyncMailer;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.ExecutionResult;
 import bgu.csp.az.api.tools.Assignment;
@@ -23,7 +23,7 @@ import bgu.csp.az.api.tools.IdleDetector;
 import bgu.csp.az.dev.alg.BranchAndBound;
 import bgu.csp.az.dev.alg.MACSolver;
 import bgu.csp.az.impl.infra.CompleteSearchExecution;
-import bgu.csp.az.impl.infra.LocalSearchExecution;
+import bgu.csp.az.impl.lsearch.LocalSearchExecution;
 import bgu.csp.az.impl.infra.LogListener;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
@@ -224,6 +224,7 @@ public class TestExpirement extends Expirament {
         switch (alg.getProblemType()) {
             case COP:
                 return new ExecutionResult(BranchAndBound.solve(currentProblem));
+            case CONNECTED_COP:
             case CSP:
                 final MACSolver msolver = new MACSolver();
                 stat = msolver.solve(currentProblem);

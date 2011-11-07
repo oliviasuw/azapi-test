@@ -13,8 +13,8 @@ import bgu.csp.az.api.tools.Assignment;
 
 public class Util implements DeepCopyable{
 	public class AgentValue implements DeepCopyable{
-		int agent;
-		int value;
+		protected int agent;
+		protected int value;
 
 		public AgentValue(AgentValue a) {
 			this.agent = a.agent;
@@ -49,10 +49,10 @@ public class Util implements DeepCopyable{
 		}
 	}
 	public class AgentUtil implements Comparable<AgentUtil>, DeepCopyable{
-		private int agentID;
+		protected int agentID;
 		protected LinkedList<AgentValue> agentValues;
-		private int util;
-		private int value;
+		protected int util;
+		protected int value;
 
 		protected AgentUtil(AgentUtil u) {
 			this(u.agentID);
@@ -163,13 +163,13 @@ public class Util implements DeepCopyable{
 		}
 	}
 	protected int agent;
-	private LinkedList<AgentUtil> agentUtils;
-	private LinkedList<Util> childrenUtils;
-	private int domainSize;
+	protected LinkedList<AgentUtil> agentUtils;
+	protected LinkedList<Util> childrenUtils;
+	protected int domainSize;
 
-	private Problem problem;
+	protected Problem problem;
 
-	private LinkedList<Integer> relevantAncestors;
+	protected LinkedList<Integer> relevantAncestors;
 
 	public Util(Problem problem, int agentId, int domain) {
 		this.problem = problem;

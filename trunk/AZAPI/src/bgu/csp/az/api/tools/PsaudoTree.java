@@ -39,12 +39,6 @@ public interface PsaudoTree {
      */
     public Set<Integer> getSeperator();
 
-    /**
-     * will use default leader selection algorithm ( = select agent 0 )
-     * @param a 
-     */
-    public void calculate(Agent a) throws NotConnectivityGraphException;
-
     public static class NotConnectivityGraphException extends RuntimeException {
 
         public NotConnectivityGraphException(Throwable cause) {

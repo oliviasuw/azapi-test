@@ -71,9 +71,7 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
             shuttingdown = true;
             stop();
 
-            if (error != null) {
-                System.out.println("PANIC! " + error);
-            }
+            System.out.println("PANIC! " + ex.getMessage() + ", [USER TEXT]: " + error);
         }
     }
 

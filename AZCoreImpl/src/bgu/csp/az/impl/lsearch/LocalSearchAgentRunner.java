@@ -7,14 +7,14 @@ package bgu.csp.az.impl.lsearch;
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.Agt0DSL;
 import bgu.csp.az.api.lsearch.SystemClock;
-import bgu.csp.az.impl.DefaultAgentRunner;
+import bgu.csp.az.impl.AsyncAgentRunner;
 import bgu.csp.az.impl.infra.AbstractExecution;
 
 /**
  *
  * @author bennyl
  */
-public class LocalSearchAgentRunner extends DefaultAgentRunner {
+public class LocalSearchAgentRunner extends AsyncAgentRunner {
 
     SystemClock clock;
     
@@ -23,7 +23,7 @@ public class LocalSearchAgentRunner extends DefaultAgentRunner {
         this.clock = clock;
     }
 
-    @Override
+    //@Override
     protected void onCurrentExecutedAgentOutOfMessages() {
         try {
             System.out.println("LocalSearchAgentRunner.onCurrentExecutedAgentOutOfMessages: ticking " + super.getRunningAgentId());

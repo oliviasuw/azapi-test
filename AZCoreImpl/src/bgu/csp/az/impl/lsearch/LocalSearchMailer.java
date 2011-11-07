@@ -13,7 +13,7 @@ import bgu.csp.az.api.exp.UnRegisteredAgentException;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.lsearch.Messages;
 import bgu.csp.az.api.lsearch.SystemClock;
-import bgu.csp.az.impl.DefaultMailer;
+import bgu.csp.az.impl.AsyncMailer;
 import bgu.csp.az.impl.DefaultMessageQueue;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -24,14 +24,14 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class LocalSearchMailer implements Mailer, SystemClock.TickListener {
 
-    private DefaultMailer mainMailer;
-    private DefaultMailer nextStepMailer;
+    private AsyncMailer mainMailer;
+    private AsyncMailer nextStepMailer;
     private SystemClock clock;
     private ReentrantReadWriteLock lock;
 
     public LocalSearchMailer() {
-        this.mainMailer = new DefaultMailer();
-        this.nextStepMailer = new DefaultMailer();
+        this.mainMailer = new AsyncMailer();
+        this.nextStepMailer = new AsyncMailer();
         lock = new ReentrantReadWriteLock();
     }
 

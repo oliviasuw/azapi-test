@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.csp.az.impl.infra;
+package bgu.csp.az.impl.lsearch;
 
 import bc.ds.TimeDelta;
 import bgu.csp.az.api.AgentRunner;
@@ -10,9 +10,7 @@ import bgu.csp.az.api.AlgorithmMetadata;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.Statistic;
 import bgu.csp.az.api.lsearch.SystemClock;
-import bgu.csp.az.impl.lsearch.LocalSearchAgentRunner;
-import bgu.csp.az.impl.lsearch.LocalSearchMailer;
-import bgu.csp.az.impl.lsearch.DefaultSystemClock;
+import bgu.csp.az.impl.infra.AbstractExecution;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -41,15 +39,19 @@ public class LocalSearchExecution extends AbstractExecution {
         timeDelta.setStart();
         timeDeltaStatistic = getStatisticsTree().getChild("Physical Running Time (Mili seconds)");
         final int numberOfVariables = getGlobalProblem().getNumberOfVariables();
-
+        final int numberOfCores = Runtime.getRuntime().availableProcessors();
+        final int numberOfAgentRunners = Math.min(numberOfCores, numberOfVariables); 
+        
         /**
-         * THIS EXECUTION MOD USES 1 AGENT RUNNER FOR EACH AGENT
+         * THIS EXECUTION MOD USES AGENT RUNNER IN POOL MODE
          */
-        setAgentRunners(new AgentRunner[numberOfVariables]);
+        setAgentRunners(new AgentRunner[numberOfAgentRunners]);
 
         if (!generateAgents()) {
             return;
         }
+
+        
         
         for (int i = 0; i < getAgents().length; i++) {
             getRunners()[i] = new LocalSearchAgentRunner(getAgents()[i], this, clock);

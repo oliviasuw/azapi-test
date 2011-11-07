@@ -9,8 +9,8 @@ import bgu.csp.az.api.AgentRunner;
 import bgu.csp.az.api.AlgorithmMetadata;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.Statistic;
-import bgu.csp.az.impl.DefaultAgentRunner;
-import bgu.csp.az.impl.DefaultMailer;
+import bgu.csp.az.impl.AsyncAgentRunner;
+import bgu.csp.az.impl.AsyncMailer;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -23,7 +23,7 @@ public class CompleteSearchExecution extends AbstractExecution {
     private Statistic timeDeltaStatistic;
 
     public CompleteSearchExecution(ExecutorService exec, Problem p, AlgorithmMetadata a) {
-        super(exec, p, new DefaultMailer(), a);
+        super(exec, p, new AsyncMailer(), a);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class CompleteSearchExecution extends AbstractExecution {
         }
         
         for (int i = 0; i < getAgents().length; i++) {
-            getRunners()[i] = new DefaultAgentRunner(getAgents()[i], this);
+            getRunners()[i] = new AsyncAgentRunner(getAgents()[i], this);
         }
     }
 

@@ -9,6 +9,6 @@ package bgu.csp.az.api;
  * @author bennyl
  */
 public enum SearchType {
-    COMPLEATE,
-    LOCAL_SEARCH
+    ASYNCHRONIZED,
+    SYNCHRONIZED
 }

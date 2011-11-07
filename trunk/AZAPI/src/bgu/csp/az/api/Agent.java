@@ -519,6 +519,10 @@ public abstract class Agent extends Agt0DSL {
         finish();
     }
     
+    public long getSystemTime(){
+        return pops.getExecution().getSystemClock().time();
+    }
+    
     /**
      * this class contains all the "hidden but public" methods,
      * because the user should extend the agent class all the "platform" operations 

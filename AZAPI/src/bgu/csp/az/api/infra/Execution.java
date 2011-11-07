@@ -9,6 +9,7 @@ import bgu.csp.az.api.AgentRunner;
 import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.Statistic;
+import bgu.csp.az.api.lsearch.SystemClock;
 import bgu.csp.az.api.tools.Assignment;
 
 /**
@@ -38,6 +39,8 @@ public interface Execution extends Process {
     
     AgentRunner getAgentRunnerFor(Agent a);
 
+    SystemClock getSystemClock();
+    
     /**
      * @return the statistics tree - a tree contains statistics about this execution
      */

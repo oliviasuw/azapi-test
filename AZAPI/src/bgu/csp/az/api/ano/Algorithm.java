@@ -35,6 +35,6 @@ public @interface Algorithm {
      */
     boolean useIdleDetector() default false;
     
-    SearchType searchType() default SearchType.COMPLEATE; 
+    SearchType searchType() default SearchType.ASYNCHRONIZED; 
 
 }

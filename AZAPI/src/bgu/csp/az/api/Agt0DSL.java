@@ -4,11 +4,7 @@
  */
 package bgu.csp.az.api;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -251,5 +247,24 @@ public class Agt0DSL {
     @SuppressWarnings("unchecked")
     private static <E extends Throwable> void throwAny(Throwable e) throws E {
         throw (E)e;
+    }
+    
+    public static <T> T random(List<T> c ){
+       Random r = new Random();
+       if (c.isEmpty()) return null;
+       return c.get(r.nextInt(c.size()));
+    }
+    
+    
+    public static <T> T random(Set<T> c ){
+       Random r = new Random();
+       return (T) random(c.toArray()); 
+    }
+    
+    
+    public static <T> T random(T[] c ){
+       Random r = new Random();
+       if (c.length == 0) return null;
+       return c[r.nextInt(c.length)];
     }
 }

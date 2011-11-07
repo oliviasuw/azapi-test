@@ -2,13 +2,14 @@
  * To change this template, choose Tools | Templates and open the template in
  * the editor.
  */
-package bgu.csp.az.impl;
+package bgu.csp.az.impl.async;
 
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.Agt0DSL;
 import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.Message;
 import bgu.csp.az.api.infra.Execution;
+import bgu.csp.az.impl.DefaultMessageQueue;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;

@@ -505,6 +505,10 @@ public abstract class Agent extends Agt0DSL {
     public void onIdleDetected() {
         throw new UnsupportedOperationException("if you are using IdleDetected feature you must implements Agent.onIdleDetected method");
     }
+    
+    public void onMailBoxEmpty(){
+        throw new UnsupportedOperationException("if you are running a Synchronized Search you must implements Agent.onMailBoxEmpty method");
+    }
 
     /**
      * this function called when a SYS_TERMINATION Message Arrived -> it just calls finish on the agent, 

@@ -28,7 +28,7 @@ public interface AgentRunner extends Runnable {
      * we will add support for this feature (Implementor Comment: by adding mailGroupKey in the idle detector)
      * @param nestedAgent 
      */
-    public void nest(int originalAgentId, SimpleAgent nestedAgent);
+    public void nest(int originalAgentId, SimpleAgent nestedAgent, ContinuationMediator cmed);
     
     /**
      * this method will block the calling thread until this agent runner will finish it current work

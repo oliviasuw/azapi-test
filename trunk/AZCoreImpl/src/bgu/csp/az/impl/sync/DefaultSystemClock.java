@@ -19,9 +19,9 @@ public class DefaultSystemClock implements SystemClock {
 
     private CyclicBarrier barrier;
     private Semaphore updateListenersLock;
-    private Execution exc;
     private volatile long time;
     private LinkedList<TickListener> tickListeners;
+    private volatile boolean closed = false;
 
     public DefaultSystemClock() {
         this.time = 0;
@@ -30,31 +30,32 @@ public class DefaultSystemClock implements SystemClock {
     }
 
     public void setExcution(Execution exc) {
-        this.exc = exc;
-        this.barrier = new CyclicBarrier(exc.getGlobalProblem().getNumberOfVariables());
+        this.barrier = new CyclicBarrier(exc.getNumberOfAgentRunners());
     }
 
     @Override
     public void tick() throws InterruptedException {
+        if (closed) return;
         try {
             long nextTime = time + 1;
             barrier.await();
             try {
                 /**
-                 * stop the agents untill all the listeners are updated
+                 * stop the agents until all the listeners are updated
                  * needed as only after the listener was updated the agents allowed to continue running 
                  * so we will not get retick before the message queue will get updated..
                  */
                 updateListenersLock.acquire();
                 if (time < nextTime) {
                     time = nextTime;
-                    System.out.println("TICK: " + time);
+//                    System.out.println("TICK: " + time);
                     fireTickHappend();
                 }
             } finally {
                 updateListenersLock.release();
             }
         } catch (BrokenBarrierException ex) {
+            if (closed) return;
             System.err.println("got BrokenBarrierException, translating it to InterruptedException (DefaultSystemClock)");
             throw new InterruptedException(ex.getMessage());
         }
@@ -79,5 +80,11 @@ public class DefaultSystemClock implements SystemClock {
         for (TickListener l : tickListeners) {
             l.onTickHappend(this);
         }
+    }
+
+    @Override
+    public void close() {
+        closed = true;
+        barrier.reset();
     }
 }

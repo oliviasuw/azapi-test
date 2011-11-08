@@ -11,11 +11,8 @@ import bgu.csp.az.api.agt.SimpleAgent;
 import bgu.csp.az.api.lsearch.SystemClock;
 import bgu.csp.az.impl.infra.AbstractExecution;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -73,13 +70,15 @@ public class SyncAgentRunner implements AgentRunner {
                 long currentTime = clock.time();
                 allFinished = true;
                 for (State s : states) {
+                    if (!s.current.isFinished()) {
+                        allFinished = false;
+                    }
+                    
                     long got = s.time.getAndSet(currentTime);
                     if (got == -1) {
-                        allFinished = false;
                         s.current.start();
                     } else if (got < currentTime) {
                         if (!s.current.isFinished()) {
-                            allFinished = false;
                             try {
                                 while (s.current.hasPendingMessages()) {
                                     s.current.processNextMessage();
@@ -89,7 +88,7 @@ public class SyncAgentRunner implements AgentRunner {
                                     cmed = s.nestedContinuations.removeFirst();
                                     s.current = s.nested.removeFirst();
                                     cmed.executeContinuation();
-                                    System.out.println("Returning Back to " + s.current.getClass().getSimpleName());
+//                                    System.out.println("Returning Back to " + s.current.getClass().getSimpleName());
                                 }
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt(); //REFLAGING THE CURRENT THREAD.
@@ -101,12 +100,15 @@ public class SyncAgentRunner implements AgentRunner {
 
                 if (!Thread.currentThread().isInterrupted()) {
                     try {
+//                        System.out.println("Agent Runner '" + Thread.currentThread().getName() + "' Ticking");
                         clock.tick();
+//                        System.out.println("Agent Runner '" + Thread.currentThread().getName() + "' Done Ticking");
                     } catch (InterruptedException ex) {
                         Thread.currentThread().interrupt(); //REFLAGING THE CURRENT THREAD.
                         System.out.println("Agent Runner Interrupted While Ticking!");
                     }
                 }
+
             }
         } catch (Exception ex) {
             exec.reportCrushAndStop(ex, "Agent Cause An Error!");
@@ -115,7 +117,8 @@ public class SyncAgentRunner implements AgentRunner {
             //AFTER THIS POINT THE EXCEPTION WILL BE LOST (BUT CAN BE RETRIVED VIA THE RESULT OF THIS ALGORITHM)) 
             ex.printStackTrace();
         } finally {
-            System.out.println("Agent Runner Terminated.");
+            clock.close();
+            System.out.println("Agent Runner '" + Thread.currentThread().getName() + "' Terminated.");
             joinLock.release();
         }
     }

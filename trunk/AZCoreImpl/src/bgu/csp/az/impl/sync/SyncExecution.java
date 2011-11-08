@@ -30,7 +30,6 @@ public class SyncExecution extends AbstractExecution {
     @Override
     protected void configure() {
         DefaultSystemClock clock = new DefaultSystemClock();
-        clock.setExcution(this);
         setSystemClock(clock);
         ((SyncMailer) getMailer()).setClock(clock);
         timeDelta = new TimeDelta();
@@ -49,6 +48,7 @@ public class SyncExecution extends AbstractExecution {
         }
         
         setAgentRunners(SyncAgentRunner.createAgentRunners(numberOfAgentRunners, getSystemClock(), this, getAgents()));
+        clock.setExcution(this); //MUST BE CALLED AFTER THE AGENT RUNNERS HAVE BEEN ASSIGNED...
     }
 
     @Override

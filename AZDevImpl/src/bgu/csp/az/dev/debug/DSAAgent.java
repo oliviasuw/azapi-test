@@ -1,12 +1,10 @@
 package bgu.csp.az.dev.debug;
 
 
-import bgu.csp.az.api.Message;
 import bgu.csp.az.api.SearchType;
 import bgu.csp.az.api.agt.SimpleAgent;
 import bgu.csp.az.api.ano.Algorithm;
 import bgu.csp.az.api.ano.WhenReceived;
-import bgu.csp.az.api.lsearch.Messages;
 import bgu.csp.az.api.tools.Assignment;
 
 @Algorithm(name = "DSA", searchType = SearchType.SYNCHRONIZED)
@@ -28,14 +26,15 @@ public class DSAAgent extends SimpleAgent {
     @WhenReceived("ValueMessage")
     public void handleValueMessage(int value) {
         log("tick" + getSystemTime());
-        if (getSystemTime() == 2000 && isFirstAgent()) {
-            finishWithAccumulationOfSubmitedPartialAssignments();
-        }
         values.assign(getCurrentMessage().getSender(), value);
     }
 
     @Override
     public void onMailBoxEmpty() {
+        if (getSystemTime()+1 == 2000 && isFirstAgent()) {
+            finishWithAccumulationOfSubmitedPartialAssignments();
+        }
+        
         Integer newValue = calcDelta();
         if (Math.random() > p && newValue != null) {
             submitCurrentAssignment(newValue);

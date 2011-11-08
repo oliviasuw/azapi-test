@@ -83,6 +83,11 @@ public abstract class AbstractExecution extends ProcessImpl implements Execution
         return this.clock;
     }
 
+    @Override
+    public int getNumberOfAgentRunners() {
+        return agentRunners.length;
+    }
+    
     public void setSystemClock(SystemClock clock) {
         this.clock = clock;
     }

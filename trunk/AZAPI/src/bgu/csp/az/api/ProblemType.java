@@ -18,5 +18,7 @@ public enum ProblemType {
      */
     COP,
     
-    CONNECTED_COP
+    CONNECTED_COP,
+    
+    ADCOP
 }

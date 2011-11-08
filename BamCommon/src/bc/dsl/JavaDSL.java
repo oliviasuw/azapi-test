@@ -332,4 +332,14 @@ public class JavaDSL {
 
         return sb.toString();
     }
+    
+    
+    public static void throwUncheked(Throwable e) {
+        JavaDSL.<RuntimeException>throwAny(e);
+    }
+   
+    @SuppressWarnings("unchecked")
+    private static <E extends Throwable> void throwAny(Throwable e) throws E {
+        throw (E)e;
+    }
 }

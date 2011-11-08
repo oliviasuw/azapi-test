@@ -620,5 +620,12 @@ public abstract class Agent extends Agt0DSL {
             ccStatistic.add(1);
             return exec.getGlobalProblem().getConstraintCost(var1, val1, var2, val2);
         }
+
+        @Override
+        public double getConstraintCost(int var, int val, Assignment ass) {
+            nccc++;
+            ccStatistic.add(1);
+            return exec.getGlobalProblem().getConstraintCost(var, val, ass);
+        }
     }
 }

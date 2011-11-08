@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 
 import bgu.csp.az.api.Problem;
+import bgu.csp.az.api.ProblemView;
 import bgu.csp.az.api.ds.ImmutableSet;
 import java.io.Serializable;
 import java.util.Collection;
@@ -83,7 +84,7 @@ public class Assignment implements Serializable, DeepCopyable{
      * @param p 
      * @return the cost of this assignment
      */
-    public double calcCost(Problem p) {
+    public double calcCost(ProblemView p) {
         if (cachedCost >= 0) return cachedCost;
         
         double c = 0;
@@ -115,7 +116,7 @@ public class Assignment implements Serializable, DeepCopyable{
      * @return the cost that will be added to this assignment by assigning 
      * 		   var <- val in the problem p
      */
-    public double calcAddedCost(int var, int val, Problem p) {
+    public double calcAddedCost(int var, int val, ProblemView p) {
         double c = 0;
         c += p.getConstraintCost(var, val);
 

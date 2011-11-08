@@ -67,7 +67,7 @@ public class SendMediator {
      * send the message to the sending agent neighbores in the problem p
      * @param p
      */
-    public void toNeighbores(Problem p) {
+    public void toNeighbores(ProblemView p) {
         for (int n : p.getNeighbors(msg.getSender())) {
             to(n);
         }

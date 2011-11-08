@@ -1,5 +1,7 @@
 package bgu.csp.az.api;
 
+import bgu.csp.az.api.ds.ImmutableSet;
+import bgu.csp.az.api.tools.Assignment;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -12,6 +14,8 @@ import java.util.List;
 public abstract class Problem implements Serializable, ProblemView {
 
     private HashMap<String, Object> metadata = new HashMap<String, Object>();
+    protected int numvars;
+    protected ImmutableSet<Integer> domain;
     
     @Override
     public String toString() {
@@ -123,5 +127,35 @@ public abstract class Problem implements Serializable, ProblemView {
         
         return constraints;
     }
+    
+    @Override
+    public double getConstraintCost(int var, int val, Assignment ass) {
+        double sum = 0;
+        for (Integer av : ass.assignedVariables()) {
+            sum += getConstraintCost(var, val, av, ass.getAssignment(av));
+        }
+
+        return sum;
+    }
+    
+    abstract public void setConstraintCost(int var1, int val1, int var2, int val2, double cost);
+
+    public ImmutableSet<Integer> getDomain() {
+        return domain;
+    }
+
+    public void setDomain(ImmutableSet<Integer> domain) {
+        this.domain = domain;
+    }
+
+    public int getNumvars() {
+        return numvars;
+    }
+
+    public void setNumvars(int numvars) {
+        this.numvars = numvars;
+    }
+    
+    
         
 }

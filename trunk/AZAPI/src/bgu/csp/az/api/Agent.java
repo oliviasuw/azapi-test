@@ -8,6 +8,7 @@ import bgu.csp.az.api.exp.PanicedAgentException;
 import bgu.csp.az.api.exp.RepeatedCallingException;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.tools.Assignment;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public abstract class Agent extends Agt0DSL {
     private int id; //The Agent ID
     private Execution exec; //The Execution That This Agent Is Currently Running Within
     private MessageQueue mailbox; //This Agent Mailbox
-    private Problem prob; // The Agent Local Problem
+    private ProblemView prob; // The Agent Local Problem
     private boolean finished = false; //The Status of the current Agent - TODO: TRANSFORM INTO A STATUS ENUM SO WE CAN BE ABLE TO QUERY THE AGENT ABOUT IT CURRENT STATUS
     private Message currentMessage = null; //The Current Message (The Last Message That was taken from the mailbox
     private PlatformOps pops; //Hidden Platform Operation 
@@ -160,7 +161,7 @@ public abstract class Agent extends Agt0DSL {
      * and he managed it differently - so if you are building tools that have to be sent with the mailer to other agent dont 
      * include the agents problem in them as field.
      */
-    protected Problem getProblem() {
+    protected ProblemView getProblem() {
         return prob;
     }
 
@@ -595,7 +596,7 @@ public abstract class Agent extends Agt0DSL {
     /**
      * this is a wrap on the given problem - each agent posess a wrap like this instaed of the actual problem
      */
-    public class AgentProblem extends Problem {
+    public class AgentProblem implements ProblemView {
 
         @Override
         public int getNumberOfVariables() {
@@ -626,6 +627,36 @@ public abstract class Agent extends Agt0DSL {
             nccc++;
             ccStatistic.add(1);
             return exec.getGlobalProblem().getConstraintCost(var, val, ass);
+        }
+
+        @Override
+        public List<Constraint> getConstraints() {
+            return exec.getGlobalProblem().getConstraints();
+        }
+
+        @Override
+        public int getDomainSize(int var) {
+            return exec.getGlobalProblem().getDomainSize(var);
+        }
+
+        @Override
+        public HashMap<String, Object> getMetadata() {
+            return exec.getGlobalProblem().getMetadata();
+        }
+
+        @Override
+        public List<Integer> getNeighbors(int var) {
+            return exec.getGlobalProblem().getNeighbors(var);
+        }
+
+        @Override
+        public boolean isConsistent(int var1, int val1, int var2, int val2) {
+            return exec.getGlobalProblem().isConsistent(var1, val1, var2, val2);
+        }
+
+        @Override
+        public boolean isConstrained(int var1, int var2) {
+            return exec.getGlobalProblem().isConstrained(var1, var2);
         }
     }
 }

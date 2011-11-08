@@ -41,6 +41,8 @@ public interface Execution extends Process {
 
     SystemClock getSystemClock();
     
+    int getNumberOfAgentRunners();
+    
     /**
      * @return the statistics tree - a tree contains statistics about this execution
      */

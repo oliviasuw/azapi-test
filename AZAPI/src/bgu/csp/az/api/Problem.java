@@ -1,6 +1,5 @@
 package bgu.csp.az.api;
 
-import bgu.csp.az.api.ds.ImmutableSet;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -10,39 +9,9 @@ import java.util.List;
  * An abstract class for problems that should let you build any type of problem 
  * @author guyafe, edited by bennyl
  */
-public abstract class Problem implements Serializable {
+public abstract class Problem implements Serializable, ProblemView {
 
     private HashMap<String, Object> metadata = new HashMap<String, Object>();
-
-    /**
-     * @return the number of variables defined in this problem
-     */
-    public abstract int getNumberOfVariables();
-
-    /**
-     * return the domain of the given variable
-     * @param var
-     * @return
-     */
-    public abstract ImmutableSet<Integer> getDomainOf(int var);
-
-    /**
-     * 
-     * @param var1
-     * @param val1
-     * @param var2
-     * @param val2
-     * @return the cost of assigning var1=val1 when var2=val2
-     */
-    public abstract double getConstraintCost(int var1, int val1, int var2, int val2);
-
-    /**
-     * 
-     * @param var1
-     * @param val1
-     * @return the cost of assigning var1=val1
-     */
-    public abstract double getConstraintCost(int var1, int val1);
     
     @Override
     public String toString() {
@@ -69,6 +38,7 @@ public abstract class Problem implements Serializable {
      * @return true if there is a constraint between var1 and var2
      * operation cost: o(d^2)cc
      */
+    @Override
     public boolean isConstrained(int var1, int var2){
         for (Integer d1 : getDomainOf(var1)){
             for (Integer d2: getDomainOf(var2)){
@@ -79,6 +49,7 @@ public abstract class Problem implements Serializable {
         return false;
     }
 
+    
     /**
      * @param var1
      * @param val1
@@ -86,6 +57,7 @@ public abstract class Problem implements Serializable {
      * @param val2
      * @return true if var1=val1 consistent with var2=val2
      */
+    @Override
     public boolean isConsistent(int var1, int val1, int var2, int val2){
         return getConstraintCost(var1, val1, var2, val2) == 0;
     }
@@ -95,6 +67,7 @@ public abstract class Problem implements Serializable {
      * @param var
      * @return
      */
+    @Override
     public int getDomainSize(int var) {
         return getDomainOf(var).size();
     }
@@ -102,6 +75,7 @@ public abstract class Problem implements Serializable {
     /**
      * @return this problem metadata
      */
+    @Override
     public HashMap<String, Object> getMetadata() {
         return metadata;
     }
@@ -111,6 +85,7 @@ public abstract class Problem implements Serializable {
      * @return all the variables that costrainted with the given var 
      * operation cost: o(n*d^2)cc
      */
+    @Override
     public List<Integer> getNeighbors(int var) {
         List<Integer> l = new LinkedList<Integer>();
         for (int v = 0; v<getNumberOfVariables(); v++){
@@ -125,6 +100,7 @@ public abstract class Problem implements Serializable {
      *         problem
      *  operation cost: o(n^2*d^2)cc
      */
+    @Override
     public List<Constraint> getConstraints(){
         LinkedList<Constraint> constraints = new LinkedList<Constraint>();
         

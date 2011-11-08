@@ -1,13 +1,14 @@
 package bgu.csp.az.dev.debug;
 
 
+import bgu.csp.az.api.ProblemType;
 import bgu.csp.az.api.SearchType;
 import bgu.csp.az.api.agt.SimpleAgent;
 import bgu.csp.az.api.ano.Algorithm;
 import bgu.csp.az.api.ano.WhenReceived;
 import bgu.csp.az.api.tools.Assignment;
 
-@Algorithm(name = "DSA", searchType = SearchType.SYNCHRONIZED)
+@Algorithm(name = "DSA", searchType = SearchType.SYNCHRONIZED, problemType= ProblemType.ADCOP)
 public class DSAAgent extends SimpleAgent {
 
     private Assignment values;

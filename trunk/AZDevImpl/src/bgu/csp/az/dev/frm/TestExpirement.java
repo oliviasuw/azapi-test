@@ -35,6 +35,7 @@ import static bc.dsl.XNavDSL.*;
 import static bam.utils.JavaUtils.*;
 import bgu.csp.az.impl.async.AsyncExecution;
 import bgu.csp.az.impl.sync.SyncExecution;
+import sun.nio.cs.ext.TIS_620;
 
 /**
  * This Is An Expirement Designed for Testing porpuse 
@@ -69,6 +70,7 @@ public class TestExpirement extends Expirament {
     LinkedList<Listener> listeners = new LinkedList<Listener>();
     LinkedList<LogListener> logListeners = new LinkedList<LogListener>();
     ExecutorService es = Executors.newCachedThreadPool();
+    private int executedProblemSequanceNumber = 0;
 
     /**
      * @param metadata the test metadata - a parsed xml file contains the definitions of all the rounds.
@@ -129,7 +131,8 @@ public class TestExpirement extends Expirament {
 
     @Override
     protected AbstractExecution nextExecution() {
-
+        System.out.println("Executing Problem " + (this.executedProblemSequanceNumber++));
+        
         if (currentRound == null || !currentRound.hasNext()) {
             final Round r = roundsLeft.remove(0);
             currentRound = r.generateProblemSequance(alg);
@@ -222,6 +225,9 @@ public class TestExpirement extends Expirament {
 
     @Override
     protected ExecutionResult safeSolve(Problem currentProblem) {
+        
+        if (alg.getSearchType() == SearchType.SYNCHRONIZED) return null; //NO CHECK METHOD AVAILABLE :(
+        
         Status stat;
         switch (alg.getProblemType()) {
             case CONNECTED_COP:

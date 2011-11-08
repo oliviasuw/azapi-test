@@ -6,10 +6,15 @@ package bgu.csp.az.impl.pseq;
 
 import bgu.csp.az.impl.prob.MatrixProblem;
 import bgu.csp.az.api.Problem;
+import bgu.csp.az.api.ProblemView;
+import bgu.csp.az.api.pseq.ProblemBuilder;
 import bgu.csp.az.api.pseq.ProblemSequence;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,7 +25,8 @@ public class RandomProblemSequence implements ProblemSequence {
     public static final String MAX_COST_PROBLEM_METADATA = "Max Cost";
     public static final String P1_PROBLEM_METADATA = "Probability Of Constraint Between Two Variables";
     public static final String P2_PROBLEM_METADATA = "Probability Of Conflict Between Two Constrained Variables";
-
+    
+    private Class probType;
     private Random rnd;
     float p1;
     float p2;
@@ -28,8 +34,9 @@ public class RandomProblemSequence implements ProblemSequence {
     int n;
     int d;
     int numberOfProblems;
+    ProblemBuilder probBuilder;
 
-    public RandomProblemSequence(float p1, float p2, int maxCost, int n, int d, long seed, int numberOfProblems) {
+    public RandomProblemSequence(float p1, float p2, int maxCost, int n, int d, long seed, int numberOfProblems,  ProblemBuilder probBuilder, Class probType) {
         this.p1 = p1;
         this.p2 = p2;
         this.maxCost = maxCost;
@@ -37,6 +44,8 @@ public class RandomProblemSequence implements ProblemSequence {
         this.d = d;
         this.rnd = new Random(seed);
         this.numberOfProblems = numberOfProblems;
+        this.probBuilder = probBuilder;
+        this.probType = probType;
     }
 
     public RandomProblemSequence(Configuration sd) {
@@ -47,28 +56,31 @@ public class RandomProblemSequence implements ProblemSequence {
         this.d = sd.getDomainSize();
         this.rnd = new Random(sd.getSeed());
         this.numberOfProblems = sd.getProblemsAmount();
-    }
+        }
 
     @Override
     public Problem next() {
         numberOfProblems--;
-
-        int[][] mat = new int[n * d][n * d];
-
-        for (int i = 0; i < mat.length; i++) {
-            for (int j = 0; j < mat.length; j++) {
-                mat[i][j] = 0;
+        
+        final Problem problem = probBuilder.build();
+        if (probType == MatrixProblem.class){
+            for (int i = 0; i < problem.getNumvars(); i++) {
+                for (int j = i + 1; j < problem.getNumvars(); j++) {
+                    if (rnd.nextDouble() < p1) {
+                        buildConstraint(i, j, problem, true);
+                    }
+                }
             }
-        }
-
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                if (rnd.nextDouble() < p1) {
-                    buildConstraint(i, j, mat);
+        }else{
+            for (int i = 0; i < problem.getNumvars(); i++) {
+                for (int j = 0; j < problem.getNumvars(); j++) {
+                    if (rnd.nextDouble() < p1) {
+                        buildConstraint(i, j, problem, false);
+                    }
                 }
             }
         }
-        final MatrixProblem problem = new MatrixProblem(mat, n);
+        
         final HashMap<String, Object> metadata = problem.getMetadata();
         metadata.put(P1_PROBLEM_METADATA, p1);
         metadata.put(P2_PROBLEM_METADATA, p2);
@@ -79,13 +91,14 @@ public class RandomProblemSequence implements ProblemSequence {
 
     }
 
-    private void buildConstraint(int i, int j, int[][] mat) {
-        for (int k = 0; k < d; k++) {
-            for (int h = 0; h < d; h++) {
+    private void buildConstraint(int i, int j, Problem p, boolean sym) {
+        for (int vi = 0; vi < p.getDomain().size(); vi++) {
+            for (int vj = 0; vj < p.getDomain().size(); vj++) {
                 if (rnd.nextDouble() < p2) {
                     final int cost = rnd.nextInt(maxCost) + 1;
-                    mat[i * d + k][j * d + h] = cost;
-                    mat[j * d + h][i * d + k] = cost;
+                    p.setConstraintCost(i, vi, j, vj, cost);
+                    if (sym)
+                        p.setConstraintCost(j, vj, i, vi, cost);
                 }
             }
         }

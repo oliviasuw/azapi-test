@@ -6,7 +6,6 @@ package bgu.csp.az.impl.prob;
 
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.ds.ImmutableSet;
-import bgu.csp.az.api.tools.Assignment;
 import java.util.ArrayList;
 
 /**
@@ -16,11 +15,9 @@ import java.util.ArrayList;
  */
 public class MatrixProblem extends Problem {
 
-    int[][] matrix;
-    int numvars;
-    ImmutableSet<Integer> domain;
+    double[][] matrix;
 
-    public MatrixProblem(int[][] matrix, int numvars) {
+    public MatrixProblem(double[][] matrix, int numvars) {
         this.matrix = matrix;
         this.numvars = numvars;
 
@@ -32,6 +29,10 @@ public class MatrixProblem extends Problem {
         domain = new ImmutableSet<Integer>(temp);
     }
 
+    public MatrixProblem() {  
+    }
+    
+   
     @Override
     public int getNumberOfVariables() {
         return numvars;
@@ -52,17 +53,22 @@ public class MatrixProblem extends Problem {
         return getConstraintCost(var1, val1, var1, val1);
     }
 
-    public void setConstraintCost(int var1, int val1, int var2, int val2, double cost) {
-        matrix[var1 * domain.size() + val1][var2 * domain.size() + val2] = (int) cost;
-    }
-
     @Override
-    public double getConstraintCost(int var, int val, Assignment ass) {
-        double sum = 0;
-        for (Integer av : ass.assignedVariables()) {
-            sum += getConstraintCost(var, val, av, ass.getAssignment(av));
-        }
+    public void setConstraintCost(int var1, int val1, int var2, int val2, double cost) {
+        matrix[var1 * domain.size() + val1][var2 * domain.size() + val2] = cost;
+    } 
 
-        return sum;
+    public double[][] getMatrix() {
+        return matrix;
     }
+
+    public void setMatrix(double[][] matrix) {
+        this.matrix = matrix;
+    }
+
+
+    
+    
+
+    
 }

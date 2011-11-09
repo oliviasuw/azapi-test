@@ -6,6 +6,7 @@ package bgu.csp.az.impl.pseq;
 
 import bgu.csp.az.impl.prob.MatrixProblem;
 import bgu.csp.az.api.Problem;
+import bgu.csp.az.api.ProblemType;
 import bgu.csp.az.api.ProblemView;
 import bgu.csp.az.api.pseq.ProblemBuilder;
 import bgu.csp.az.api.pseq.ProblemSequence;
@@ -26,7 +27,7 @@ public class RandomProblemSequence implements ProblemSequence {
     public static final String P1_PROBLEM_METADATA = "Probability Of Constraint Between Two Variables";
     public static final String P2_PROBLEM_METADATA = "Probability Of Conflict Between Two Constrained Variables";
     
-    private Class probType;
+    private ProblemType probType;
     private Random rnd;
     float p1;
     float p2;
@@ -36,7 +37,7 @@ public class RandomProblemSequence implements ProblemSequence {
     int numberOfProblems;
     ProblemBuilder probBuilder;
 
-    public RandomProblemSequence(float p1, float p2, int maxCost, int n, int d, long seed, int numberOfProblems,  ProblemBuilder probBuilder, Class probType) {
+    public RandomProblemSequence(float p1, float p2, int maxCost, int n, int d, long seed, int numberOfProblems,  ProblemBuilder probBuilder, ProblemType probType) {
         this.p1 = p1;
         this.p2 = p2;
         this.maxCost = maxCost;
@@ -63,7 +64,7 @@ public class RandomProblemSequence implements ProblemSequence {
         numberOfProblems--;
         
         final Problem problem = probBuilder.build();
-        if (probType == MatrixProblem.class){
+        if (probType != ProblemType.ADCOP){
             for (int i = 0; i < problem.getNumvars(); i++) {
                 for (int j = i + 1; j < problem.getNumvars(); j++) {
                     if (rnd.nextDouble() < p1) {
@@ -94,6 +95,7 @@ public class RandomProblemSequence implements ProblemSequence {
     private void buildConstraint(int i, int j, Problem p, boolean sym) {
         for (int vi = 0; vi < p.getDomain().size(); vi++) {
             for (int vj = 0; vj < p.getDomain().size(); vj++) {
+                if (i==j && vi!=vj) continue;
                 if (rnd.nextDouble() < p2) {
                     final int cost = rnd.nextInt(maxCost) + 1;
                     p.setConstraintCost(i, vi, j, vj, cost);

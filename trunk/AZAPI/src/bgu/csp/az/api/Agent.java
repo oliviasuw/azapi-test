@@ -68,9 +68,9 @@ public abstract class Agent extends Agt0DSL {
      * S T A T I S T I C S
      */
     private Statistic messagesReceived; //Counter for the number of messages received -> example usage: agent work ratio
-    private Statistic ccStatistic;
-    private long nccc = 0;
-    private long ncsc = 0;
+    private int nccc = 0;
+    private int ncsc = 0;
+    private int cc = 0;
     /**
      * H O O K S
      */
@@ -122,6 +122,7 @@ public abstract class Agent extends Agt0DSL {
     }
 
     private void updateAutoStatistics() {
+        createAgentStatistic(CC_PER_AGENT_STATISTIC).setValue(cc);
         if (isFirstAgent()) {
             exec.getStatisticsTree().getChild(NCCC_STATISTIC).setValue(nccc);
             exec.getStatisticsTree().getChild(NCSC_STATISTIC).setValue(ncsc);
@@ -205,13 +206,13 @@ public abstract class Agent extends Agt0DSL {
     }
 
     private void updateNextMessageStatistics(Message msg) {
-        long nnc = -1;
-        long nns = -1;
+        int nnc = -1;
+        int nns = -1;
         if (msg.getMetadata().containsKey("nccc")) {
-            nnc = (Long) msg.getMetadata().get("nccc");
+            nnc = (Integer) msg.getMetadata().get("nccc");
         }
         if (msg.getMetadata().containsKey("nccc")) {
-            nns = (Long) msg.getMetadata().get("ncsc");
+            nns = (Integer) msg.getMetadata().get("ncsc");
         }
         nccc = Math.max(nccc, nnc);
         ncsc = Math.max(ncsc, nns);
@@ -545,7 +546,6 @@ public abstract class Agent extends Agt0DSL {
         public void setExecution(Execution exec) {
             Agent.this.exec = exec;
             prob = new AgentProblem();
-            ccStatistic = createAgentStatistic(CC_PER_AGENT_STATISTIC);
         }
 
         /**
@@ -611,21 +611,21 @@ public abstract class Agent extends Agt0DSL {
         @Override
         public double getConstraintCost(int var1, int val1) {
             nccc++;
-            ccStatistic.add(1);
+            cc++;
             return exec.getGlobalProblem().getConstraintCost(var1, val1);
         }
 
         @Override
         public double getConstraintCost(int var1, int val1, int var2, int val2) {
             nccc++;
-            ccStatistic.add(1);
+            cc++;
             return exec.getGlobalProblem().getConstraintCost(var1, val1, var2, val2);
         }
 
         @Override
         public double getConstraintCost(int var, int val, Assignment ass) {
             nccc++;
-            ccStatistic.add(1);
+            cc++;
             return exec.getGlobalProblem().getConstraintCost(var, val, ass);
         }
 

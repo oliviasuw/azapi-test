@@ -12,10 +12,4 @@ public interface SystemClock {
     void tick() throws InterruptedException;
     long time();
     void close();
-    void addTickListener(TickListener tickListener);
-    void removeTickListener(TickListener tickListener);
-    
-    public static interface TickListener{
-        void onTickHappend(SystemClock sender);
-    }
 }

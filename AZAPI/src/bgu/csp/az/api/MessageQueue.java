@@ -4,6 +4,8 @@
  */
 package bgu.csp.az.api;
 
+import java.util.List;
+
 /**
  *
  * @author bennyl
@@ -17,5 +19,11 @@ public interface MessageQueue {
     Message take() throws InterruptedException;
 
     void waitForNewMessages() throws InterruptedException;
+
+    boolean isEmpty();
+
+    boolean isNotEmpty();
+
+    List<Message> retriveAll();
     
 }

@@ -17,19 +17,15 @@ public class Message implements Serializable {
      * a temporary flag this flag will get deprecated after all the algorithms will be transformed to work with deep copy
      */
     public static boolean USE_DEEP_COPY = true;
-    
     /**
      * the message not contains the recepient in its fields this field is a metadata of the message 
      * and it is accessable via this key
      */
     public static final String RECEPIENT_METADATA = "RECEPIENT";
-    
     /**
      * TODO - > it will be faster if it is a field or an argument to the mailer.. 
      */
     public static final String RECEPIENT_TYPE_METADATA = "RECEPIENT TYPE";
-    
-    
     private String name; //the message name (= type)
     private int from; //the sender of the message
     /**
@@ -38,7 +34,6 @@ public class Message implements Serializable {
      * think about it at the content on the envelop of the message - you may want to write the timestamp there etc.
      */
     protected Map<String, Object> metadata;
-
     /**
      * collection of the message arguments 
      * the arguments are unnamed -> TODO: FIGUREOUT A WAY TO NAME THEM FOR DEBUGGING PORPUSE -> MAYBE COMPILE TIME PROCESSING USING APT.. 
@@ -64,41 +59,41 @@ public class Message implements Serializable {
     }
 
     public Message copy() {
-        Object[] cargs = new Object[this.args.length]; 
-        
-        for (int i=0; i<args.length; i++){
+        Object[] cargs = new Object[this.args.length];
+
+        for (int i = 0; i < args.length; i++) {
             Object a = args[i];
-            if (a instanceof DeepCopyable){
-                cargs[i] = ((DeepCopyable)a).deepCopy();
-            }else {
-                try{
-                cargs[i] = DeepCopyUtil.deepCopy(a);
-                }catch(Exception ex){
-                    if (ex instanceof InterruptedException){
+            if (a instanceof DeepCopyable) {
+                cargs[i] = ((DeepCopyable) a).deepCopy();
+            } else {
+                try {
+                    cargs[i] = DeepCopyUtil.deepCopy(a);
+                } catch (Exception ex) {
+                    if (ex instanceof InterruptedException) {
                         Thread.currentThread().interrupt();
                         Agt0DSL.throwUncheked(ex);
-                    }else {
+                    } else {
                         throw new DeepCopyFailedException("Cannot figure out how to deep copy " + a.getClass().getName() + " class please implement the DeepCopyable interface on this class.", ex);
                     }
                 }
             }
         }
-        
-        
+
+
         Message ret = new Message(getName(), getSender(), cargs);
-        ret.metadata = new HashMap<String, Object> (metadata);
+        ret.metadata = new HashMap<String, Object>(metadata);
         return ret;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (Object a : args){
+        for (Object a : args) {
             sb.append(a.toString()).append(", ");
         }
-        return "[" + getName() + (args.length > 0? ": " + sb.deleteCharAt(sb.length()-2).toString() + "]" : "]");
+        return "[" + getName() + (args.length > 0 ? ": " + sb.deleteCharAt(sb.length() - 2).toString() + "]" : "]");
     }
-    
+
     /**
      * @return the name of this message (can be reffered as type)
      */
@@ -135,5 +130,4 @@ public class Message implements Serializable {
     protected void setName(String name) {
         this.name = name;
     }
-
 }

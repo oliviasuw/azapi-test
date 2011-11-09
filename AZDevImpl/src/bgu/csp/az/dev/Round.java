@@ -7,13 +7,13 @@ package bgu.csp.az.dev;
 import bgu.csp.az.api.AlgorithmMetadata;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.pseq.ProblemSequence;
-import bgu.csp.az.impl.pBuilder.mapProblemBuilder;
+import bgu.csp.az.impl.pbuild.MapProblemBuilder;
 import bgu.csp.az.impl.prob.MatrixProblem;
 import bgu.csp.az.impl.pseq.RandomProblemSequence;
 
 import static bam.utils.JavaUtils.*;
 import bgu.csp.az.impl.pseq.ConnectivityProblemSequence;
-import bgu.csp.az.impl.pBuilder.matrixProblemBuilder;
+import bgu.csp.az.impl.pbuild.MatrixProblemBuilder;
 import bgu.csp.az.impl.prob.MapProblem;
 
 /**
@@ -129,9 +129,9 @@ public class Round {
                         maxCost = 1;
                         //INTENDED FALL DOWN - DONT PUT BREAK HERE!
                     case COP:
-                        return new RandomProblemSequence(p1, cp2, maxCost, n, d, System.currentTimeMillis(), 1, new matrixProblemBuilder(n, d), MatrixProblem.class).next();
+                        return new RandomProblemSequence(p1, cp2, maxCost, n, d, System.currentTimeMillis(), 1, new MatrixProblemBuilder(n, d), alg.getProblemType()).next();
                     case ADCOP:
-                        return new RandomProblemSequence(p1, cp2, maxCost, n, d, System.currentTimeMillis(), 1, new mapProblemBuilder(n, d), MapProblem.class).next(); 
+                        return new RandomProblemSequence(p1, cp2, maxCost, n, d, System.currentTimeMillis(), 1, new MapProblemBuilder(n, d), alg.getProblemType()).next(); 
                     case CONNECTED_COP:
                         return new ConnectivityProblemSequence(p1, cp2, maxCost, n, d, System.currentTimeMillis(), 1).next();                       
                     default:

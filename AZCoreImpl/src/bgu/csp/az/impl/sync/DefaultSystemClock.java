@@ -19,13 +19,11 @@ public class DefaultSystemClock implements SystemClock {
 
     private CyclicBarrier barrier;
     private Semaphore updateListenersLock;
-    private volatile long time;
-    private LinkedList<TickListener> tickListeners;
+    private long time;
     private volatile boolean closed = false;
 
     public DefaultSystemClock() {
         this.time = 0;
-        this.tickListeners = new LinkedList<TickListener>();
         this.updateListenersLock = new Semaphore(1);
     }
 
@@ -39,21 +37,12 @@ public class DefaultSystemClock implements SystemClock {
         try {
             long nextTime = time + 1;
             barrier.await();
-            try {
-                /**
-                 * stop the agents until all the listeners are updated
-                 * needed as only after the listener was updated the agents allowed to continue running 
-                 * so we will not get retick before the message queue will get updated..
-                 */
-                updateListenersLock.acquire();
-                if (time < nextTime) {
-                    time = nextTime;
-//                    System.out.println("TICK: " + time);
-                    fireTickHappend();
-                }
-            } finally {
-                updateListenersLock.release();
-            }
+            
+            /**
+             * visibility problem should not occure here as every thread must pass through that line
+             */
+            time = nextTime;
+            
         } catch (BrokenBarrierException ex) {
             if (closed) return;
             System.err.println("got BrokenBarrierException, translating it to InterruptedException (DefaultSystemClock)");
@@ -64,22 +53,6 @@ public class DefaultSystemClock implements SystemClock {
     @Override
     public long time() {
         return time;
-    }
-
-    @Override
-    public void addTickListener(TickListener tickListener) {
-        this.tickListeners.add(tickListener);
-    }
-
-    @Override
-    public void removeTickListener(TickListener tickListener) {
-        this.tickListeners.remove(tickListener);
-    }
-
-    private void fireTickHappend() {
-        for (TickListener l : tickListeners) {
-            l.onTickHappend(this);
-        }
     }
 
     @Override

@@ -14,13 +14,13 @@ import java.util.HashMap;
  * @author Inna
  */
 public class MapProblem extends Problem {
-    
-    private HashMap<Integer, HashMap<Integer,HashMap<Integer,Double>>> map;
 
+    private Object[] map;
+    //private HashMap<Integer, double[][]> map;
 
-    public MapProblem(int n,int d) {
-        
-        this.map = new HashMap<Integer, HashMap<Integer, HashMap<Integer, Double>>>();
+    public MapProblem(int n, int d) {
+        //this.map = new HashMap<Integer, double[][]>();
+        this.map = new Object[n*n];
         this.numvars = n;
         ArrayList<Integer> temp = new ArrayList<Integer>(d);
         for (int i = 0; i < d; i++) {
@@ -29,37 +29,38 @@ public class MapProblem extends Problem {
         this.domain = new ImmutableSet<Integer>(temp);
     }
 
-    public MapProblem(HashMap<Integer, HashMap<Integer, HashMap<Integer, Double>>> map, int numvars, ImmutableSet<Integer> domain) {
-        this.map = map;
-        this.numvars = numvars;
-        this.domain = domain;
+    @Override
+    public boolean isConstrained(int var1, int var2) {
+        return super.constraints.containsKey(calcId(var1, var2));
     }
 
     @Override
     public void setConstraintCost(int var1, int val1, int var2, int val2, double cost) {
-        int id = var1*numvars+var2;
-        createMap(id,val1,map);
-        map.get(id).get(val1).put(val2,cost);
+        int id = calcId(var1, var2);
+        if (cost != 0) {
+            super.constraints.put(id, Boolean.TRUE);
+        }
+        createMap(id);
+        ((double[][])map[id])[val1][val2] = cost;
     }
 
     @Override
-    public double getConstraintCost(int var1, int val1, int var2, int val2) {       
-        int id = var1*numvars+var2;
-        if(checkIfNull(id,val1,val2)){
+    public double getConstraintCost(int var1, int val1, int var2, int val2) {
+        int id = calcId(var1, var2);
+        if (map[id]==null) {
             return 0;
         }
-        return map.get(id).get(val1).get(val2);
+        return ((double[][])map[id])[val1][val2];
     }
 
     @Override
     public double getConstraintCost(int var1, int val1) {
-        int id = var1*numvars+var1;
-        if(checkIfNull(id,val1,val1)){
+        int id = calcId(var1, var1);
+        if (map[id] == null) {
             return 0;
         }
-        return map.get(id).get(val1).get(val1);
+        return ((double[][])map[id])[val1][val1];
     }
-
 
     @Override
     public ImmutableSet<Integer> getDomainOf(int var) {
@@ -71,36 +72,12 @@ public class MapProblem extends Problem {
         return this.numvars;
     }
 
-
-    private void createMap(int id, int val1, HashMap<Integer, HashMap<Integer, HashMap<Integer, Double>>> map) {
-        HashMap<Integer, HashMap<Integer, Double>> mapId = map.get(id);
-        if (mapId == null){
-            mapId = new HashMap<Integer, HashMap<Integer, Double>>();
-            map.put(id, mapId);
-        }
-        HashMap<Integer, Double> mapVal1 = mapId.get(val1);
-        if(mapVal1 == null){
-            map.get(id).put(val1, new HashMap<Integer, Double>());
+    private void createMap(int id) {
+        double[][] mapId = (double[][]) map[id];
+        if (mapId == null) {
+            mapId = new double[domain.size()][domain.size()];
+            map[id] = mapId;
         }
     }
 
-    public HashMap<Integer, HashMap<Integer, HashMap<Integer, Double>>> getMap() {
-        return map;
-    }
-
-    public void setMap(HashMap<Integer, HashMap<Integer, HashMap<Integer, Double>>> map) {
-        this.map = map;
-    }
-
-    private boolean checkIfNull(int id, int val1, int val2) {
-        HashMap<Integer, HashMap<Integer, Double>> mapId = map.get(id);
-        if(mapId == null) return true;
-        HashMap<Integer, Double> mapVal1 = mapId.get(val1);
-        if(mapVal1 == null) return true;
-        return(mapVal1.get(val2) == null);
-    }
-
-    
-    
-    
 }

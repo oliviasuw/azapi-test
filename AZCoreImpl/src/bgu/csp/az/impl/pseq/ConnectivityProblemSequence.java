@@ -6,8 +6,9 @@ package bgu.csp.az.impl.pseq;
 
 import bgu.csp.az.impl.prob.MatrixProblem;
 import bgu.csp.az.api.Problem;
+import bgu.csp.az.api.ProblemType;
 import java.util.Random;
-import bgu.csp.az.impl.pBuilder.matrixProblemBuilder;
+import bgu.csp.az.impl.pbuild.MatrixProblemBuilder;
 
 /**
  *
@@ -23,7 +24,7 @@ public class ConnectivityProblemSequence extends RandomProblemSequence {
     }
 
     public ConnectivityProblemSequence(float p1, float p2, int maxCost, int n, int d, long seed, int numberOfProblems) {
-        super(p1, p2, maxCost, n, d, seed, numberOfProblems, new matrixProblemBuilder(n, d), MatrixProblem.class);
+        super(p1, p2, maxCost, n, d, seed, numberOfProblems, new MatrixProblemBuilder(n, d), ProblemType.CONNECTED_COP);
         rnd = new Random(seed);
     }
 

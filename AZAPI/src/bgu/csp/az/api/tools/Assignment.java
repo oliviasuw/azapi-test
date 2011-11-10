@@ -2,12 +2,10 @@ package bgu.csp.az.api.tools;
 
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.DeepCopyable;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
-import bgu.csp.az.api.Problem;
-import bgu.csp.az.api.ProblemView;
+import bgu.csp.az.api.ImuteableProblem;
 import bgu.csp.az.api.ds.ImmutableSet;
 import java.io.Serializable;
 import java.util.Collection;
@@ -89,7 +87,7 @@ public class Assignment implements Serializable, DeepCopyable{
      * @param p 
      * @return the cost of this assignment
      */
-    public double calcCost(ProblemView p) {
+    public double calcCost(ImuteableProblem p) {
         if (cachedCost >= 0) return cachedCost;
         
         double c = 0;
@@ -121,7 +119,7 @@ public class Assignment implements Serializable, DeepCopyable{
      * @return the cost that will be added to this assignment by assigning 
      * 		   var <- val in the problem p
      */
-    public double calcAddedCost(int var, int val, ProblemView p) {
+    public double calcAddedCost(int var, int val, ImuteableProblem p) {
         double c = 0;
         c += p.getConstraintCost(var, val);
 
@@ -145,7 +143,7 @@ public class Assignment implements Serializable, DeepCopyable{
      * @param p
      * @return the cost of the assignment without the given variable assignment
      */
-    public double calcCostWithout(int var, Problem p){
+    public double calcCostWithout(int var, ImuteableProblem p){
         double c = 0;
         LinkedList<Entry<Integer, Integer>> past = new LinkedList<Entry<Integer, Integer>>();
 
@@ -176,7 +174,7 @@ public class Assignment implements Serializable, DeepCopyable{
      * @param p
      * @return from the given domain the value that assigning var to it will be add the least to the assignment
      */
-    public int findMinimalCostValue(int var, Collection<Integer> domain, Problem p) {
+    public int findMinimalCostValue(int var, Collection<Integer> domain, ImuteableProblem p) {
         boolean first = true;
         double min = 0;
         double c;
@@ -208,7 +206,7 @@ public class Assignment implements Serializable, DeepCopyable{
      * @param p
      * @return 
      */
-    public int findFirstAssignmentUnderUB(double upperbound, int var, Collection<Integer> domain, Problem p){
+    public int findFirstAssignmentUnderUB(double upperbound, int var, Collection<Integer> domain, ImuteableProblem p){
         double cost = calcCost(p);
         if (cost >= upperbound) return -1;
         for (Integer d : domain) if (cost + calcAddedCost(var, d, p) < upperbound) return d;
@@ -245,7 +243,7 @@ public class Assignment implements Serializable, DeepCopyable{
      * @param p
      * @return 
      */
-    public boolean isConsistentWith(int var, int val, Problem p){
+    public boolean isConsistentWith(int var, int val, ImuteableProblem p){
         for (Entry<Integer, Integer> e : assignment.entrySet()) {
             int var2 = e.getKey();
             int val2 = e.getValue();

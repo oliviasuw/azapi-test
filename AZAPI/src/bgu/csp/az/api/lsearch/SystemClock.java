@@ -11,5 +11,6 @@ package bgu.csp.az.api.lsearch;
 public interface SystemClock {
     void tick() throws InterruptedException;
     long time();
+    boolean isTicked();
     void close();
 }

@@ -1,5 +1,7 @@
 package bgu.csp.az.api;
 
+import bgu.csp.az.api.Constraint;
+import bgu.csp.az.api.ImuteableProblem;
 import bgu.csp.az.api.ds.ImmutableSet;
 import bgu.csp.az.api.tools.Assignment;
 import java.io.Serializable;
@@ -11,13 +13,14 @@ import java.util.List;
  * An abstract class for problems that should let you build any type of problem 
  * @author guyafe, edited by bennyl
  */
-public abstract class Problem implements Serializable, ProblemView {
+public abstract class Problem implements Serializable, ImuteableProblem {
 
     private HashMap<String, Object> metadata = new HashMap<String, Object>();
     protected int numvars;
     protected ImmutableSet<Integer> domain;
     protected HashMap<Integer, List<Integer>> neighbores = new HashMap<Integer, List<Integer>>();
     protected HashMap<Integer, Boolean> constraints = new HashMap<Integer, Boolean>();
+    protected boolean allowCaching = true;
 
     @Override
     public String toString() {
@@ -37,6 +40,14 @@ public abstract class Problem implements Serializable, ProblemView {
         return sb.toString();
     }
 
+    public void setAllowCaching(boolean allowNeighborCaching) {
+        this.allowCaching = allowNeighborCaching;
+    }
+
+    public boolean isAllowNeighborCaching() {
+        return allowCaching;
+    }
+
     protected int calcId(int i, int j) {
         return i * numvars + j;
     }
@@ -51,7 +62,7 @@ public abstract class Problem implements Serializable, ProblemView {
     public boolean isConstrained(int var1, int var2) {
         int id = calcId(var1, var2);
         Boolean ans = constraints.get(id);
-        if (ans == null) {
+        if (ans == null || !allowCaching) {
 
             boolean found = false;
             OUTER_FOR:
@@ -110,7 +121,7 @@ public abstract class Problem implements Serializable, ProblemView {
     public List<Integer> getNeighbors(int var) {
 
         List<Integer> l = this.neighbores.get(var);
-        if (l == null) {
+        if (l == null || !allowCaching) {
             l = new LinkedList<Integer>();
             this.neighbores.put(var, l);
             for (int v = 0; v < getNumberOfVariables(); v++) {

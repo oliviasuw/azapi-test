@@ -27,6 +27,8 @@ import java.util.List;
  */
 public abstract class Agent extends Agt0DSL {
 
+    private static final boolean USE_DEBUG_LOGS = true;
+    
     /**
      * the name of the statistic that collect the number of non concurrent constraing checks
      */
@@ -59,7 +61,7 @@ public abstract class Agent extends Agt0DSL {
     private int id; //The Agent ID
     private Execution exec; //The Execution That This Agent Is Currently Running Within
     private MessageQueue mailbox; //This Agent Mailbox
-    private ProblemView prob; // The Agent Local Problem
+    private ImuteableProblem prob; // The Agent Local Problem
     private boolean finished = false; //The Status of the current Agent - TODO: TRANSFORM INTO A STATUS ENUM SO WE CAN BE ABLE TO QUERY THE AGENT ABOUT IT CURRENT STATUS
     private Message currentMessage = null; //The Current Message (The Last Message That was taken from the mailbox
     private PlatformOps pops; //Hidden Platform Operation 
@@ -162,7 +164,7 @@ public abstract class Agent extends Agt0DSL {
      * and he managed it differently - so if you are building tools that have to be sent with the mailer to other agent dont 
      * include the agents problem in them as field.
      */
-    protected ProblemView getProblem() {
+    protected ImuteableProblem getProblem() {
         return prob;
     }
 
@@ -262,6 +264,9 @@ public abstract class Agent extends Agt0DSL {
      */
     public void log(String what) {
         exec.log(id, this.mailGroupKey, what);
+        if (USE_DEBUG_LOGS){
+            System.out.println("[" + getClass().getSimpleName() + "] " + getId() + ": " + what);
+        }
     }
 
     /**
@@ -509,7 +514,7 @@ public abstract class Agent extends Agt0DSL {
     }
     
     public void onMailBoxEmpty(){
-        throw new UnsupportedOperationException("if you are running a Synchronized Search you must implements Agent.onMailBoxEmpty method");
+//        throw new UnsupportedOperationException("if you are running a Synchronized Search you must implements Agent.onMailBoxEmpty method");
     }
 
     /**
@@ -596,7 +601,7 @@ public abstract class Agent extends Agt0DSL {
     /**
      * this is a wrap on the given problem - each agent posess a wrap like this instaed of the actual problem
      */
-    public class AgentProblem implements ProblemView {
+    public class AgentProblem implements ImuteableProblem {
 
         @Override
         public int getNumberOfVariables() {

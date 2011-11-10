@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author bennyl
  */
-public interface ProblemView {
+public interface ImuteableProblem {
 
     /**
      *

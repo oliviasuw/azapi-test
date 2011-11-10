@@ -30,11 +30,13 @@ public class ConnectivityProblemSequence extends RandomProblemSequence {
 
     @Override
     public Problem next() {
-        MatrixProblem p = (MatrixProblem) super.next();
+        Problem p = super.next();
+        p.setAllowCaching(false);
         while (true){
             boolean[] connections = new boolean[p.getNumberOfVariables()];
             calcConnectivity(p, 0, connections);
             if (allTrue(connections)){
+                p.setAllowCaching(true);
                 return p;
             }
             
@@ -47,7 +49,7 @@ public class ConnectivityProblemSequence extends RandomProblemSequence {
         return -1;
     }
     
-    private void connect(int var1, int var2, MatrixProblem p) {
+    private void connect(int var1, int var2, Problem p) {
         int val2 = rnd.nextInt(p.getDomainSize(var2));
         int val1 = rnd.nextInt(p.getDomainSize(var1));
         double cost = rnd.nextInt(super.maxCost - 1) + 1;

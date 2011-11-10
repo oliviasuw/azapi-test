@@ -7,7 +7,7 @@ package bgu.csp.az.impl.pseq;
 import bgu.csp.az.impl.prob.MatrixProblem;
 import bgu.csp.az.api.Problem;
 import bgu.csp.az.api.ProblemType;
-import bgu.csp.az.api.ProblemView;
+import bgu.csp.az.api.ImuteableProblem;
 import bgu.csp.az.api.pseq.ProblemBuilder;
 import bgu.csp.az.api.pseq.ProblemSequence;
 import java.io.Serializable;

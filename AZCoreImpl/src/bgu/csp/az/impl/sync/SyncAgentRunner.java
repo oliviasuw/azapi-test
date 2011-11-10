@@ -70,6 +70,11 @@ public class SyncAgentRunner implements AgentRunner {
                 long currentTime = clock.time();
                 allFinished = true;
                 for (State s : states) {
+                    if (clock.isTicked()) {
+                        allFinished = false;
+                        break;
+                    }
+                    
                     if (!s.current.isFinished()) {
                         allFinished = false;
                     }

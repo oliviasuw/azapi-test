@@ -18,16 +18,16 @@ import java.util.concurrent.Semaphore;
 public class DefaultSystemClock implements SystemClock {
 
     private CyclicBarrier barrier;
-    private Semaphore updateListenersLock;
     private long time;
     private volatile boolean closed = false;
+    private volatile boolean ticked = false;
 
     public DefaultSystemClock() {
         this.time = 0;
-        this.updateListenersLock = new Semaphore(1);
     }
 
     public void setExcution(Execution exc) {
+        System.out.println("DefaultSystemClock: Barrier Set to Be: " + exc.getNumberOfAgentRunners());
         this.barrier = new CyclicBarrier(exc.getNumberOfAgentRunners());
     }
 
@@ -35,13 +35,16 @@ public class DefaultSystemClock implements SystemClock {
     public void tick() throws InterruptedException {
         if (closed) return;
         try {
+            ticked = true;
             long nextTime = time + 1;
             barrier.await();
             
             /**
-             * visibility problem should not occure here as every thread must pass through that line
+             * visibility problem should not occure here as every thread must pass through the following line
+             * thus its local cpu cache will get updated.
              */
             time = nextTime;
+            ticked = false;
             
         } catch (BrokenBarrierException ex) {
             if (closed) return;
@@ -60,4 +63,9 @@ public class DefaultSystemClock implements SystemClock {
         closed = true;
         barrier.reset();
     }
+
+    public boolean isTicked() {
+        return ticked;
+    }
+    
 }

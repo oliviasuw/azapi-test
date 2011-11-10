@@ -2,16 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.csp.az.dev;
+package bgu.csp.az.dev.debug;
 
 import bgu.csp.az.dev.frm.TestExpirement;
 import java.io.File;
 import static bc.dsl.XNavDSL.*;
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.AlgorithmMetadata;
-import bgu.csp.az.dev.debug.DSAAgent;
-import bgu.csp.az.dev.debug.NestedCheckAgent;
-import com.j256.ormlite.logger.LocalLog;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import nu.xom.ParsingException;

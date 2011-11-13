@@ -83,7 +83,7 @@ public class UIController extends Model implements TestExpirement.Listener {
             public void onLog(int agent, String mailGroupKey, String log) {
                 final String lname = "[" + mailGroupKey.substring(mailGroupKey.lastIndexOf(".") +1) + "] " +agent;
                 bdoc.addLog(lname,log, Level.INFO);
-                System.out.println(lname + ": " + log);
+                //System.out.println(lname + ": " + log);
                 pw.poke();
             }
         });

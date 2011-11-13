@@ -129,7 +129,7 @@ public class Round {
                         maxCost = 1;
                         //INTENDED FALL DOWN - DONT PUT BREAK HERE!
                     case COP:
-                        return new RandomProblemSequence(p1, cp2, maxCost, n, d, System.currentTimeMillis(), 1, new MatrixProblemBuilder(n, d), alg.getProblemType()).next();
+                        return new RandomProblemSequence(p1, cp2, maxCost, n, d, System.currentTimeMillis(), 1, new MapProblemBuilder(n, d), alg.getProblemType()).next();
                     case ADCOP:
                         return new RandomProblemSequence(p1, cp2, maxCost, n, d, System.currentTimeMillis(), 1, new MapProblemBuilder(n, d), alg.getProblemType()).next(); 
                     case CONNECTED_COP:

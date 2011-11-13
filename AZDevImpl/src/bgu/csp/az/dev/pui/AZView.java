@@ -50,6 +50,7 @@ public class AZView extends javax.swing.JPanel implements PageLayout{
         jLabel1 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel2 = new javax.swing.JLabel();
+        jSplitPane1 = new javax.swing.JSplitPane();
         tabs = new javax.swing.JPanel();
         consolePan = new javax.swing.JPanel();
         pbar = new javax.swing.JPanel();
@@ -105,21 +106,23 @@ public class AZView extends javax.swing.JPanel implements PageLayout{
         gridBagConstraints.weightx = 1.0;
         contentPan.add(topPanel, gridBagConstraints);
 
+        jSplitPane1.setBorder(null);
+        jSplitPane1.setDividerLocation(-1);
+        jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        jSplitPane1.setResizeWeight(0.6);
+
         tabs.setBackground(new java.awt.Color(255, 255, 255));
         tabs.setLayout(new java.awt.BorderLayout());
+        jSplitPane1.setLeftComponent(tabs);
+        jSplitPane1.setRightComponent(consolePan);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 3, 5, 3);
-        contentPan.add(tabs, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.ipady = 80;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 5);
-        contentPan.add(consolePan, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        contentPan.add(jSplitPane1, gridBagConstraints);
 
         pbar.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         pbar.setPreferredSize(new java.awt.Dimension(0, 24));
@@ -152,6 +155,7 @@ public class AZView extends javax.swing.JPanel implements PageLayout{
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JPanel pbar;
     private org.jdesktop.swingx.painter.PinstripePainter pinstripePainter1;
     private javax.swing.JPanel tabs;

@@ -41,7 +41,8 @@ public class StatusModel extends Model implements TestExpirement.Listener {
     @Param(name = CURRENT_ROUND_PARAM)
     Round currentRound;
     TestExpirement te;
-
+    int problemNumber = 0;
+    
     public void setExpirement(TestExpirement te) {
         this.te = te;
         rounds = te.getRounds();
@@ -110,11 +111,14 @@ public class StatusModel extends Model implements TestExpirement.Listener {
 
     @Override
     public void onNewProblemExecuted(Problem p) {
+        problemNumber++;
+        setExecutionStatus("Solving the " + problemNumber + "/" + currentRound.getLength() + " problem on this round...");
     }
 
     @Override
     public void onNewRoundStarted(Round r) {
         currentRound = r;
+        problemNumber = 0;
         Page.get(this).syncParameterFromModel(CURRENT_ROUND_PARAM);
     }
 

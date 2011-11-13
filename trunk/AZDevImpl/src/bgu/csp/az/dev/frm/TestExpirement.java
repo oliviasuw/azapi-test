@@ -131,7 +131,7 @@ public class TestExpirement extends Expirament {
 
     @Override
     protected AbstractExecution nextExecution() {
-        System.out.println("Executing Problem " + (this.executedProblemSequanceNumber++));
+        //System.out.println("Executing Problem " + (this.executedProblemSequanceNumber++));
         
         if (currentRound == null || !currentRound.hasNext()) {
             final Round r = roundsLeft.remove(0);

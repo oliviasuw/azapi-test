@@ -19,7 +19,7 @@ import nu.xom.ParsingException;
  */
 public class DebugMain {
 
-    public static final Class<? extends Agent> agentToRun = DSAAgent.class;
+    public static final Class<? extends Agent> agentToRun = AFCAgent.class;
 
     public static void main(String[] args) throws ParsingException, IOException, MalformedURLException, ClassNotFoundException {
 

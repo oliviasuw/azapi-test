@@ -6,10 +6,14 @@ package bgu.csp.az.dev.pui;
 
 import bc.swing.models.LimitedBatchDocument;
 import java.awt.Color;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Formatter;
 import java.util.HashMap;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
@@ -30,6 +34,9 @@ public class AgentLogDocument extends LimitedBatchDocument {
     StringBuilder tokenBuilder = new StringBuilder();
     private Formatter formatter = new Formatter(tokenBuilder);
 
+    private Matcher match=null;
+    
+    
     public AgentLogDocument() {
         super();
         this.AttributeSets = new HashMap<String, SimpleAttributeSet>();
@@ -37,6 +44,17 @@ public class AgentLogDocument extends LimitedBatchDocument {
 
     }
 
+    public SimpleEntry<Integer,Integer> search(String what,boolean ragex,boolean matchCase,int offset){
+            Pattern p =(Pattern.compile(what,(matchCase ? Pattern.LITERAL :Pattern.CASE_INSENSITIVE)));
+            try {
+                match=p.matcher(getText(offset, getLength()-offset));
+            } catch (BadLocationException ex) {
+                Logger.getLogger(AgentLogDocument.class.getName()).log(Level.SEVERE, null, ex);
+                return new SimpleEntry<Integer,Integer>(-1,-1);
+            }
+            return (match.find()? new SimpleEntry<Integer,Integer>(match.start(),match.end()):new SimpleEntry<Integer,Integer>(-1,-1));
+    }
+    
     private String createToken(String format, Object... args) {
         tokenBuilder.setLength(0);
         formatter.format(format, args);

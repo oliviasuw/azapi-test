@@ -33,7 +33,7 @@ public class DoubleMessageQueue implements MessageQueue {
 
     @Override
     public Message take() throws InterruptedException {
-        return (Message) q[qToUse()].poll();
+        return (Message) q[qToUse()].remove();
     }
 
     @Override

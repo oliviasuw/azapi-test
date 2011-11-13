@@ -1,7 +1,5 @@
 package bgu.csp.az.api;
 
-import bgu.csp.az.api.Constraint;
-import bgu.csp.az.api.ImuteableProblem;
 import bgu.csp.az.api.ds.ImmutableSet;
 import bgu.csp.az.api.tools.Assignment;
 import java.io.Serializable;

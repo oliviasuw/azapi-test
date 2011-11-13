@@ -33,6 +33,12 @@ public interface ImuteableProblem {
      */
     double getConstraintCost(int var1, int val1);
 
+    /**
+     * @param var
+     * @param val
+     * @param ass
+     * @return the constraint cost of assigning var=val and X=V for each <X=V> in ass
+     */
     double getConstraintCost(int var, int val, Assignment ass);
 
     

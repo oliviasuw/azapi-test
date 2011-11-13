@@ -15,10 +15,10 @@ public class SendMediator {
 
     private Message msg;
     private Mailer mailer;
-    private Problem curp;
+    private ImuteableProblem curp;
     private String agentGroupKey;
 
-    public SendMediator(Message msg, Mailer mailer, Problem curp, String agentGroupKey) {
+    public SendMediator(Message msg, Mailer mailer, ImuteableProblem curp, String agentGroupKey) {
         this.msg = msg;
         this.mailer = mailer;
         this.curp = curp;

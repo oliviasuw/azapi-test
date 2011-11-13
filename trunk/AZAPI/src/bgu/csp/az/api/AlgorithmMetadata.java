@@ -37,6 +37,9 @@ public class AlgorithmMetadata {
         this.searchType = a.searchType();
     }
 
+    /**
+     * @return the defined search type 
+     */
     public SearchType getSearchType() {
         return searchType;
     }

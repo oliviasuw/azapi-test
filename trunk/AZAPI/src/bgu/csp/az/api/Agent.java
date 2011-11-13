@@ -176,9 +176,8 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * request the agent to process the next message (waiting if no such message in this agent mailbox)
+     * request the agent to process the next message (waiting if the agents message queue is empty)
      * @throws InterruptedException
-     * @return the processed message
      */
     public abstract void processNextMessage() throws InterruptedException;
 
@@ -482,6 +481,10 @@ public abstract class Agent extends Agt0DSL {
         broadcast(createMessage(msg, args));
     }
 
+    /**
+     * broadcast a new message - preffer using broadcast(String msg, Object... args)
+     * @param msg
+     */
     public void broadcast(Message msg){
         final Execution execution = PlatformOperationsExtractor.extract(this).getExecution();
         execution.getMailer().broadcast(msg, mailGroupKey);
@@ -504,15 +507,26 @@ public abstract class Agent extends Agt0DSL {
         return send(createMessage(msg, args));
     }
     
+    /**
+     * send a new message - prefer using send(String msg, Object... args)
+     * @param msg
+     * @return
+     */
     public SendMediator send(Message msg){
         final Execution execution = pops.getExecution();
         return new SendMediator(msg, execution.getMailer(), execution.getGlobalProblem(), mailGroupKey);
     }
 
+    /**
+     * a callback that is called when idle detected - this is the place to finish the algorithm or revive from idle
+     */
     public void onIdleDetected() {
         throw new UnsupportedOperationException("if you are using IdleDetected feature you must implements Agent.onIdleDetected method");
     }
     
+    /**
+     * a callback that is called only when running in synchronized mode just before the next tick (when the agent finish handling all its messages)
+     */
     public void onMailBoxEmpty(){
 //        throw new UnsupportedOperationException("if you are running a Synchronized Search you must implements Agent.onMailBoxEmpty method");
     }
@@ -526,6 +540,11 @@ public abstract class Agent extends Agt0DSL {
         finish();
     }
     
+    /**
+     * the concept system time is only exists in synchronized execution 
+     * @return the number of ticks passed since the algorithm start (first tick is 0), you can read about the definition of tick
+     * in agent zero manual
+     */
     public long getSystemTime(){
         return pops.getExecution().getSystemClock().time();
     }
@@ -578,6 +597,10 @@ public abstract class Agent extends Agt0DSL {
             return exec;
         }
 
+        /**
+         * @return the current agent mail group key (current implementation will just return the class name 
+         * but it should get changed in later implementations)
+         */
         public String getMailGroupKey() {
             return mailGroupKey;
         }

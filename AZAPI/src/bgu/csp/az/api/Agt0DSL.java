@@ -240,6 +240,11 @@ public class Agt0DSL {
         return args[min];
     }
     
+    /**
+     * trick to throw checked exception in uncheck context - do not use unless you know what you are doing
+     * or you just dont care about this exception
+     * @param e 
+     */
     public static void throwUncheked(Throwable e) {
         Agt0DSL.<RuntimeException>throwAny(e);
     }
@@ -249,19 +254,36 @@ public class Agt0DSL {
         throw (E)e;
     }
     
+    /**
+     * select a random item from the given list
+     * @param <T>
+     * @param c
+     * @return 
+     */
     public static <T> T random(List<T> c ){
        Random r = new Random();
        if (c.isEmpty()) return null;
        return c.get(r.nextInt(c.size()));
     }
     
-    
+    /**
+     * select a random item from the given set
+     * @param <T>
+     * @param c
+     * @return 
+     */
     public static <T> T random(Set<T> c ){
        Random r = new Random();
        return (T) random(c.toArray()); 
     }
     
     
+    /**
+     * select a random item from the given array
+     * @param <T>
+     * @param c
+     * @return 
+     */
     public static <T> T random(T[] c ){
        Random r = new Random();
        if (c.length == 0) return null;

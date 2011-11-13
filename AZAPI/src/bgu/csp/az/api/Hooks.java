@@ -16,6 +16,10 @@ public class Hooks {
      * callback that will get called before message sent - can be attached to simple agent.
      */
     public static interface BeforeMessageSentHook{
+        /**
+         * callback implementation
+         * @param msg
+         */
         void hook(Message msg);
     }
     
@@ -23,6 +27,10 @@ public class Hooks {
      * callback that will get called before message processed by the attached agent - can be attachd to simple agent.
      */
     public static interface BeforeMessageProcessingHook{
+        /**
+         * callback implementation
+         * @param msg
+         */
         void hook(Message msg);
     }
 }

@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *
@@ -27,8 +29,11 @@ public class ExpiramentImpl extends AbstractProcess implements Expirement {
     
     private List<Round> rounds = new ArrayList<Round>();
     private ExpirementResult result;
+    
     @Override
     public void _run() {
+        ExecutorService pool = Executors.newCachedThreadPool();
+        
         for (Round current : rounds){
             if (Thread.interrupted()){
                 result = new ExpirementResult(true);
@@ -37,6 +42,11 @@ public class ExpiramentImpl extends AbstractProcess implements Expirement {
             if (current.canAccept(CorrectnessTester.class)){
                 current.addSubConfiguration(current.getProblemGenerator().getType().getCorrectnessTester());
             }
+            
+            if (current instanceof AbstractRound){
+                ((AbstractRound)current).setPool(pool);
+            }
+            
             current.run();
             RoundResult res = current.getResult();
             switch (res.finishStatus){

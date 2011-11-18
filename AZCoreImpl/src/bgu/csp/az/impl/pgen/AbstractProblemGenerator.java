@@ -6,11 +6,8 @@ package bgu.csp.az.impl.pgen;
 
 import bgu.csp.az.api.ProblemType;
 import bgu.csp.az.api.infra.VariableMetadata;
-import bgu.csp.az.api.pgen.Problem;
 import bgu.csp.az.api.pgen.ProblemGenerator;
 import bgu.csp.az.impl.infra.AbstractConfigureable;
-import java.util.Map;
-import java.util.Random;
 
 /**
  *
@@ -32,11 +29,6 @@ public abstract class AbstractProblemGenerator extends AbstractConfigureable imp
         return VariableMetadata.scan(this);
     }
 
-    @Override
-    public void generate(Map<String, Object> variables, Problem p, Random rand) {
-        VariableMetadata.assign(this, variables);
-        _generate(p, rand);
-    }
 
     @Override
     public String getName() {
@@ -47,8 +39,6 @@ public abstract class AbstractProblemGenerator extends AbstractConfigureable imp
     public ProblemType getType() {
         return type;
     }
-
-    protected abstract void _generate(Problem p, Random rand);
 
     @Override
     protected void configurationDone() {

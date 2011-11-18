@@ -6,7 +6,7 @@ package bgu.csp.az.impl.sync;
 
 import bgu.csp.az.api.Message;
 import bgu.csp.az.api.MessageQueue;
-import bgu.csp.az.api.lsearch.SystemClock;
+import bgu.csp.az.api.SystemClock;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;

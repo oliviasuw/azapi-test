@@ -8,7 +8,7 @@ import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.AgentRunner;
 import bgu.csp.az.api.ContinuationMediator;
 import bgu.csp.az.api.agt.SimpleAgent;
-import bgu.csp.az.api.lsearch.SystemClock;
+import bgu.csp.az.api.SystemClock;
 import bgu.csp.az.impl.infra.AbstractExecution;
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;

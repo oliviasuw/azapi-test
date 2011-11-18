@@ -2,12 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.csp.az.impl.prob;
+package bgu.csp.az.impl.pgen;
 
-import bgu.csp.az.api.Problem;
+import bgu.csp.az.api.pgen.Problem;
 import bgu.csp.az.api.ds.ImmutableSet;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -17,17 +19,6 @@ public class MapProblem extends Problem {
 
     private Object[] map;
     //private HashMap<Integer, double[][]> map;
-
-    public MapProblem(int n, int d) {
-        //this.map = new HashMap<Integer, double[][]>();
-        this.map = new Object[n*n];
-        this.numvars = n;
-        ArrayList<Integer> temp = new ArrayList<Integer>(d);
-        for (int i = 0; i < d; i++) {
-            temp.add(i);
-        }
-        this.domain = new ImmutableSet<Integer>(temp);
-    }
 
     @Override
     public boolean isConstrained(int var1, int var2) {
@@ -39,9 +30,20 @@ public class MapProblem extends Problem {
         int id = calcId(var1, var2);
         if (cost != 0) {
             super.constraints.put(id, Boolean.TRUE);
+            setNeighbor(var1, var2);
+            setNeighbor(var2, var1);
         }
         createMap(id);
         ((double[][])map[id])[val1][val2] = cost;
+    }
+
+    private void setNeighbor(int var1, int var2) {
+        List<Integer> l = super.neighbores.get(var1);
+        if (l == null){
+            l = new LinkedList<Integer>();
+            super.neighbores.put(var1, l);
+        }
+        l.add(var2);
     }
 
     @Override
@@ -62,16 +64,6 @@ public class MapProblem extends Problem {
         return ((double[][])map[id])[val1][val1];
     }
 
-    @Override
-    public ImmutableSet<Integer> getDomainOf(int var) {
-        return this.domain;
-    }
-
-    @Override
-    public int getNumberOfVariables() {
-        return this.numvars;
-    }
-
     private void createMap(int id) {
         double[][] mapId = (double[][]) map[id];
         if (mapId == null) {
@@ -79,5 +71,20 @@ public class MapProblem extends Problem {
             map[id] = mapId;
         }
     }
+
+    @Override
+    protected void _initialize() {
+        int n = getNumberOfVariables(); 
+        int d = getDomainSize(getDomain().size());
+
+        this.map = new Object[n * n];
+        this.numvars = n;
+        ArrayList<Integer> temp = new ArrayList<Integer>(d);
+        for (int i = 0; i < d; i++) {
+            temp.add(i);
+        }
+        this.domain = new ImmutableSet<Integer>(temp);
+    }
+
 
 }

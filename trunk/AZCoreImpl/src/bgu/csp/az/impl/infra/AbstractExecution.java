@@ -4,13 +4,13 @@ import bgu.csp.az.impl.async.AsyncExecution;
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.Agent.PlatformOps;
 import bgu.csp.az.api.AgentRunner;
-import bgu.csp.az.api.AlgorithmMetadata;
+import bgu.csp.az.impl.AlgorithmMetadata;
 import bgu.csp.az.api.Mailer;
-import bgu.csp.az.api.Problem;
-import bgu.csp.az.api.Statistic;
+import bgu.csp.az.api.pgen.Problem;
+import bgu.csp.az.api.infra.stat.Statistic;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.ExecutionResult;
-import bgu.csp.az.api.lsearch.SystemClock;
+import bgu.csp.az.api.SystemClock;
 import bgu.csp.az.api.tools.Assignment;
 import bgu.csp.az.api.tools.IdleDetector;
 import java.util.HashMap;
@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  * get notifications about interesting thing that happened there, let you shut down an execution etc.
  * @author bennyl
  */
-public abstract class AbstractExecution extends ProcessImpl implements Execution {
+public abstract class AbstractExecution extends AbstractProcess implements Execution {
 
     private Statistic statTree; //will get constracted when the global problem is setted.
     private Problem problem;

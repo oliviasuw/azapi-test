@@ -5,7 +5,7 @@
 package bgu.csp.az.impl.sync;
 
 import bgu.csp.az.api.MessageQueue;
-import bgu.csp.az.api.lsearch.SystemClock;
+import bgu.csp.az.api.SystemClock;
 import bgu.csp.az.impl.AbstractMailer;
 
 /**

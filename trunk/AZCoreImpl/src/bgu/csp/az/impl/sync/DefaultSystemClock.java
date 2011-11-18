@@ -5,7 +5,7 @@
 package bgu.csp.az.impl.sync;
 
 import bgu.csp.az.api.infra.Execution;
-import bgu.csp.az.api.lsearch.SystemClock;
+import bgu.csp.az.api.SystemClock;
 import java.util.LinkedList;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;

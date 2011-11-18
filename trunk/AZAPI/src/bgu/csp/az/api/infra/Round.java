@@ -13,6 +13,9 @@ import bgu.csp.az.api.tools.Assignment;
  * the execution of the collection of problems + algorithms it contains
  * the round also contains the means to analyze the statistics that gathered during it execution
  * @author bennyl
+ * 
+ * TODO: MISSING FUNCTIONS FOR ADD AND REMOVE ALGORITHM METADATA (NEDD TO API THE ALGORITHM METADATA)
+ * 
  */
 public interface Round extends Configureable, Process {
 
@@ -54,6 +57,10 @@ public interface Round extends Configureable, Process {
      * return the round result after execution
      */
     RoundResult getResult();
+    
+    CorrectnessTester getCorrectnessTester();
+    
+    void setCorrectnessTester(CorrectnessTester ctester);
     
     public static enum FinishStatus{
         SUCCESS,

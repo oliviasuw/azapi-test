@@ -4,21 +4,31 @@
  */
 package bgu.csp.az.api;
 
+import bgu.csp.az.api.infra.CorrectnessTester;
+
 /**
  *
  * @author bennyl
  */
 public enum ProblemType {
+
     /**
      * Constraint Setisfaction Problem
      */
-    CSP,
+    DCSP(null),
     /**
      * Constraint Optimization Problem
      */
-    COP,
-    
-    CONNECTED_COP,
-    
-    ADCOP
+    DCOP(null),
+    CONNECTED_DCOP(null),
+    ADCOP(null);
+    private CorrectnessTester tester;
+
+    private ProblemType(CorrectnessTester tester) {
+        this.tester = tester;
+    }
+
+    public CorrectnessTester getCorrectnessTester() {
+        return tester;
+    }
 }

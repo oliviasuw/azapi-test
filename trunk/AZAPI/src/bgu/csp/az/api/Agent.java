@@ -1,5 +1,6 @@
 package bgu.csp.az.api;
 
+import bgu.csp.az.api.infra.stat.Statistic;
 import bgu.csp.az.api.Hooks.BeforeMessageSentHook;
 import bgu.csp.az.api.ano.WhenReceived;
 import bgu.csp.az.api.ds.ImmutableSet;
@@ -7,10 +8,12 @@ import bgu.csp.az.api.exp.InvalidValueException;
 import bgu.csp.az.api.exp.PanicedAgentException;
 import bgu.csp.az.api.exp.RepeatedCallingException;
 import bgu.csp.az.api.infra.Execution;
+import bgu.csp.az.api.infra.VariableMetadata;
 import bgu.csp.az.api.tools.Assignment;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Agent is the main building block for a CP algorithms, it includes the algorithms
@@ -113,7 +116,7 @@ public abstract class Agent extends Agt0DSL {
         beforeMessageSending(ret);
         return ret;
     }
-
+    
     /**
      * override this function in the case you want to make some action every time before sending a message
      * this is a great place to write logs, attach timestamps to the message etc.
@@ -315,8 +318,10 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * should be used in algorithms that stop on idle detection - using this function the agent can submit its final result 
-     * and when the idle detector will stop it this is the assignment that will be considered as the final assignment 
+     * the agent can submit its assignment
+     * so that when the function finishWithAccumulationOfSubmitedPartialAssignments will get called 
+     * this will be the assignment to be accumulated
+     * - if you want to reassign a new value you dont have to call unSubmitCurrentAssignment, you can just call this function again with the new value
      * @param currentAssignment the assignment to submit
      */
     protected void submitCurrentAssignment(int currentAssignment) {
@@ -326,7 +331,7 @@ public abstract class Agent extends Agt0DSL {
     /**
      * remove the submitted current assignment
      */
-    protected void unSubmitCurrentAssignmenr() {
+    protected void unSubmitCurrentAssignment() {
         final Assignment partialAssignment = exec.getPartialResult().getAssignment();
         if (partialAssignment != null) {
             partialAssignment.unassign(this);
@@ -335,7 +340,7 @@ public abstract class Agent extends Agt0DSL {
 
     /**
      * @return the last submitted assignment
-     * will throw InvalideValueException if called before ever call submitCurrentAssignment
+     * will throw InvalideValueException if no assignment is submitted
      */
     protected Integer getSubmitedCurrentAssignment() {
         final Assignment finalAssignment = exec.getPartialResult().getAssignment();
@@ -541,11 +546,11 @@ public abstract class Agent extends Agt0DSL {
     }
     
     /**
-     * the concept system time is only exists in synchronized execution 
+     * Note: the concept 'system time' is only exists in synchronized execution 
      * @return the number of ticks passed since the algorithm start (first tick is 0), you can read about the definition of tick
      * in agent zero manual
      */
-    public long getSystemTime(){
+    public long getSystemTimeInTicks(){
         return pops.getExecution().getSystemClock().time();
     }
     
@@ -604,6 +609,14 @@ public abstract class Agent extends Agt0DSL {
         public String getMailGroupKey() {
             return mailGroupKey;
         }
+        
+        public VariableMetadata[] provideExpectendVariabls(){
+            return VariableMetadata.scan(Agent.this);
+        }
+        
+        public void configure(Map<String, Object> vars){
+            VariableMetadata.assign(Agent.this, vars);
+        }
     }
 
     /**
@@ -655,11 +668,6 @@ public abstract class Agent extends Agt0DSL {
             nccc++;
             cc++;
             return exec.getGlobalProblem().getConstraintCost(var, val, ass);
-        }
-
-        @Override
-        public List<Constraint> getConstraints() {
-            return exec.getGlobalProblem().getConstraints();
         }
 
         @Override

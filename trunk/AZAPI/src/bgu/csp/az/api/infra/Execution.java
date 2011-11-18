@@ -7,9 +7,9 @@ package bgu.csp.az.api.infra;
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.AgentRunner;
 import bgu.csp.az.api.Mailer;
-import bgu.csp.az.api.Problem;
-import bgu.csp.az.api.Statistic;
-import bgu.csp.az.api.lsearch.SystemClock;
+import bgu.csp.az.api.pgen.Problem;
+import bgu.csp.az.api.infra.stat.Statistic;
+import bgu.csp.az.api.SystemClock;
 import bgu.csp.az.api.tools.Assignment;
 
 /**

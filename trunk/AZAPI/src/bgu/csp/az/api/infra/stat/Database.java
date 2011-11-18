@@ -2,13 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.csp.az.api;
+package bgu.csp.az.api.infra.stat;
 
 /**
  *
  * @author bennyl
  */
-public enum SearchType {
-    ASYNCHRONOUS,
-    SYNCHRONOUS
+public class Database {
+    
 }

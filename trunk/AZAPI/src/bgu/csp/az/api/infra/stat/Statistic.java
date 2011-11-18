@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.csp.az.api;
+package bgu.csp.az.api.infra.stat;
 
 import bgu.csp.az.api.ds.NonBlockingCounter;
 import java.io.Serializable;

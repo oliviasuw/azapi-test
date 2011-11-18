@@ -18,8 +18,8 @@ public class ConnectedDCOPGen extends UnstracturedDCOPGen {
     }
 
     @Override
-    protected void _generate(Problem p, Random rand) {
-        super._generate(p, rand);
+    public void generate(Problem p, Random rand, float p1, float p2) {
+        super.generate(p, rand, p1, p2);
         while (true) {
             boolean[] connections = new boolean[p.getNumberOfVariables()];
             calcConnectivity(p, 0, connections);

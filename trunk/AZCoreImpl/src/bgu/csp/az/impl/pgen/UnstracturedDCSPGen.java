@@ -17,10 +17,6 @@ import java.util.Random;
  */
 public class UnstracturedDCSPGen extends AbstractProblemGenerator {
 
-    @Variable(name = "p1", description = "probability of constraint between two variables")
-    float p1 = 0.1f;
-    @Variable(name = "p2", description = "probability of conflict between two constrainted variables")
-    float p2 = 0.1f;
     @Variable(name = "n", description = "number of variables")
     int n = 2;
     @Variable(name = "d", description = "domain size")
@@ -31,18 +27,18 @@ public class UnstracturedDCSPGen extends AbstractProblemGenerator {
     }
 
     @Override
-    protected void _generate(Problem p, Random rand) {
+    public void generate(Problem p, Random rand, float p1, float p2) {
         p.initialize(n, new ImmutableSet<Integer>(Agt0DSL.range(0, d - 1)));
         for (int i = 0; i < p.getNumberOfVariables(); i++) {
             for (int j = 0; j < p.getNumberOfVariables(); j++) {
                 if (rand.nextDouble() < p1) {
-                    buildConstraint(i, j, p, false, rand);
+                    buildConstraint(i, j, p, false, rand, p2);
                 }
             }
         }
     }
 
-    private void buildConstraint(int i, int j, Problem p, boolean sym, Random rand) {
+    private void buildConstraint(int i, int j, Problem p, boolean sym, Random rand, float p2) {
         for (int vi = 0; vi < p.getDomain().size(); vi++) {
             for (int vj = 0; vj < p.getDomain().size(); vj++) {
                 if (i == j && vi != vj) {

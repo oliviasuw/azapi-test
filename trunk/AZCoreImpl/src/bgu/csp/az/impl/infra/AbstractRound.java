@@ -4,41 +4,75 @@
  */
 package bgu.csp.az.impl.infra;
 
+import bgu.csp.az.api.infra.CorrectnessTester;
 import bgu.csp.az.impl.AlgorithmMetadata;
 import bgu.csp.az.api.ano.Variable;
 import bgu.csp.az.api.exp.InvalidValueException;
 import bgu.csp.az.api.infra.Configureable;
+import bgu.csp.az.api.infra.CorrectnessTester.TestResult;
+import bgu.csp.az.api.infra.Execution;
+import bgu.csp.az.api.infra.ExecutionResult;
 import bgu.csp.az.api.infra.Round;
 import bgu.csp.az.api.infra.Round.RoundResult;
 import bgu.csp.az.api.infra.VariableMetadata;
 import bgu.csp.az.api.infra.stat.StatisticAnalyzer;
+import bgu.csp.az.api.pgen.Problem;
 import bgu.csp.az.api.pgen.ProblemGenerator;
+import bgu.csp.az.impl.async.AsyncExecution;
+import bgu.csp.az.impl.pgen.MapProblem;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
 
 /**
  *
  * @author bennyl
  */
 public abstract class AbstractRound extends AbstractProcess implements Round {
+    public static final String P1_PROBLEM_METADATA = "P1";
+    public static final String P2_PROBLEM_METADATA = "P2";
+    public static final String PROBLEM_GENERATOR_PROBLEM_METADATA = "PROBLEM GENERATOR";
+    public static final String SEED_PROBLEM_METADATA = "SEED";
 
     private static final StatisticAnalyzer[] EMPTY_STATISTIC_ANALAYZER_ARRAY = new StatisticAnalyzer[0];
-    
-    @Variable(name="name", description="the round name")
+    @Variable(name = "name", description = "the round name")
     private String name = "";
-    @Variable(name="length", description="the number of executions in this round")
+    @Variable(name = "length", description = "the number of executions in this round")
     private int length = 100;
-    @Variable(name="seed", description="seed for determining roundiness")
+    @Variable(name = "seed", description = "seed for determining roundiness")
     private long seed = -1;
-    private List<AlgorithmMetadata> algorithms = new LinkedList<AlgorithmMetadata>();
+    //TODO: FOR NOW THIS PARAMETERS ARE GOOD BUT NEED TO TALK WITH ALON AND SEE WHAT TYPE OF EXPIREMENT MORE EXISTS
+    @Variable(name = "p1", description = "probability of constraint between two variables")
+    private float p1 = 0.6f;
     
+    @Variable(name = "p2-start", description = "probability of conflict between two constrainted variables: at start of the round")
+    private float p2Start = 0.1f;
+    @Variable(name = "p2-end", description = "probability of conflict between two constrainted variables: at end of the round")
+    private float p2End = 0.9f;
+    @Variable(name = "p2-tick", description = "probability of conflict between two constrainted variables: increasment size")
+    private float p2Tick = 0.1f;
+    private List<AlgorithmMetadata> algorithms = new LinkedList<AlgorithmMetadata>();
     private ProblemGenerator pgen = null;
     private List<StatisticAnalyzer> analyzers = new LinkedList<StatisticAnalyzer>();
+    private RoundResult res = null;
+    private ExecutorService pool;
+    private Random rand;
+    private int current = 0;
 
-    RoundResult res = null;
+    private CorrectnessTester ctester = null;
 
     public AbstractRound() {
+    }
+
+    public void setPool(ExecutorService pool) {
+        this.pool = pool;
+    }
+
+    public ExecutorService getPool() {
+        return pool;
     }
 
     public void setName(String name) {
@@ -48,7 +82,7 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     public void setLength(int length) {
         this.length = length;
     }
-    
+
     @Override
     public String name() {
         return name;
@@ -69,11 +103,44 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
         return analyzers.toArray(EMPTY_STATISTIC_ANALAYZER_ARRAY);
     }
 
+    public List<AlgorithmMetadata> getAlgorithms() {
+        return algorithms;
+    }
+
     @Override
     protected void _run() {
-        res = __run();
+        ExecutionResult r;
+        TestResult testRes;
+        Execution e = null;
+        try {
+            for (int i = 0; i < length(); i++) {
+                Problem p = nextProblem();
+                for (AlgorithmMetadata alg : getAlgorithms()) {
+                    e = provideExecution(p, alg);
+                    e.run();
+                    r = e.getResult();
+                    if (r.isExecutionCrushed()) {
+                        res =  new RoundResult(r.getCrushReason(), e);
+                        return;
+                    } else if (getCorrectnessTester() != null) {
+                        testRes = getCorrectnessTester().test(e, r);
+                        if (!testRes.passed) {
+                            res =  new RoundResult(testRes.rightAnswer, e);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            res = new RoundResult();
+        } catch (Exception ex) {
+            res = new RoundResult(ex, e);
+        }
+        
     }
-    
+
+    protected abstract Execution provideExecution(Problem p, AlgorithmMetadata alg);
+
     @Override
     public long seed() {
         return seed;
@@ -93,6 +160,18 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
         return "configurable part of an expirement";
     }
 
+    public float getP2End() {
+        return p2End;
+    }
+
+    public float getP2Start() {
+        return p2Start;
+    }
+
+    public float getP2Tick() {
+        return p2Tick;
+    }
+
     @Override
     public VariableMetadata[] provideExpectedVariables() {
         return VariableMetadata.scan(this);
@@ -100,11 +179,13 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
 
     @Override
     public boolean canAccept(Class<? extends Configureable> cls) {
-        if (ProblemGenerator.class.isAssignableFrom(cls)){
+        if (ProblemGenerator.class.isAssignableFrom(cls)) {
             return pgen != null;
-        }else if (StatisticAnalyzer.class.isAssignableFrom(cls)){
+        } else if (StatisticAnalyzer.class.isAssignableFrom(cls)) {
             return true;
-        }else {
+        } else if (AlgorithmMetadata.class.isAssignableFrom(cls)) {
+            return true;
+        } else {
             return false;
         }
     }
@@ -114,18 +195,24 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
         LinkedList<Class<? extends Configureable>> ret = new LinkedList<Class<? extends Configureable>>();
         ret.add(ProblemGenerator.class);
         ret.add(StatisticAnalyzer.class);
+        ret.add(AlgorithmMetadata.class);
+        ret.add(CorrectnessTester.class);
         return ret;
     }
 
     @Override
     public void addSubConfiguration(Configureable sub) throws InvalidValueException {
-        if (canAccept(sub.getClass())){
-            if (sub instanceof ProblemGenerator){
+        if (canAccept(sub.getClass())) {
+            if (sub instanceof ProblemGenerator) {
                 pgen = (ProblemGenerator) sub;
-            }else {
+            } else if (sub instanceof StatisticAnalyzer){
                 this.analyzers.add((StatisticAnalyzer) sub);
+            } else if (sub instanceof AlgorithmMetadata){
+                this.algorithms.add((AlgorithmMetadata) sub);
+            } else {
+                this.setCorrectnessTester((CorrectnessTester) sub);
             }
-        }else {
+        } else {
             throw new InvalidValueException("can only accept 1 problem generator and statistics analyzers");
         }
     }
@@ -133,6 +220,7 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     @Override
     public void configure(Map<String, Object> variables) {
         VariableMetadata.assign(this, variables);
+        rand = new Random(seed);
         onConfigurationComplete();
     }
 
@@ -145,9 +233,46 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     public ProblemGenerator getProblemGenerator() {
         return pgen;
     }
-    
+
+    protected Problem nextProblem() {
+        float p2 = getP2For(current++);
+        final long nseed = rand.nextLong();
+        Random nrand = new Random(nseed);
+        MapProblem p = new MapProblem();
+        HashMap<String, Object> metadata = p.getMetadata();
+        
+        metadata.put(SEED_PROBLEM_METADATA, nseed);
+        metadata.put(PROBLEM_GENERATOR_PROBLEM_METADATA, pgen.getName());
+        metadata.put(P1_PROBLEM_METADATA, p1);
+        metadata.put(P2_PROBLEM_METADATA, p2);
+        
+        pgen.generate(p, nrand, p1, p2);
+        return p;
+    }
+
+    private float getP2For(int idx) {
+        if (p2Tick == 0) {
+            return 0;
+        } else if (p2Start == p2End) {
+            return p2Start;
+        } else {
+            float delta = p2End - p2Start;
+            float changes = delta / p2Tick;
+            float tickLength = (float) length / changes;
+            return p2Start + p2Tick * (idx % tickLength);
+        }
+    }
+
     protected abstract void onConfigurationComplete();
 
-    protected abstract RoundResult __run();
+    @Override
+    public CorrectnessTester getCorrectnessTester() {
+        return this.ctester;
+    }
+
+    @Override
+    public void setCorrectnessTester(CorrectnessTester ctester) {
+        this.ctester = ctester;
+    }
 
 }

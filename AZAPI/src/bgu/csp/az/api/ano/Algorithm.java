@@ -27,7 +27,7 @@ public @interface Algorithm {
     /**
      * @return the type of problem this algorithm solve
      */
-    ProblemType problemType() default ProblemType.COP;
+    ProblemType problemType() default ProblemType.DCOP;
 
     /**
      * if this set to true the algorithm requires an idle detector
@@ -35,6 +35,6 @@ public @interface Algorithm {
      */
     boolean useIdleDetector() default false;
     
-    SearchType searchType() default SearchType.ASYNCHRONIZED; 
+    SearchType searchType() default SearchType.ASYNCHRONOUS; 
 
 }

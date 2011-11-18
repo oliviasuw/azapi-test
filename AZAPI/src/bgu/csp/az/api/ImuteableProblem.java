@@ -41,15 +41,6 @@ public interface ImuteableProblem {
      */
     double getConstraintCost(int var, int val, Assignment ass);
 
-    
-    /**
-     * @return list of constraints that exist in this problem - the list is not part of the problem
-     * so regenerating it will create a new list every time and changing it will not change the
-     * problem
-     * operation cost: o(n^2*d^2)cc
-     */
-    List<Constraint> getConstraints();
-
     /**
      * return the domain of the given variable
      * @param var

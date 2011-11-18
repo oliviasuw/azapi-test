@@ -26,16 +26,26 @@ public class Agt0DSL {
      * @return
      */
     public static List<Integer> range(int start, int end) {
+        
         if (end < start) {
             return new ArrayList<Integer>(0);
         }
 
         ArrayList<Integer> ret = new ArrayList<Integer>(end - start);
+        fillRange(ret, start, end);
+        return ret;
+    }
+    
+    public static void fillRange(Collection c, int start, int end){
+        if (end < start) {
+            return;
+        }
+
+        //ArrayList<Integer> ret = new ArrayList<Integer>(end - start);
         for (int i = start; i <= end; i++) {
-            ret.add(i);
+            c.add(i);
         }
         
-        return ret;
     }
 
     /**

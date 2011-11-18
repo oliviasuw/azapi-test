@@ -1,11 +1,12 @@
-package bgu.csp.az.api;
+package bgu.csp.az.api.pgen;
 
+import bgu.csp.az.api.ImuteableProblem;
 import bgu.csp.az.api.ds.ImmutableSet;
 import bgu.csp.az.api.tools.Assignment;
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An abstract class for problems that should let you build any type of problem 
@@ -18,7 +19,6 @@ public abstract class Problem implements Serializable, ImuteableProblem {
     protected ImmutableSet<Integer> domain;
     protected HashMap<Integer, List<Integer>> neighbores = new HashMap<Integer, List<Integer>>();
     protected HashMap<Integer, Boolean> constraints = new HashMap<Integer, Boolean>();
-    protected boolean allowCaching = true;
 
     @Override
     public String toString() {
@@ -38,14 +38,6 @@ public abstract class Problem implements Serializable, ImuteableProblem {
         return sb.toString();
     }
 
-    public void setAllowCaching(boolean allowNeighborCaching) {
-        this.allowCaching = allowNeighborCaching;
-    }
-
-    public boolean isAllowNeighborCaching() {
-        return allowCaching;
-    }
-
     protected int calcId(int i, int j) {
         return i * numvars + j;
     }
@@ -60,7 +52,7 @@ public abstract class Problem implements Serializable, ImuteableProblem {
     public boolean isConstrained(int var1, int var2) {
         int id = calcId(var1, var2);
         Boolean ans = constraints.get(id);
-        if (ans == null || !allowCaching) {
+        if (ans == null) {
 
             boolean found = false;
             OUTER_FOR:
@@ -73,7 +65,6 @@ public abstract class Problem implements Serializable, ImuteableProblem {
                 }
             }
 
-            constraints.put(id, found);
             return found;
         } else {
             return ans;
@@ -117,50 +108,8 @@ public abstract class Problem implements Serializable, ImuteableProblem {
      */
     @Override
     public List<Integer> getNeighbors(int var) {
-
         List<Integer> l = this.neighbores.get(var);
-        if (l == null || !allowCaching) {
-            l = new LinkedList<Integer>();
-            this.neighbores.put(var, l);
-            for (int v = 0; v < getNumberOfVariables(); v++) {
-                if (v != var && isConstrained(var, v)) {
-                    l.add(v);
-                }
-            }
-            return l;
-        } else {
-            return l;
-        }
-    }
-
-    /**
-     * @return list of constraints that exist in this problem - the list is not part of the problem
-     *         so regenerating it will create a new list every time and changing it will not change the 
-     *         problem
-     *  operation cost: o(n^2*d^2)cc
-     */
-    @Override
-    public List<Constraint> getConstraints() {
-        LinkedList<Constraint> constraints = new LinkedList<Constraint>();
-
-        for (int v1 = 0; v1 < getNumberOfVariables(); v1++) {
-            for (Integer v2 : getNeighbors(v1)) {
-                for (Integer d1 : getDomainOf(v1)) {
-                    for (Integer d2 : getDomainOf(v2)) {
-                        final double cost = getConstraintCost(v1, d1, v2, d2);
-                        if (cost != 0) {
-                            if (v1 == v2) {
-                                constraints.add(new Constraint(cost, v1, d1, v2, d2));
-                            } else {
-                                constraints.add(new Constraint(cost, v1, d1));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return constraints;
+        return l;
     }
 
     @Override
@@ -179,15 +128,24 @@ public abstract class Problem implements Serializable, ImuteableProblem {
         return domain;
     }
 
-    public void setDomain(ImmutableSet<Integer> domain) {
-        this.domain = domain;
-    }
-
-    public int getNumvars() {
+    @Override
+    public int getNumberOfVariables() {
         return numvars;
     }
 
-    public void setNumvars(int numvars) {
-        this.numvars = numvars;
+    public void initialize(int numberOfVariables, Set<Integer> domain) {
+        domain = new ImmutableSet<Integer>(domain);
+        numvars = numberOfVariables;
+        _initialize();
+    }
+
+    protected abstract void _initialize();
+
+    /**
+     * we are not yet supports seperated domains but when we do - this function should be useful
+     */
+    @Override
+    public ImmutableSet<Integer> getDomainOf(int var) {
+        return domain;
     }
 }

@@ -17,24 +17,6 @@ import java.util.Map;
  */
 public abstract class AbstractConfigureable implements Configureable{
 
-    private String name;
-    private String desc;
-
-    public AbstractConfigureable(String name, String desc) {
-        this.name = name;
-        this.desc = desc;
-    }
-    
-    @Override
-    public String getConfigurationName() {
-        return name;
-    }
-
-    @Override
-    public String getConfigurationDescription() {
-        return desc;
-    }
-
     @Override
     public VariableMetadata[] provideExpectedVariables() {
         return VariableMetadata.scan(this);

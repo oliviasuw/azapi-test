@@ -4,18 +4,15 @@
  */
 package bgu.csp.az.impl;
 
-import bc.dsl.JavaDSL;
-import bgu.csp.az.api.ProblemType;
-import bgu.csp.az.api.pgen.ProblemGenerator;
-import bgu.csp.az.impl.pgen.ConnectedDCOPGen;
-import bgu.csp.az.impl.pgen.UnstracturedADCOPGen;
-import bgu.csp.az.impl.pgen.UnstracturedDCOPGen;
-import bgu.csp.az.impl.pgen.UnstracturedDCSPGen;
-import java.io.File;
+import bgu.csp.az.api.Agent;
+import bgu.csp.az.api.ano.Algorithm;
+import bgu.csp.az.api.ano.Register;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import org.reflections.Reflections;
+import org.reflections.scanners.TypeAnnotationsScanner;
 
 /**
  *
@@ -24,33 +21,43 @@ import java.util.Map;
 public enum Registary {
 
     UNIT;
-    private List<File> lookupPaths = new LinkedList<File>();
-    private Map<ProblemType, Map<String, ProblemGenerator>> problemGenerators = null;
 
-    public void addLookupPath(File path) {
-        lookupPaths.add(path);
-    }
-
-    void loadProblemGenerators() {
-
-        if (problemGenerators == null) {
-            problemGenerators = new HashMap<ProblemType, Map<String, ProblemGenerator>>();
-            ProblemGenerator[] defaultGens = {new UnstracturedADCOPGen(), new UnstracturedDCOPGen(), new UnstracturedDCSPGen(), new ConnectedDCOPGen()};
-            for (ProblemGenerator d : defaultGens) {
-                JavaDSL.innerMap(problemGenerators, d.getType()).put(d.getName(), d);
+    Map<String, Class> registeredXMLEntities = new HashMap<String, Class>();
+    Map<String, Class> agents = new HashMap<String, Class>();
+    
+    private Registary() {
+        Reflections ref = new Reflections("bgu.csp.az", new TypeAnnotationsScanner());
+        
+        //SCANNING XML ENTITIES
+        Set<Class<?>> types = ref.getTypesAnnotatedWith(Register.class);
+        for (Class<?> type : types) {
+            if (type.isInterface() || type.isAnonymousClass() || Modifier.isAbstract(type.getModifiers())) {
+                System.out.println("Found Abstract Registered Item - ignoring it: " + type.getSimpleName());
+            } else {
+                final String name = type.getAnnotation(Register.class).name();
+                System.out.println("Found Registered item : " + type.getSimpleName() + " as " + name);
+                registeredXMLEntities.put(name, type);
             }
         }
-
-
-        /*Reflections ref = new Reflections(new ConfigurationBuilder()
-        .addUrls(ClasspathHelper.))*/
-        //need to scan to find all instances of problem generator
-        //we have to define search directory - can be plugin directory or maybe register code search directory so 
-        //the test environment could load the problem generator from the bin folder
+        
+        //SCANNING AGENTS
+        types = ref.getTypesAnnotatedWith(Algorithm.class);
+        for (Class<?> type : types) {
+            if (type.isInterface() || type.isAnonymousClass() || Modifier.isAbstract(type.getModifiers())) {
+                System.out.println("Found Abstract Agent - ignoring it: " + type.getSimpleName());
+            } else {
+                final String name = type.getAnnotation(Algorithm.class).name();
+                System.out.println("Found Agent : " + type.getSimpleName() + " as " + name);
+                agents.put(name, type);
+            }
+        }
+    }
+    
+    public Class getXMLEntity(String type){
+        return registeredXMLEntities.get(type);
     }
 
-    public ProblemGenerator getProblemGenerator(String name, ProblemType type) {
-        loadProblemGenerators();
-        return JavaDSL.innerMap(problemGenerators, type).get(name);
+    Class<? extends Agent> getAgentByAlgorithmName(String name) {
+        return agents.get(name);
     }
 }

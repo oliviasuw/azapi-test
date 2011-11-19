@@ -4,6 +4,7 @@
  */
 package bgu.csp.az.impl.sync;
 
+import bgu.csp.az.api.ano.Register;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.pgen.Problem;
 import bgu.csp.az.impl.AlgorithmMetadata;
@@ -13,17 +14,8 @@ import bgu.csp.az.impl.infra.AbstractRound;
  *
  * @author bennyl
  */
+@Register(name="sync-round")
 public class SyncRound extends AbstractRound {
-
-    @Override
-    public String getConfigurationName() {
-        return "sync-round";
-    }
-
-    @Override
-    public String getConfigurationDescription() {
-        return "configurable part of an expirement";
-    }
 
     @Override
     protected void onConfigurationComplete() {

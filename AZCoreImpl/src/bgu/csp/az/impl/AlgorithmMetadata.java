@@ -3,6 +3,7 @@ package bgu.csp.az.impl;
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.ProblemType;
 import bgu.csp.az.api.SearchType;
+import bgu.csp.az.api.ano.Register;
 import bgu.csp.az.api.ano.Variable;
 import bgu.csp.az.api.exp.InvalidValueException;
 import bgu.csp.az.api.infra.Configureable;
@@ -18,20 +19,16 @@ import java.util.Map;
  * creation it configurs with its given configuration.
  * @author bennyl
  */
+@Register(name = "algorithm")
 public class AlgorithmMetadata extends AbstractConfigureable {
 
+    @Variable(name = "name", description = "the name of the algorithm")
     private String name; //the algorithm name
-    @Variable(name="class", description="the agent class")
     private Class<? extends Agent> agentClass; //the class of the agent that implements this algorithm
     private ProblemType problemType;
     private boolean useIdleDetector;
     private SearchType searchType;
     private Map<String, Object> agentConfiguration = new HashMap<String, Object>();
-   
-
-    public AlgorithmMetadata() {
-        super("algorithm", "the algorithm to execute");
-    }
 
     /**
      * constract an algorithm metadata from an agent class 
@@ -39,10 +36,12 @@ public class AlgorithmMetadata extends AbstractConfigureable {
      * @param agentClass
      */
     public AlgorithmMetadata(Class<? extends Agent> agentClass) {
-        this();
         initialize(agentClass);
     }
 
+    public AlgorithmMetadata() {
+    }
+    
     private void initialize(Class<? extends Agent> agentClass) throws InvalidValueException {
         bgu.csp.az.api.ano.Algorithm a = agentClass.getAnnotation(bgu.csp.az.api.ano.Algorithm.class);
         if (a == null) {
@@ -93,7 +92,11 @@ public class AlgorithmMetadata extends AbstractConfigureable {
 
     @Override
     protected void configurationDone() {
-        initialize(agentClass);
+        Class<? extends Agent> a = Registary.UNIT.getAgentByAlgorithmName(name);
+        if (a == null) {
+            throw new InvalidValueException("cannot find agent with the given algorithm name: '" + name + "'");
+        }
+        initialize(a);
     }
 
     @Override
@@ -110,34 +113,31 @@ public class AlgorithmMetadata extends AbstractConfigureable {
 
     @Override
     public void addSubConfiguration(Configureable sub) throws InvalidValueException {
-        if (canAccept(sub.getClass())){
+        if (canAccept(sub.getClass())) {
             VarAssign va = (VarAssign) sub;
             agentConfiguration.put(va.varName, va.value);
-        }else {
+        } else {
             throw new InvalidValueException("can only accept VarAssign");
         }
     }
 
-    public Agent generateAgent() throws InstantiationException, IllegalAccessException{
+    public Agent generateAgent() throws InstantiationException, IllegalAccessException {
         Agent agent = agentClass.newInstance();
         Agent.PlatformOps pops = Agent.PlatformOperationsExtractor.extract(agent);
         pops.configure(agentConfiguration);
         return agent;
     }
-    
-    public static class VarAssign extends AbstractConfigureable{
-        @Variable(name="var", description="the variable name")
-        String varName;
-        @Variable(name="val", description="the variable value to assign")
-        String value;
 
-        public VarAssign() {
-            super("assign", "variable assignment");
-        }
+    @Register(name = "assign")
+    public static class VarAssign extends AbstractConfigureable {
+
+        @Variable(name = "var", description = "the variable name")
+        String varName;
+        @Variable(name = "val", description = "the variable value to assign")
+        String value;
 
         @Override
         protected void configurationDone() {
         }
-        
     }
 }

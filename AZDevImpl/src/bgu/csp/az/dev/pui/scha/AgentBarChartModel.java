@@ -11,7 +11,7 @@ import bc.swing.pfrm.ano.PageDef;
 import bc.swing.pfrm.ano.Param;
 import bc.swing.pfrm.layouts.CenterLayout;
 import bc.swing.pfrm.viewtypes.ParamType;
-import bgu.csp.az.api.Statistic;
+import bgu.csp.az.api.infra.stat.Statistic;
 import java.util.Map.Entry;
 
 /**

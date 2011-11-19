@@ -5,7 +5,7 @@
 package bgu.csp.az.dev;
 
 import bgu.csp.az.api.infra.EventPipe;
-import bgu.csp.az.impl.infra.Expirament;
+import bgu.csp.az.impl.infra.ExperimentImpl;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import java.io.BufferedReader;
@@ -28,7 +28,7 @@ public class EventServer extends Thread {
     
     public static final int DEFAULT_PORT = 9090;
     private int port;
-    private Expirament exp;
+    private ExperimentImpl exp;
     private EventPipe ep;
 
     /**
@@ -36,7 +36,7 @@ public class EventServer extends Thread {
      * @param port
      * @param exp 
      */
-    public EventServer(int port, Expirament exp) {
+    public EventServer(int port, ExperimentImpl exp) {
         this.port = port;
         this.exp = exp;
         this.ep = exp.getEventPipe();

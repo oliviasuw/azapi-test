@@ -12,8 +12,8 @@ import bc.swing.pfrm.ano.PageDef;
 import bc.swing.pfrm.ano.Param;
 import bc.swing.pfrm.layouts.CenterLayout;
 import bc.swing.pfrm.viewtypes.ParamType;
-import bgu.csp.az.api.Statistic;
-import bgu.csp.az.impl.pseq.RandomProblemSequence;
+import bgu.csp.az.api.infra.stat.Statistic;
+
 import java.util.List;
 
 /**
@@ -49,7 +49,7 @@ public class P2AreaChartModel extends Model implements StatisticNode.Listener {
 
     @Override
     public synchronized final void onRootAdded(Statistic s) {
-        double p2 = (Float) s.getProblemMetadata().get(RandomProblemSequence.P2_PROBLEM_METADATA);
-        chart.add(p2, s.getValue());
+//        double p2 = (Float) s.getProblemMetadata().get(RandomProblemSequence.P2_PROBLEM_METADATA);
+//        chart.add(p2, s.getValue());
     }
 }

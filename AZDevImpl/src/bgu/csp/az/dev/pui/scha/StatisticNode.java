@@ -7,7 +7,7 @@ package bgu.csp.az.dev.pui.scha;
 import bc.dsl.JavaDSL.Fn;
 import bc.dsl.JavaDSL.Fn1;
 import bc.swing.models.GenericTreeModel.Node;
-import bgu.csp.az.api.Statistic;
+import bgu.csp.az.api.infra.stat.Statistic;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;

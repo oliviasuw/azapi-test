@@ -6,8 +6,8 @@ package bgu.csp.az.dev.slog;
 
 import bgu.csp.az.api.Constraint;
 import bgu.csp.az.api.Message;
-import bgu.csp.az.api.Problem;
-import bgu.csp.az.api.Statistic;
+import bgu.csp.az.api.pgen.Problem;
+import bgu.csp.az.api.infra.stat.Statistic;
 import bgu.csp.az.api.agt.SimpleAgent;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.tools.Assignment;
@@ -192,7 +192,7 @@ public class ScenarioLogger {
             Problem p = exec.getGlobalProblem();
 
             List constraintList = this.parts[0];
-            for (Constraint constraint : p.getConstraints()) {
+            /*for (Constraint constraint : p.getConstraints()) {
                 constraintLog = new ProblemConstraintsLog();
                 constraintLog.cost = (int) constraint.getCost();
                 constraintedItems = constraint.getConstrainted();
@@ -209,7 +209,7 @@ public class ScenarioLogger {
                 }
 
                 constraintList.add(constraintLog);
-            }
+            }*/
 
 
             //WRITE TO DB

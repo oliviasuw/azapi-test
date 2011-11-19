@@ -1,5 +1,6 @@
 package bgu.csp.az.dev.debug;
 
+
 import bgu.csp.az.api.ProblemType;
 import bgu.csp.az.api.SearchType;
 import bgu.csp.az.api.agt.SimpleAgent;
@@ -7,7 +8,7 @@ import bgu.csp.az.api.ano.Algorithm;
 import bgu.csp.az.api.ano.WhenReceived;
 import bgu.csp.az.api.tools.Assignment;
 
-@Algorithm(name = "DSA", searchType = SearchType.SYNCHRONIZED, problemType = ProblemType.ADCOP)
+@Algorithm(name = "DSA", searchType = SearchType.SYNCHRONOUS, problemType= ProblemType.ADCOP)
 public class DSAAgent extends SimpleAgent {
 
     private Assignment values;
@@ -15,7 +16,6 @@ public class DSAAgent extends SimpleAgent {
 
     @Override
     public void start() {
-//        log("starting");
         values = new Assignment();
         p = 0.5;
         int value = random(this.getDomain());
@@ -30,14 +30,10 @@ public class DSAAgent extends SimpleAgent {
 
     @Override
     public void onMailBoxEmpty() {
-        final long systemTime = getSystemTime();
-        if (isFirstAgent() && systemTime % 1000 == 0) {
-            System.out.println("tick" + systemTime + " real time: " + System.currentTimeMillis());
-        }
-        if (systemTime + 1 == 20000 && isFirstAgent()) {
+        if (getSystemTimeInTicks()+1 == 2000 && isFirstAgent()) {
             finishWithAccumulationOfSubmitedPartialAssignments();
         }
-
+        
         Integer newValue = calcDelta();
         if (Math.random() > p && newValue != null) {
             submitCurrentAssignment(newValue);

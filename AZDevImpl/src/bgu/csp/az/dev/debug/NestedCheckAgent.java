@@ -6,7 +6,7 @@ import bgu.csp.az.api.agt.SimpleAgent;
 import bgu.csp.az.api.ano.Algorithm;
 import bgu.csp.az.impl.tools.DFSPsaudoTree;
 
-@Algorithm(name = "NestedCheck", problemType= ProblemType.CONNECTED_COP)
+@Algorithm(name = "NestedCheck", problemType= ProblemType.DCOP)
 public class NestedCheckAgent extends SimpleAgent {
 
     TestingNestedTool tool = new TestingNestedTool();

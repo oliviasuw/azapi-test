@@ -6,11 +6,10 @@ package bgu.csp.az.impl.async;
 
 import bc.ds.TimeDelta;
 import bgu.csp.az.api.AgentRunner;
+import bgu.csp.az.api.infra.Round;
 import bgu.csp.az.impl.AlgorithmMetadata;
 import bgu.csp.az.api.pgen.Problem;
 import bgu.csp.az.api.infra.stat.Statistic;
-import bgu.csp.az.impl.async.AsyncAgentRunner;
-import bgu.csp.az.impl.async.AsyncMailer;
 import bgu.csp.az.impl.infra.AbstractExecution;
 import java.util.concurrent.ExecutorService;
 
@@ -23,8 +22,8 @@ public class AsyncExecution extends AbstractExecution {
     private TimeDelta timeDelta;
     private Statistic timeDeltaStatistic;
 
-    public AsyncExecution(ExecutorService exec, Problem p, AlgorithmMetadata a) {
-        super(exec, p, new AsyncMailer(), a);
+    public AsyncExecution(ExecutorService exec, Problem p, AlgorithmMetadata a, Round r) {
+        super(exec, p, new AsyncMailer(), a, r);
     }
 
     @Override

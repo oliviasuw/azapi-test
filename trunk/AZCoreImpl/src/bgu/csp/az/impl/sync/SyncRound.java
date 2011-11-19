@@ -25,6 +25,6 @@ public class SyncRound extends AbstractRound {
 
     @Override
     protected Execution provideExecution(Problem p, AlgorithmMetadata alg) {
-        return new SyncExecution(getPool(), p, alg);
+        return new SyncExecution(getPool(), p, alg, this);
     }
 }

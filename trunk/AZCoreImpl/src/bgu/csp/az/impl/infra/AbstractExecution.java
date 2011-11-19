@@ -1,5 +1,6 @@
 package bgu.csp.az.impl.infra;
 
+import bgu.csp.az.api.infra.stat.StatisticRoot;
 import bgu.csp.az.impl.async.AsyncExecution;
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.Agent.PlatformOps;
@@ -11,6 +12,7 @@ import bgu.csp.az.api.infra.stat.Statistic;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.ExecutionResult;
 import bgu.csp.az.api.SystemClock;
+import bgu.csp.az.api.infra.Round;
 import bgu.csp.az.api.tools.Assignment;
 import bgu.csp.az.api.tools.IdleDetector;
 import java.util.HashMap;
@@ -32,7 +34,7 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractExecution extends AbstractProcess implements Execution {
 
-    private Statistic statTree; //will get constracted when the global problem is setted.
+    private StatisticRoot statTree; //will get constracted when the global problem is setted.
     private Problem problem;
     private Mailer mailer;
     private boolean shuttingdown; //this variable is used to check that the execution is doing the process of shuting down only once.
@@ -50,14 +52,14 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     /**
      * 
      */
-    public AbstractExecution(ExecutorService exec, Problem p, Mailer m, AlgorithmMetadata a) {
+    public AbstractExecution(ExecutorService exec, Problem p, Mailer m, AlgorithmMetadata a, Round round) {
         this.parameterValues = new HashMap<String, Object>();
         this.shuttingdown = false;
         this.parameterValues.clear();
         this.executorService = exec;
         this.mailer = m;
         this.problem = p;
-        this.statTree = new Statistic(p.getMetadata());
+        this.statTree = new StatisticRoot(round.getName(), round.getCurrentExecutionNumber());
         this.algorithmMetadata = a;
     }
 
@@ -165,7 +167,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
      * @return the statistics tree - a tree contains statistics about this execution
      */
     @Override
-    public Statistic getStatisticsTree() {
+    public StatisticRoot getStatisticsTree() {
         return statTree;
     }
 

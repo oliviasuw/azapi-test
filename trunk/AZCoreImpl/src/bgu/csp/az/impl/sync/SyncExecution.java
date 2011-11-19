@@ -5,11 +5,10 @@
 package bgu.csp.az.impl.sync;
 
 import bc.ds.TimeDelta;
-import bgu.csp.az.api.AgentRunner;
+import bgu.csp.az.api.infra.Round;
 import bgu.csp.az.impl.AlgorithmMetadata;
 import bgu.csp.az.api.pgen.Problem;
 import bgu.csp.az.api.infra.stat.Statistic;
-import bgu.csp.az.api.SystemClock;
 import bgu.csp.az.impl.infra.AbstractExecution;
 import java.util.concurrent.ExecutorService;
 
@@ -23,8 +22,8 @@ public class SyncExecution extends AbstractExecution {
     private Statistic timeDeltaStatistic;
 
     @SuppressWarnings("LeakingThisInConstructor")
-    public SyncExecution(ExecutorService exec, Problem p, AlgorithmMetadata a) {
-        super(exec, p, new SyncMailer(), a);
+    public SyncExecution(ExecutorService exec, Problem p, AlgorithmMetadata a, Round r) {
+        super(exec, p, new SyncMailer(), a, r);
     }
 
     @Override

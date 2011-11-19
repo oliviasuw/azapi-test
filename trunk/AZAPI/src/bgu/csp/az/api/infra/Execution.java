@@ -8,8 +8,8 @@ import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.AgentRunner;
 import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.pgen.Problem;
-import bgu.csp.az.api.infra.stat.Statistic;
 import bgu.csp.az.api.SystemClock;
+import bgu.csp.az.api.infra.stat.StatisticRoot;
 import bgu.csp.az.api.tools.Assignment;
 
 /**
@@ -46,7 +46,7 @@ public interface Execution extends Process {
     /**
      * @return the statistics tree - a tree contains statistics about this execution
      */
-    Statistic getStatisticsTree();
+    StatisticRoot getStatisticsTree();
 
     /**
      * cause the executed environment to log the given data

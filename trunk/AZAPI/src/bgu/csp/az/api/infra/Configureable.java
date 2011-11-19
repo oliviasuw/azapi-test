@@ -18,14 +18,7 @@ import java.util.Map;
  * @author bennyl
  */
 public interface Configureable {
-    /**
-     * @return the name of this configuration 
-     */
-    String getConfigurationName();
-    /**
-     * @return a descriotion for this configuration
-     */
-    String getConfigurationDescription();
+
     /**
      * @return the expected variables 
      */

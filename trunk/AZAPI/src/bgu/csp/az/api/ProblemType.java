@@ -15,20 +15,10 @@ public enum ProblemType {
     /**
      * Constraint Setisfaction Problem
      */
-    DCSP(null),
+    DCSP,
     /**
      * Constraint Optimization Problem
      */
-    DCOP(null),
-    CONNECTED_DCOP(null),
-    ADCOP(null);
-    private CorrectnessTester tester;
-
-    private ProblemType(CorrectnessTester tester) {
-        this.tester = tester;
-    }
-
-    public CorrectnessTester getCorrectnessTester() {
-        return tester;
-    }
+    DCOP,
+    ADCOP;
 }

@@ -44,6 +44,23 @@ public interface Expirement extends Configureable, Process{
             this.badRoundResult = badRoundResult;
             this.interupted = false;
         }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Expirement");
+            if(succeded){
+                sb.append(" succeded");
+            }else if(!interupted){
+                sb.append(" failed: ");
+                sb.append(badRoundResult.toString());
+            }else{
+                sb.append("interrupted");
+            }
+            return sb.toString();
+        }
+        
+        
         
         
     }

@@ -7,6 +7,9 @@ package bgu.csp.az.api.infra;
 import bgu.csp.az.api.infra.stat.StatisticAnalyzer;
 import bgu.csp.az.api.pgen.ProblemGenerator;
 import bgu.csp.az.api.tools.Assignment;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * round is a configureable execution - it is part of the expirement and it define 
@@ -107,5 +110,26 @@ public interface Round extends Configureable, Process {
             this.goodAssignment = goodAssignment;
             this.badExecution = badExecution;
         }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("round result:\n").append("status= ").append(finishStatus);
+            switch (finishStatus){
+                case CRUSH:
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    crushReason.printStackTrace(pw);
+                    sb.append("crushReason: ").append(sw.toString());
+                case WRONG_RESULT:
+                    sb.append("wrong assignment: ").append(badExecution.getResult().getAssignment().toString())
+                            .append("while good assignment is: ").append(goodAssignment.toString());
+            }
+            return sb.toString();
+            
+            
+        }
+        
+        
     }
 }

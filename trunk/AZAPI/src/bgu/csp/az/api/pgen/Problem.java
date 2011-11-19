@@ -1,6 +1,7 @@
 package bgu.csp.az.api.pgen;
 
 import bgu.csp.az.api.ImuteableProblem;
+import bgu.csp.az.api.ProblemType;
 import bgu.csp.az.api.ds.ImmutableSet;
 import bgu.csp.az.api.tools.Assignment;
 import java.io.Serializable;
@@ -19,6 +20,7 @@ public abstract class Problem implements Serializable, ImuteableProblem {
     protected ImmutableSet<Integer> domain;
     protected HashMap<Integer, List<Integer>> neighbores = new HashMap<Integer, List<Integer>>();
     protected HashMap<Integer, Boolean> constraints = new HashMap<Integer, Boolean>();
+    protected ProblemType type;
 
     @Override
     public String toString() {
@@ -133,10 +135,15 @@ public abstract class Problem implements Serializable, ImuteableProblem {
         return numvars;
     }
 
-    public void initialize(int numberOfVariables, Set<Integer> domain) {
-        domain = new ImmutableSet<Integer>(domain);
-        numvars = numberOfVariables;
+    public void initialize(ProblemType type, int numberOfVariables, Set<Integer> domain) {
+        this.domain = new ImmutableSet<Integer>(domain);
+        this.numvars = numberOfVariables;
+        this.type = type;
         _initialize();
+    }
+
+    public ProblemType getProblemType() {
+        return type;
     }
 
     protected abstract void _initialize();

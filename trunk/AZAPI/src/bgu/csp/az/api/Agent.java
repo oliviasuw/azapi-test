@@ -664,6 +664,13 @@ public abstract class Agent extends Agt0DSL {
         }
 
         @Override
+        public String toString() {
+            return exec.getGlobalProblem().toString();
+        }
+
+         
+        
+        @Override
         public double getConstraintCost(int var, int val, Assignment ass) {
             nccc++;
             cc++;

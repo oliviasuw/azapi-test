@@ -34,12 +34,12 @@ public class MapProblem extends Problem {
             setNeighbor(var2, var1);
         }
         createMap(id);
-        ((double[][])map[id])[val1][val2] = cost;
+        ((double[][]) map[id])[val1][val2] = cost;
     }
 
     private void setNeighbor(int var1, int var2) {
         List<Integer> l = super.neighbores.get(var1);
-        if (l == null){
+        if (l == null) {
             l = new LinkedList<Integer>();
             super.neighbores.put(var1, l);
         }
@@ -49,10 +49,10 @@ public class MapProblem extends Problem {
     @Override
     public double getConstraintCost(int var1, int val1, int var2, int val2) {
         int id = calcId(var1, var2);
-        if (map[id]==null) {
+        if (map[id] == null) {
             return 0;
         }
-        return ((double[][])map[id])[val1][val2];
+        return ((double[][]) map[id])[val1][val2];
     }
 
     @Override
@@ -61,7 +61,7 @@ public class MapProblem extends Problem {
         if (map[id] == null) {
             return 0;
         }
-        return ((double[][])map[id])[val1][val1];
+        return ((double[][]) map[id])[val1][val1];
     }
 
     private void createMap(int id) {
@@ -74,7 +74,7 @@ public class MapProblem extends Problem {
 
     @Override
     protected void _initialize() {
-        int n = getNumberOfVariables(); 
+        int n = getNumberOfVariables();
         int d = getDomainSize(getDomain().size());
 
         this.map = new Object[n * n];
@@ -85,6 +85,6 @@ public class MapProblem extends Problem {
         }
         this.domain = new ImmutableSet<Integer>(temp);
     }
-
-
+    
+    
 }

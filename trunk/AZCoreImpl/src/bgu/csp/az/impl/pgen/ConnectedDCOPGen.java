@@ -4,6 +4,7 @@
  */
 package bgu.csp.az.impl.pgen;
 
+import bgu.csp.az.api.ano.Register;
 import bgu.csp.az.api.pgen.Problem;
 import java.util.Random;
 
@@ -11,11 +12,8 @@ import java.util.Random;
  *
  * @author bennyl
  */
-public class ConnectedDCOPGen extends UnstracturedDCOPGen {
-
-    public ConnectedDCOPGen() {
-        name = "connected";
-    }
+@Register(name="dcop-connected")
+public class ConnectedDCOPGen extends UnstructuredDCOPGen {
 
     @Override
     public void generate(Problem p, Random rand, float p1, float p2) {

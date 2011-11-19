@@ -18,7 +18,6 @@ public abstract class AbstractStatisticAnalyzer extends AbstractConfigureable im
     private String statisticName;
 
     public AbstractStatisticAnalyzer(String statisticName) {
-        super("stat", "statistic analayzer definition");
         this.statisticName = statisticName;
     }
 

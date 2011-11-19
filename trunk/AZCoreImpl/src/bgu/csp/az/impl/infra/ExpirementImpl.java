@@ -4,6 +4,7 @@
  */
 package bgu.csp.az.impl.infra;
 
+import bgu.csp.az.api.ano.Register;
 import bgu.csp.az.api.exp.InvalidValueException;
 import bgu.csp.az.api.infra.Configureable;
 import bgu.csp.az.api.infra.CorrectnessTester;
@@ -23,7 +24,8 @@ import java.util.concurrent.Executors;
  *
  * @author bennyl
  */
-public class ExpiramentImpl extends AbstractProcess implements Expirement {
+@Register(name="expirement")
+public class ExpirementImpl extends AbstractProcess implements Expirement {
 
     private static final VariableMetadata[] EMPTY_VARIABLE_ARRAY =  new VariableMetadata[0];
     
@@ -40,7 +42,7 @@ public class ExpiramentImpl extends AbstractProcess implements Expirement {
             }
             
             if (current.canAccept(CorrectnessTester.class)){
-                current.addSubConfiguration(current.getProblemGenerator().getType().getCorrectnessTester());
+                current.addSubConfiguration(new DefaultCorrectnessTester());
             }
             
             if (current instanceof AbstractRound){
@@ -56,53 +58,8 @@ public class ExpiramentImpl extends AbstractProcess implements Expirement {
                     return;
             }
         }
-//        try {
-//            
-//            
-//            while (hasMoreExecutions() && !Thread.currentThread().isInterrupted()) {
-//                currentExecution = nextExecution();
-//                currentExecutionEventPipe = new EventPipe();
-//                currentExecution.setEventPipe(currentExecutionEventPipe);
-//                p = currentExecution.getGlobalProblem();
-//
-//                currentExecution.run();
-//
-//                result = currentExecution.getResult();
-//                
-//                //CHECK CRUSH
-//                if (result.isExecutionCrushed()){
-//                    whenExpirementEndedBecauseExecutionCrushed(result.getCrushReason());
-//                    return;
-//                }
-//                
-//                //CHECK CORRECTNESS
-//                System.out.println("Testing solution...");
-//                correct = safeSolve(currentExecution.getGlobalProblem());
-//                if (correct != null) {
-//                    if (result.hasSolution() == true && correct.hasSolution() == true) {
-//                        goodc = correct.getAssignment().calcCost(currentExecution.getGlobalProblem());
-//                        gotc = result.getAssignment().calcCost(currentExecution.getGlobalProblem());
-//                        if (goodc != gotc) {
-//                            whenExpirementEndedBecauseOfWrongResults(result.getAssignment(), correct.getAssignment());
-//                            return;
-//                        }
-//                    } else if (result.hasSolution() == false && correct.hasSolution() == false) {
-//                        //great!
-//                    } else {
-//                        whenExpirementEndedBecauseOfWrongResults(result.getAssignment(), correct.getAssignment());
-//                        return;
-//                    }
-//                }
-//                
-//                whenSingleExecutionEndedSuccessfully(currentExecution);
-//                System.out.println("Good Solution :)");
-//                //SAVE DATA TO DATABASE - SHOULD BE DONE ON A DIFFERENT THREAD
-//            }
-//            whenExpirementEndedSuccessfully();
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//            whenExpirementEndedBecauseExecutionCrushed(ex);
-//        }
+        
+        result = new ExpirementResult(false);
     }
 
     @Override
@@ -118,16 +75,6 @@ public class ExpiramentImpl extends AbstractProcess implements Expirement {
     @Override
     public ExpirementResult getResult() {
         return result;
-    }
-
-    @Override
-    public String getConfigurationName() {
-        return "expirement";
-    }
-
-    @Override
-    public String getConfigurationDescription() {
-        return "configureable collection of rounds";
     }
 
     @Override

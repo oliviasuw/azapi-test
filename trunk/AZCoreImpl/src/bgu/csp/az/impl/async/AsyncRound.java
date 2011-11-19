@@ -4,6 +4,7 @@
  */
 package bgu.csp.az.impl.async;
 
+import bgu.csp.az.api.ano.Register;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.pgen.Problem;
 import bgu.csp.az.impl.AlgorithmMetadata;
@@ -13,17 +14,8 @@ import bgu.csp.az.impl.infra.AbstractRound;
  *
  * @author bennyl
  */
+@Register(name= "async-round")
 public class AsyncRound extends AbstractRound {
-
-    @Override
-    public String getConfigurationName() {
-        return "async-round";
-    }
-
-    @Override
-    public String getConfigurationDescription() {
-        return "configurable part of an expirement";
-    }
 
     @Override
     protected void onConfigurationComplete() {

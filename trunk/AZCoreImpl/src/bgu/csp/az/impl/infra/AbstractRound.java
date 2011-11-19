@@ -1,3 +1,4 @@
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -18,7 +19,6 @@ import bgu.csp.az.api.infra.VariableMetadata;
 import bgu.csp.az.api.infra.stat.StatisticAnalyzer;
 import bgu.csp.az.api.pgen.Problem;
 import bgu.csp.az.api.pgen.ProblemGenerator;
-import bgu.csp.az.impl.async.AsyncExecution;
 import bgu.csp.az.impl.pgen.MapProblem;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -32,11 +32,11 @@ import java.util.concurrent.ExecutorService;
  * @author bennyl
  */
 public abstract class AbstractRound extends AbstractProcess implements Round {
+
     public static final String P1_PROBLEM_METADATA = "P1";
     public static final String P2_PROBLEM_METADATA = "P2";
     public static final String PROBLEM_GENERATOR_PROBLEM_METADATA = "PROBLEM GENERATOR";
     public static final String SEED_PROBLEM_METADATA = "SEED";
-
     private static final StatisticAnalyzer[] EMPTY_STATISTIC_ANALAYZER_ARRAY = new StatisticAnalyzer[0];
     @Variable(name = "name", description = "the round name")
     private String name = "";
@@ -47,7 +47,6 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     //TODO: FOR NOW THIS PARAMETERS ARE GOOD BUT NEED TO TALK WITH ALON AND SEE WHAT TYPE OF EXPIREMENT MORE EXISTS
     @Variable(name = "p1", description = "probability of constraint between two variables")
     private float p1 = 0.6f;
-    
     @Variable(name = "p2-start", description = "probability of conflict between two constrainted variables: at start of the round")
     private float p2Start = 0.1f;
     @Variable(name = "p2-end", description = "probability of conflict between two constrainted variables: at end of the round")
@@ -61,8 +60,20 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     private ExecutorService pool;
     private Random rand;
     private int current = 0;
-
     private CorrectnessTester ctester = null;
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("round:\n").append("name = ").append(name).append("\nlength = ").append(length).append("\nseed = ").append(seed).append("\np1 = ").append(p1).append("\np2-start = ").append(p2Start).append("\np2-end = ").append(p2End).append("\np2-tick = ").append(p2Tick).append("\n");
+        if (pgen == null) {
+            sb.append("no problem generator defined!\n");
+        } else {
+            sb.append("pgen = ").append(pgen.toString()).append("\n");
+        }
+
+        return sb.toString();
+    }
 
     public AbstractRound() {
     }
@@ -120,12 +131,12 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
                     e.run();
                     r = e.getResult();
                     if (r.isExecutionCrushed()) {
-                        res =  new RoundResult(r.getCrushReason(), e);
+                        res = new RoundResult(r.getCrushReason(), e);
                         return;
                     } else if (getCorrectnessTester() != null) {
                         testRes = getCorrectnessTester().test(e, r);
                         if (!testRes.passed) {
-                            res =  new RoundResult(testRes.rightAnswer, e);
+                            res = new RoundResult(testRes.rightAnswer, e);
                             return;
                         }
                     }
@@ -136,7 +147,7 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
         } catch (Exception ex) {
             res = new RoundResult(ex, e);
         }
-        
+
     }
 
     protected abstract Execution provideExecution(Problem p, AlgorithmMetadata alg);
@@ -148,16 +159,6 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
 
     public void setSeed(long seed) {
         this.seed = seed;
-    }
-
-    @Override
-    public String getConfigurationName() {
-        return "round";
-    }
-
-    @Override
-    public String getConfigurationDescription() {
-        return "configurable part of an expirement";
     }
 
     public float getP2End() {
@@ -180,11 +181,13 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     @Override
     public boolean canAccept(Class<? extends Configureable> cls) {
         if (ProblemGenerator.class.isAssignableFrom(cls)) {
-            return pgen != null;
+            return pgen == null;
         } else if (StatisticAnalyzer.class.isAssignableFrom(cls)) {
             return true;
         } else if (AlgorithmMetadata.class.isAssignableFrom(cls)) {
             return true;
+        }else if (CorrectnessTester.class.isAssignableFrom(cls)){
+            return ctester == null;
         } else {
             return false;
         }
@@ -205,9 +208,9 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
         if (canAccept(sub.getClass())) {
             if (sub instanceof ProblemGenerator) {
                 pgen = (ProblemGenerator) sub;
-            } else if (sub instanceof StatisticAnalyzer){
+            } else if (sub instanceof StatisticAnalyzer) {
                 this.analyzers.add((StatisticAnalyzer) sub);
-            } else if (sub instanceof AlgorithmMetadata){
+            } else if (sub instanceof AlgorithmMetadata) {
                 this.algorithms.add((AlgorithmMetadata) sub);
             } else {
                 this.setCorrectnessTester((CorrectnessTester) sub);
@@ -240,12 +243,12 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
         Random nrand = new Random(nseed);
         MapProblem p = new MapProblem();
         HashMap<String, Object> metadata = p.getMetadata();
-        
+
         metadata.put(SEED_PROBLEM_METADATA, nseed);
-        metadata.put(PROBLEM_GENERATOR_PROBLEM_METADATA, pgen.getName());
+        metadata.put(PROBLEM_GENERATOR_PROBLEM_METADATA, pgen.getClass().getName());
         metadata.put(P1_PROBLEM_METADATA, p1);
         metadata.put(P2_PROBLEM_METADATA, p2);
-        
+
         pgen.generate(p, nrand, p1, p2);
         return p;
     }
@@ -274,5 +277,4 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     public void setCorrectnessTester(CorrectnessTester ctester) {
         this.ctester = ctester;
     }
-
 }

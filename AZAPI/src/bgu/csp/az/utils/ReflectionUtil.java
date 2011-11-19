@@ -32,33 +32,35 @@ public class ReflectionUtil {
         return null;
     }
 
-    public static Set<Class> getClassGraph(Class c){
+    public static Set<Class> getClassGraph(Class c) {
         Set<Class> ret = new HashSet<Class>();
         LinkedList<Class> investigateQ = new LinkedList<Class>();
         investigateQ.add(c);
-        while (!investigateQ.isEmpty()){
+        while (!investigateQ.isEmpty()) {
             Class i = investigateQ.removeFirst();
-            
-            if (ret.contains(i)) continue;
+
+            if (ret.contains(i)) {
+                continue;
+            }
             ret.add(i);
-            
+
             Class[] interfaces = i.getInterfaces();
             Class superclass = i.getSuperclass();
-            
-            if (superclass != null && !ret.contains(superclass)){
+
+            if (superclass != null && !ret.contains(superclass)) {
                 investigateQ.add(superclass);
             }
-            
-            for (Class inter : interfaces){
-                if (!ret.contains(inter)){
+
+            for (Class inter : interfaces) {
+                if (!ret.contains(inter)) {
                     investigateQ.add(inter);
                 }
             }
         }
-        
+
         return ret;
     }
-    
+
     public static List<Method> getAllMethodsWithAnnotation(Class aClass, Class<? extends Annotation> ano) {
         LinkedList<Method> ret = new LinkedList<Method>();
         for (Method m : aClass.getDeclaredMethods()) {
@@ -70,7 +72,20 @@ public class ReflectionUtil {
 
         return ret;
     }
-    
+
+    public static List<Field> getRecursivelyFieldsWithAnnotation(Class aClass, Class<? extends Annotation> ano) {
+        LinkedList<Field> ret = new LinkedList<Field>();
+        while (true) {
+            List<Field> l = getAllFieldsWithAnnotation(aClass, ano);
+            ret.addAll(l);
+            if (aClass == Object.class) {
+                return ret;
+            } else {
+                aClass = aClass.getSuperclass();
+            }
+        }
+    }
+
     public static List<Field> getAllFieldsWithAnnotation(Class aClass, Class<? extends Annotation> ano) {
         LinkedList<Field> ret = new LinkedList<Field>();
         for (Field m : aClass.getDeclaredFields()) {
@@ -82,8 +97,8 @@ public class ReflectionUtil {
 
         return ret;
     }
-    
-    public static Method methodByName(Class aClass, String name){
+
+    public static Method methodByName(Class aClass, String name) {
         LinkedList<Method> ret = new LinkedList<Method>();
         for (Method m : aClass.getDeclaredMethods()) {
             if (m.getName().equals(name)) {
@@ -91,19 +106,21 @@ public class ReflectionUtil {
                 return m;
             }
         }
-        
-        return null;
-    }
-    
-    public static Method methodByNameAndNArgs(Class aClass, String name, int nargs){
-        for (Method m : methodsByName(aClass, name)){
-            if (m.getParameterTypes().length == nargs) return m;
-        }
-        
+
         return null;
     }
 
-    public static List<Method> methodsByName(Class aClass, String name){
+    public static Method methodByNameAndNArgs(Class aClass, String name, int nargs) {
+        for (Method m : methodsByName(aClass, name)) {
+            if (m.getParameterTypes().length == nargs) {
+                return m;
+            }
+        }
+
+        return null;
+    }
+
+    public static List<Method> methodsByName(Class aClass, String name) {
         LinkedList<Method> ret = new LinkedList<Method>();
         for (Method m : aClass.getDeclaredMethods()) {
             if (m.getName().equals(name)) {
@@ -114,5 +131,4 @@ public class ReflectionUtil {
 
         return ret;
     }
-    
 }

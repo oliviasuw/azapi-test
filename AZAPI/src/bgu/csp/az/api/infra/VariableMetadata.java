@@ -8,6 +8,7 @@ import bgu.csp.az.api.ano.Variable;
 import bgu.csp.az.api.exp.InternalErrorException;
 import bgu.csp.az.utils.ReflectionUtil;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -49,8 +50,11 @@ public class VariableMetadata {
 
     public static void assign(Object obj, Map<String, Object> variables) {
         try {
-            for (Field field : ReflectionUtil.getAllFieldsWithAnnotation(obj.getClass(), Variable.class)) {
-                field.set(obj, variables.get(field.getAnnotation(Variable.class).name()));
+            for (Field field : ReflectionUtil.getRecursivelyFieldsWithAnnotation(obj.getClass(), Variable.class)) {
+                final Object val = variables.get(field.getAnnotation(Variable.class).name());
+                if (val != null) {
+                    field.set(obj, val);
+                }
             }
         } catch (IllegalArgumentException ex) {
             Logger.getLogger(VariableMetadata.class.getName()).log(Level.SEVERE, null, ex);
@@ -62,8 +66,19 @@ public class VariableMetadata {
 
     }
 
+    public static Map<String, VariableMetadata> map(Object from) {
+        VariableMetadata[] s = scan(from);
+        HashMap<String, VariableMetadata> ret = new HashMap<String, VariableMetadata>();
+        for (VariableMetadata v : s) {
+            ret.put(v.getName(), v);
+        }
+
+        return ret;
+    }
+
     public static VariableMetadata[] scan(Object from) {
-        List<Field> fields = ReflectionUtil.getAllFieldsWithAnnotation(from.getClass(), Variable.class);
+//        System.out.println("Scanning " + from.getClass().getSimpleName());
+        List<Field> fields = ReflectionUtil.getRecursivelyFieldsWithAnnotation(from.getClass(), Variable.class);
         VariableMetadata[] ret = new VariableMetadata[fields.size()];
         int i = 0;
 

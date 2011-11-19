@@ -15,7 +15,7 @@ import bc.dsl.PageDSL;
 import bc.swing.pfrm.BaseParamModel;
 import bc.swing.pfrm.PageLayout;
 import bc.swing.pfrm.FieldParamModel;
-import bgu.csp.az.dev.Round;
+//import bgu.csp.az.dev.frm.Round;
 
 /**
  *
@@ -283,14 +283,14 @@ public class StatusView extends javax.swing.JPanel implements PageLayout{
     // End of variables declaration//GEN-END:variables
 
 
-    public void changeRound(Round round) {
-        if (round != null) {
-            nLabel.setText("" + round.getNumberOfVariables());
-            dLabel.setText("" + round.getDomainSize());
-            p1Label.setText("" + round.getP1());
-            cLabel.setText("" + round.getMaxCost());
-        }
-    }
+//    public void changeRound(Round round) {
+//        if (round != null) {
+//            nLabel.setText("" + round.getNumberOfVariables());
+//            dLabel.setText("" + round.getDomainSize());
+//            p1Label.setText("" + round.getP1());
+//            cLabel.setText("" + round.getMaxCost());
+//        }
+//    }
 
     @Override
     public void setPage(Page page) {
@@ -300,16 +300,16 @@ public class StatusView extends javax.swing.JPanel implements PageLayout{
         PageDSL.fillByRole(page, statusPan, EXECUTION_STATUS_ROLE);
         
         //current Execution
-        BaseParamModel rp = page.getParam(StatusModel.CURRENT_ROUND_PARAM);
-        rp.addChangeListener(new FieldParamModel.ChangeListener() {
-
-            @Override
-            public void onChange(BaseParamModel source, Object newValue, Object deltaHint) {
-                changeRound((Round)newValue);
-            }
-        });
-        
-        changeRound((Round)rp.getValue());
+//        BaseParamModel rp = page.getParam(StatusModel.CURRENT_ROUND_PARAM);
+//        rp.addChangeListener(new FieldParamModel.ChangeListener() {
+//
+//            @Override
+//            public void onChange(BaseParamModel source, Object newValue, Object deltaHint) {
+//                changeRound((Round)newValue);
+//            }
+//        });
+//        
+//        changeRound((Round)rp.getValue());
     }
 
     @Override

@@ -7,7 +7,7 @@ package bgu.csp.az.dev.pui.scha;
 import bc.swing.pfrm.models.NoDataModel;
 import bc.swing.pfrm.Model;
 import bgu.csp.az.api.Agent;
-import bgu.csp.az.api.Statistic;
+import bgu.csp.az.api.infra.stat.Statistic;
 import java.util.List;
 
 /**

@@ -22,15 +22,19 @@ import java.io.StringWriter;
  */
 public interface Round extends Configureable, Process {
 
+    void addListener(RoundListener l);
+    
+    void removeListener(RoundListener l);
+    
     /**
      * @return the name of this round
      */
-    String name();
+    String getName();
 
     /**
      * @return the length of the round - means how many executions should run under this round configuratios
      */
-    int length();
+    int getLength();
 
     /**
      * the round seed - if there are any random elements on the round 
@@ -38,8 +42,14 @@ public interface Round extends Configureable, Process {
      * or not supplied (-1 is the default) then the seed will be the current time in miliseconds
      * @return the round seed 
      */
-    long seed();
+    long getSeed();
 
+    /**
+     * @return return the round progress - when the round is running this function 
+     * will return the current execution number between 0 and Round.getLength()
+     */
+    int getCurrentExecutionNumber();
+    
     /**
      * @return this round problem generator
      */
@@ -121,15 +131,23 @@ public interface Round extends Configureable, Process {
                     PrintWriter pw = new PrintWriter(sw);
                     crushReason.printStackTrace(pw);
                     sb.append("crushReason: ").append(sw.toString());
+                    break;
                 case WRONG_RESULT:
-                    sb.append("wrong assignment: ").append(badExecution.getResult().getAssignment().toString())
+                    sb.append("wrong assignment: ")
+                            .append("" + badExecution.getResult().getAssignment())
                             .append("while good assignment is: ").append(goodAssignment.toString());
+                    break;
             }
             return sb.toString();
             
             
         }
         
-        
+    }
+    
+    public static interface RoundListener{
+        void onRoundStarted(Round source);
+        void onExecutionStarted(Round source, Execution exec);
+        void onExecutionEnded(Round source, Execution exec);
     }
 }

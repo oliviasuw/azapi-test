@@ -24,24 +24,12 @@ public class Statistic implements Serializable {
 
     private HashMap<String, Statistic> childs;
     private NonBlockingCounter cnt;
-    private Map problemMetadata;
 
-    /**
-     * 
-     * @param problemMetadata the metadata of the problem - this is saved via the statistic for later analyzing
-     */
-    public Statistic(Map problemMetadata) {
+    public Statistic() {
         this.cnt = new NonBlockingCounter();
         this.childs = new HashMap<String, Statistic>();
-        this.problemMetadata = problemMetadata;
     }
 
-    /**
-     * @return the saved problem metadata
-     */
-    public Map getProblemMetadata() {
-        return problemMetadata;
-    }
 
     /**
      * set the statistic value
@@ -83,7 +71,7 @@ public class Statistic implements Serializable {
         Statistic ret = childs.get(key);
 
         if (ret == null) {
-            ret = new Statistic(getProblemMetadata());
+            ret = new Statistic();
             childs.put(key, ret);
         }
 

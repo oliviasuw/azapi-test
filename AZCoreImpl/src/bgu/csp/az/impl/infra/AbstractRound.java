@@ -61,6 +61,7 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     private Random rand;
     private int current = 0;
     private CorrectnessTester ctester = null;
+    private List<RoundListener> listeners = new LinkedList<RoundListener>();
 
     @Override
     public String toString() {
@@ -86,6 +87,11 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
         return pool;
     }
 
+    @Override
+    public int getCurrentExecutionNumber() {
+        return current;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -95,12 +101,12 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     }
 
     @Override
-    public String name() {
+    public String getName() {
         return name;
     }
 
     @Override
-    public int length() {
+    public int getLength() {
         return length;
     }
 
@@ -124,10 +130,12 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
         TestResult testRes;
         Execution e = null;
         try {
-            for (int i = 0; i < length(); i++) {
+            fireRoundStarted();
+            for (int i = 0; i < getLength(); i++) {
                 Problem p = nextProblem();
                 for (AlgorithmMetadata alg : getAlgorithms()) {
                     e = provideExecution(p, alg);
+                    fireNewExecution(e);
                     e.run();
                     r = e.getResult();
                     if (r.isExecutionCrushed()) {
@@ -140,6 +148,7 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
                             return;
                         }
                     }
+                    fireExecutionEnded(e);
                 }
             }
 
@@ -153,7 +162,7 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     protected abstract Execution provideExecution(Problem p, AlgorithmMetadata alg);
 
     @Override
-    public long seed() {
+    public long getSeed() {
         return seed;
     }
 
@@ -277,4 +286,27 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     public void setCorrectnessTester(CorrectnessTester ctester) {
         this.ctester = ctester;
     }
+
+    @Override
+    public void addListener(RoundListener l) {
+        listeners.add(l);
+    }
+
+    @Override
+    public void removeListener(RoundListener l) {
+        listeners.remove(l);
+    }
+
+    private void fireRoundStarted() {
+        for (RoundListener l : listeners) l.onRoundStarted(this);
+    }
+
+    private void fireNewExecution(Execution e) {
+        for (RoundListener l : listeners) l.onExecutionStarted(this, e);
+    }
+
+    private void fireExecutionEnded(Execution e) {
+        for (RoundListener l : listeners) l.onExecutionEnded(this, e);
+    }
+    
 }

@@ -16,8 +16,8 @@ import java.util.Random;
 public class ConnectedDCOPGen extends UnstructuredDCOPGen {
 
     @Override
-    public void generate(Problem p, Random rand, float p1, float p2) {
-        super.generate(p, rand, p1, p2);
+    public void generate(Problem p, Random rand) {
+        super.generate(p, rand);
         while (true) {
             boolean[] connections = new boolean[p.getNumberOfVariables()];
             calcConnectivity(p, 0, connections);

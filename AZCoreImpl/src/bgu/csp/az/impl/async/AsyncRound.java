@@ -27,4 +27,5 @@ public class AsyncRound extends AbstractRound {
     protected Execution provideExecution(Problem p, AlgorithmMetadata alg) {
         return new AsyncExecution(getPool(), p, alg, this);
     }
+
 }

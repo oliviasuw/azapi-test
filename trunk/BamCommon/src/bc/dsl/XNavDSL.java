@@ -7,9 +7,12 @@ package bc.dsl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import static bc.dsl.JavaDSL.*;
 import java.util.List;
+import java.util.Map;
+import nu.xom.Attribute;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
@@ -103,5 +106,15 @@ public class XNavDSL {
                 return eq(attr(args[0], attr), value);
             }
         });
+    }
+    
+    public static Map<String, String> attributes(Element e){
+        Map<String, String> ret = new HashMap<String, String>();
+        for (int i=0; i<e.getAttributeCount(); i++){
+            Attribute a = e.getAttribute(i);
+            ret.put(a.getLocalName(), a.getValue());
+        }
+        
+        return ret;
     }
 }

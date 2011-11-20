@@ -8,6 +8,7 @@ import bgu.csp.az.api.ds.ImmutableSet;
 import bgu.csp.az.api.tools.Assignment;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -65,7 +66,7 @@ public interface ImuteableProblem {
      * @return all the variables that costrainted with the given var
      * operation cost: o(n*d^2)cc
      */
-    List<Integer> getNeighbors(int var);
+    Set<Integer> getNeighbors(int var);
 
     /**
      * @return the number of variables defined in this problem
@@ -88,5 +89,4 @@ public interface ImuteableProblem {
      * operation cost: o(d^2)cc
      */
     boolean isConstrained(int var1, int var2);
-    
 }

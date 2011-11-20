@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Agent is the main building block for a CP algorithms, it includes the algorithms
@@ -635,7 +636,7 @@ public abstract class Agent extends Agt0DSL {
         }
 
         @Override
-        public List<Integer> getNeighbors(int var) {
+        public Set<Integer> getNeighbors(int var) {
             return exec.getGlobalProblem().getNeighbors(var);
         }
 

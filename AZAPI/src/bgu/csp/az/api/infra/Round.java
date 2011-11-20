@@ -134,9 +134,9 @@ public interface Round extends Configureable, Process {
                     sb.append("crushReason: ").append(sw.toString());
                     break;
                 case WRONG_RESULT:
-                    sb.append("wrong assignment: ")
-                            .append("" + badExecution.getResult().getAssignment())
-                            .append("while good assignment is: ").append(goodAssignment.toString());
+                    sb.append("\nwrong assignment: ")
+                            .append("" + badExecution.getResult().getAssignment()).append(" with cost of = ").append(badExecution.getResult().getAssignment().calcCost(badExecution.getGlobalProblem()))
+                            .append(" while good assignment is: ").append(goodAssignment.toString()).append(" with cost of = ").append(goodAssignment.calcCost(badExecution.getGlobalProblem()));
                     break;
             }
             return sb.toString();

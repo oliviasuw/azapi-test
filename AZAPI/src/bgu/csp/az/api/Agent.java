@@ -1,7 +1,6 @@
 package bgu.csp.az.api;
 
 import bgu.csp.az.api.Hooks.BeforeCallingFinishHook;
-import bgu.csp.az.api.infra.stat.Statistic;
 import bgu.csp.az.api.Hooks.BeforeMessageSentHook;
 import bgu.csp.az.api.ano.WhenReceived;
 import bgu.csp.az.api.ds.ImmutableSet;
@@ -191,7 +190,8 @@ public abstract class Agent extends Agt0DSL {
      * @throws InterruptedException
      */
     protected Message nextMessage() throws InterruptedException {
-        return mailbox.take();
+        currentMessage =  mailbox.take();
+        return currentMessage;
     }
 
     /**

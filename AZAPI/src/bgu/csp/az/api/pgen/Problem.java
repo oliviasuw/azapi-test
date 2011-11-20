@@ -6,6 +6,7 @@ import bgu.csp.az.api.ds.ImmutableSet;
 import bgu.csp.az.api.tools.Assignment;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -56,18 +57,18 @@ public abstract class Problem implements Serializable, ImuteableProblem {
         Boolean ans = constraints.get(id);
         if (ans == null) {
 
-            boolean found = false;
-            OUTER_FOR:
-            for (Integer d1 : getDomainOf(var1)) {
-                for (Integer d2 : getDomainOf(var2)) {
-                    if (getConstraintCost(var1, d1, var2, d2) != 0) {
-                        found = true;
-                        break OUTER_FOR;
-                    }
-                }
-            }
+            return false;
+//            OUTER_FOR:
+//            for (Integer d1 : getDomainOf(var1)) {
+//                for (Integer d2 : getDomainOf(var2)) {
+//                    if (getConstraintCost(var1, d1, var2, d2) != 0) {
+//                        found = true;
+//                        break OUTER_FOR;
+//                    }
+//                }
+//            }
 
-            return found;
+//            return found;
         } else {
             return ans;
         }
@@ -138,6 +139,10 @@ public abstract class Problem implements Serializable, ImuteableProblem {
     public void initialize(ProblemType type, int numberOfVariables, Set<Integer> domain) {
         this.domain = new ImmutableSet<Integer>(domain);
         this.numvars = numberOfVariables;
+        this.neighbores = new HashMap<Integer, List<Integer>>();
+        for (int i=0; i<numvars; i++){
+            neighbores.put(i, new LinkedList<Integer>());
+        }
         this.type = type;
         _initialize();
     }

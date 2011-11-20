@@ -4,10 +4,9 @@
  */
 package bgu.csp.az.api.infra;
 
-import bgu.csp.az.api.infra.stat.StatisticAnalyzer;
+import bgu.csp.az.api.infra.stat.StatisticCollector;
 import bgu.csp.az.api.pgen.ProblemGenerator;
 import bgu.csp.az.api.tools.Assignment;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -32,23 +31,25 @@ public interface Round extends Configureable, Process {
     String getName();
 
     /**
-     * @return the length of the round - means how many executions should run under this round configuratios
-     */
-    int getLength();
-
-    /**
      * the round seed - if there are any random elements on the round 
      * then this seed will give the ability to recreate the same round - if the seed is -1 
      * or not supplied (-1 is the default) then the seed will be the current time in miliseconds
      * @return the round seed 
      */
     long getSeed();
+    String getRunningVarName();
+    float getVarStart();
+    float getVarEnd();
+    float getTick();
+    int getTickSize();
+    float getCurrentVarValue();
 
     /**
      * @return return the round progress - when the round is running this function 
      * will return the current execution number between 0 and Round.getLength()
      */
     int getCurrentExecutionNumber();
+    
     
     /**
      * @return this round problem generator
@@ -59,12 +60,12 @@ public interface Round extends Configureable, Process {
      * register statistic analayzer to this round
      * @param analyzer 
      */
-    void registerStatisticAnalyzer(StatisticAnalyzer analyzer);
+    void registerStatisticCollector(StatisticCollector analyzer);
 
     /**
      * @return list of all the registered statistics analayzers
      */
-    StatisticAnalyzer[] getRegisteredStatisticAnalayzers();
+    StatisticCollector[] getRegisteredStatisticCollectors();
     
     /**
      * return the round result after execution

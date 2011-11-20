@@ -1,5 +1,6 @@
 package bgu.csp.az.api;
 
+import bgu.csp.az.api.Hooks.BeforeCallingFinishHook;
 import bgu.csp.az.api.infra.stat.Statistic;
 import bgu.csp.az.api.Hooks.BeforeMessageSentHook;
 import bgu.csp.az.api.ano.WhenReceived;
@@ -31,7 +32,6 @@ import java.util.Map;
 public abstract class Agent extends Agt0DSL {
 
     private static final boolean USE_DEBUG_LOGS = true;
-    
     /**
      * the name of the statistic that collect the number of non concurrent constraing checks
      */
@@ -53,14 +53,12 @@ public abstract class Agent extends Agt0DSL {
      * the system termination message is getting sent only by the abstract agent 
      */
     public static final String SYS_TERMINATION_MESSAGE = "__TERMINATE__";
-    
     /**
      * the name for the system tick message 
      * the system tick message is getting sent only by the local search mailer when the system clock performed a 'tick'
      * its what wakes up the agent even if he dosent have any messages - in order for him to retick the clock
      */
     public static final String SYS_TICK_MESSAGE = "__TICK__";
-    
     private int id; //The Agent ID
     private Execution exec; //The Execution That This Agent Is Currently Running Within
     private MessageQueue mailbox; //This Agent Mailbox
@@ -72,9 +70,6 @@ public abstract class Agent extends Agt0DSL {
     /*
      * S T A T I S T I C S
      */
-    private Statistic messagesReceived; //Counter for the number of messages received -> example usage: agent work ratio
-    private int nccc = 0;
-    private int ncsc = 0;
     private int cc = 0;
     /**
      * H O O K S
@@ -84,6 +79,7 @@ public abstract class Agent extends Agt0DSL {
      * collection of hooks that will get called before message processing on this agent.
      */
     protected List<Hooks.BeforeMessageProcessingHook> beforeMessageProcessingHooks;
+    protected List<Hooks.BeforeCallingFinishHook> beforeCallingFinishHooks;
 
     /**
      * create a default agent - this agent will have id = -1 so you must reassign it 
@@ -93,7 +89,12 @@ public abstract class Agent extends Agt0DSL {
         this.exec = null;
         beforeMessageSentHooks = new LinkedList<Hooks.BeforeMessageSentHook>();
         beforeMessageProcessingHooks = new LinkedList<Hooks.BeforeMessageProcessingHook>();
+        beforeCallingFinishHooks = new LinkedList<Hooks.BeforeCallingFinishHook>();
         this.pops = new PlatformOps();
+    }
+
+    public long getNumberOfConstraintChecks() {
+        return cc;
     }
 
     /**
@@ -108,15 +109,13 @@ public abstract class Agent extends Agt0DSL {
      */
     protected Message createMessage(String name, Object[] args) {
         Message ret = new Message(name, getId(), args);
-        ret.getMetadata().put("nccc", nccc);
-        ret.getMetadata().put("ncsc", ncsc);
         for (BeforeMessageSentHook hook : beforeMessageSentHooks) {
-            hook.hook(ret);
+            hook.hook(this, ret);
         }
         beforeMessageSending(ret);
         return ret;
     }
-    
+
     /**
      * override this function in the case you want to make some action every time before sending a message
      * this is a great place to write logs, attach timestamps to the message etc.
@@ -124,14 +123,6 @@ public abstract class Agent extends Agt0DSL {
      */
     protected void beforeMessageSending(Message m) {
         //do nothing - derived classes can implement this if they want
-    }
-
-    private void updateAutoStatistics() {
-        createAgentStatistic(CC_PER_AGENT_STATISTIC).setValue(cc);
-        if (isFirstAgent()) {
-            exec.getStatisticsTree().getChild(NCCC_STATISTIC).setValue(nccc);
-            exec.getStatisticsTree().getChild(NCSC_STATISTIC).setValue(ncsc);
-        }
     }
 
     /**
@@ -159,6 +150,10 @@ public abstract class Agent extends Agt0DSL {
      */
     public void hookIn(Hooks.BeforeMessageProcessingHook hook) {
         beforeMessageProcessingHooks.add(hook);
+    }
+
+    public void hookIn(Hooks.BeforeCallingFinishHook hook) {
+        beforeCallingFinishHooks.add(hook);
     }
 
     /**
@@ -196,31 +191,7 @@ public abstract class Agent extends Agt0DSL {
      * @throws InterruptedException
      */
     protected Message nextMessage() throws InterruptedException {
-        Message msg = mailbox.take();
-        currentMessage = msg;
-
-        if (messagesReceived == null) {
-            messagesReceived = createAgentStatistic(MESSAGES_RECEIVED_PER_AGENT_STATISTIC);
-        }
-        messagesReceived.add(1);
-        updateNextMessageStatistics(msg);
-
-
-        return msg;
-    }
-
-    private void updateNextMessageStatistics(Message msg) {
-        int nnc = -1;
-        int nns = -1;
-        if (msg.getMetadata().containsKey("nccc")) {
-            nnc = (Integer) msg.getMetadata().get("nccc");
-        }
-        if (msg.getMetadata().containsKey("nccc")) {
-            nns = (Integer) msg.getMetadata().get("ncsc");
-        }
-        nccc = Math.max(nccc, nnc);
-        ncsc = Math.max(ncsc, nns);
-        ncsc++;
+        return mailbox.take();
     }
 
     /**
@@ -266,7 +237,7 @@ public abstract class Agent extends Agt0DSL {
      */
     public void log(String what) {
         exec.log(id, this.mailGroupKey, what);
-        if (USE_DEBUG_LOGS){
+        if (USE_DEBUG_LOGS) {
             System.out.println("[" + getClass().getSimpleName() + "] " + getId() + ": " + what);
         }
     }
@@ -304,7 +275,7 @@ public abstract class Agent extends Agt0DSL {
      * this function is here so that you can implement your own shutdown mechanism
      */
     protected void finish() {
-        updateAutoStatistics();
+        hookBeforeCallingFinish();
         finished = true;
     }
 
@@ -452,31 +423,6 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * creates new agent statistic (or reuse an old one with the same name)
-     * agent static is a statistic that relevant to each agent seperatly
-     * for instance: "number of messages sent - per agent"
-     * @param name
-     * @return 
-     */
-    protected Statistic createAgentStatistic(String name) {
-        return pops.getExecution().getStatisticsTree().getChild(name).getChild("Agent " + getId());
-    }
-
-    /**
-     * creates new global statistic (or reuse an old one with the same name)
-     * a global statistic is a statistic relevant to current execution 
-     * for instance: "total number of messages sent" 
-     * you should avoid using global statistics as there much slower then the agent statistics
-     * most of the global statistics can be replaced with agent statistics and operation on the parent:
-     * "total number of messages sent" => "number of messages sent per agent" and the operation sum on all those statistics
-     * @param name
-     * @return 
-     */
-    protected Statistic createGlobalStatistic(String name) {
-        return pops.getExecution().getStatisticsTree().getChild(name);
-    }
-
-    /**
      * send the given message+arguments to all other agents excepts the sender (read the method send javadoc for
      * more details about sending the message)
      * @param msg
@@ -490,11 +436,11 @@ public abstract class Agent extends Agt0DSL {
      * broadcast a new message - preffer using broadcast(String msg, Object... args)
      * @param msg
      */
-    public void broadcast(Message msg){
+    public void broadcast(Message msg) {
         final Execution execution = PlatformOperationsExtractor.extract(this).getExecution();
         execution.getMailer().broadcast(msg, mailGroupKey);
     }
-    
+
     /**
      * sends a new message 
      * the message should have a name and any number of arguments
@@ -511,13 +457,13 @@ public abstract class Agent extends Agt0DSL {
     public SendMediator send(String msg, Object... args) {
         return send(createMessage(msg, args));
     }
-    
+
     /**
      * send a new message - prefer using send(String msg, Object... args)
      * @param msg
      * @return
      */
-    public SendMediator send(Message msg){
+    public SendMediator send(Message msg) {
         final Execution execution = pops.getExecution();
         return new SendMediator(msg, execution.getMailer(), execution.getGlobalProblem(), mailGroupKey);
     }
@@ -528,11 +474,11 @@ public abstract class Agent extends Agt0DSL {
     public void onIdleDetected() {
         throw new UnsupportedOperationException("if you are using IdleDetected feature you must implements Agent.onIdleDetected method");
     }
-    
+
     /**
      * a callback that is called only when running in synchronized mode just before the next tick (when the agent finish handling all its messages)
      */
-    public void onMailBoxEmpty(){
+    public void onMailBoxEmpty() {
 //        throw new UnsupportedOperationException("if you are running a Synchronized Search you must implements Agent.onMailBoxEmpty method");
     }
 
@@ -544,16 +490,22 @@ public abstract class Agent extends Agt0DSL {
     public void handleTermination() {
         finish();
     }
-    
+
     /**
      * Note: the concept 'system time' is only exists in synchronized execution 
      * @return the number of ticks passed since the algorithm start (first tick is 0), you can read about the definition of tick
      * in agent zero manual
      */
-    public long getSystemTimeInTicks(){
+    public long getSystemTimeInTicks() {
         return pops.getExecution().getSystemClock().time();
     }
-    
+
+    private void hookBeforeCallingFinish() {
+        for (BeforeCallingFinishHook l : beforeCallingFinishHooks) {
+            l.hook(this);
+        }
+    }
+
     /**
      * this class contains all the "hidden but public" methods,
      * because the user should extend the agent class all the "platform" operations 
@@ -609,12 +561,12 @@ public abstract class Agent extends Agt0DSL {
         public String getMailGroupKey() {
             return mailGroupKey;
         }
-        
-        public VariableMetadata[] provideExpectendVariabls(){
+
+        public VariableMetadata[] provideExpectendVariabls() {
             return VariableMetadata.scan(Agent.this);
         }
-        
-        public void configure(Map<String, Object> vars){
+
+        public void configure(Map<String, Object> vars) {
             VariableMetadata.assign(Agent.this, vars);
         }
     }
@@ -651,14 +603,12 @@ public abstract class Agent extends Agt0DSL {
 
         @Override
         public double getConstraintCost(int var1, int val1) {
-            nccc++;
             cc++;
             return exec.getGlobalProblem().getConstraintCost(var1, val1);
         }
 
         @Override
         public double getConstraintCost(int var1, int val1, int var2, int val2) {
-            nccc++;
             cc++;
             return exec.getGlobalProblem().getConstraintCost(var1, val1, var2, val2);
         }
@@ -668,11 +618,8 @@ public abstract class Agent extends Agt0DSL {
             return exec.getGlobalProblem().toString();
         }
 
-         
-        
         @Override
         public double getConstraintCost(int var, int val, Assignment ass) {
-            nccc++;
             cc++;
             return exec.getGlobalProblem().getConstraintCost(var, val, ass);
         }

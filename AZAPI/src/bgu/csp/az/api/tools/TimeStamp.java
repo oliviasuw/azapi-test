@@ -77,7 +77,7 @@ public class TimeStamp implements Serializable, DeepCopyable {
         a.hookIn(new BeforeMessageSentHook() {
 
             @Override
-            public void hook(Message msg) {
+            public void hook(Agent a, Message msg) {
                 msg.getMetadata().put(TIME_STAMP_METADATA, TimeStamp.this);
             }
         });

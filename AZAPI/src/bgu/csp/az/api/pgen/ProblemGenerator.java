@@ -15,5 +15,5 @@ import java.util.Random;
 public interface ProblemGenerator extends Configureable{
     public static final String CONFIGURATION_ID = "pgen";
     
-    void generate(Problem p, Random rand, float p1, float p2);
+    void generate(Problem p, Random rand);
 }

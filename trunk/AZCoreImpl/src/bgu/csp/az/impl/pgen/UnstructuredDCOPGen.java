@@ -52,7 +52,7 @@ public class UnstructuredDCOPGen extends AbstractProblemGenerator {
     protected void buildConstraint(int i, int j, Problem p, boolean sym, Random rand, float p2) {
         for (int vi = 0; vi < p.getDomain().size(); vi++) {
             for (int vj = 0; vj < p.getDomain().size(); vj++) {
-                if (i == j && vi != vj) {
+                if (i == j ) {
                     continue;
                 }
                 if (rand.nextDouble() < p2) {

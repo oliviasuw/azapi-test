@@ -204,6 +204,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         for (LogListener ll : logListeners) {
             ll.onLog(agent, mailGroupKey, data);
         }
+        System.out.println("Agent " + agent  + ": " + data);
     }
 
     protected void setResult(ExecutionResult result) {

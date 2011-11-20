@@ -6,6 +6,7 @@ import bgu.csp.az.api.ds.ImmutableSet;
 import bgu.csp.az.api.tools.Assignment;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +20,7 @@ public abstract class Problem implements Serializable, ImuteableProblem {
     private HashMap<String, Object> metadata = new HashMap<String, Object>();
     protected int numvars;
     protected ImmutableSet<Integer> domain;
-    protected HashMap<Integer, List<Integer>> neighbores = new HashMap<Integer, List<Integer>>();
+    protected HashMap<Integer, Set<Integer>> neighbores = new HashMap<Integer, Set<Integer>>();
     protected HashMap<Integer, Boolean> constraints = new HashMap<Integer, Boolean>();
     protected ProblemType type;
 
@@ -110,8 +111,8 @@ public abstract class Problem implements Serializable, ImuteableProblem {
      * operation cost: o(n*d^2)cc
      */
     @Override
-    public List<Integer> getNeighbors(int var) {
-        List<Integer> l = this.neighbores.get(var);
+    public Set<Integer> getNeighbors(int var) {
+        Set<Integer> l = this.neighbores.get(var);
         return l;
     }
 
@@ -139,9 +140,9 @@ public abstract class Problem implements Serializable, ImuteableProblem {
     public void initialize(ProblemType type, int numberOfVariables, Set<Integer> domain) {
         this.domain = new ImmutableSet<Integer>(domain);
         this.numvars = numberOfVariables;
-        this.neighbores = new HashMap<Integer, List<Integer>>();
+        this.neighbores = new HashMap<Integer, Set<Integer>>();
         for (int i=0; i<numvars; i++){
-            neighbores.put(i, new LinkedList<Integer>());
+            neighbores.put(i, new HashSet<Integer>());
         }
         this.type = type;
         _initialize();

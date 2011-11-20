@@ -16,7 +16,7 @@ import java.util.Random;
  *
  * @author bennyl
  */
-@Register(name="dcop-unstructured")
+@Register(name = "dcop-unstructured")
 public class UnstructuredDCOPGen extends AbstractProblemGenerator {
 
     @Variable(name = "n", description = "number of variables")
@@ -25,6 +25,10 @@ public class UnstructuredDCOPGen extends AbstractProblemGenerator {
     int d = 2;
     @Variable(name = "max-cost", description = "maximal cost of constraint")
     int maxCost = 100;
+    @Variable(name = "p1", description = "probablity of constraint between two variables")
+    float p1 = 0.6f;
+    @Variable(name = "p2", description = "probablity of conflict between two constrainted variables")
+    float p2 = 0.4f;
 
     @Override
     public String toString() {
@@ -32,10 +36,9 @@ public class UnstructuredDCOPGen extends AbstractProblemGenerator {
         sb.append("Generating : ").append("n = ").append(n).append("\nd = ").append(d).append("\nmaxCost = ").append(maxCost);
         return sb.toString();
     }
-    
-    
+
     @Override
-    public void generate(Problem p, Random rand, float p1, float p2) {
+    public void generate(Problem p, Random rand) {
         p.initialize(ProblemType.DCOP, n, new ImmutableSet<Integer>(Agt0DSL.range(0, d - 1)));
         for (int i = 0; i < p.getNumberOfVariables(); i++) {
             for (int j = 0; j < p.getNumberOfVariables(); j++) {
@@ -62,6 +65,4 @@ public class UnstructuredDCOPGen extends AbstractProblemGenerator {
             }
         }
     }
-
-    
 }

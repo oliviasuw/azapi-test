@@ -19,7 +19,7 @@ import java.util.Random;
 public class UnstructuredADCOPGen extends UnstructuredDCOPGen {
 
     @Override
-    public void generate(Problem p, Random rand, float p1, float p2) {
+    public void generate(Problem p, Random rand) {
         p.initialize(ProblemType.ADCOP, n, new ImmutableSet<Integer>(Agt0DSL.range(0, d - 1)));
         for (int i = 0; i < p.getNumberOfVariables(); i++) {
             for (int j = i + 1; j < p.getNumberOfVariables(); j++) {

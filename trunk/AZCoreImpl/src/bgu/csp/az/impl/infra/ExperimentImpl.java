@@ -164,4 +164,12 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
             l.onExecutionEnded(this, source, exec);
         }
     }
+
+    @Override
+    public void bubbleDownVariable(String var, Object val) {
+        for (Round r : rounds) {
+            r.bubbleDownVariable(var, val);
+        }
+    }
+
 }

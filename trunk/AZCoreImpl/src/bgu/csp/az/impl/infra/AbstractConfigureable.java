@@ -4,6 +4,7 @@
  */
 package bgu.csp.az.impl.infra;
 
+import bc.dsl.JavaDSL;
 import bgu.csp.az.api.exp.InvalidValueException;
 import bgu.csp.az.api.infra.Configureable;
 import bgu.csp.az.api.infra.VariableMetadata;
@@ -35,6 +36,11 @@ public abstract class AbstractConfigureable implements Configureable{
     @Override
     public void addSubConfiguration(Configureable sub) throws InvalidValueException {
         throw new InvalidValueException("no expected sub configurations");
+    }
+
+    @Override
+    public void bubbleDownVariable(String var, Object val) {
+        configure(JavaDSL.cassoc(var, val));
     }
 
     @Override

@@ -8,15 +8,16 @@ import bgu.csp.az.api.AgentRunner;
 import bgu.csp.az.impl.AlgorithmMetadata;
 import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.pgen.Problem;
-import bgu.csp.az.api.infra.stat.Statistic;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.ExecutionResult;
 import bgu.csp.az.api.SystemClock;
 import bgu.csp.az.api.infra.Round;
+import bgu.csp.az.api.infra.stat.StatisticCollector;
 import bgu.csp.az.api.tools.Assignment;
 import bgu.csp.az.api.tools.IdleDetector;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
@@ -34,7 +35,6 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractExecution extends AbstractProcess implements Execution {
 
-    private StatisticRoot statTree; //will get constracted when the global problem is setted.
     private Problem problem;
     private Mailer mailer;
     private boolean shuttingdown; //this variable is used to check that the execution is doing the process of shuting down only once.
@@ -48,6 +48,8 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private Agent[] agents;
     private LinkedList<LogListener> logListeners = new LinkedList<LogListener>();
     private SystemClock clock;
+    private List<StatisticCollector> statisticCollectors = new LinkedList<StatisticCollector>();
+    private final Round round;
 
     /**
      * 
@@ -59,8 +61,8 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         this.executorService = exec;
         this.mailer = m;
         this.problem = p;
-        this.statTree = new StatisticRoot(round.getName(), round.getCurrentExecutionNumber());
         this.algorithmMetadata = a;
+        this.round = round;
     }
 
     /**
@@ -78,6 +80,11 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
 
             System.out.println("PANIC! " + ex.getMessage() + ", [USER TEXT]: " + error);
         }
+    }
+
+    @Override
+    public Round getRound() {
+        return round;
     }
 
     @Override
@@ -111,7 +118,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         try {
             agents = new Agent[getGlobalProblem().getNumberOfVariables()];
             for (int i = 0; i < agents.length; i++) {
-                getAgents()[i] = getAlgorithm().getAgentClass().newInstance();
+                getAgents()[i] = getAlgorithm().generateAgent();
                 PlatformOps apops = Agent.PlatformOperationsExtractor.extract(getAgents()[i]);
                 apops.setExecution(this);
                 apops.setId(i);
@@ -163,12 +170,8 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         this.idleDetector = idet;
     }
 
-    /**
-     * @return the statistics tree - a tree contains statistics about this execution
-     */
-    @Override
-    public StatisticRoot getStatisticsTree() {
-        return statTree;
+    public void setStatisticCollectors(List<StatisticCollector> statisticCollectors) {
+        this.statisticCollectors = statisticCollectors;
     }
 
     /**
@@ -249,6 +252,9 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         try {
             doStaticConfigurations();
             configure();
+            for (StatisticCollector sc : statisticCollectors){
+                sc.hookIn(agents, this);
+            }
             startExecution();
             finish();
         } finally {
@@ -262,6 +268,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         if (getAlgorithm().isUseIdleDetector()) {
             setIdleDetector(new IdleDetector(getGlobalProblem().getNumberOfVariables(), getMailer(), getAlgorithm().getAgentClass().getName()));
         }
+        
     }
 
     protected void startExecution() {

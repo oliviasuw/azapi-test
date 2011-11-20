@@ -169,7 +169,8 @@ public class DFSPsaudoTree extends NesteableTool implements PsaudoTree {
 
         @WhenReceived("VISIT")
         public void handleVisit(int pDepth) {
-            final int sendingAgent = getCurrentMessage().getSender();
+            int sendingAgent = 0;
+            sendingAgent = getCurrentMessage().getSender();
             if (color == COLOR_WHITE) {
                 parent = sendingAgent;
                 depth = pDepth;

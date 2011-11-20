@@ -20,10 +20,10 @@ public class MapProblem extends Problem {
     private Object[] map;
     //private HashMap<Integer, double[][]> map;
 
-    @Override
-    public boolean isConstrained(int var1, int var2) {
-        return super.constraints.containsKey(calcId(var1, var2));
-    }
+//    @Override
+//    public boolean isConstrained(int var1, int var2) {
+//        return super.constraints.containsKey(calcId(var1, var2));
+//    }
 
     @Override
     public void setConstraintCost(int var1, int val1, int var2, int val2, double cost) {
@@ -31,7 +31,7 @@ public class MapProblem extends Problem {
         if (cost != 0) {
             super.constraints.put(id, Boolean.TRUE);
             setNeighbor(var1, var2);
-            setNeighbor(var2, var1);
+//            setNeighbor(var2, var1);
         }
         createMap(id);
         ((double[][]) map[id])[val1][val2] = cost;
@@ -39,10 +39,6 @@ public class MapProblem extends Problem {
 
     private void setNeighbor(int var1, int var2) {
         List<Integer> l = super.neighbores.get(var1);
-        if (l == null) {
-            l = new LinkedList<Integer>();
-            super.neighbores.put(var1, l);
-        }
         l.add(var2);
     }
 
@@ -75,16 +71,14 @@ public class MapProblem extends Problem {
     @Override
     protected void _initialize() {
         int n = getNumberOfVariables();
-        int d = getDomainSize(getDomain().size());
+//        int d = getDomain().size();
 
         this.map = new Object[n * n];
-        this.numvars = n;
-        ArrayList<Integer> temp = new ArrayList<Integer>(d);
-        for (int i = 0; i < d; i++) {
-            temp.add(i);
-        }
-        this.domain = new ImmutableSet<Integer>(temp);
+//        this.numvars = n;
+//        ArrayList<Integer> temp = new ArrayList<Integer>(d);
+//        for (int i = 0; i < d; i++) {
+//            temp.add(i);
+//        }
+//        this.domain = new ImmutableSet<Integer>(temp);
     }
-    
-    
 }

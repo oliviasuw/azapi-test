@@ -60,7 +60,7 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
 
                 @Override
                 public void hook(Agent a, Message msg) {
-                    long newNcsc = (long) msg.getMetadata().get("ncsc");
+                    long newNcsc = (Long) msg.getMetadata().get("ncsc");
                     ncsc[a.getId()] = Math.max(newNcsc, ncsc[a.getId()]);
                     ncsc[a.getId()]++;
                 }

@@ -24,9 +24,10 @@ import java.awt.Insets;
  * @author bennyl
  */
 public class AZView extends javax.swing.JPanel implements PageLayout{
-    public static final String CONSOLE_ROLE = "CONSOLE ROLE";
-    public static final String PAGES_ROLE = "PAGES ROLE";
-    public static final String PROGRESS_BAR_ROLE = "PROGRESS BAR ROLE";
+    public static final String CONSOLE_ROLE = "AZView.CONSOLE_ROLE";
+    public static final String PAGES_ROLE = "AZView.PAGES_ROLE";
+    public static final String PROGRESS_BAR_ROLE = "AZView.PROGRESS_BAR_ROLE";
+    public static final String STOP_AND_SAVE_ACTION = "AZView.STOP_AND_SAVE_ACTION";
 
     /** Creates new form AZView */
     public AZView() {
@@ -166,7 +167,7 @@ public class AZView extends javax.swing.JPanel implements PageLayout{
     public void setPage(Page model) {
         PageDSL.fillByRole(model, tabs, PAGES_ROLE);
         PageDSL.fillByRole(model, pbar, PROGRESS_BAR_ROLE, 3);
-        JActionView stopAndSave = new JActionView(model.getAction(UIController.STOP_AND_SAVE_ACTION));
+        JActionView stopAndSave = new JActionView(model.getAction(STOP_AND_SAVE_ACTION));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.insets = new Insets(3, 3, 3, 3);

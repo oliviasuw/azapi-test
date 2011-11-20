@@ -2,14 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.csp.az.dev.frm;
+package bgu.csp.az.dev;
 
-import bc.swing.pfrm.units.EventBusUnit;
 import bgu.csp.az.api.exp.ConnectionFaildException;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.Experiment;
 import bgu.csp.az.api.infra.Round;
-import bgu.csp.az.dev.db.DatabaseUnit;
+import bgu.csp.az.impl.db.DatabaseUnit;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -28,7 +27,6 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
             Experiment experiment = TestXMLReader.read(xml);
             DatabaseUnit.UNIT.delete();
             DatabaseUnit.UNIT.connect();
-            DatabaseUnit.UNIT.createStatisticDatabase();
             DatabaseUnit.UNIT.startCollectorThread();
             experiment.addListener(this);
             experiment.run();
@@ -73,6 +71,6 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
 
     @Override
     public void onExecutionEnded(Experiment source, Round round, Execution exec) {
-        DatabaseUnit.UNIT.insertLater(exec.getStatisticsTree());
+        //TO EVENT BUS
     }
 }

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -24,7 +25,6 @@ public class MapProblem extends Problem {
 //    public boolean isConstrained(int var1, int var2) {
 //        return super.constraints.containsKey(calcId(var1, var2));
 //    }
-
     @Override
     public void setConstraintCost(int var1, int val1, int var2, int val2, double cost) {
         int id = calcId(var1, var2);
@@ -38,7 +38,7 @@ public class MapProblem extends Problem {
     }
 
     private void setNeighbor(int var1, int var2) {
-        List<Integer> l = super.neighbores.get(var1);
+        Set<Integer> l = super.neighbores.get(var1);
         l.add(var2);
     }
 

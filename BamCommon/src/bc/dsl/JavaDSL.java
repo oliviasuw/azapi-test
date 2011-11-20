@@ -12,6 +12,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -303,6 +304,13 @@ public class JavaDSL {
 
         return map;
     }
+    
+    public static <K, V> Map<K, V> cassoc(K k, V v, Object... kvs){
+        Map<K,V> ret = new HashMap<K, V>();
+        ret.put(k, v);
+        assoc(ret, kvs);
+        return ret;
+    }
 
     public static boolean isAlphaNummeric(char c) {
         return (c >= 'a' && c <= 'z')
@@ -342,4 +350,14 @@ public class JavaDSL {
     private static <E extends Throwable> void throwAny(Throwable e) throws E {
         throw (E)e;
     }
+    
+    public static <T,K,V> Map<K,V> innerMap(Map<T, Map<K,V>> map, T key){
+        Map<K, V> inner = map.get(key);
+        if (inner == null){
+            inner = new HashMap<K, V>();
+            map.put(key, inner);
+        }
+        
+        return inner;
+    } 
 }

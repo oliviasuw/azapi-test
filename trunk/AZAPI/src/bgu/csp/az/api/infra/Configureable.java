@@ -31,6 +31,8 @@ public interface Configureable {
      */
     List<Class<? extends Configureable>> provideExpectedSubConfigurations();
     
+    void bubbleDownVariable(String var, Object val);
+    
     /**
      * @param cls
      * @return true if this configureable item can accept the given type

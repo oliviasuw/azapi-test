@@ -9,8 +9,9 @@ import bgu.csp.az.api.AgentRunner;
 import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.pgen.Problem;
 import bgu.csp.az.api.SystemClock;
-import bgu.csp.az.api.infra.stat.StatisticRoot;
+import bgu.csp.az.api.infra.stat.StatisticCollector;
 import bgu.csp.az.api.tools.Assignment;
+import java.util.List;
 
 /**
  *
@@ -18,6 +19,8 @@ import bgu.csp.az.api.tools.Assignment;
  */
 public interface Execution extends Process {
 
+    Round getRound();
+    
     /**
      * @return the global problem -
      * each agent have its own "version" of problem that is based on the global problem
@@ -43,10 +46,7 @@ public interface Execution extends Process {
     
     int getNumberOfAgentRunners();
     
-    /**
-     * @return the statistics tree - a tree contains statistics about this execution
-     */
-    StatisticRoot getStatisticsTree();
+    void setStatisticCollectors(List<StatisticCollector> collectors);
 
     /**
      * cause the executed environment to log the given data

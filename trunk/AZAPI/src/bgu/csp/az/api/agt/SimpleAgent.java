@@ -40,7 +40,7 @@ public abstract class SimpleAgent extends Agent {
     public void processNextMessage() throws InterruptedException {
         Message msg = nextMessage();
         for (BeforeMessageProcessingHook hook : beforeMessageProcessingHooks) {
-            hook.hook(msg);
+            hook.hook(this, msg);
         }
         msg = beforeMessageProcessing(msg);
         if (msg == null) {

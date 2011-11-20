@@ -17,7 +17,7 @@ public interface Experiment extends Configureable, Process {
     void addRound(Round round);
 
     List<Round> getRounds();
-
+    
     ExperimentResult getResult();
 
     void addListener(ExperimentListener l);

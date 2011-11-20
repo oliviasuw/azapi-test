@@ -20,7 +20,7 @@ public class Hooks {
          * callback implementation
          * @param msg
          */
-        void hook(Message msg);
+        void hook(Agent a, Message msg);
     }
     
     /**
@@ -31,6 +31,11 @@ public class Hooks {
          * callback implementation
          * @param msg
          */
-        void hook(Message msg);
+        void hook(Agent a, Message msg);
     }
+    
+    public static interface BeforeCallingFinishHook{
+        void hook(Agent a);
+    }
+    
 }

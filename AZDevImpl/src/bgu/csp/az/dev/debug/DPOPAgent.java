@@ -17,9 +17,6 @@ public class DPOPAgent extends SimpleAgent {
 
     @Override
     public void start() {
-        if (isFirstAgent()) {
-            System.out.println(getProblem().toString());
-        }
 //    	log(this.getProblem().toString());
         tree = new DFSPsaudoTree();
 //    	log("tree is done");
@@ -32,8 +29,8 @@ public class DPOPAgent extends SimpleAgent {
             @Override
             public void doContinue() {
                 if (tree.isLeaf()) {
-                    log("im a leaf");
-                    log("processing");
+//		    		log("im a leaf");
+//		            log("processing");
                     process();
                 }
             }

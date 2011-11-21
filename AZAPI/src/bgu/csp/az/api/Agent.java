@@ -62,7 +62,7 @@ public abstract class Agent extends Agt0DSL {
     private int id; //The Agent ID
     private Execution exec; //The Execution That This Agent Is Currently Running Within
     private MessageQueue mailbox; //This Agent Mailbox
-    private ImuteableProblem prob; // The Agent Local Problem
+    private ImmutableProblem prob; // The Agent Local Problem
     private boolean finished = false; //The Status of the current Agent - TODO: TRANSFORM INTO A STATUS ENUM SO WE CAN BE ABLE TO QUERY THE AGENT ABOUT IT CURRENT STATUS
     private Message currentMessage = null; //The Current Message (The Last Message That was taken from the mailbox
     private PlatformOps pops; //Hidden Platform Operation 
@@ -162,7 +162,7 @@ public abstract class Agent extends Agt0DSL {
      * and he managed it differently - so if you are building tools that have to be sent with the mailer to other agent dont 
      * include the agents problem in them as field.
      */
-    protected ImuteableProblem getProblem() {
+    protected ImmutableProblem getProblem() {
         return prob;
     }
 
@@ -590,7 +590,7 @@ public abstract class Agent extends Agt0DSL {
     /**
      * this is a wrap on the given problem - each agent posess a wrap like this instaed of the actual problem
      */
-    public class AgentProblem implements ImuteableProblem {
+    public class AgentProblem implements ImmutableProblem {
 
         @Override
         public int getNumberOfVariables() {
@@ -648,6 +648,11 @@ public abstract class Agent extends Agt0DSL {
         @Override
         public boolean isConstrained(int var1, int var2) {
             return exec.getGlobalProblem().isConstrained(var1, var2);
+        }
+
+        @Override
+        public ProblemType type() {
+            return exec.getGlobalProblem().type();
         }
     }
 }

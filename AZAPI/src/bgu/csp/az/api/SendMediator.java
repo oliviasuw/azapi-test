@@ -15,10 +15,10 @@ public class SendMediator {
 
     private Message msg;
     private Mailer mailer;
-    private ImuteableProblem curp;
+    private ImmutableProblem curp;
     private String agentGroupKey;
 
-    public SendMediator(Message msg, Mailer mailer, ImuteableProblem curp, String agentGroupKey) {
+    public SendMediator(Message msg, Mailer mailer, ImmutableProblem curp, String agentGroupKey) {
         this.msg = msg;
         this.mailer = mailer;
         this.curp = curp;
@@ -67,7 +67,7 @@ public class SendMediator {
      * send the message to the sending agent neighbores in the problem p
      * @param p
      */
-    public void toNeighbores(ImuteableProblem p) {
+    public void toNeighbores(ImmutableProblem p) {
         for (int n : p.getNeighbors(msg.getSender())) {
             to(n);
         }

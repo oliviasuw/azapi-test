@@ -142,7 +142,9 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
             c.bubbleDownVariable(var, val);
         }
 
-        ctester.bubbleDownVariable(var, val);
+        if (ctester != null) {
+            ctester.bubbleDownVariable(var, val);
+        }
 
         pgen.bubbleDownVariable(var, val);
     }
@@ -238,7 +240,7 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
             if (sub instanceof ProblemGenerator) {
                 pgen = (ProblemGenerator) sub;
             } else if (sub instanceof StatisticCollector) {
-                registerStatisticCollector((StatisticCollector)sub);
+                registerStatisticCollector((StatisticCollector) sub);
             } else if (sub instanceof AlgorithmMetadata) {
                 this.algorithms.add((AlgorithmMetadata) sub);
             } else {

@@ -47,9 +47,9 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
 
                 current.addListener(this);
 
-                if (current.canAccept(CorrectnessTester.class)) {
-                    current.addSubConfiguration(new DefaultCorrectnessTester());
-                }
+//                if (current.canAccept(CorrectnessTester.class) ) {
+//                    current.addSubConfiguration(new DefaultCorrectnessTester());
+//                }
 
                 if (current instanceof AbstractRound) {
                     ((AbstractRound) current).setPool(pool);

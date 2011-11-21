@@ -4,6 +4,7 @@
  */
 package bgu.csp.az.impl.infra;
 
+import bgu.csp.az.api.ano.Register;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.ExecutionResult;
 import bgu.csp.az.api.pgen.Problem;
@@ -16,6 +17,7 @@ import bgu.csp.az.impl.correctness.MACSolver;
  *
  * @author bennyl
  */
+@Register(name="default-tester")
 public class DefaultCorrectnessTester extends AbstractCorrectnessTester {
 
     @Override
@@ -24,7 +26,7 @@ public class DefaultCorrectnessTester extends AbstractCorrectnessTester {
         final Problem globalProblem = exec.getGlobalProblem();
         Status stat;
         final MACSolver solver = new MACSolver();
-        switch (exec.getGlobalProblem().getProblemType()) {
+        switch (exec.getGlobalProblem().type()) {
             case ADCOP:
                 return new TestResult(null, true);
             case DCOP:

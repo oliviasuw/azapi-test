@@ -20,14 +20,14 @@ import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.tools.Assignment;
 //import bgu.csp.az.dev.frm.Round;
 //import bgu.csp.az.dev.frm.TestExpirement;
-import bgu.csp.az.dev.pui.sgrp.StatisticsView;
+import bgu.csp.az.dev.pui.stat.StatisticsLayout;
 import javax.swing.ImageIcon;
 
 /**
  *
  * @author bennyl
  */
-@PageDef(icon = "page-execution-statistics", name = "Execution statistics", layout = StatisticsView.class)
+@PageDef(icon = "page-execution-statistics", name = "Execution statistics", layout = StatisticsLayout.class)
 public class StatisticsModel extends Model{
 
     public static final String AVAILABLE_GRAPHS_PARAM = "Available Graphs";
@@ -40,12 +40,12 @@ public class StatisticsModel extends Model{
         master = ChartModelProvider.I.provide(null);
     }
 
-    @Param(name = AVAILABLE_GRAPHS_PARAM, type = ParamType.TREE, role = StatisticsView.GRAPHS_TREE_ROLE)
+//    @Param(name = AVAILABLE_GRAPHS_PARAM, type = ParamType.TREE, role = StatisticsLayout.GRAPHS_TREE_ROLE)
     public ListNode getRoundStatistics() {
         return roundStatistics;
     }
 
-    @Param(name = "Master", type = ParamType.PAGE, role = StatisticsView.MASTER_GRAPH_ROLE)
+//    @Param(name = "Master", type = ParamType.PAGE, role = StatisticsLayout.MASTER_GRAPH_ROLE)
     public Model getMaster() {
         return master;
     }

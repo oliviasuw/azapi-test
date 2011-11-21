@@ -21,14 +21,14 @@ import bc.swing.pfrm.FieldParamModel;
  *
  * @author bennyl
  */
-public class StatusView extends javax.swing.JPanel implements PageLayout{
+public class StatusLayout extends javax.swing.JPanel implements PageLayout{
     public static final String ALGORITHM_NAME_ROLE = "ALGORITHM NAME ROLE";
     public static final String EXECUTION_STATUS_ROLE = "EXECUTION STATUS ROLE";
     public static final String EXECUTION_TIME_ROLE = "EXECUTION TIME ROLE";
     public static final String ROUNDS_ROLE = "ROUNDS ROLE";
 
     /** Creates new form TestDetailsPageView */
-    public StatusView() {
+    public StatusLayout() {
         initComponents();
     }
 

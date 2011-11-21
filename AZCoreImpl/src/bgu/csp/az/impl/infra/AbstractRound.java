@@ -89,6 +89,15 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
         return this.currentVarValue;
     }
 
+    @Override
+    public int getLength() {
+        if (tick == 0){
+            tick = 0.1f;
+        }
+        
+        return (int) ((((end - start) / tick ) + 1) * tickSize);
+    }
+
     public void setPool(ExecutorService pool) {
         this.pool = pool;
     }

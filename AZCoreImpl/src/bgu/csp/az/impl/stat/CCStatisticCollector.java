@@ -58,6 +58,17 @@ public class CCStatisticCollector extends AbstractStatisticCollector<CCStatistic
         });
     }
 
+    @Override
+    public String getName() {
+        return "Constraint Checks";
+    }
+
+//    @Override
+//    public String getName() {
+//        return "Constraint Checks";
+//    }
+//    
+    
     public static class CCRecord extends DBRecord {
 
         float rVar;

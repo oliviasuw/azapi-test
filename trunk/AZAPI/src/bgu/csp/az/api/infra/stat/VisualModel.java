@@ -4,10 +4,13 @@
  */
 package bgu.csp.az.api.infra.stat;
 
+import java.io.File;
+
 /**
  *
  * @author bennyl
  */
 public interface VisualModel {
     String getTitle();
+    void exportToCSV(File csv);
 }

@@ -5,8 +5,14 @@
 package bgu.csp.az.api.infra.stat.vmod;
 
 import bgu.csp.az.api.infra.stat.VisualModel;
-import java.util.HashMap;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -16,7 +22,7 @@ public class LineVisualModel implements VisualModel{
     String xAxisName;
     String yAxisName;
     String title;
-    Map<Double, Double> values = new HashMap<Double, Double>();
+    Map<Double, Double> values = new LinkedHashMap<Double, Double>();
 
     public LineVisualModel(String xAxisName, String yAxisName, String title) {
         this.xAxisName = xAxisName;
@@ -42,6 +48,23 @@ public class LineVisualModel implements VisualModel{
 
     public String getyAxisName() {
         return yAxisName;
+    }
+
+    @Override
+    public void exportToCSV(File csv) {
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(csv);
+            pw.println(getxAxisName() + ", " + getyAxisName());
+            for (Entry<Double, Double> v : getValues().entrySet()){
+                pw.println("" + v.getKey() + ", " + v.getValue());
+            }
+            pw.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(LineVisualModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            pw.close();
+        }
     }
     
 }

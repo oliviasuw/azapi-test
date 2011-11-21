@@ -25,6 +25,8 @@ public interface Round extends Configureable, Process {
     
     void removeListener(RoundListener l);
     
+    int getLength();
+    
     /**
      * @return the name of this round
      */

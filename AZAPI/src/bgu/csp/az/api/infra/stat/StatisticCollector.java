@@ -20,4 +20,6 @@ public interface StatisticCollector<T extends DBRecord> extends Configureable{
     void hookIn(Agent[] a, Execution ex); //TODO - REPLACE WITH EXECUTION VIEW
     
     void submit(T record);
+    
+    String getName();
 }

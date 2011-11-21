@@ -46,6 +46,7 @@ public interface Configureable {
      */
     void addSubConfiguration(Configureable sub) throws InvalidValueException;
     
+    
     /**
      * configure the class variables, 
      * it must be guerentied that first all the subConfigurations has been added 

@@ -14,7 +14,9 @@ import java.util.Set;
  *
  * @author bennyl
  */
-public interface ImuteableProblem {
+public interface ImmutableProblem {
+    
+    ProblemType type();
 
     /**
      *

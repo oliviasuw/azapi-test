@@ -1,6 +1,6 @@
 package bgu.csp.az.api.pgen;
 
-import bgu.csp.az.api.ImuteableProblem;
+import bgu.csp.az.api.ImmutableProblem;
 import bgu.csp.az.api.ProblemType;
 import bgu.csp.az.api.ds.ImmutableSet;
 import bgu.csp.az.api.tools.Assignment;
@@ -15,7 +15,7 @@ import java.util.Set;
  * An abstract class for problems that should let you build any type of problem 
  * @author guyafe, edited by bennyl
  */
-public abstract class Problem implements Serializable, ImuteableProblem {
+public abstract class Problem implements Serializable, ImmutableProblem {
 
     private HashMap<String, Object> metadata = new HashMap<String, Object>();
     protected int numvars;
@@ -148,7 +148,7 @@ public abstract class Problem implements Serializable, ImuteableProblem {
         _initialize();
     }
 
-    public ProblemType getProblemType() {
+    public ProblemType type() {
         return type;
     }
 

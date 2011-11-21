@@ -1,12 +1,16 @@
 package bgu.csp.az.impl;
 
 import bgu.csp.az.api.Agent;
+import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.ProblemType;
+import bgu.csp.az.api.ProblemType;
+import bgu.csp.az.api.SearchType;
 import bgu.csp.az.api.SearchType;
 import bgu.csp.az.api.ano.Register;
 import bgu.csp.az.api.ano.Variable;
 import bgu.csp.az.api.exp.InvalidValueException;
 import bgu.csp.az.api.infra.Configureable;
+import bgu.csp.az.impl.Registary;
 import bgu.csp.az.impl.infra.AbstractConfigureable;
 import java.util.HashMap;
 import java.util.LinkedList;

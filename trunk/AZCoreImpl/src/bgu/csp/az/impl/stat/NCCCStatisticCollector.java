@@ -88,6 +88,11 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
         });
     }
 
+    @Override
+    public String getName() {
+        return "Number Of Concurent Constraint Checks";
+    }
+    
     private void updateCurrentNccc(Agent a) {
         long last = lastKnownCC[a.getId()];
         lastKnownCC[a.getId()] = a.getNumberOfConstraintChecks();

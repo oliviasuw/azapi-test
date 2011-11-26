@@ -14,10 +14,10 @@ package bgu.csp.az.dev.ui;
  *
  * @author bennyl
  */
-public class RoundView_ extends javax.swing.JPanel {
+public class RoundView extends javax.swing.JPanel {
 
     /** Creates new form RoundView */
-    public RoundView_() {
+    public RoundView() {
         initComponents();
         faildProblemPan.setVisible(false);
         debugProblemButtonPan.setVisible(false);

@@ -10,71 +10,29 @@
  */
 package bgu.csp.az.dev.ui;
 
-import bc.dsl.SwingDSL;
-import javax.swing.JPanel;
+import bc.ui.swing.visuals.Visual;
+import bgu.csp.az.api.infra.Execution;
+import bgu.csp.az.api.infra.Experiment;
+import bgu.csp.az.api.infra.Round;
+import com.sun.java.swing.plaf.motif.MotifProgressBarUI;
+import java.util.List;
+import javax.swing.BoundedRangeModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.metal.MetalProgressBarUI;
 
 /**
  *
  * @author bennyl
  */
-public class MessageScreen extends javax.swing.JPanel {
-
-    public static enum MessageType {
-
-        INFO,
-        SUCCESS,
-        FAIL;
-
-        public String getIconName(MessageType type) {
-            switch (type) {
-                case FAIL:
-                    return "fail-message";
-                case SUCCESS:
-                    return "success-message";
-                case INFO:
-                    return "info-message";
-
-            }
-            return "info-message";
-        }
-
-        public String getTypeText(MessageType type) {
-            switch (type) {
-                case FAIL:
-                    return "ONOES!";
-                case SUCCESS:
-                    return "WHOOPY!";
-                case INFO:
-                    return "HMMM...";
-
-            }
-
-
-            return "UNKNOWN TYPE OF MESSAGE";
-        }
-    }
+public class ExceptionScreen extends javax.swing.JPanel {
 
     /** Creates new form StatusScreen */
-    public MessageScreen() {
+    public ExceptionScreen() {
         initComponents();
     }
 
-    public MessageScreen(MessageType type, String data, String content) {
-        initComponents();
-        this.messageContentLabel.setText(content);
-        this.messageDataLabel.setText(data);
-        chooseIconAndType(type);
-    }
-
-    public MessageScreen(MessageType type, String data, JPanel content) {
-        this.messageContentPanel = content;
-        initComponents();
-        this.messageDataLabel.setText(data);
-    }
-
-    private void chooseIconAndType(MessageType messageType) {
-        this.typeLable.setText(messageType.getIconName(messageType));
-        this.iconLabel.setIcon(SwingDSL.resIcon(messageType.getIconName(messageType)));
+    void setModel(Experiment experiment) {
     }
 
     /** This method is called from within the constructor to
@@ -90,15 +48,15 @@ public class MessageScreen extends javax.swing.JPanel {
         roundDataScroll = new javax.swing.JScrollPane();
         roundView = new bgu.csp.az.dev.ui.RoundView();
         jPanel2 = new javax.swing.JPanel();
-        iconLabel = new javax.swing.JLabel();
-        typeLable = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        progressLabel = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        messageDataLabel = new javax.swing.JLabel();
-        messageContentPanel = new javax.swing.JPanel();
+        jPanel12 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
-        messageContentLabel = new javax.swing.JLabel();
+        jPanel13 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
 
         roundDataScroll.setBorder(null);
         roundDataScroll.setViewportView(roundView);
@@ -106,87 +64,91 @@ public class MessageScreen extends javax.swing.JPanel {
         setOpaque(false);
         setLayout(new java.awt.BorderLayout());
 
+        jPanel2.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel2.setOpaque(false);
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
-        iconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/monitor.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/monitor.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel2.add(iconLabel, gridBagConstraints);
+        jPanel2.add(jLabel1, gridBagConstraints);
 
-        typeLable.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
-        typeLable.setText("Something Went Wrong...");
-        typeLable.setDoubleBuffered(true);
+        progressLabel.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        progressLabel.setText("Something Went Wrong...");
+        progressLabel.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
-        jPanel2.add(typeLable, gridBagConstraints);
+        jPanel2.add(progressLabel, gridBagConstraints);
 
         add(jPanel2, java.awt.BorderLayout.NORTH);
 
         jPanel1.setBackground(new java.awt.Color(120, 120, 120));
-        jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
         jPanel11.setBackground(new java.awt.Color(120, 120, 120));
-        jPanel11.setLayout(new java.awt.BorderLayout());
+        jPanel11.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 3, 3));
 
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Exception description : ");
-        jPanel11.add(jLabel4, java.awt.BorderLayout.PAGE_START);
-
-        messageDataLabel.setForeground(new java.awt.Color(255, 255, 255));
-        messageDataLabel.setText("The actual description");
-        jPanel11.add(messageDataLabel, java.awt.BorderLayout.PAGE_END);
+        jPanel11.add(jLabel4);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         jPanel1.add(jPanel11, gridBagConstraints);
 
-        messageContentPanel.setBackground(new java.awt.Color(120, 120, 120));
-        messageContentPanel.setLayout(new java.awt.BorderLayout());
+        jPanel12.setBackground(new java.awt.Color(120, 120, 120));
+        jPanel12.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 3, 3));
 
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("what can you do ?");
-        messageContentPanel.add(jLabel5, java.awt.BorderLayout.PAGE_START);
-
-        messageContentLabel.setForeground(new java.awt.Color(255, 255, 255));
-        messageContentLabel.setText("The actual detail");
-        messageContentPanel.add(messageContentLabel, java.awt.BorderLayout.PAGE_END);
+        jPanel12.add(jLabel5);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-        jPanel1.add(messageContentPanel, gridBagConstraints);
+        jPanel1.add(jPanel12, gridBagConstraints);
+
+        jPanel13.setBackground(new java.awt.Color(120, 120, 120));
+        jPanel13.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 3, 3));
+
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("Advanced");
+        jPanel13.add(jLabel6);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        jPanel1.add(jPanel13, gridBagConstraints);
 
         add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel iconLabel;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JLabel messageContentLabel;
-    private javax.swing.JPanel messageContentPanel;
-    private javax.swing.JLabel messageDataLabel;
+    private javax.swing.JLabel progressLabel;
     private javax.swing.JScrollPane roundDataScroll;
     private bgu.csp.az.dev.ui.RoundView roundView;
-    private javax.swing.JLabel typeLable;
     // End of variables declaration//GEN-END:variables
 }

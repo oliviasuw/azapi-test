@@ -2,23 +2,23 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.csp.az.dev;
+package bgu.csp.az.dev.ui;
 
-import bc.dsl.PageDSL;
+//import bgu.csp.az.dev.swing.AZScreen;
 import bc.dsl.SwingDSL;
 import bc.swing.pfrm.Model;
+import bc.swing.pfrm.Page;
 import bc.swing.pfrm.ano.Action;
 import bc.swing.pfrm.ano.PageDef;
 import bc.swing.pfrm.ano.Param;
-import bc.swing.pfrm.viewtypes.ParamType;
 import bc.utils.PokedWorker;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.Experiment;
 import bgu.csp.az.api.infra.Experiment.ExperimentListener;
 import bgu.csp.az.api.infra.Round;
+import bgu.csp.az.dev.ExecutionUnit;
 import bgu.csp.az.dev.pui.AZView;
 import bgu.csp.az.dev.pui.AgentLogDocument;
-import bgu.csp.az.dev.pui.Console;
 import bgu.csp.az.dev.pui.UIController;
 import bgu.csp.az.dev.pui.stat.StatisticModel;
 import bgu.csp.az.dev.pui.stat.StatusModel;
@@ -28,34 +28,39 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultBoundedRangeModel;
+import javax.swing.JFrame;
 import javax.swing.text.BadLocationException;
 
 /**
  *
  * @author bennyl
  */
-@PageDef(layout = AZView.class)
+//@PageDef(layout = AZScreen.class)
 public class NewUIController extends Model implements LogListener, ExperimentListener {
 
-    @Param(name = "Execution Progress", type = ParamType.PROGRESS, role = AZView.PROGRESS_BAR_ROLE)
+    @Param(name = "Execution Progress", role = AZView.PROGRESS_BAR_ROLE)
     DefaultBoundedRangeModel progress;
     List<Model> pages = new LinkedList<Model>();
     AgentLogDocument bdoc = new AgentLogDocument();
     private PokedWorker pw;
 
 
-    @Param(name = "Pages", type = ParamType.TABS, role = AZView.PAGES_ROLE)
+    @Param(name = "Pages", role = AZView.PAGES_ROLE)
     public List<Model> getPages() {
         return pages;
     }
 
-    @Param(name = "console", customView = Console.class, role = AZView.CONSOLE_ROLE)
+    @Param(name = "console", role = AZView.CONSOLE_ROLE)
     public AgentLogDocument getLogDocument() {
         return bdoc;
     }
 
     @Action(name = AZView.STOP_AND_SAVE_ACTION)
     public void stopAndSave() {
+    }
+    
+    public static void main(String[] args){
+        new NewUIController().startUi();
     }
 
     public void startUi() {
@@ -85,15 +90,18 @@ public class NewUIController extends Model implements LogListener, ExperimentLis
 
         new Thread(pw).start();
 
-        final StatusModel statusModel = new StatusModel();
-        ExecutionUnit.UNIT.addExperimentListener(statusModel);
-        pages.add(statusModel);
+//        final StatusModel statusModel = new StatusModel();
+//        ExecutionUnit.UNIT.addExperimentListener(statusModel);
+//        pages.add(statusModel);
+//        
+//        final StatisticModel statisticModel = new StatisticModel();
+//        ExecutionUnit.UNIT.addExperimentListener(statisticModel);
+//        pages.add(statisticModel);
         
-        final StatisticModel statisticModel = new StatisticModel();
-        ExecutionUnit.UNIT.addExperimentListener(statisticModel);
-        pages.add(statisticModel);
-        
-        PageDSL.showInFrame(this);
+        JFrame jf = new JFrame("test");
+        jf.setContentPane(Page.get(this).getView());
+        jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        jf.setVisible(true);
     }
 
     @Override

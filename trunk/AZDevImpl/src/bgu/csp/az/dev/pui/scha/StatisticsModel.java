@@ -6,14 +6,14 @@ package bgu.csp.az.dev.pui.scha;
 
 import bc.dsl.SwingDSL;
 import bc.swing.models.GenericTreeModel.ListNode;
-import bc.swing.pfrm.BaseParamModel;
+import bc.swing.pfrm.Parameter;
 import bc.swing.pfrm.DeltaHint;
-import bc.swing.pfrm.FieldParamModel.ChangeListener;
+//import bc.swing.pfrm.FieldParamModel.ChangeListener;
 import bc.swing.pfrm.Model;
 import bc.swing.pfrm.Page;
 import bc.swing.pfrm.ano.PageDef;
 import bc.swing.pfrm.ano.Param;
-import bc.swing.pfrm.viewtypes.ParamType;
+//import bc.swing.pfrm.viewtypes.ParamType;
 import bgu.csp.az.api.pgen.Problem;
 import bgu.csp.az.api.infra.stat.Statistic;
 import bgu.csp.az.api.infra.Execution;
@@ -52,19 +52,19 @@ public class StatisticsModel extends Model{
 
     @Override
     public void whenPageCreated(Page page) {
-        page.getParam(AVAILABLE_GRAPHS_PARAM).addSelectionListner(new ChangeListener() {
-
-            @Override
-            public void onChange(BaseParamModel source, Object newValue, Object deltaHint) {
-                if (newValue instanceof StatisticNode) {
-                    final StatisticNode stData = (StatisticNode)newValue;
-                    master = ChartModelProvider.I.provide(stData);
-                } else {
-                    master = ChartModelProvider.I.provide(null);
-                }
-                syncToView("Master");
-            }
-        });
+//        page.param(AVAILABLE_GRAPHS_PARAM).addSelectionListner(new ChangeListener() {
+//
+//            @Override
+//            public void onChange(Parameter source, Object newValue, Object deltaHint) {
+//                if (newValue instanceof StatisticNode) {
+//                    final StatisticNode stData = (StatisticNode)newValue;
+//                    master = ChartModelProvider.I.provide(stData);
+//                } else {
+//                    master = ChartModelProvider.I.provide(null);
+//                }
+//                syncToView("Master");
+//            }
+//        });
     }
 
 //    @Override

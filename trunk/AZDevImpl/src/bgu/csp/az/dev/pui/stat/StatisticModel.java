@@ -7,16 +7,16 @@ package bgu.csp.az.dev.pui.stat;
 import bc.dsl.SwingDSL;
 import bc.swing.models.chart.AreaChartModel;
 import bc.swing.models.chart.ChartModel;
-import bc.swing.pfrm.BaseParamModel;
+import bc.swing.pfrm.Parameter;
 import bc.swing.pfrm.DeltaHint;
-import bc.swing.pfrm.FieldParamModel.ChangeListener;
+//import bc.swing.pfrm.FieldParamModel.ChangeListener;
 import bc.swing.pfrm.Model;
 import bc.swing.pfrm.Page;
 import bc.swing.pfrm.ano.Action;
 import bc.swing.pfrm.ano.PageDef;
 import bc.swing.pfrm.ano.Param;
-import bc.swing.pfrm.models.NoDataModel;
-import bc.swing.pfrm.viewtypes.ParamType;
+//import bc.swing.pfrm.models.NoDataModel;
+//import bc.swing.pfrm.viewtypes.ParamType;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.Experiment;
 import bgu.csp.az.api.infra.Experiment.ExperimentListener;
@@ -44,7 +44,7 @@ public class StatisticModel extends Model implements ExperimentListener {
     private List<Round> passedRounds = new LinkedList<Round>();
     private VisualModel lastVisualModel = null;
 
-    @Param(type = ParamType.OPTIONS, name = PASSED_ROUNDS_PARAM, role = StatisticsLayout.ROUNDS_ROLE)
+//    @Param(type = ParamType.OPTIONS, name = PASSED_ROUNDS_PARAM, role = StatisticsLayout.ROUNDS_ROLE)
     public List<ToStringBox<Round>> getPassedRounds() {
         LinkedList<ToStringBox<Round>> re = new LinkedList<ToStringBox<Round>>();
         for (Round p : passedRounds) {
@@ -60,52 +60,56 @@ public class StatisticModel extends Model implements ExperimentListener {
         return re;
     }
 
-    @Param(type = ParamType.CHART, name = CHART_PARAM, role = StatisticsLayout.CHART_ROLE)
+//    @Param(type = ParamType.CHART, name = CHART_PARAM, role = StatisticsLayout.CHART_ROLE)
     public ChartModel getChart() {
-
-        if (getPage().getParam(COLLECTORS_PARAM).getSelectedItem() != null) {
-            StatisticCollector selectedCollector = ((ToStringBox<StatisticCollector>) getPage().getParam(COLLECTORS_PARAM).getSelectedItem()).getVal();
-            if (selectedCollector != null) {
-                Round selectedRound = ((ToStringBox<Round>) getPage().getParam(PASSED_ROUNDS_PARAM).getSelectedItem()).getVal();
-                lastVisualModel = selectedCollector.analyze(DatabaseUnit.UNIT.createDatabase(), selectedRound);
-
-                if (lastVisualModel instanceof LineVisualModel) {
-                    syncToView(TABLE_PARAM);
-                    return transform((LineVisualModel) lastVisualModel);
-                } else {
-                    return null;
-                }
-            }
-        }
-
+        
         return null;
+
+//        if (getPage().param(COLLECTORS_PARAM).getSelectedItem() != null) {
+//            StatisticCollector selectedCollector = ((ToStringBox<StatisticCollector>) getPage().param(COLLECTORS_PARAM).getSelectedItem()).getVal();
+//            if (selectedCollector != null) {
+//                Round selectedRound = ((ToStringBox<Round>) getPage().param(PASSED_ROUNDS_PARAM).getSelectedItem()).getVal();
+//                lastVisualModel = selectedCollector.analyze(DatabaseUnit.UNIT.createDatabase(), selectedRound);
+//
+//                if (lastVisualModel instanceof LineVisualModel) {
+//                    syncToView(TABLE_PARAM);
+//                    return transform((LineVisualModel) lastVisualModel);
+//                } else {
+//                    return null;
+//                }
+//            }
+//        }
+//
+//        return null;
     }
 
-    @Param(name=TABLE_PARAM, customView=AnalayzedTableView.class, role=StatisticsLayout.TABLE_ROLE)
+//    @Param(name=TABLE_PARAM, customView=AnalayzedTableView.class, role=StatisticsLayout.TABLE_ROLE)
     public VisualModel getLastVisualModel(){
         return lastVisualModel;
     }
     
-    @Param(type = ParamType.OPTIONS, name = COLLECTORS_PARAM, role = StatisticsLayout.COLLECTORS_ROLE)
+//    @Param(type = ParamType.OPTIONS, name = COLLECTORS_PARAM, role = StatisticsLayout.COLLECTORS_ROLE)
     public List<ToStringBox<StatisticCollector>> getCollectors() {
-        List<ToStringBox<StatisticCollector>> ret = new LinkedList<ToStringBox<StatisticCollector>>();
-        ToStringBox<Round> selectedRoundName = (ToStringBox<Round>) getPage().getParam(PASSED_ROUNDS_PARAM).getSelectedItem();
-        if (selectedRoundName != null) {
-            Round selectedRound = selectedRoundName.getVal();
-
-            if (selectedRound != null) {
-                for (StatisticCollector sc : selectedRound.getRegisteredStatisticCollectors()) {
-                    ret.add(new ToStringBox<StatisticCollector>(sc) {
-
-                        @Override
-                        protected String toString(StatisticCollector val) {
-                            return val.getName();
-                        }
-                    });
-                }
-            }
-        }
-        return ret;
+        return null;
+        
+//        List<ToStringBox<StatisticCollector>> ret = new LinkedList<ToStringBox<StatisticCollector>>();
+//        ToStringBox<Round> selectedRoundName = (ToStringBox<Round>) getPage().param(PASSED_ROUNDS_PARAM).getSelectedItem();
+//        if (selectedRoundName != null) {
+//            Round selectedRound = selectedRoundName.getVal();
+//
+//            if (selectedRound != null) {
+//                for (StatisticCollector sc : selectedRound.getRegisteredStatisticCollectors()) {
+//                    ret.add(new ToStringBox<StatisticCollector>(sc) {
+//
+//                        @Override
+//                        protected String toString(StatisticCollector val) {
+//                            return val.getName();
+//                        }
+//                    });
+//                }
+//            }
+//        }
+//        return ret;
     }
 
     @Override
@@ -130,25 +134,25 @@ public class StatisticModel extends Model implements ExperimentListener {
     public void onExecutionEnded(Experiment source, Round round, Execution exec) {
     }
 
-    @Override
-    public void whenPageCreated(Page page) {
-        page.getParam(PASSED_ROUNDS_PARAM).addSelectionListner(new ChangeListener() {
-
-            @Override
-            public void onChange(BaseParamModel source, Object newValue, Object deltaHint) {
-                syncToView(COLLECTORS_PARAM);
-            }
-        });
-
-        page.getParam(COLLECTORS_PARAM).addSelectionListner(new ChangeListener() {
-
-            @Override
-            public void onChange(BaseParamModel source, Object newValue, Object deltaHint) {
-                syncToView(CHART_PARAM);
-            }
-        });
-
-    }
+//    @Override
+//    public void whenPageCreated(Page page) {
+//        page.param(PASSED_ROUNDS_PARAM).addSelectionListner(new ChangeListener() {
+//
+//            @Override
+//            public void onChange(Parameter source, Object newValue, Object deltaHint) {
+//                syncToView(COLLECTORS_PARAM);
+//            }
+//        });
+//
+//        page.param(COLLECTORS_PARAM).addSelectionListner(new ChangeListener() {
+//
+//            @Override
+//            public void onChange(Parameter source, Object newValue, Object deltaHint) {
+//                syncToView(CHART_PARAM);
+//            }
+//        });
+//
+//    }
     
     @Action(name=StatisticsLayout.EXPORT_TO_CSV_ACTION)
     void onExportToCSV(){

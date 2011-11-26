@@ -12,8 +12,8 @@ package bgu.csp.az.dev.pui.stat;
 
 import bam.utils.ui.mvc.DataExtractor;
 import bam.utils.ui.mvc.GenericTableModel;
-import bc.swing.pfrm.BaseParamModel;
-import bc.swing.pfrm.ParamView;
+import bc.swing.pfrm.Parameter;
+//import bc.swing.pfrm.ParamView;
 import bgu.csp.az.api.infra.stat.VisualModel;
 import bgu.csp.az.api.infra.stat.vmod.BarVisualModel;
 import bgu.csp.az.api.infra.stat.vmod.LineVisualModel;
@@ -25,7 +25,7 @@ import java.util.Map.Entry;
  *
  * @author bennyl
  */
-public class AnalayzedTableView extends javax.swing.JPanel implements ParamView {
+public class AnalayzedTableView extends javax.swing.JPanel {
 
     /** Creates new form AnalayzedTableView */
     public AnalayzedTableView() {
@@ -69,18 +69,18 @@ public class AnalayzedTableView extends javax.swing.JPanel implements ParamView 
     private javax.swing.JTable table;
     // End of variables declaration//GEN-END:variables
 
-    @Override
-    public void setParam(BaseParamModel param) {
+//    @Override
+    public void setParam(Parameter param) {
         onChange(param, param.getValue(), null);
     }
 
-    @Override
-    public void reflectChangesToParam(BaseParamModel to) {
+//    @Override
+    public void reflectChangesToParam(Parameter to) {
 //        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public void onChange(BaseParamModel param, Object newValue, Object deltaHint) {
+//    @Override
+    public void onChange(Parameter param, Object newValue, Object deltaHint) {
         VisualModel model = (VisualModel) param.getValue();
 
         if (model instanceof LineVisualModel) {

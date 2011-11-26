@@ -10,11 +10,9 @@
  */
 package bgu.csp.az.dev.pui;
 
-import bc.dsl.PageDSL;
 import bc.swing.comp.JActionView;
 import bc.swing.pfrm.Page;
 import bc.swing.pfrm.PageLayout;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -165,8 +163,8 @@ public class AZView extends javax.swing.JPanel implements PageLayout{
 
     @Override
     public void setPage(Page model) {
-        PageDSL.fillByRole(model, tabs, PAGES_ROLE);
-        PageDSL.fillByRole(model, pbar, PROGRESS_BAR_ROLE, 3);
+//        PageDSL.fillByRole(model, tabs, PAGES_ROLE);
+//        PageDSL.fillByRole(model, pbar, PROGRESS_BAR_ROLE, 3);
         JActionView stopAndSave = new JActionView(model.getAction(STOP_AND_SAVE_ACTION));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 1;
@@ -174,7 +172,7 @@ public class AZView extends javax.swing.JPanel implements PageLayout{
         pbar.add(stopAndSave, gbc);
         stopAndSave.setForeground(Color.BLUE);
         
-        PageDSL.fillByRole(model, consolePan, CONSOLE_ROLE);
+//        PageDSL.fillByRole(model, consolePan, CONSOLE_ROLE);
     }
 
     @Override

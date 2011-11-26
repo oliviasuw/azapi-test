@@ -4,7 +4,7 @@
  */
 package bgu.csp.az.dev.pui;
 
-import bc.dsl.PageDSL;
+//import bc.dsl.PageDSL;
 import bgu.csp.az.api.pgen.Problem;
 import bgu.csp.az.api.infra.stat.Statistic;
 import bgu.csp.az.api.tools.Assignment;
@@ -16,7 +16,7 @@ import bc.swing.pfrm.Model;
 import bc.swing.pfrm.ano.Action;
 import bc.swing.pfrm.ano.PageDef;
 import bc.swing.pfrm.ano.Param;
-import bc.swing.pfrm.viewtypes.ParamType;
+//import bc.swing.pfrm.viewtypes.ParamType;
 import bc.utils.PokedWorker;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.dev.pui.scha.StatisticsModel;
@@ -36,9 +36,9 @@ import javax.swing.text.BadLocationException;
 public class UIController extends Model {
 
     public static final String STOP_AND_SAVE_ACTION = "Stop and save";
-    @Param(name = "Pages", type = ParamType.TABS, role = AZView.PAGES_ROLE)
+//    @Param(name = "Pages", type = ParamType.TABS, role = AZView.PAGES_ROLE)
     List<Model> models = new LinkedList<Model>();
-    @Param(name = "Execution Progress", type = ParamType.PROGRESS, role = AZView.PROGRESS_BAR_ROLE)
+//    @Param(name = "Execution Progress", type = ParamType.PROGRESS, role = AZView.PROGRESS_BAR_ROLE)
     DefaultBoundedRangeModel progress;
 //    TestExpirement te;
     //BatchDocument bdoc = new LimitedBatchDocument();
@@ -95,7 +95,7 @@ public class UIController extends Model {
 /*        te.stop();*/
     }
 
-    @Param(name = "console", customView = Console.class, role = AZView.CONSOLE_ROLE)
+//    @Param(name = "console", customView = Console.class, role = AZView.CONSOLE_ROLE)
     public BatchDocument getBatchdoc() {
         return bdoc;
     }

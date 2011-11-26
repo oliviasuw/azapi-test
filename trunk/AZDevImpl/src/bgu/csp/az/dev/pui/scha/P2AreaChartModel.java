@@ -10,8 +10,8 @@ import bc.swing.models.chart.AreaChartModel;
 import bc.swing.pfrm.Model;
 import bc.swing.pfrm.ano.PageDef;
 import bc.swing.pfrm.ano.Param;
-import bc.swing.pfrm.layouts.CenterLayout;
-import bc.swing.pfrm.viewtypes.ParamType;
+//import bc.swing.pfrm.layouts.CenterLayout;
+//import bc.swing.pfrm.viewtypes.ParamType;
 import bgu.csp.az.api.infra.stat.Statistic;
 
 import java.util.List;
@@ -20,12 +20,12 @@ import java.util.List;
  *
  * @author bennyl
  */
-@PageDef(layout = CenterLayout.class)
+//@PageDef(layout = CenterLayout.class)
 public class P2AreaChartModel extends Model implements StatisticNode.Listener {
 
     AreaChartModel chart;
 
-    @Param(name = "Chart", type = ParamType.CHART)
+//    @Param(name = "Chart", type = ParamType.CHART)
     public AreaChartModel getChart() {
         return chart;
     }

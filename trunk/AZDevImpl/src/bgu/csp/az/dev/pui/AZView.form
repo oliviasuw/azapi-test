@@ -127,7 +127,6 @@
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="null"/>
                 </Property>
-                <Property name="dividerLocation" type="int" value="-1"/>
                 <Property name="orientation" type="int" value="0"/>
                 <Property name="resizeWeight" type="double" value="0.6"/>
               </Properties>

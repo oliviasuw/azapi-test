@@ -19,6 +19,8 @@ public class RoundView extends javax.swing.JPanel {
     /** Creates new form RoundView */
     public RoundView() {
         initComponents();
+        faildProblemPan.setVisible(false);
+        debugProblemButtonPan.setVisible(false);
     }
 
     /** This method is called from within the constructor to
@@ -29,18 +31,346 @@ public class RoundView extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
+        jButton1 = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        spacer = new org.jdesktop.swingx.JXLabel();
+        jXLabel2 = new org.jdesktop.swingx.JXLabel();
+        jPanel2 = new javax.swing.JPanel();
+        transparentList1 = new bc.ui.swing.lists.TransparentList();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        spacer1 = new org.jdesktop.swingx.JXLabel();
+        jXLabel3 = new org.jdesktop.swingx.JXLabel();
+        jPanel6 = new javax.swing.JPanel();
+        transparentList2 = new bc.ui.swing.lists.TransparentList();
+        jPanel7 = new javax.swing.JPanel();
+        jPanel8 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        spacer2 = new org.jdesktop.swingx.JXLabel();
+        jXLabel4 = new org.jdesktop.swingx.JXLabel();
+        jPanel9 = new javax.swing.JPanel();
+        transparentList3 = new bc.ui.swing.lists.TransparentList();
+        faildProblemPan = new javax.swing.JPanel();
+        jPanel11 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        spacer3 = new org.jdesktop.swingx.JXLabel();
+        jXLabel5 = new org.jdesktop.swingx.JXLabel();
+        jPanel12 = new javax.swing.JPanel();
+        transparentList4 = new bc.ui.swing.lists.TransparentList();
+        spacerPan = new javax.swing.JPanel();
+        debugProblemButtonPan = new javax.swing.JPanel();
+        jXHyperlink1 = new org.jdesktop.swingx.JXHyperlink();
+
+        jButton1.setBackground(new java.awt.Color(102, 102, 102));
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/gnome-glchess_1.png"))); // NOI18N
+        jButton1.setText("Debug This Problem");
+        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+
+        setBackground(new java.awt.Color(102, 102, 102));
+        setLayout(new java.awt.GridBagLayout());
+
+        jPanel3.setMinimumSize(new java.awt.Dimension(155, 150));
+        jPanel3.setOpaque(false);
+        jPanel3.setLayout(new java.awt.GridBagLayout());
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
+        jPanel1.setMinimumSize(new java.awt.Dimension(200, 16));
+        jPanel1.setOpaque(false);
+        jPanel1.setPreferredSize(new java.awt.Dimension(200, 100));
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
+        jLabel1.setFont(new java.awt.Font("Consolas", 1, 12));
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Round Parameters");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel1.add(jLabel1, gridBagConstraints);
+
+        spacer.setMinimumSize(new java.awt.Dimension(20, 0));
+        spacer.setPreferredSize(new java.awt.Dimension(20, 0));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 1;
+        jPanel1.add(spacer, gridBagConstraints);
+
+        jXLabel2.setForeground(new java.awt.Color(210, 233, 255));
+        jXLabel2.setText("the set of parameters controlling\nthe execution of the round");
+        jXLabel2.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jXLabel2.setLineWrap(true);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        jPanel1.add(jXLabel2, gridBagConstraints);
+
+        jPanel3.add(jPanel1, new java.awt.GridBagConstraints());
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
+        jPanel2.setOpaque(false);
+        jPanel2.setPreferredSize(new java.awt.Dimension(349, 100));
+        jPanel2.setLayout(new java.awt.BorderLayout());
+
+        transparentList1.setForeColor(new java.awt.Color(255, 255, 255));
+        jPanel2.add(transparentList1, java.awt.BorderLayout.CENTER);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel3.add(jPanel2, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        add(jPanel3, gridBagConstraints);
+
+        jPanel4.setMinimumSize(new java.awt.Dimension(155, 150));
+        jPanel4.setOpaque(false);
+        jPanel4.setLayout(new java.awt.GridBagLayout());
+
+        jPanel5.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
+        jPanel5.setMinimumSize(new java.awt.Dimension(200, 16));
+        jPanel5.setOpaque(false);
+        jPanel5.setPreferredSize(new java.awt.Dimension(200, 100));
+        jPanel5.setLayout(new java.awt.GridBagLayout());
+
+        jLabel2.setFont(new java.awt.Font("Consolas", 1, 12));
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("Problem Generator");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel5.add(jLabel2, gridBagConstraints);
+
+        spacer1.setMinimumSize(new java.awt.Dimension(20, 0));
+        spacer1.setPreferredSize(new java.awt.Dimension(20, 0));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 1;
+        jPanel5.add(spacer1, gridBagConstraints);
+
+        jXLabel3.setForeground(new java.awt.Color(210, 233, 255));
+        jXLabel3.setText("the generator of the \nproblems in this round");
+        jXLabel3.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jXLabel3.setLineWrap(true);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        jPanel5.add(jXLabel3, gridBagConstraints);
+
+        jPanel4.add(jPanel5, new java.awt.GridBagConstraints());
+
+        jPanel6.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
+        jPanel6.setOpaque(false);
+        jPanel6.setPreferredSize(new java.awt.Dimension(349, 100));
+        jPanel6.setLayout(new java.awt.BorderLayout());
+
+        transparentList2.setForeColor(new java.awt.Color(255, 255, 255));
+        jPanel6.add(transparentList2, java.awt.BorderLayout.CENTER);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel4.add(jPanel6, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
+        add(jPanel4, gridBagConstraints);
+
+        jPanel7.setMinimumSize(new java.awt.Dimension(155, 150));
+        jPanel7.setOpaque(false);
+        jPanel7.setLayout(new java.awt.GridBagLayout());
+
+        jPanel8.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
+        jPanel8.setMinimumSize(new java.awt.Dimension(200, 16));
+        jPanel8.setOpaque(false);
+        jPanel8.setPreferredSize(new java.awt.Dimension(200, 100));
+        jPanel8.setLayout(new java.awt.GridBagLayout());
+
+        jLabel3.setFont(new java.awt.Font("Consolas", 1, 12));
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("Executed Algorithms");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel8.add(jLabel3, gridBagConstraints);
+
+        spacer2.setMinimumSize(new java.awt.Dimension(20, 0));
+        spacer2.setPreferredSize(new java.awt.Dimension(20, 0));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 1;
+        jPanel8.add(spacer2, gridBagConstraints);
+
+        jXLabel4.setForeground(new java.awt.Color(210, 233, 255));
+        jXLabel4.setText("list of the algorithms that \nparticipating in this round");
+        jXLabel4.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jXLabel4.setLineWrap(true);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        jPanel8.add(jXLabel4, gridBagConstraints);
+
+        jPanel7.add(jPanel8, new java.awt.GridBagConstraints());
+
+        jPanel9.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
+        jPanel9.setOpaque(false);
+        jPanel9.setPreferredSize(new java.awt.Dimension(349, 100));
+        jPanel9.setLayout(new java.awt.BorderLayout());
+
+        transparentList3.setForeColor(new java.awt.Color(255, 255, 255));
+        jPanel9.add(transparentList3, java.awt.BorderLayout.CENTER);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel7.add(jPanel9, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
+        add(jPanel7, gridBagConstraints);
+
+        faildProblemPan.setMinimumSize(new java.awt.Dimension(155, 150));
+        faildProblemPan.setOpaque(false);
+        faildProblemPan.setLayout(new java.awt.GridBagLayout());
+
+        jPanel11.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
+        jPanel11.setMinimumSize(new java.awt.Dimension(200, 16));
+        jPanel11.setOpaque(false);
+        jPanel11.setPreferredSize(new java.awt.Dimension(200, 100));
+        jPanel11.setLayout(new java.awt.GridBagLayout());
+
+        jLabel4.setFont(new java.awt.Font("Consolas", 1, 12));
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("Failed Problem");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel11.add(jLabel4, gridBagConstraints);
+
+        spacer3.setMinimumSize(new java.awt.Dimension(20, 0));
+        spacer3.setPreferredSize(new java.awt.Dimension(20, 0));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 1;
+        jPanel11.add(spacer3, gridBagConstraints);
+
+        jXLabel5.setForeground(new java.awt.Color(210, 233, 255));
+        jXLabel5.setText("the parameters of the faild problem\nin this round");
+        jXLabel5.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jXLabel5.setLineWrap(true);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        jPanel11.add(jXLabel5, gridBagConstraints);
+
+        faildProblemPan.add(jPanel11, new java.awt.GridBagConstraints());
+
+        jPanel12.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
+        jPanel12.setOpaque(false);
+        jPanel12.setPreferredSize(new java.awt.Dimension(349, 100));
+        jPanel12.setLayout(new java.awt.BorderLayout());
+
+        transparentList4.setForeColor(new java.awt.Color(255, 255, 255));
+        jPanel12.add(transparentList4, java.awt.BorderLayout.CENTER);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        faildProblemPan.add(jPanel12, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
+        add(faildProblemPan, gridBagConstraints);
+
+        spacerPan.setMinimumSize(new java.awt.Dimension(155, 150));
+        spacerPan.setOpaque(false);
+        spacerPan.setLayout(new java.awt.GridBagLayout());
+
+        debugProblemButtonPan.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        debugProblemButtonPan.setOpaque(false);
+        debugProblemButtonPan.setLayout(new java.awt.GridBagLayout());
+
+        jXHyperlink1.setForeground(new java.awt.Color(255, 255, 255));
+        jXHyperlink1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/gnome-glchess_1.png"))); // NOI18N
+        jXHyperlink1.setText("Debug This Problem");
+        jXHyperlink1.setClickedColor(new java.awt.Color(255, 255, 255));
+        jXHyperlink1.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        jXHyperlink1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jXHyperlink1.setUnclickedColor(new java.awt.Color(255, 255, 255));
+        jXHyperlink1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        debugProblemButtonPan.add(jXHyperlink1, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        spacerPan.add(debugProblemButtonPan, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
+        add(spacerPan, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel debugProblemButtonPan;
+    private javax.swing.JPanel faildProblemPan;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
+    private org.jdesktop.swingx.JXHyperlink jXHyperlink1;
+    private org.jdesktop.swingx.JXLabel jXLabel2;
+    private org.jdesktop.swingx.JXLabel jXLabel3;
+    private org.jdesktop.swingx.JXLabel jXLabel4;
+    private org.jdesktop.swingx.JXLabel jXLabel5;
+    private org.jdesktop.swingx.JXLabel spacer;
+    private org.jdesktop.swingx.JXLabel spacer1;
+    private org.jdesktop.swingx.JXLabel spacer2;
+    private org.jdesktop.swingx.JXLabel spacer3;
+    private javax.swing.JPanel spacerPan;
+    private bc.ui.swing.lists.TransparentList transparentList1;
+    private bc.ui.swing.lists.TransparentList transparentList2;
+    private bc.ui.swing.lists.TransparentList transparentList3;
+    private bc.ui.swing.lists.TransparentList transparentList4;
     // End of variables declaration//GEN-END:variables
 }

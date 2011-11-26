@@ -10,6 +10,14 @@
  */
 package bc.ui.swing.charts;
 
+import bgu.csp.az.api.infra.stat.vmod.LineVisualModel;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
 /**
  *
  * @author bennyl
@@ -19,6 +27,20 @@ public class LineChart extends javax.swing.JPanel {
     /** Creates new form LineChart */
     public LineChart() {
         initComponents();
+    }
+    
+    public void setModel(LineVisualModel line){
+        XYDataset dataset = createDataset(line);
+        JFreeChart chart = ChartFactory.createXYLineChart(
+            "Line Chart Demo 2",      // chart title
+            "X",                      // x axis label
+            "Y",                      // y axis label
+            dataset,                  // data
+            PlotOrientation.HORIZONTAL,
+            true,                     // include legend
+            true,                     // tooltips
+            false                     // urls
+        );
     }
 
     /** This method is called from within the constructor to
@@ -43,4 +65,43 @@ public class LineChart extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
+
+    private XYDataset createDataset(LineVisualModel line) {
+        XYSeries series1 = new XYSeries("First");
+        series1.add(1.0, 1.0);
+        series1.add(2.0, 4.0);
+        series1.add(3.0, 3.0);
+        series1.add(4.0, 5.0);
+        series1.add(5.0, 5.0);
+        series1.add(6.0, 7.0);
+        series1.add(7.0, 7.0);
+        series1.add(8.0, 8.0);
+
+        XYSeries series2 = new XYSeries("Second");
+        series2.add(1.0, 5.0);
+        series2.add(2.0, 7.0);
+        series2.add(3.0, 6.0);
+        series2.add(4.0, 8.0);
+        series2.add(5.0, 4.0);
+        series2.add(6.0, 4.0);
+        series2.add(7.0, 2.0);
+        series2.add(8.0, 1.0);
+
+        XYSeries series3 = new XYSeries("Third");
+        series3.add(3.0, 4.0);
+        series3.add(4.0, 3.0);
+        series3.add(5.0, 2.0);
+        series3.add(6.0, 3.0);
+        series3.add(7.0, 6.0);
+        series3.add(8.0, 3.0);
+        series3.add(9.0, 4.0);
+        series3.add(10.0, 3.0);
+
+        XYSeriesCollection dataset = new XYSeriesCollection();
+        dataset.addSeries(series1);
+        dataset.addSeries(series2);
+        dataset.addSeries(series3);
+                
+        return dataset;
+    }
 }

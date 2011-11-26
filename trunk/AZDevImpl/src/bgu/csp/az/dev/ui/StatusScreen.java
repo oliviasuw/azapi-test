@@ -14,7 +14,9 @@ import bc.ui.swing.visuals.Visual;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.Experiment;
 import bgu.csp.az.api.infra.Round;
+import com.sun.java.swing.plaf.motif.MotifProgressBarUI;
 import java.util.List;
+import javax.swing.BoundedRangeModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.metal.MetalProgressBarUI;
@@ -28,7 +30,7 @@ public class StatusScreen extends javax.swing.JPanel {
     /** Creates new form StatusScreen */
     public StatusScreen() {
         initComponents();
-        execProgress.setUI(new MetalProgressBarUI());
+        execProgress.setUI(new MotifProgressBarUI());
     }
 
     void setModel(Experiment experiment) {
@@ -54,33 +56,41 @@ public class StatusScreen extends javax.swing.JPanel {
                 }
             }
         });
-        
         // EXECUTION PROGRESS BAR
+        final BoundedRangeModel mod = execProgress.getModel();
+        mod.setMinimum(0);
+        
+        int sum = 0;
+        for (Round r : experiment.getRounds()){
+            sum += r.getLength();
+        }
+        
+        final int finalSum = sum;
+        
+        mod.setMaximum(sum);
+        progressLabel.setText("Execution 0 " + " of " + finalSum);
         experiment.addListener(new Experiment.ExperimentListener() {
 
             @Override
             public void onExpirementStarted(Experiment source) {
-                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public void onExpirementEnded(Experiment source) {
-                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public void onNewRoundStarted(Experiment source, Round round) {
-                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public void onNewExecutionStarted(Experiment source, Round round, Execution exec) {
-                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public void onExecutionEnded(Experiment source, Round round, Execution exec) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                mod.setValue(mod.getValue()+1);
+                progressLabel.setText("Execution " + (mod.getValue()) + " of " + finalSum);
             }
         });
     }
@@ -99,7 +109,7 @@ public class StatusScreen extends javax.swing.JPanel {
         roundView = new bgu.csp.az.dev.ui.RoundView();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        progressLabel = new javax.swing.JLabel();
         execProgress = new javax.swing.JProgressBar();
         jPanel1 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
@@ -127,20 +137,25 @@ public class StatusScreen extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel2.add(jLabel1, gridBagConstraints);
 
-        jLabel2.setFont(new java.awt.Font("Consolas", 1, 14));
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Execution 7 of 16, 20 sec");
+        progressLabel.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        progressLabel.setForeground(new java.awt.Color(255, 255, 255));
+        progressLabel.setText("Execution 0 of 16");
+        progressLabel.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
-        jPanel2.add(jLabel2, gridBagConstraints);
+        jPanel2.add(progressLabel, gridBagConstraints);
+
+        execProgress.setBackground(null);
+        execProgress.setForeground(new java.awt.Color(255, 255, 255));
+        execProgress.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(71, 71, 71), 2));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 10, 5);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 10, 0);
         jPanel2.add(execProgress, gridBagConstraints);
 
         add(jPanel2, java.awt.BorderLayout.NORTH);
@@ -195,12 +210,12 @@ public class StatusScreen extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JProgressBar execProgress;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JLabel progressLabel;
     private bc.ui.swing.useful.DataPanel roundData;
     private javax.swing.JScrollPane roundDataScroll;
     private bc.ui.swing.lists.StripeList roundList;

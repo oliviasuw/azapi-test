@@ -19,6 +19,7 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
  * @author bennyl
  */
 public class MainWindow extends javax.swing.JFrame {
+
     private StatusScreen statusScreen;
 
     /** Creates new form MainWindow */
@@ -33,7 +34,13 @@ public class MainWindow extends javax.swing.JFrame {
         statusScreen.setModel(experiment);
         //Status Screen!
         tabs.addTab("Status", SwingDSL.resIcon("status"), statusScreen);
-        
+        java.awt.EventQueue.invokeLater(new Runnable() {
+
+            public void run() {
+                setVisible(true);
+            }
+        });
+
     }
 
     public void startDebugging() {

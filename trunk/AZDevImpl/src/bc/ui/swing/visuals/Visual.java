@@ -4,6 +4,8 @@
  */
 package bc.ui.swing.visuals;
 
+import java.util.LinkedList;
+import java.util.List;
 import javax.swing.Icon;
 
 /**
@@ -22,6 +24,39 @@ public class Visual {
         this.description = description;
         this.icon = icon;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Icon getIcon() {
+        return icon;
+    }
+
+    public void setIcon(Icon icon) {
+        this.icon = icon;
+    }
+
+    public Object getItem() {
+        return item;
+    }
+
+    public void setItem(Object item) {
+        this.item = item;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+    
 
     @Override
     public boolean equals(Object obj) {
@@ -43,5 +78,33 @@ public class Visual {
         hash = 61 * hash + (this.item != null ? this.item.hashCode() : 0);
         return hash;
     }
+
+    @Override
+    public String toString() {
+        return text;
+    }
     
+    
+    
+    public static LinkedList<Visual> adapt(List items){
+        LinkedList<Visual> ret = new LinkedList<Visual>();
+        for (Object i : items){
+            ret.add(new Visual(i, i.toString(), "", null));
+        }
+        
+        return ret;
+    }
+    
+    public static LinkedList<Visual> adapt(List items, VisualGen func){
+        LinkedList<Visual> ret = new LinkedList<Visual>();
+        for (Object i : items){
+            ret.add(func.gen(i));
+        }
+        
+        return ret;
+    }
+    
+    public static interface VisualGen{
+        Visual gen(Object it);
+    }
 }

@@ -10,7 +10,9 @@
  */
 package bgu.csp.az.dev.ui;
 
+import bc.ui.swing.visuals.Visual;
 import bgu.csp.az.api.infra.Experiment;
+import bgu.csp.az.api.infra.Round;
 import javax.swing.plaf.metal.MetalProgressBarUI;
 
 /**
@@ -26,7 +28,15 @@ public class StatusScreen extends javax.swing.JPanel {
     }
 
     void setModel(Experiment experiment) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        roundList.setItems(Visual.adapt(experiment.getRounds(), new Visual.VisualGen() {
+
+            @Override
+            public Visual gen(Object it) {
+                Round r = (Round) it;
+                return new Visual(it, r.getName(), "", null);
+            }
+        }));
+        
     }
 
     /** This method is called from within the constructor to
@@ -39,6 +49,8 @@ public class StatusScreen extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        roundDataScroll = new javax.swing.JScrollPane();
+        roundView1 = new bgu.csp.az.dev.ui.RoundView_();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -48,8 +60,10 @@ public class StatusScreen extends javax.swing.JPanel {
         jLabel4 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         roundList = new bc.ui.swing.lists.StripeList();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        roundView1 = new bgu.csp.az.dev.ui.RoundView();
+        roundData = new bc.ui.swing.useful.DataPanel();
+
+        roundDataScroll.setBorder(null);
+        roundDataScroll.setViewportView(roundView1);
 
         setOpaque(false);
         setLayout(new java.awt.BorderLayout());
@@ -67,7 +81,7 @@ public class StatusScreen extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel2.add(jLabel1, gridBagConstraints);
 
-        jLabel2.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Consolas", 1, 14));
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Execution 7 of 16, 20 sec");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -114,15 +128,13 @@ public class StatusScreen extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         jPanel3.add(roundList, gridBagConstraints);
 
-        jScrollPane1.setBorder(null);
-        jScrollPane1.setViewportView(roundView1);
-
+        roundData.setNoDataForeColor(new java.awt.Color(255, 255, 255));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        jPanel3.add(jScrollPane1, gridBagConstraints);
+        jPanel3.add(roundData, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -142,8 +154,9 @@ public class StatusScreen extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JScrollPane jScrollPane1;
+    private bc.ui.swing.useful.DataPanel roundData;
+    private javax.swing.JScrollPane roundDataScroll;
     private bc.ui.swing.lists.StripeList roundList;
-    private bgu.csp.az.dev.ui.RoundView roundView1;
+    private bgu.csp.az.dev.ui.RoundView_ roundView1;
     // End of variables declaration//GEN-END:variables
 }

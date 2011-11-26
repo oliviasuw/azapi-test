@@ -4,12 +4,14 @@
  */
 package bgu.csp.az.dev;
 
+import bc.dsl.SwingDSL;
 import bgu.csp.az.dev.ui.NewUIController;
 import bgu.csp.az.api.exp.ConnectionFaildException;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.Experiment;
 import bgu.csp.az.api.infra.Experiment.ExperimentListener;
 import bgu.csp.az.api.infra.Round;
+import bgu.csp.az.dev.ui.MainWindow;
 import bgu.csp.az.impl.AlgorithmMetadata;
 import bgu.csp.az.impl.db.DatabaseUnit;
 import bgu.csp.az.impl.infra.AbstractExecution;
@@ -46,15 +48,20 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
             DatabaseUnit.UNIT.connect();
             DatabaseUnit.UNIT.startCollectorThread();
             runningExperiment.addListener(this);
-            if (withGui) {
-                ui = new NewUIController();
-                ui.startUi();
-            }
+            SwingDSL.configureUI();
+            MainWindow mainW = new MainWindow();
+            mainW.startRunning(runningExperiment);
+
+            
+            //            if (withGui) {
+//                ui = new NewUIController();
+//                ui.startUi();
+//            }
             //runningExperiment.run();
             runningExperiment.removeListener(this);
             DatabaseUnit.UNIT.stopCollectorThread();
             DatabaseUnit.UNIT.disconnect();
-            System.out.println(runningExperiment.getResult().toString());
+//            System.out.println(runningExperiment.getResult().toString());
         } catch (ConnectionFaildException ex) {
             Logger.getLogger(ExecutionUnit.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

@@ -27,6 +27,10 @@ public class MapProblem extends Problem {
 //    }
     @Override
     public void setConstraintCost(int var1, int val1, int var2, int val2, double cost) {
+        if (maxCost < cost){
+            maxCost = cost;
+        }
+        
         int id = calcId(var1, var2);
         if (cost != 0) {
             super.constraints.put(id, Boolean.TRUE);

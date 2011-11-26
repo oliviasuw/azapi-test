@@ -11,6 +11,7 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import org.reflections.Configuration;
 import org.reflections.Reflections;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
@@ -28,10 +29,15 @@ public enum Registary {
     Map<String, Class> agents = new HashMap<String, Class>();
     
     private Registary() {
+<<<<<<< .mine
+        //Reflections ref = new Reflections("bgu.csp.az", new TypeAnnotationsScanner());
+        Reflections ref = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage("bgu.csp.az"), ClasspathHelper.forPackage("ext.sim")).setScanners(new TypeAnnotationsScanner()));
+=======
 //        Reflections ref = new Reflections("bgu.csp.az", new TypeAnnotationsScanner());
         Reflections ref = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage("bgu.csp.az"), ClasspathHelper.forPackage("ext.sim.agents"))
                 .setScanners(new TypeAnnotationsScanner())); 
 
+>>>>>>> .r159
         
         //SCANNING XML ENTITIES
         Set<Class<?>> types = ref.getTypesAnnotatedWith(Register.class);

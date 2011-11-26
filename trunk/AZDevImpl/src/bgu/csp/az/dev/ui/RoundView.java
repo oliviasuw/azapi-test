@@ -10,6 +10,13 @@
  */
 package bgu.csp.az.dev.ui;
 
+import bc.ui.swing.visuals.Visual;
+import bc.ui.swing.visuals.Visual.VisualGen;
+import bgu.csp.az.api.infra.Round;
+import bgu.csp.az.api.infra.VariableMetadata;
+import bgu.csp.az.impl.AlgorithmMetadata;
+import bgu.csp.az.impl.infra.AbstractRound;
+
 /**
  *
  * @author bennyl
@@ -21,6 +28,31 @@ public class RoundView extends javax.swing.JPanel {
         initComponents();
         faildProblemPan.setVisible(false);
         debugProblemButtonPan.setVisible(false);
+        roundVars.getList().setFixedCellHeight(18);
+        pgenVars.getList().setFixedCellHeight(18);
+        algos.getList().setFixedCellHeight(18);
+    }
+
+    public void setModel(Round r) {
+        VisualGen varsGen = new Visual.VisualGen() {
+
+            @Override
+            public Visual gen(Object it) {
+                VariableMetadata var = (VariableMetadata) it;
+                return new Visual(it, "+ " + var.getName() + "='" + var.getCurrentValue() + "' [ " + var.getDescription() + " ]","", null);
+            }
+        };
+        
+        roundVars.setItems(Visual.adapt(r.provideExpectedVariables(),varsGen));
+        pgenVars.setItems(Visual.adapt(r.getProblemGenerator().provideExpectedVariables(), varsGen));
+        algos.setItems(Visual.adapt(((AbstractRound) r).getAlgorithms(), new VisualGen() {
+
+            @Override
+            public Visual gen(Object it) {
+                AlgorithmMetadata alg = (AlgorithmMetadata) it;
+                return new Visual(alg, "+ " + alg.getName(), "", null);
+            }
+        }));
     }
 
     /** This method is called from within the constructor to
@@ -40,21 +72,21 @@ public class RoundView extends javax.swing.JPanel {
         spacer = new org.jdesktop.swingx.JXLabel();
         jXLabel2 = new org.jdesktop.swingx.JXLabel();
         jPanel2 = new javax.swing.JPanel();
-        transparentList1 = new bc.ui.swing.lists.TransparentList();
+        roundVars = new bc.ui.swing.lists.TransparentList();
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         spacer1 = new org.jdesktop.swingx.JXLabel();
         jXLabel3 = new org.jdesktop.swingx.JXLabel();
         jPanel6 = new javax.swing.JPanel();
-        transparentList2 = new bc.ui.swing.lists.TransparentList();
+        pgenVars = new bc.ui.swing.lists.TransparentList();
         jPanel7 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         spacer2 = new org.jdesktop.swingx.JXLabel();
         jXLabel4 = new org.jdesktop.swingx.JXLabel();
         jPanel9 = new javax.swing.JPanel();
-        transparentList3 = new bc.ui.swing.lists.TransparentList();
+        algos = new bc.ui.swing.lists.TransparentList();
         faildProblemPan = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
@@ -118,8 +150,8 @@ public class RoundView extends javax.swing.JPanel {
         jPanel2.setPreferredSize(new java.awt.Dimension(349, 100));
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        transparentList1.setForeColor(new java.awt.Color(255, 255, 255));
-        jPanel2.add(transparentList1, java.awt.BorderLayout.CENTER);
+        roundVars.setForeColor(new java.awt.Color(255, 255, 255));
+        jPanel2.add(roundVars, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -174,8 +206,8 @@ public class RoundView extends javax.swing.JPanel {
         jPanel6.setPreferredSize(new java.awt.Dimension(349, 100));
         jPanel6.setLayout(new java.awt.BorderLayout());
 
-        transparentList2.setForeColor(new java.awt.Color(255, 255, 255));
-        jPanel6.add(transparentList2, java.awt.BorderLayout.CENTER);
+        pgenVars.setForeColor(new java.awt.Color(255, 255, 255));
+        jPanel6.add(pgenVars, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -231,8 +263,8 @@ public class RoundView extends javax.swing.JPanel {
         jPanel9.setPreferredSize(new java.awt.Dimension(349, 100));
         jPanel9.setLayout(new java.awt.BorderLayout());
 
-        transparentList3.setForeColor(new java.awt.Color(255, 255, 255));
-        jPanel9.add(transparentList3, java.awt.BorderLayout.CENTER);
+        algos.setForeColor(new java.awt.Color(255, 255, 255));
+        jPanel9.add(algos, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -314,7 +346,7 @@ public class RoundView extends javax.swing.JPanel {
         jXHyperlink1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/gnome-glchess_1.png"))); // NOI18N
         jXHyperlink1.setText("Debug This Problem");
         jXHyperlink1.setClickedColor(new java.awt.Color(255, 255, 255));
-        jXHyperlink1.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        jXHyperlink1.setFont(new java.awt.Font("Consolas", 0, 14));
         jXHyperlink1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jXHyperlink1.setUnclickedColor(new java.awt.Color(255, 255, 255));
         jXHyperlink1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -340,6 +372,7 @@ public class RoundView extends javax.swing.JPanel {
         add(spacerPan, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private bc.ui.swing.lists.TransparentList algos;
     private javax.swing.JPanel debugProblemButtonPan;
     private javax.swing.JPanel faildProblemPan;
     private javax.swing.JButton jButton1;
@@ -363,14 +396,13 @@ public class RoundView extends javax.swing.JPanel {
     private org.jdesktop.swingx.JXLabel jXLabel3;
     private org.jdesktop.swingx.JXLabel jXLabel4;
     private org.jdesktop.swingx.JXLabel jXLabel5;
+    private bc.ui.swing.lists.TransparentList pgenVars;
+    private bc.ui.swing.lists.TransparentList roundVars;
     private org.jdesktop.swingx.JXLabel spacer;
     private org.jdesktop.swingx.JXLabel spacer1;
     private org.jdesktop.swingx.JXLabel spacer2;
     private org.jdesktop.swingx.JXLabel spacer3;
     private javax.swing.JPanel spacerPan;
-    private bc.ui.swing.lists.TransparentList transparentList1;
-    private bc.ui.swing.lists.TransparentList transparentList2;
-    private bc.ui.swing.lists.TransparentList transparentList3;
     private bc.ui.swing.lists.TransparentList transparentList4;
     // End of variables declaration//GEN-END:variables
 }

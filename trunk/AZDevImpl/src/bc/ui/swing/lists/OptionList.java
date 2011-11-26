@@ -12,8 +12,8 @@ package bc.ui.swing.lists;
 
 import bc.ui.swing.listeners.Listeners;
 import bc.ui.swing.listeners.SelectionListener;
+import bc.ui.swing.visuals.Visual;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -23,7 +23,6 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JRadioButton;
 import javax.swing.JViewport;
-import javax.swing.border.LineBorder;
 
 /**
  *
@@ -70,7 +69,15 @@ public class OptionList extends javax.swing.JPanel {
         items.clear();
     }
     
-    public void add(final Object item) {
+    public void setItems(List<Visual> items){
+        for (Visual i : items){
+            add(i);
+        }
+        revalidate();
+        repaint();
+    }
+    
+    public void add(final Visual item) {
         
         final JRadioButton radio = new JRadioButton();
         items.put(item, radio);
@@ -78,6 +85,7 @@ public class OptionList extends javax.swing.JPanel {
         //IF IS THE FIRST THEN SET AS SELECTED
         if (items.size() == 1){
             radio.setSelected(true);
+            selectionListeners.fire().onSelectionChanged(this, Arrays.asList(item));
         }
         
         radio.addItemListener(new ItemListener() {
@@ -138,9 +146,9 @@ public class OptionList extends javax.swing.JPanel {
         jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         OptionList list = new OptionList();
         jf.setContentPane(list);
-        list.add("test1");
-        list.add("test2");
-        list.add("test3");
+//        list.add("test1");
+//        list.add("test2");
+//        list.add("test3");
         
         list.getSelectionListeners().addListener(new SelectionListener() {
 

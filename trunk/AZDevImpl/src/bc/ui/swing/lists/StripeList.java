@@ -15,6 +15,7 @@ import bc.ui.swing.visuals.Visual;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.LinkedList;
+import java.util.List;
 import javax.swing.JList;
 import javax.swing.JViewport;
 import javax.swing.event.ListSelectionListener;
@@ -55,6 +56,15 @@ public class StripeList extends javax.swing.JPanel {
 
     public JList getList() {
         return list;
+    }
+    
+    public List<Visual> getSelectedItems(){
+        LinkedList<Visual> ret = new  LinkedList<Visual>();
+        for (Object l : list.getSelectedValues()){
+            ret.add((Visual)l);
+        }
+        
+        return ret;
     }
     
     public Color getEvenBackColor() {

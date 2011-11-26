@@ -11,8 +11,12 @@
 package bgu.csp.az.dev.ui;
 
 import bc.ui.swing.visuals.Visual;
+import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.Experiment;
 import bgu.csp.az.api.infra.Round;
+import java.util.List;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.metal.MetalProgressBarUI;
 
 /**
@@ -37,7 +41,48 @@ public class StatusScreen extends javax.swing.JPanel {
             }
         }));
         
+        roundList.addSelectionListner(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                List<Visual> items = roundList.getSelectedItems();
+                if (items.isEmpty()){
+                    roundData.unSetData();
+                }else {
+                    roundView.setModel((Round)items.get(0).getItem());
+                    roundData.setData(roundDataScroll);
+                }
+            }
+        });
         
+        // EXECUTION PROGRESS BAR
+        experiment.addListener(new Experiment.ExperimentListener() {
+
+            @Override
+            public void onExpirementStarted(Experiment source) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void onExpirementEnded(Experiment source) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void onNewRoundStarted(Experiment source, Round round) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void onNewExecutionStarted(Experiment source, Round round, Execution exec) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void onExecutionEnded(Experiment source, Round round, Execution exec) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        });
     }
 
     /** This method is called from within the constructor to
@@ -51,7 +96,7 @@ public class StatusScreen extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         roundDataScroll = new javax.swing.JScrollPane();
-        roundView1 = new bgu.csp.az.dev.ui.RoundView();
+        roundView = new bgu.csp.az.dev.ui.RoundView();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -64,7 +109,7 @@ public class StatusScreen extends javax.swing.JPanel {
         roundData = new bc.ui.swing.useful.DataPanel();
 
         roundDataScroll.setBorder(null);
-        roundDataScroll.setViewportView(roundView1);
+        roundDataScroll.setViewportView(roundView);
 
         setOpaque(false);
         setLayout(new java.awt.BorderLayout());
@@ -130,6 +175,7 @@ public class StatusScreen extends javax.swing.JPanel {
         jPanel3.add(roundList, gridBagConstraints);
 
         roundData.setNoDataForeColor(new java.awt.Color(255, 255, 255));
+        roundData.setNoDataText("No Round Selected");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
@@ -158,6 +204,6 @@ public class StatusScreen extends javax.swing.JPanel {
     private bc.ui.swing.useful.DataPanel roundData;
     private javax.swing.JScrollPane roundDataScroll;
     private bc.ui.swing.lists.StripeList roundList;
-    private bgu.csp.az.dev.ui.RoundView roundView1;
+    private bgu.csp.az.dev.ui.RoundView roundView;
     // End of variables declaration//GEN-END:variables
 }

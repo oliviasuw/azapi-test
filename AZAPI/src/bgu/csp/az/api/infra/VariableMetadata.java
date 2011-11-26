@@ -32,7 +32,7 @@ public class VariableMetadata {
         this.type = type;
     }
 
-    public Object getDefaultValue() {
+    public Object getCurrentValue() {
         return defaultValue;
     }
 

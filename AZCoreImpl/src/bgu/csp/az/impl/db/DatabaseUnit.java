@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -40,7 +41,9 @@ public enum DatabaseUnit {
     private ArrayBlockingQueue<SimpleEntry<DBRecord, Round>> dbQueue = new ArrayBlockingQueue<SimpleEntry<DBRecord, Round>>(MAXIMUM_NUMBER_OF_INMEMORY_STATISTICS);
     private Set<Class<? extends DBRecord>> knownRecords = new HashSet<Class<? extends DBRecord>>();
     private Map<Class<? extends DBRecord>, PreparedStatement> insertStatments = new HashMap<Class<? extends DBRecord>, PreparedStatement>();
-
+    private Map<Signal, Signal> signals = Collections.synchronizedMap(new HashMap<Signal, Signal>());
+    private List<SignalListner> signalListeners = new LinkedList<SignalListner>();
+    
     public void connect() throws ConnectionFaildException {
         try {
             connection = new DBConnectionHandler("org.h2.Driver", "jdbc:h2:" + DATA_BASE_NAME, "sa", "");
@@ -50,6 +53,42 @@ public enum DatabaseUnit {
         } catch (ClassNotFoundException ex) {
             throw new ConnectionFaildException("cannot connect to statistics database", ex);
         }
+    }
+
+    public void addSignalListener(SignalListner sl){
+        signalListeners.add(sl);
+    }
+    
+    public void removeSignalListener(SignalListner sl){
+        signalListeners.remove(sl);
+    }
+    
+    /**
+     * will return true if signal with that key exists in the system and 
+     * the requesting thread waited untill this signal received
+     * @param signal
+     * @return
+     * @throws InterruptedException 
+     */
+    public boolean awaitSignal(Object signal) throws InterruptedException {
+        final Signal fake = new Signal(signal);
+        if (signals.containsKey(fake)) {
+            Signal real = signals.get(fake);
+            real.await();
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public boolean isSignaled(Object signal){
+        Signal fake = new Signal(signal);
+        return signals.containsKey(fake) && signals.get(fake).isSignaled();
+    }
+
+    public void signal(Object signal) {
+        Signal s = new Signal(signal);
+        dbQueue.add(s);
     }
 
     public void disconnect() {
@@ -67,8 +106,8 @@ public enum DatabaseUnit {
         FileUtils.delete(new File(DATA_BASE_NAME + ".lock.db"));
         FileUtils.delete(new File(DATA_BASE_NAME + ".trace.db"));
     }
-    
-    public Database createDatabase(){
+
+    public Database createDatabase() {
         return new H2Database();
     }
 
@@ -153,7 +192,7 @@ public enum DatabaseUnit {
             } else if (Float.class == f.getType() || float.class == f.getType()) {
                 exe.append(" FLOAT");
             } else if (Integer.class == f.getType() || int.class == f.getType()) {
-                exe.append(" INTEGER"); 
+                exe.append(" INTEGER");
             } else if (Character.class == f.getType() || char.class == f.getType()) {
                 exe.append(" CHAR");
             } else if (String.class == f.getType()) {
@@ -171,6 +210,55 @@ public enum DatabaseUnit {
         @Override
         public ResultSet query(String query) throws SQLException {
             return connection.runQuery(query);
+        }
+    }
+
+    private class Signal extends SimpleEntry<DBRecord, Round> {
+
+        Object key;
+        Semaphore lock;
+        volatile boolean signaled;
+
+        public Signal(Object key) {
+            super(null, null);
+            this.key = key;
+            signaled = false;
+            lock = new Semaphore(0);
+        }
+
+        public boolean isSignaled() {
+            return signaled;
+        }
+
+        void signal() {
+            signaled = true;
+            lock.release(lock.getQueueLength() + 1 /* ADD ONE FOR THE POSIBILITY WHERE THERE ARE NO THREADS BUT 1 THAT JUST ENTERED */);
+            for (SignalListner sl : signalListeners) {
+                sl.onDataCollectedUpToSignal(UNIT, key);
+            }
+        }
+
+        void await() throws InterruptedException {
+            if (signaled) {
+                return;
+            }
+            lock.acquire();
+            lock.release();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o != null
+                    && o instanceof Signal
+                    && ((Signal) o).key != null
+                    && ((Signal) o).key.equals(this.key);
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 5;
+            hash = 67 * hash + (this.key != null ? this.key.hashCode() : 0);
+            return hash;
         }
     }
 
@@ -198,12 +286,17 @@ public enum DatabaseUnit {
                     }
 
                     for (SimpleEntry<DBRecord, Round> m : multi) {
-                        try {
-                            UNIT.insert(m.getKey(), m.getValue());
-                        } catch (SQLException ex) {
-                            Logger.getLogger(DatabaseUnit.class.getName()).log(Level.SEVERE, null, ex);
+                        if (m instanceof Signal) {
+                            ((Signal) m).signal();
+                        } else {
+                            try {
+                                UNIT.insert(m.getKey(), m.getValue());
+                            } catch (SQLException ex) {
+                                Logger.getLogger(DatabaseUnit.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         }
                     }
+                    
                     if (multi.size() > 1) {
                         try {
                             UNIT.endAndCommitBatch();
@@ -217,5 +310,9 @@ public enum DatabaseUnit {
                 }
             }
         }
+    }
+    
+    public static interface SignalListner{
+        void onDataCollectedUpToSignal(DatabaseUnit source, Object signal);
     }
 }

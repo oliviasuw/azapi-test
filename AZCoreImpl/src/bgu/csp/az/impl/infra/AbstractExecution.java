@@ -5,6 +5,7 @@ import bgu.csp.az.impl.async.AsyncExecution;
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.Agent.PlatformOps;
 import bgu.csp.az.api.AgentRunner;
+import bgu.csp.az.api.Hooks.ReportHook;
 import bgu.csp.az.impl.AlgorithmMetadata;
 import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.pgen.Problem;
@@ -50,7 +51,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private SystemClock clock;
     private List<StatisticCollector> statisticCollectors = new LinkedList<StatisticCollector>();
     private final Round round;
-
+    private Map<String, ReportHook> reportHooks = new HashMap<String, ReportHook>();
     /**
      * 
      */
@@ -65,6 +66,18 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         this.round = round;
     }
 
+    @Override
+    public void hookIn(String name, ReportHook hook){
+        reportHooks.put(name, hook);
+    }
+
+    @Override
+    public void report(String to, Agent a, Object[] args) {
+        if (reportHooks.containsKey(to)){
+            reportHooks.get(to).hook(a, args);
+        }
+    }
+    
     /**
      * will stop the current execution and set the result to no solution
      * TODO: maybe keep track of the execution status via enum (working, done, crushed, etc.)
@@ -204,7 +217,6 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         for (LogListener ll : logListeners) {
             ll.onLog(agent, mailGroupKey, data);
         }
-        System.out.println("Agent " + agent  + ": " + data);
     }
 
     protected void setResult(ExecutionResult result) {

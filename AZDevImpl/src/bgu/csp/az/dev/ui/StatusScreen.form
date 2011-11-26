@@ -11,7 +11,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="bgu.csp.az.dev.ui.RoundView_" name="roundView1">
+        <Component class="bgu.csp.az.dev.ui.RoundView" name="roundView1">
         </Component>
       </SubComponents>
     </Container>

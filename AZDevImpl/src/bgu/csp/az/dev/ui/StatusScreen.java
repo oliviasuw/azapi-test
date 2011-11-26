@@ -37,6 +37,7 @@ public class StatusScreen extends javax.swing.JPanel {
             }
         }));
         
+        
     }
 
     /** This method is called from within the constructor to
@@ -50,7 +51,7 @@ public class StatusScreen extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         roundDataScroll = new javax.swing.JScrollPane();
-        roundView1 = new bgu.csp.az.dev.ui.RoundView_();
+        roundView1 = new bgu.csp.az.dev.ui.RoundView();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -157,6 +158,6 @@ public class StatusScreen extends javax.swing.JPanel {
     private bc.ui.swing.useful.DataPanel roundData;
     private javax.swing.JScrollPane roundDataScroll;
     private bc.ui.swing.lists.StripeList roundList;
-    private bgu.csp.az.dev.ui.RoundView_ roundView1;
+    private bgu.csp.az.dev.ui.RoundView roundView1;
     // End of variables declaration//GEN-END:variables
 }

@@ -18,6 +18,7 @@ public class SBBAgent extends SimpleAgent {
     @Override
     public void start() {
         if (isFirstAgent()) {
+            System.out.println(getProblem().toString());
         	cpa = new Assignment();
         	currentDomain = new LinkedList<Integer>(getDomain());
         	assignCpa();

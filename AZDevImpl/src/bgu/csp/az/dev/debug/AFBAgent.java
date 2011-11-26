@@ -25,7 +25,7 @@ public class AFBAgent extends SimpleAgent {
 		h = new int[this.getProblem().getDomainSize(this.getId())];
 		fillH();
 		if (isFirstAgent()) {
-			System.out.println(getProblem().toString());
+//			System.out.println(getProblem().toString());
 			generateCPA();
 			assignCPA();
 		}

@@ -1,65 +1,83 @@
 package bgu.csp.az.dev.debug;
 
-import bc.ds.TimeDelta;
-import bgu.csp.az.api.ProblemType;
-import bgu.csp.az.api.SearchType;
-import bgu.csp.az.api.agt.SimpleAgent;
-import bgu.csp.az.api.ano.Algorithm;
-import bgu.csp.az.api.ano.WhenReceived;
-import bgu.csp.az.api.tools.Assignment;
+import bgu.csp.az.api.*;
+import bgu.csp.az.api.agt.*;
+import bgu.csp.az.api.ano.*;
+import bgu.csp.az.api.tools.*;
 
-@Algorithm(name = "DSA", searchType = SearchType.SYNCHRONOUS, problemType = ProblemType.DCOP)
+@Algorithm(name="DSA_ALON",useIdleDetector=false)
 public class DSAAgent extends SimpleAgent {
+	private Assignment values; 
+	private double p;
+	private boolean localChange;
+	
+	@Override
+	public void start() {
+		values = new Assignment();
+		localChange = true;
+		if (isFirstAgent()){
+			report(1).to("ticksPerCycle");			// DSA Ticks per Cycles = 1
+			//log(getProblem().toString());
+		}
+		p = 0;
+		int val = random(getDomain());
+		submitCurrentAssignment(val);
+		send("ValueMessage", val).toNeighbores(getProblem());
 
-    private Assignment values;
-    private double p;
-    private TimeDelta t;
+	}
 
-    @Override
-    public void start() {
-        t = new TimeDelta();
-        t.setStart();
-        values = new Assignment();
-        p = 0.5;
-        int value = random(this.getDomain());
-        this.submitCurrentAssignment(value);
-        send("ValueMessage", value).toNeighbores(this.getProblem());
-    }
+	@WhenReceived("ValueMessage") 
+	public void handleValueMessage(int value) {
+		log("Got message");
+		int sender = getCurrentMessage().getSender();
+		if (!values.isAssigned(sender) || values.getAssignment(sender) != value){
+			localChange = true;
+			values.assign(getCurrentMessage().getSender(), value); 
+			log("AV ="+values.toString()+", current assignment "+getSubmitedCurrentAssignment());
+		}
+	}
 
-    @WhenReceived("ValueMessage")
-    public void handleValueMessage(int value) {
-        values.assign(getCurrentMessage().getSender(), value);
-    }
+	@Override 
+	public void onMailBoxEmpty() { 
+		final long systemTime = getSystemTimeInTicks(); 
 
-    @Override
-    public void onMailBoxEmpty() {
-        if (getSystemTimeInTicks() + 1 == 20000 && isFirstAgent()) {
-            t.setEnd();
-            System.out.println("DSA time: " + t);
-            finishWithAccumulationOfSubmitedPartialAssignments();
-        }
+		if (systemTime + 1 == 100 && isFirstAgent()) { 
+			finishWithAccumulationOfSubmitedPartialAssignments(); 
+		} 
+		if (localChange){
+			Integer newValue = calcDelta();
+			if (Math.random() > p && newValue != null) { 
+				submitCurrentAssignment(newValue); 
+				send("ValueMessage", newValue).toNeighbores(getProblem());
+				log("Assigning value and informing neighbors that new assignment is "+newValue);
+			}
+		}
+		else
+			log("Did not send a message in tick "+systemTime);
+	}
 
-        Integer newValue = calcDelta();
-        if (Math.random() > p && newValue != null) {
-            submitCurrentAssignment(newValue);
-            send("ValueMessage", newValue).toNeighbores(this.getProblem());
-        }
-    }
 
-    private Integer calcDelta() {
-        int ans = this.getSubmitedCurrentAssignment();
-        double delta = this.values.calcAddedCost(this.getId(), ans, this.getProblem());
-        double tmpDelta = delta;
-        for (Integer i : this.getDomain()) {
-            double tmp = this.values.calcAddedCost(this.getId(), i, this.getProblem());
-            if (tmp < tmpDelta) {
-                tmpDelta = tmp;
-                ans = i;
-            }
-        }
-        if (delta == tmpDelta) {
-            return null;
-        }
-        return ans;
-    }
+	private Integer calcDelta() {
+		log("CALLING CALCDELTA");
+		int ans = getSubmitedCurrentAssignment(); 
+		double delta = values.calcAddedCost(getId(), ans, getProblem()); 
+		double tmpDelta = delta; 
+		for (Integer i : this.getDomain()) { 
+			if (i != ans){
+				double tmp = this.values.calcAddedCost(this.getId(), i, this.getProblem()); 
+				log("Cost of assigning "+i+" is "+tmp+" ("+delta+")");
+				if (tmp > tmpDelta) { 
+					tmpDelta = tmp; 
+					ans = i; 
+				}
+			}
+		} 
+		if (delta == tmpDelta) {
+			localChange = false;
+			return null; 
+		} 
+//		return random(getDomain());
+		return ans; 
+	}
+
 }

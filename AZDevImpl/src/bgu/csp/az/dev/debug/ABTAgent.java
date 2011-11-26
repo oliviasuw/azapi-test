@@ -20,9 +20,9 @@ public class ABTAgent extends SimpleAgent {
 
     @Override
     public void start() {
-        if (isFirstAgent()){
-            System.out.println(getProblem().toString());
-        }
+//        if (isFirstAgent()){
+//            System.out.println(getProblem().toString());
+//        }
         agentView = new Assignment();
 
         nogoods = new Explanations(this);

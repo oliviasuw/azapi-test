@@ -10,6 +10,9 @@
  */
 package bgu.csp.az.dev.ui;
 
+import java.awt.Component;
+import javax.swing.JPanel;
+
 /**
  *
  * @author kdima85
@@ -17,8 +20,10 @@ package bgu.csp.az.dev.ui;
 public class PoppingScreen extends javax.swing.JDialog {
 
     /** Creates new form MessageDialog */
-    public PoppingScreen(java.awt.Frame parent, boolean modal) {
+    public PoppingScreen(java.awt.Frame parent, boolean modal, JPanel panel) {
         super(parent, modal);
+        Component add = this.add(panel);
+        
         initComponents();
     }
 
@@ -31,10 +36,7 @@ public class PoppingScreen extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        messageScreen1 = new bgu.csp.az.dev.ui.MessageScreen();
-
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        getContentPane().add(messageScreen1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -70,7 +72,7 @@ public class PoppingScreen extends javax.swing.JDialog {
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             public void run() {
-                PoppingScreen dialog = new PoppingScreen(new javax.swing.JFrame(), true);
+                PoppingScreen dialog = new PoppingScreen(new javax.swing.JFrame(), true, new JPanel());
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
 
                     @Override
@@ -83,6 +85,5 @@ public class PoppingScreen extends javax.swing.JDialog {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private bgu.csp.az.dev.ui.MessageScreen messageScreen1;
     // End of variables declaration//GEN-END:variables
 }

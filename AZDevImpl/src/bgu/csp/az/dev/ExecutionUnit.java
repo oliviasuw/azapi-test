@@ -4,6 +4,7 @@
  */
 package bgu.csp.az.dev;
 
+import bgu.csp.az.dev.ui.NewUIController;
 import bgu.csp.az.api.exp.ConnectionFaildException;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.Experiment;
@@ -168,7 +169,7 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
         return runningExperiment.getRounds();
     }
 
-    void setLogListener(LogListener l) {
+    public void setLogListener(LogListener l) {
         logListener = l;
     }
 

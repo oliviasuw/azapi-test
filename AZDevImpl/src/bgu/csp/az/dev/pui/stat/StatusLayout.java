@@ -11,10 +11,10 @@
 package bgu.csp.az.dev.pui.stat;
 
 import bc.swing.pfrm.Page;
-import bc.dsl.PageDSL;
-import bc.swing.pfrm.BaseParamModel;
+//import bc.dsl.PageDSL;
+import bc.swing.pfrm.Parameter;
 import bc.swing.pfrm.PageLayout;
-import bc.swing.pfrm.FieldParamModel;
+//import bc.swing.pfrm.FieldParamModel;
 //import bgu.csp.az.dev.frm.Round;
 
 /**
@@ -294,10 +294,10 @@ public class StatusLayout extends javax.swing.JPanel implements PageLayout{
 
     @Override
     public void setPage(Page page) {
-        PageDSL.fillByRole(page, roundsPan, ROUNDS_ROLE);
-        PageDSL.fillByRole(page, execTimePan, EXECUTION_TIME_ROLE);
-        PageDSL.fillByRole(page, algoPan, ALGORITHM_NAME_ROLE);
-        PageDSL.fillByRole(page, statusPan, EXECUTION_STATUS_ROLE);
+//        PageDSL.fillByRole(page, roundsPan, ROUNDS_ROLE);
+//        PageDSL.fillByRole(page, execTimePan, EXECUTION_TIME_ROLE);
+//        PageDSL.fillByRole(page, algoPan, ALGORITHM_NAME_ROLE);
+//        PageDSL.fillByRole(page, statusPan, EXECUTION_STATUS_ROLE);
         
         //current Execution
 //        BaseParamModel rp = page.getParam(StatusModel.CURRENT_ROUND_PARAM);

@@ -10,7 +10,7 @@
  */
 package bgu.csp.az.dev.pui.stat;
 
-import bc.dsl.PageDSL;
+//import bc.dsl.PageDSL;
 import bc.swing.pfrm.Page;
 import bc.swing.pfrm.PageLayout;
 
@@ -210,10 +210,10 @@ public class StatisticsLayout extends javax.swing.JPanel implements PageLayout {
     @Override
     public void setPage(Page page) {
         this.page = page;
-        PageDSL.fillByRole(page, roundPanel, ROUNDS_ROLE);
-        PageDSL.fillByRole(page, collectorPan, COLLECTORS_ROLE);
-        PageDSL.fillByRole(page, chartPan, CHART_ROLE);
-        PageDSL.fillByRole(page, tablePan, TABLE_ROLE);
+//        PageDSL.fillByRole(page, roundPanel, ROUNDS_ROLE);
+//        PageDSL.fillByRole(page, collectorPan, COLLECTORS_ROLE);
+//        PageDSL.fillByRole(page, chartPan, CHART_ROLE);
+//        PageDSL.fillByRole(page, tablePan, TABLE_ROLE);
 //        PageDSL.fillByRole(model, chartSelectPan, GRAPHS_TREE_ROLE);
 //        model.getParamsWithRole(GRAPHS_TREE_ROLE).get(0).addSelectionListner(new ChangeListener() {
 //

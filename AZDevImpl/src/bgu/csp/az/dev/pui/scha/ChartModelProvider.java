@@ -4,7 +4,7 @@
  */
 package bgu.csp.az.dev.pui.scha;
 
-import bc.swing.pfrm.models.NoDataModel;
+//import bc.swing.pfrm.models.NoDataModel;
 import bc.swing.pfrm.Model;
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.infra.stat.Statistic;
@@ -28,16 +28,16 @@ public enum ChartModelProvider {
         lastNode = node;
 
         if (node == null) {
-            return new NoDataModel("There is no data to show.");
+//            return new NoDataModel("There is no data to show.");
         }
 
         StatisticNode.Listener ret = null;
         if (node.isLeaf()) {
             ret = new P2AreaChartModel(node);
         } else if (node.getChildren().get(0).isLeaf()) {
-            ret = new AgentBarChartModel(node);
+//            ret = new AgentBarChartModel(node);
         } else {
-            return new NoDataModel("There is no data to show.");
+//            return new NoDataModel("There is no data to show.");
         }
 //        
 //        if (node.getData().equals(Agent.NCCC_STATISTIC) || node.getData().equals(Agent.NCSC_STATISTIC)) {

@@ -10,11 +10,11 @@
  */
 package bgu.csp.az.dev.pui;
 
-import bc.dsl.PageDSL;
+//import bc.dsl.PageDSL;
 import bc.swing.models.BatchDocument;
-import bc.swing.pfrm.BaseParamModel;
+import bc.swing.pfrm.Parameter;
 import bc.swing.pfrm.Model;
-import bc.swing.pfrm.ParamView;
+//import bc.swing.pfrm.ParamView;
 import bc.swing.pfrm.ano.PageDef;
 import bc.swing.pfrm.ano.Param;
 import java.awt.Color;
@@ -35,7 +35,7 @@ import javax.swing.text.StyledEditorKit;
  *
  * @author bennyl
  */
-public class Console extends javax.swing.JPanel implements ParamView {
+public class Console extends javax.swing.JPanel {
     
     private Scanner sc=null;
     private AgentLogDocument doc;
@@ -191,8 +191,8 @@ private void matchCaseCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
     private javax.swing.JTextField searchTextField;
     // End of variables declaration//GEN-END:variables
 
-    @Override
-    public void setParam(BaseParamModel param) {
+//    @Override
+    public void setParam(Parameter param) {
         doc = (AgentLogDocument) param.getValue();
         doc.addDocumentListener(new DocumentListener() {
 
@@ -214,12 +214,12 @@ private void matchCaseCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
         output.setDocument(doc);
     }
 
-    @Override
-    public void reflectChangesToParam(BaseParamModel to) {
+//    @Override
+    public void reflectChangesToParam(Parameter to) {
     }
 
-    @Override
-    public void onChange(BaseParamModel source, Object newValue, Object deltaHint) {
+//    @Override
+    public void onChange(Parameter source, Object newValue, Object deltaHint) {
     }
 
     @PageDef
@@ -230,7 +230,7 @@ private void matchCaseCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
             
         }
         
-        @Param(name = "console", customView = Console.class)
+//        @Param(name = "console", customView = Console.class)
         public BatchDocument getBatchdoc() {
             
             return b;
@@ -240,7 +240,7 @@ private void matchCaseCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
     public static void main(String[] args) {
         
         TestModel tm = new TestModel();
-        PageDSL.showInFrame(tm);
+//        PageDSL.showInFrame(tm);
         
     }
 }

@@ -11,7 +11,7 @@ import bc.swing.pfrm.ano.DataExtractor;
 import bc.swing.pfrm.ano.PageDef;
 import bc.swing.pfrm.ano.Param;
 import bc.swing.pfrm.ano.ViewHints;
-import bc.swing.pfrm.viewtypes.ParamType;
+//import bc.swing.pfrm.viewtypes.ParamType;
 import bgu.csp.az.api.infra.Experiment;
 import bgu.csp.az.api.infra.Experiment.ExperimentResult;
 import bgu.csp.az.api.infra.Execution;
@@ -36,22 +36,22 @@ public class StatusModel extends Model implements ExperimentListener {
     public static final String EXECUTION_TIME_PARAM = "Execution Time";
     public static final String ROUNDS_PARAM = "Rounds";
     public static final String TESTED_ALGORITHM_PARAM = "Tested Algorithm";
-    @Param(name = EXECUTION_STATUS_PARAM, type = ParamType.LABEL, role = StatusLayout.EXECUTION_STATUS_ROLE)
+//    @Param(name = EXECUTION_STATUS_PARAM, type = ParamType.LABEL, role = StatusLayout.EXECUTION_STATUS_ROLE)
     String executionStatus;
-    @Param(name = EXECUTION_TIME_PARAM, type = ParamType.LABEL, role = StatusLayout.EXECUTION_TIME_ROLE)
-    @ViewHints(autoSyncEvery = 250)
+//    @Param(name = EXECUTION_TIME_PARAM, type = ParamType.LABEL, role = StatusLayout.EXECUTION_TIME_ROLE)
+//    @ViewHints(autoSyncEvery = 250)
     TimeDelta execTime = new TimeDelta();
     @Param(name = CURRENT_ROUND_PARAM)
     Round currentRound;
     int problemNumber = 0;
 
-    @ViewHints(allowSelection = false)
-    @Param(name = ROUNDS_PARAM, type = ParamType.TABLE, role = StatusLayout.ROUNDS_ROLE)
+//    @ViewHints(allowSelection = false)
+//    @Param(name = ROUNDS_PARAM, type = ParamType.TABLE, role = StatusLayout.ROUNDS_ROLE)
     public List<Round> getRounds() {
         return ExecutionUnit.UNIT.getAllRounds();
     }
 
-    @Param(name = TESTED_ALGORITHM_PARAM, type = ParamType.LABEL, role = StatusLayout.ALGORITHM_NAME_ROLE)
+//    @Param(name = TESTED_ALGORITHM_PARAM, type = ParamType.LABEL, role = StatusLayout.ALGORITHM_NAME_ROLE)
     public String getTestedAlgorithmName() {
         if (ExecutionUnit.UNIT.getRunningAlgorithm() != null) {
             return ExecutionUnit.UNIT.getRunningAlgorithm().getName();

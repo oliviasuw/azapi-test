@@ -43,7 +43,8 @@ public class StatusScreen extends javax.swing.JPanel {
         jLabel4 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         stripeList1 = new bc.ui.swing.lists.StripeList();
-        jPanel4 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        roundView1 = new bgu.csp.az.dev.ui.RoundView();
 
         setOpaque(false);
         setLayout(new java.awt.BorderLayout());
@@ -95,6 +96,7 @@ public class StatusScreen extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         jPanel1.add(jPanel11, gridBagConstraints);
 
+        jPanel3.setBackground(new java.awt.Color(102, 102, 102));
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
         stripeList1.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 3, new java.awt.Color(153, 153, 153)));
@@ -107,12 +109,15 @@ public class StatusScreen extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         jPanel3.add(stripeList1, gridBagConstraints);
 
-        jPanel4.setBackground(new java.awt.Color(204, 204, 204));
-        jPanel4.setLayout(new java.awt.GridBagLayout());
+        jScrollPane1.setBorder(null);
+        jScrollPane1.setViewportView(roundView1);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
-        jPanel3.add(jPanel4, gridBagConstraints);
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        jPanel3.add(jScrollPane1, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -132,7 +137,8 @@ public class StatusScreen extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private bgu.csp.az.dev.ui.RoundView roundView1;
     private bc.ui.swing.lists.StripeList stripeList1;
     // End of variables declaration//GEN-END:variables
 }

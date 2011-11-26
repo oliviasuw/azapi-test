@@ -61,7 +61,7 @@ public class StatusScreen extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel2.add(jLabel1, gridBagConstraints);
 
-        jLabel2.setFont(new java.awt.Font("Consolas", 1, 14));
+        jLabel2.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Execution 7 of 16, 20 sec");
         gridBagConstraints = new java.awt.GridBagConstraints();

@@ -35,6 +35,10 @@ public class Tabs extends javax.swing.JPanel {
     public void addTab(String name, Icon icon, JPanel content){
         tabs.put(name, content);
         createTab(name, icon, content);
+        //this is the first tab then select it
+        if (tabs.size() == 1){
+            showTab(name);
+        }
     }
     
     private void createTab(final String name, Icon icon, JPanel content){
@@ -57,9 +61,13 @@ public class Tabs extends javax.swing.JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                ((CardLayout)Tabs.this.content.getLayout()).show(Tabs.this.content, name);
+                showTab(name);
             }
         });
+    }
+    
+    public void showTab(String name){
+        ((CardLayout)Tabs.this.content.getLayout()).show(this.content, name);
     }
     
     /** This method is called from within the constructor to

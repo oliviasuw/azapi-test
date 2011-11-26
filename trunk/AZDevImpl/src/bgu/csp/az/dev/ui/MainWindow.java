@@ -72,6 +72,7 @@ public class MainWindow extends javax.swing.JFrame {
         topPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
+        jXHyperlink1 = new org.jdesktop.swingx.JXHyperlink();
         jLabel3 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         tabs = new bc.ui.swing.tabs.Tabs();
@@ -109,32 +110,45 @@ public class MainWindow extends javax.swing.JFrame {
         jPanel2.setOpaque(false);
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
+        jXHyperlink1.setForeground(new java.awt.Color(51, 51, 51));
+        jXHyperlink1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/cross-button.png"))); // NOI18N
+        jXHyperlink1.setText("");
+        jXHyperlink1.setClickedColor(new java.awt.Color(51, 51, 51));
+        jXHyperlink1.setUnclickedColor(new java.awt.Color(51, 51, 51));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
+        jPanel2.add(jXHyperlink1, gridBagConstraints);
+
         jLabel3.setBackground(new java.awt.Color(245, 245, 245));
         jLabel3.setForeground(new java.awt.Color(240, 240, 240));
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel3.setText("Executing");
         jLabel3.setFocusable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
         jPanel2.add(jLabel3, gridBagConstraints);
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/progress.gif"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
         jPanel2.add(jLabel2, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         topPanel.add(jPanel2, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -192,6 +206,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private org.jdesktop.swingx.JXHyperlink jXHyperlink1;
     private org.jdesktop.swingx.painter.PinstripePainter pinstripePainter1;
     private bc.ui.swing.tabs.Tabs tabs;
     private javax.swing.JPanel topPanel;

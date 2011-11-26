@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import org.reflections.Reflections;
 import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 
 /**
  *
@@ -26,7 +28,10 @@ public enum Registary {
     Map<String, Class> agents = new HashMap<String, Class>();
     
     private Registary() {
-        Reflections ref = new Reflections("bgu.csp.az", new TypeAnnotationsScanner());
+//        Reflections ref = new Reflections("bgu.csp.az", new TypeAnnotationsScanner());
+        Reflections ref = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage("bgu.csp.az"), ClasspathHelper.forPackage("ext.sim.agents"))
+                .setScanners(new TypeAnnotationsScanner())); 
+
         
         //SCANNING XML ENTITIES
         Set<Class<?>> types = ref.getTypesAnnotatedWith(Register.class);

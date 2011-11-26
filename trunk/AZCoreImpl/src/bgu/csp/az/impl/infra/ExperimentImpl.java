@@ -7,12 +7,12 @@ package bgu.csp.az.impl.infra;
 import bgu.csp.az.api.ano.Register;
 import bgu.csp.az.api.exp.InvalidValueException;
 import bgu.csp.az.api.infra.Configureable;
-import bgu.csp.az.api.infra.CorrectnessTester;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.Round.RoundResult;
 import bgu.csp.az.api.infra.VariableMetadata;
 import bgu.csp.az.api.infra.Experiment;
 import bgu.csp.az.api.infra.Round;
+import bgu.csp.az.impl.db.DatabaseUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -47,15 +47,12 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
 
                 current.addListener(this);
 
-//                if (current.canAccept(CorrectnessTester.class) ) {
-//                    current.addSubConfiguration(new DefaultCorrectnessTester());
-//                }
-
                 if (current instanceof AbstractRound) {
                     ((AbstractRound) current).setPool(pool);
                 }
 
                 current.run();
+                DatabaseUnit.UNIT.signal(current); // SIGNALING - TELLING THAT STATISTICS COLLECTION TO THE CURRENT ROUND IS OVER
                 current.removeListener(this);
                 RoundResult res = current.getResult();
                 switch (res.finishStatus) {

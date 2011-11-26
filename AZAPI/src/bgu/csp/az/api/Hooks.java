@@ -38,4 +38,12 @@ public class Hooks {
         void hook(Agent a);
     }
     
+    
+    public static interface ReportHook{
+        void hook(Agent a, Object[] args);
+    }
+    
+    public static interface TickHook{
+        void hook(SystemClock clock);
+    }
 }

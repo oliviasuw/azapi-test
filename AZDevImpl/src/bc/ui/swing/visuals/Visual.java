@@ -13,6 +13,7 @@ import javax.swing.Icon;
  * @author bennyl
  */
 public class Visual {
+
     Object item;
     String text;
     String description;
@@ -56,18 +57,19 @@ public class Visual {
     public void setText(String text) {
         this.text = text;
     }
-    
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) return false;
-        
-        if (obj instanceof Visual){
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj instanceof Visual) {
             Visual other = (Visual) obj;
             return other.item.equals(this.item);
-        }else if (obj.getClass().equals(this.item.getClass())){
+        } else if (obj.getClass().equals(this.item.getClass())) {
             return obj.equals(item);
-        }else {
+        } else {
             return false;
         }
     }
@@ -83,28 +85,36 @@ public class Visual {
     public String toString() {
         return text;
     }
-    
-    
-    
-    public static LinkedList<Visual> adapt(List items){
+
+    public static LinkedList<Visual> adapt(List items) {
         LinkedList<Visual> ret = new LinkedList<Visual>();
-        for (Object i : items){
+        for (Object i : items) {
             ret.add(new Visual(i, i.toString(), "", null));
         }
-        
+
         return ret;
     }
-    
-    public static LinkedList<Visual> adapt(List items, VisualGen func){
+
+    public static LinkedList<Visual> adapt(List items, VisualGen func) {
         LinkedList<Visual> ret = new LinkedList<Visual>();
-        for (Object i : items){
+        for (Object i : items) {
             ret.add(func.gen(i));
         }
-        
+
         return ret;
     }
-    
-    public static interface VisualGen{
+
+    public static LinkedList<Visual> adapt(Object[] items, VisualGen func) {
+        LinkedList<Visual> ret = new LinkedList<Visual>();
+        for (Object i : items) {
+            ret.add(func.gen(i));
+        }
+
+        return ret;
+    }
+
+    public static interface VisualGen {
+
         Visual gen(Object it);
     }
 }

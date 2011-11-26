@@ -10,10 +10,13 @@
  */
 package bgu.csp.az.dev.ui;
 
+import bc.ui.swing.listeners.SelectionListener;
 import bc.ui.swing.lists.OptionList;
-import bgu.csp.az.api.infra.VariableMetadata;
-import java.awt.BorderLayout;
-import java.awt.Color;
+import bc.ui.swing.visuals.Visual;
+import bgu.csp.az.api.infra.Experiment;
+import bgu.csp.az.api.infra.Round;
+import bgu.csp.az.api.infra.stat.StatisticCollector;
+import java.util.List;
 import javax.swing.JFrame;
 
 /**
@@ -21,38 +24,90 @@ import javax.swing.JFrame;
  * @author bennyl
  */
 public class StatisticsScreen extends javax.swing.JPanel {
+
     OptionList availableStatisticsList;
     OptionList roundsList;
-    
+
     /** Creates new form StatisticsScreen */
     public StatisticsScreen() {
         initComponents();
         //STAT
         availableStatisticsList = new OptionList();
         statScroll.setViewportView(availableStatisticsList);
-        
+
         //ROUND
         roundsList = new OptionList();
         roundScroll.setViewportView(roundsList);
-        
+
         statScroll.getViewport().setOpaque(false);
         varscrolls.getViewport().setOpaque(false);
         roundScroll.getViewport().setOpaque(false);
-        
+
         //TESTING 
-        availableStatisticsList.add("stat 1");
-        availableStatisticsList.add("stat 2");
-        
-        roundsList.add("stat 1");
-        roundsList.add("stat 2");
-        
-        vars.add(new VariableMetadata("test1", "this is test 1", 5, Integer.class));
-        vars.add(new VariableMetadata("test2", "this is test 2", 5, Integer.class));
-        vars.add(new VariableMetadata("test3", "this is test 3", 5, Integer.class));
-        
+//        availableStatisticsList.add("stat 1");
+//        availableStatisticsList.add("stat 2");
+//        
+//        roundsList.add("stat 1");
+//        roundsList.add("stat 2");
+//        
+//        vars.add(new VariableMetadata("test1", "this is test 1", 5, Integer.class));
+//        vars.add(new VariableMetadata("test2", "this is test 2", 5, Integer.class));
+//        vars.add(new VariableMetadata("test3", "this is test 3", 5, Integer.class));
+
     }
-    
-    public static void main(String[] args){
+
+    public void setModel(Experiment exp) {
+        availableStatisticsList.getSelectionListeners().addListener(new SelectionListener() {
+
+            @Override
+            public void onSelectionChanged(Object source, List selectedItems) {
+                varsDataPan.unSetData();
+                
+                if (!selectedItems.isEmpty()){
+                    StatisticCollector sc = (StatisticCollector) ((Visual)selectedItems.get(0)).getItem();
+                    if (sc.provideExpectedVariables().length > 0){
+                        vars.setModel(sc.provideExpectedVariables());
+                        varsDataPan.setData(varscrolls);
+                        
+                    }
+                }
+                
+            }
+        });
+        
+        roundsList.getSelectionListeners().addListener(new SelectionListener() {
+
+            @Override
+            public void onSelectionChanged(Object source, List selectedItems) {
+                availableStatisticsList.clear();
+
+                if (!selectedItems.isEmpty()) {
+
+                    Round selected = ((Round) ((Visual) selectedItems.get(0)).getItem());
+                    availableStatisticsList.setItems(Visual.adapt(selected.getRegisteredStatisticCollectors(), new Visual.VisualGen() {
+
+                        @Override
+                        public Visual gen(Object it) {
+                            StatisticCollector sc = (StatisticCollector) it;
+                            return new Visual(it, sc.getName(), "", null);
+                        }
+                    }));
+                }
+            }
+        });
+
+        roundsList.setItems(Visual.adapt(exp.getRounds(), new Visual.VisualGen() {
+
+            @Override
+            public Visual gen(Object it) {
+                Round r = (Round) it;
+                return new Visual(it, r.getName(), "", null);
+            }
+        }));
+
+    }
+
+    public static void main(String[] args) {
         JFrame frame = new JFrame();
         frame.setContentPane(new StatisticsScreen());
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -72,6 +127,8 @@ public class StatisticsScreen extends javax.swing.JPanel {
         resultsPan = new javax.swing.JSplitPane();
         jPanel13 = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
+        varscrolls = new javax.swing.JScrollPane();
+        vars = new bc.ui.swing.configurable.VariablesEditor();
         jPanel12 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
@@ -87,8 +144,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
-        varscrolls = new javax.swing.JScrollPane();
-        vars = new bc.ui.swing.configurable.VariablesEditor();
+        varsDataPan = new bc.ui.swing.useful.DataPanel();
         jPanel8 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
@@ -102,6 +158,10 @@ public class StatisticsScreen extends javax.swing.JPanel {
         resultsPan.setResizeWeight(0.65);
         resultsPan.setLeftComponent(jPanel13);
         resultsPan.setRightComponent(jPanel14);
+
+        varscrolls.setBorder(null);
+        varscrolls.setOpaque(false);
+        varscrolls.setViewportView(vars);
 
         setBackground(new java.awt.Color(255, 255, 255));
         setLayout(new java.awt.GridBagLayout());
@@ -155,9 +215,10 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jPanel1.add(jPanel3, new java.awt.GridBagConstraints());
 
         jPanel4.setBackground(new java.awt.Color(232, 232, 232));
+        jPanel4.setMinimumSize(new java.awt.Dimension(240, 52));
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
-        jLabel7.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("Consolas", 1, 12));
         jLabel7.setText("Select Statistic");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -189,7 +250,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jPanel6.setBackground(new java.awt.Color(220, 220, 220));
         jPanel6.setLayout(new java.awt.GridBagLayout());
 
-        jLabel8.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Consolas", 1, 12));
         jLabel8.setText("Configure Analyzer");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -197,16 +258,14 @@ public class StatisticsScreen extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel6.add(jLabel8, gridBagConstraints);
 
-        varscrolls.setBorder(null);
-        varscrolls.setOpaque(false);
-        varscrolls.setViewportView(vars);
-
+        varsDataPan.setNoDataText("No Configuration Needed");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 3, 5);
-        jPanel6.add(varscrolls, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        jPanel6.add(varsDataPan, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -299,6 +358,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
     private javax.swing.JScrollPane roundScroll;
     private javax.swing.JScrollPane statScroll;
     private bc.ui.swing.configurable.VariablesEditor vars;
+    private bc.ui.swing.useful.DataPanel varsDataPan;
     private javax.swing.JScrollPane varscrolls;
     // End of variables declaration//GEN-END:variables
 }

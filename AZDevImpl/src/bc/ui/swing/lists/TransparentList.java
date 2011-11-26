@@ -10,11 +10,16 @@
  */
 package bc.ui.swing.lists;
 
+import bc.swing.models.GenericListModel;
+import bc.ui.swing.visuals.Visual;
 import java.awt.Color;
 import java.awt.Component;
+import java.util.LinkedList;
+import java.util.List;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComponent;
 import javax.swing.JList;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -23,12 +28,14 @@ import javax.swing.JList;
 public class TransparentList extends javax.swing.JPanel {
 
     private Color foreColor = Color.BLACK;
-    
+
     /** Creates new form TransparentList */
     public TransparentList() {
         initComponents();
+                
         scroll.getViewport().setOpaque(false);
-        list.setCellRenderer(new DefaultListCellRenderer(){
+        list.setCellRenderer(new DefaultListCellRenderer() {
+
             {
                 setOpaque(false);
             }
@@ -39,9 +46,33 @@ public class TransparentList extends javax.swing.JPanel {
                 ret.setBorder(null);
                 return ret;
             }
-            
         });
-        
+
+    }
+
+    public void addSelectionListner(ListSelectionListener listener) {
+        list.getSelectionModel().addListSelectionListener(listener);
+    }
+
+    public void setItems(LinkedList<Visual> visuals) {
+        GenericListModel<Visual> data = new GenericListModel<Visual>();
+        data.setInnerList(visuals);
+
+        list.setModel(data);
+
+    }
+
+    public JList getList() {
+        return list;
+    }
+
+    public List<Visual> getSelectedItems() {
+        LinkedList<Visual> ret = new LinkedList<Visual>();
+        for (Object l : list.getSelectedValues()) {
+            ret.add((Visual) l);
+        }
+
+        return ret;
     }
 
     public Color getForeColor() {
@@ -53,8 +84,6 @@ public class TransparentList extends javax.swing.JPanel {
         list.setForeground(foreColor);
         list.repaint();
     }
-    
-    
 
     /** This method is called from within the constructor to
      * initialize the form.

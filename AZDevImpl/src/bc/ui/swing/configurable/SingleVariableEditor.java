@@ -30,7 +30,7 @@ public class SingleVariableEditor extends javax.swing.JPanel {
         this.var = var;
         this.varDesc.setText(var.getDescription());
         this.varName.setText(var.getName());
-        this.varVal.setText(var.getDefaultValue().toString());
+        this.varVal.setText(var.getCurrentValue().toString());
     }
 
     public VariableMetadata getModel(){

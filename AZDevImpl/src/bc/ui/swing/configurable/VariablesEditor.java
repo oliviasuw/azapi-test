@@ -21,4 +21,13 @@ public class VariablesEditor extends ComponentList{
         return sv;
     }
     
+    public void setModel(VariableMetadata[] vars){
+        clear();
+        for (VariableMetadata v : vars){
+            add(v);
+        }
+        
+        revalidate();
+        repaint();
+    }
 }

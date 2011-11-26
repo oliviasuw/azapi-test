@@ -21,6 +21,7 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
 public class MainWindow extends javax.swing.JFrame {
 
     private StatusScreen statusScreen;
+    private StatisticsScreen statisticsScreen;
 
     /** Creates new form MainWindow */
     public MainWindow() {
@@ -32,8 +33,16 @@ public class MainWindow extends javax.swing.JFrame {
     public void startRunning(Experiment experiment) {
         statusScreen = new StatusScreen();
         statusScreen.setModel(experiment);
+        statisticsScreen = new StatisticsScreen();
+        statisticsScreen.setModel(experiment);
+        
         //Status Screen!
         tabs.addTab("Status", SwingDSL.resIcon("status"), statusScreen);
+        
+        //Statistics Screen!
+        tabs.addTab("Statistics", SwingDSL.resIcon("statistics"), statisticsScreen);
+        
+        //show!
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             public void run() {

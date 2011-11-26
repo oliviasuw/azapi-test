@@ -13,7 +13,7 @@ package bc.ui.swing.useful;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 
 /**
  *
@@ -35,8 +35,15 @@ public class DataPanel extends javax.swing.JPanel {
         return noDataLabel.getForeground();
     }
     
+    public String getNoDataText(){
+        return noDataLabel.getText();
+    }
     
-    public void setData(JPanel data) {
+    public void setNoDataText(String ndt){
+        noDataLabel.setText(ndt);
+    }
+    
+    public void setData(JComponent data) {
         this.data.removeAll();
         this.data.add(data, BorderLayout.CENTER);
         ((CardLayout) getLayout()).show(this, "DATA");

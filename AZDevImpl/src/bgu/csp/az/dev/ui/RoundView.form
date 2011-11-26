@@ -146,7 +146,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
           <SubComponents>
-            <Component class="bc.ui.swing.lists.TransparentList" name="transparentList1">
+            <Component class="bc.ui.swing.lists.TransparentList" name="roundVars">
               <Properties>
                 <Property name="foreColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
@@ -272,7 +272,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
           <SubComponents>
-            <Component class="bc.ui.swing.lists.TransparentList" name="transparentList2">
+            <Component class="bc.ui.swing.lists.TransparentList" name="pgenVars">
               <Properties>
                 <Property name="foreColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
@@ -398,7 +398,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
           <SubComponents>
-            <Component class="bc.ui.swing.lists.TransparentList" name="transparentList3">
+            <Component class="bc.ui.swing.lists.TransparentList" name="algos">
               <Properties>
                 <Property name="foreColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>

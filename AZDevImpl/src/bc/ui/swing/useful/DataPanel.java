@@ -12,21 +12,30 @@ package bc.ui.swing.useful;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Component;
+import java.awt.Color;
 import javax.swing.JPanel;
 
 /**
  *
  * @author bennyl
  */
-public class NoDataPanel extends javax.swing.JPanel {
+public class DataPanel extends javax.swing.JPanel {
 
     /** Creates new form NoDataPanel */
-    public NoDataPanel() {
+    public DataPanel() {
         initComponents();
         unSetData();
     }
 
+    public void setNoDataForeColor(Color color){
+        noDataLabel.setForeground(color);
+    }
+    
+    public Color getNoDataForeColor(){
+        return noDataLabel.getForeground();
+    }
+    
+    
     public void setData(JPanel data) {
         this.data.removeAll();
         this.data.add(data, BorderLayout.CENTER);
@@ -50,7 +59,7 @@ public class NoDataPanel extends javax.swing.JPanel {
 
         noData = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        noDataLabel = new javax.swing.JLabel();
         data = new javax.swing.JPanel();
 
         setOpaque(false);
@@ -62,12 +71,12 @@ public class NoDataPanel extends javax.swing.JPanel {
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/no-data.png"))); // NOI18N
         noData.add(jLabel1, new java.awt.GridBagConstraints());
 
-        jLabel2.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
-        jLabel2.setText("There Is No Data To Show");
+        noDataLabel.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        noDataLabel.setText("There Is No Data To Show");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        noData.add(jLabel2, gridBagConstraints);
+        noData.add(noDataLabel, gridBagConstraints);
 
         add(noData, "NO_DATA");
 
@@ -78,7 +87,7 @@ public class NoDataPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel data;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel noData;
+    private javax.swing.JLabel noDataLabel;
     // End of variables declaration//GEN-END:variables
 }

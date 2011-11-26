@@ -97,7 +97,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jPanel10 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        nodataPan = new bc.ui.swing.useful.NoDataPanel();
+        nodataPan = new bc.ui.swing.useful.DataPanel();
 
         resultsPan.setResizeWeight(0.65);
         resultsPan.setLeftComponent(jPanel13);
@@ -294,7 +294,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private org.jdesktop.swingx.JXHyperlink jXHyperlink1;
-    private bc.ui.swing.useful.NoDataPanel nodataPan;
+    private bc.ui.swing.useful.DataPanel nodataPan;
     private javax.swing.JSplitPane resultsPan;
     private javax.swing.JScrollPane roundScroll;
     private javax.swing.JScrollPane statScroll;

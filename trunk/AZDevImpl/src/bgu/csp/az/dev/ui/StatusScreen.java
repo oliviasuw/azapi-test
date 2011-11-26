@@ -10,6 +10,7 @@
  */
 package bgu.csp.az.dev.ui;
 
+import bgu.csp.az.api.infra.Experiment;
 import javax.swing.plaf.metal.MetalProgressBarUI;
 
 /**
@@ -22,6 +23,10 @@ public class StatusScreen extends javax.swing.JPanel {
     public StatusScreen() {
         initComponents();
         execProgress.setUI(new MetalProgressBarUI());
+    }
+
+    void setModel(Experiment experiment) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     /** This method is called from within the constructor to
@@ -42,7 +47,7 @@ public class StatusScreen extends javax.swing.JPanel {
         jPanel11 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        stripeList1 = new bc.ui.swing.lists.StripeList();
+        roundList = new bc.ui.swing.lists.StripeList();
         jScrollPane1 = new javax.swing.JScrollPane();
         roundView1 = new bgu.csp.az.dev.ui.RoundView();
 
@@ -99,15 +104,15 @@ public class StatusScreen extends javax.swing.JPanel {
         jPanel3.setBackground(new java.awt.Color(102, 102, 102));
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
-        stripeList1.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 3, new java.awt.Color(153, 153, 153)));
-        stripeList1.setMinimumSize(new java.awt.Dimension(200, 24));
-        stripeList1.setOddBackColor(new java.awt.Color(230, 230, 230));
-        stripeList1.setOddForeColor(new java.awt.Color(61, 61, 61));
-        stripeList1.setPreferredSize(new java.awt.Dimension(200, 194));
+        roundList.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 3, new java.awt.Color(153, 153, 153)));
+        roundList.setMinimumSize(new java.awt.Dimension(200, 24));
+        roundList.setOddBackColor(new java.awt.Color(230, 230, 230));
+        roundList.setOddForeColor(new java.awt.Color(61, 61, 61));
+        roundList.setPreferredSize(new java.awt.Dimension(200, 194));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 1.0;
-        jPanel3.add(stripeList1, gridBagConstraints);
+        jPanel3.add(roundList, gridBagConstraints);
 
         jScrollPane1.setBorder(null);
         jScrollPane1.setViewportView(roundView1);
@@ -138,7 +143,7 @@ public class StatusScreen extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private bc.ui.swing.lists.StripeList roundList;
     private bgu.csp.az.dev.ui.RoundView roundView1;
-    private bc.ui.swing.lists.StripeList stripeList1;
     // End of variables declaration//GEN-END:variables
 }

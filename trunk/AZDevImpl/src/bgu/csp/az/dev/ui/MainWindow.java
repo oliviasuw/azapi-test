@@ -11,6 +11,7 @@
 package bgu.csp.az.dev.ui;
 
 import bc.dsl.SwingDSL;
+import bgu.csp.az.api.infra.Experiment;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 
 /**
@@ -18,13 +19,24 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
  * @author bennyl
  */
 public class MainWindow extends javax.swing.JFrame {
+    private StatusScreen statusScreen;
 
     /** Creates new form MainWindow */
     public MainWindow() {
         initComponents();
         //tabs.setUI(new BasicTabbedPaneUI());
-        tabs.addTab("Status", SwingDSL.resIcon("status"), new StatusScreen());
-        tabs.addTab("Statistics",SwingDSL.resIcon("statistics"), new StatisticsScreen());
+//        tabs.addTab("Statistics", SwingDSL.resIcon("statistics"), new StatisticsScreen());
+    }
+
+    public void startRunning(Experiment experiment) {
+        statusScreen = new StatusScreen();
+        statusScreen.setModel(experiment);
+        //Status Screen!
+        tabs.addTab("Status", SwingDSL.resIcon("status"), statusScreen);
+        
+    }
+
+    public void startDebugging() {
     }
 
     /** This method is called from within the constructor to

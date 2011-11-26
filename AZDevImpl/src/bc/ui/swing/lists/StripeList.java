@@ -10,8 +10,11 @@
  */
 package bc.ui.swing.lists;
 
+import bc.swing.models.GenericListModel;
+import bc.ui.swing.visuals.Visual;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.LinkedList;
 import javax.swing.JViewport;
 
 /**
@@ -36,6 +39,14 @@ public class StripeList extends javax.swing.JPanel {
         list.setCellRenderer(itemRenderer);
     }
 
+    public void setItems(LinkedList<Visual> visuals){
+        GenericListModel<Visual> data = new GenericListModel<Visual>();
+        data.setInnerList(visuals);
+        
+        list.setModel(data);
+        
+    }
+    
     public Color getEvenBackColor() {
         return evenBackColor;
     }

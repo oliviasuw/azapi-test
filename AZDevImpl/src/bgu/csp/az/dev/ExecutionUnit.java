@@ -50,7 +50,7 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
                 ui = new NewUIController();
                 ui.startUi();
             }
-            runningExperiment.run();
+            //runningExperiment.run();
             runningExperiment.removeListener(this);
             DatabaseUnit.UNIT.stopCollectorThread();
             DatabaseUnit.UNIT.disconnect();

@@ -31,7 +31,7 @@ import java.util.Set;
  */
 public abstract class Agent extends Agt0DSL {
 
-    private static final boolean USE_DEBUG_LOGS = true;
+    private static final boolean USE_DEBUG_LOGS = false;
     /**
      * the name of the statistic that collect the number of non concurrent constraing checks
      */
@@ -114,6 +114,10 @@ public abstract class Agent extends Agt0DSL {
         }
         beforeMessageSending(ret);
         return ret;
+    }
+    
+    public ReportMediator report(Object... args){
+        return new ReportMediator(args, this);
     }
 
     /**

@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import bgu.csp.az.api.ImmutableProblem;
 import bgu.csp.az.api.ProblemType;
 import bgu.csp.az.api.ds.ImmutableSet;
-import bgu.csp.az.api.pgen.ProblemGenerator;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -21,7 +20,6 @@ public class Assignment implements Serializable, DeepCopyable{
 
     private LinkedHashMap<Integer, Integer> assignment;
     private transient double cachedCost = -1;
-    private Entry<Integer, Integer>[] iteratorCache;
 
     /**
      * constracting new empty assignment
@@ -33,7 +31,6 @@ public class Assignment implements Serializable, DeepCopyable{
 
     private Assignment(Assignment a) {
         this.assignment = new LinkedHashMap<Integer, Integer>();
-        iteratorCache = null;
         for (Entry<Integer, Integer> e : a.assignment.entrySet()){
             this.assignment.put(e.getKey(), e.getValue());
         }
@@ -46,7 +43,6 @@ public class Assignment implements Serializable, DeepCopyable{
      */
     public void assign(int var, int val) {
         assignment.put(var, val);
-        iteratorCache = null;
         cachedCost = -1;
     }
 
@@ -56,7 +52,6 @@ public class Assignment implements Serializable, DeepCopyable{
      */
     public void unassign(int var) {
         assignment.remove(var);
-        iteratorCache = null;
         cachedCost = -1;
     }
 
@@ -124,14 +119,9 @@ public class Assignment implements Serializable, DeepCopyable{
     public double calcAddedCost(int var, int val, ImmutableProblem p) {
         double c = 0;
         c += p.getConstraintCost(var, val);
-
-        if (iteratorCache == null)
-        iteratorCache = assignment.entrySet().toArray(new Entry[0]);
         
-        Entry<Integer, Integer> e;
         int var2, val2;
-        for (int i=0; i<iteratorCache.length; i++){
-            e = iteratorCache[i];
+        for (Entry<Integer, Integer> e : assignment.entrySet()){
             var2 = e.getKey();
             val2 = e.getValue();
             c += p.getConstraintCost(var, val, var2, val2);

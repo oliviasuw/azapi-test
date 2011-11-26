@@ -6,6 +6,7 @@ package bgu.csp.az.api.infra;
 
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.AgentRunner;
+import bgu.csp.az.api.Hooks.ReportHook;
 import bgu.csp.az.api.Mailer;
 import bgu.csp.az.api.pgen.Problem;
 import bgu.csp.az.api.SystemClock;
@@ -20,6 +21,10 @@ import java.util.List;
 public interface Execution extends Process {
 
     Round getRound();
+    
+    void report(String to, Agent a, Object[] args);
+    
+    void hookIn(String name, ReportHook hook);
     
     /**
      * @return the global problem -

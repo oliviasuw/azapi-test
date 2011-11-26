@@ -10,6 +10,9 @@
  */
 package bgu.csp.az.dev.ui;
 
+
+import javax.swing.JPanel;
+
 import bc.ui.swing.visuals.Visual;
 import bc.ui.swing.visuals.Visual.VisualGen;
 import bgu.csp.az.api.infra.Round;
@@ -405,4 +408,17 @@ public class RoundView extends javax.swing.JPanel {
     private javax.swing.JPanel spacerPan;
     private bc.ui.swing.lists.TransparentList transparentList4;
     // End of variables declaration//GEN-END:variables
+
+
+
+    public void setFaildProblemPanVisibility(boolean b) {
+        this.faildProblemPan.setVisible(b);
+    }
+
+    public void setDebugProblemButtonPanVisibility(boolean b) {
+        this.debugProblemButtonPan.setVisible(b);
+    }
+
+
+
 }

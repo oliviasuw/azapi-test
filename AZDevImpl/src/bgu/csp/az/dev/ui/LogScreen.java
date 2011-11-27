@@ -67,7 +67,7 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
             }
         });
 
-
+        outScroll.getViewport().setOpaque(false);
 
     }
 
@@ -87,9 +87,10 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
         searchTextField = new javax.swing.JTextField();
         nextMatch = new javax.swing.JButton();
         matchCaseCheckBox = new javax.swing.JCheckBox();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        outScroll = new javax.swing.JScrollPane();
         output = new javax.swing.JTextPane();
 
+        setBackground(new java.awt.Color(0, 0, 0));
         setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
         setPreferredSize(new java.awt.Dimension(200, 150));
         setLayout(new java.awt.BorderLayout());
@@ -156,16 +157,17 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
 
         add(jPanel1, java.awt.BorderLayout.PAGE_END);
 
-        jScrollPane1.setBorder(null);
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(32, 50));
+        outScroll.setBorder(null);
+        outScroll.setOpaque(false);
+        outScroll.setPreferredSize(new java.awt.Dimension(32, 50));
 
-        output.setBackground(new java.awt.Color(51, 51, 51));
+        output.setBackground(new java.awt.Color(0, 0, 0));
         output.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
-        output.setForeground(new java.awt.Color(51, 204, 0));
+        output.setForeground(new java.awt.Color(51, 255, 0));
         output.setText("bla");
-        jScrollPane1.setViewportView(output);
+        outScroll.setViewportView(output);
 
-        add(jScrollPane1, java.awt.BorderLayout.CENTER);
+        add(outScroll, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 private void searchTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchTextFieldActionPerformed
@@ -205,9 +207,9 @@ private void matchCaseCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
 }//GEN-LAST:event_matchCaseCheckBoxActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JCheckBox matchCaseCheckBox;
     private javax.swing.JButton nextMatch;
+    private javax.swing.JScrollPane outScroll;
     private javax.swing.JTextPane output;
     private javax.swing.JLabel searchLabel;
     private javax.swing.JLabel searchLabel1;

@@ -26,8 +26,8 @@ import javax.swing.text.StyleConstants;
 public class AgentLogDocument extends LimitedBatchDocument {
     public static final String LEFT_JUSTIFIED_SPACED_FORMAT = "%-18s";
     public static final String REPEAT_INDICATOR_STRING = "#";
-    private static final Color AGENT_NAME_BACKGROUND = new Color(71,71,71);
-    private static final Color NORMAL_TEXT_COLOR = new Color(51,204,0);
+    private static final Color AGENT_NAME_BACKGROUND = new Color(51,51,51);
+    private static final Color NORMAL_TEXT_COLOR = new Color(51,255,0);
 
     private String lastAgent = "";
     private HashMap<String, SimpleAttributeSet> AttributeSets;

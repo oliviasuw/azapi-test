@@ -13,6 +13,7 @@ package bc.ui.swing.lists;
 import bc.swing.models.GenericListModel;
 import bc.ui.swing.visuals.Visual;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class StripeList extends javax.swing.JPanel {
     private Color oddBackColor = new Color(215, 215, 215);
     private Color oddForeColor = new Color(71, 71, 71);
     private final StripeListItemRenderer itemRenderer;
-    
+
     /** Creates new form StripeList */
     public StripeList() {
         initComponents();
@@ -42,31 +43,46 @@ public class StripeList extends javax.swing.JPanel {
         list.setCellRenderer(itemRenderer);
     }
 
-    public void addSelectionListner(ListSelectionListener listener){
+    public void addSelectionListner(ListSelectionListener listener) {
         list.getSelectionModel().addListSelectionListener(listener);
     }
-    
-    public void setItems(LinkedList<Visual> visuals){
+
+    public void setItems(LinkedList<Visual> visuals) {
         GenericListModel<Visual> data = new GenericListModel<Visual>();
         data.setInnerList(visuals);
-        
+
         list.setModel(data);
-        
+
+    }
+
+    @Override
+    public void setFont(Font font) {
+        if (itemRenderer != null) {
+            itemRenderer.setFont(font);
+        }
+    }
+
+    @Override
+    public Font getFont() {
+        if (itemRenderer != null) {
+            return itemRenderer.getFont();
+        }
+        return super.getFont();
     }
 
     public JList getList() {
         return list;
     }
-    
-    public List<Visual> getSelectedItems(){
-        LinkedList<Visual> ret = new  LinkedList<Visual>();
-        for (Object l : list.getSelectedValues()){
-            ret.add((Visual)l);
+
+    public List<Visual> getSelectedItems() {
+        LinkedList<Visual> ret = new LinkedList<Visual>();
+        for (Object l : list.getSelectedValues()) {
+            ret.add((Visual) l);
         }
-        
+
         return ret;
     }
-    
+
     public Color getEvenBackColor() {
         return evenBackColor;
     }
@@ -134,14 +150,14 @@ public class StripeList extends javax.swing.JPanel {
     private javax.swing.JScrollPane scroll;
     // End of variables declaration//GEN-END:variables
 
-    private Color getRowColor(int i){
-        if (i%2==0){
+    private Color getRowColor(int i) {
+        if (i % 2 == 0) {
             return evenBackColor;
         }
-        
+
         return oddBackColor;
     }
-    
+
     private class StripeViewPort extends JViewport {
 
         @Override
@@ -149,8 +165,7 @@ public class StripeList extends javax.swing.JPanel {
             paintStripedBackground(g);
             //super.paintComponent(g);
         }
-        
-        
+
         private void paintStripedBackground(Graphics g) {
             // get the row index at the top of the clip bounds (the first row
             // to paint).
@@ -159,7 +174,7 @@ public class StripeList extends javax.swing.JPanel {
             // rows in the table, start painting at the top of the supplied
             // clipping bounds.
             int topY = rowAtPoint < 0
-                    ? g.getClipBounds().y : list.getCellBounds(rowAtPoint,0).y;
+                    ? g.getClipBounds().y : list.getCellBounds(rowAtPoint, 0).y;
 
             // create a counter variable to hold the current row. if there are no
             // rows in the table, start the counter at 0.
@@ -169,9 +184,8 @@ public class StripeList extends javax.swing.JPanel {
                 g.setColor(getRowColor(currentRow));
                 g.fillRect(g.getClipBounds().x, topY, g.getClipBounds().width, bottomY);
                 topY = bottomY;
-                currentRow ++;
+                currentRow++;
             }
         }
-
     }
 }

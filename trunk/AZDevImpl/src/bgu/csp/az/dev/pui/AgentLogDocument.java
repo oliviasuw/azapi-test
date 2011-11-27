@@ -26,7 +26,8 @@ import javax.swing.text.StyleConstants;
 public class AgentLogDocument extends LimitedBatchDocument {
     public static final String LEFT_JUSTIFIED_SPACED_FORMAT = "%-18s";
     public static final String REPEAT_INDICATOR_STRING = "#";
-    private static final Color AGENT_NAME_BACKGROUND = new Color(245,245,245);
+    private static final Color AGENT_NAME_BACKGROUND = new Color(71,71,71);
+    private static final Color NORMAL_TEXT_COLOR = new Color(51,204,0);
 
     private String lastAgent = "";
     private HashMap<String, SimpleAttributeSet> AttributeSets;
@@ -90,15 +91,15 @@ public class AgentLogDocument extends LimitedBatchDocument {
     private void generateColors() {
 
         colors = new Color[]{
-            new Color(0,51,255),
-            new Color(102,153,0),
-            new Color(204,0,102),
-            new Color(37,175,228),
-            new Color(153,153,0),
-            new Color(150,0,210),
-            new Color(153,153,153),
-            new Color(255,153,51),
-            new Color(245,151,151),
+            new Color(50,101,255),
+            new Color(152,203,50),
+            new Color(204,50,152),
+            new Color(87,225,255),
+            new Color(203,203,50),
+            new Color(200,50,255),
+            new Color(203,203,203),
+            new Color(255,203,101),
+            new Color(255,201,201),
             /***************************/
             new Color(205, 205, 80),
             new Color(170, 170, 170),
@@ -144,7 +145,7 @@ public class AgentLogDocument extends LimitedBatchDocument {
         } else if (lvl.equals(Level.WARNING)) {
             StyleConstants.ColorConstants.setForeground(textColor, colors[22]);
         } else {
-            StyleConstants.ColorConstants.setForeground(textColor, colors[20]);
+            StyleConstants.ColorConstants.setForeground(textColor, NORMAL_TEXT_COLOR);
         }
 
         return textColor;

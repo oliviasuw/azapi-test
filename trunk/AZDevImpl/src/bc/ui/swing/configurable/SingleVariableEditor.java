@@ -58,30 +58,36 @@ public class SingleVariableEditor extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         varName = new javax.swing.JLabel();
+        spacer = new javax.swing.JLabel();
         varVal = new javax.swing.JTextField();
         varDesc = new javax.swing.JLabel();
 
-        setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(141, 161, 161)));
         setOpaque(false);
         setLayout(new java.awt.GridBagLayout());
 
         varName.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
         varName.setForeground(new java.awt.Color(51, 51, 51));
-        varName.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/no.png"))); // NOI18N
         varName.setText("p1");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(5, 3, 3, 0);
         add(varName, gridBagConstraints);
 
-        varVal.setBackground(new java.awt.Color(255, 255, 204));
+        spacer.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
+        spacer.setForeground(new java.awt.Color(51, 51, 51));
+        spacer.setText("=");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(5, 3, 3, 0);
+        add(spacer, gridBagConstraints);
+
+        varVal.setBackground(new java.awt.Color(153, 153, 153));
         varVal.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
         varVal.setForeground(new java.awt.Color(51, 102, 255));
         varVal.setText("defaultValue");
-        varVal.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 1, new java.awt.Color(141, 161, 161)));
+        varVal.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(51, 51, 51)));
         varVal.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 3, 3, 3);
         add(varVal, gridBagConstraints);
@@ -98,6 +104,7 @@ public class SingleVariableEditor extends javax.swing.JPanel {
         add(varDesc, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel spacer;
     private javax.swing.JLabel varDesc;
     private javax.swing.JLabel varName;
     private javax.swing.JTextField varVal;

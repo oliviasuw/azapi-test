@@ -42,7 +42,7 @@ public class RoundView extends javax.swing.JPanel {
             @Override
             public Visual gen(Object it) {
                 VariableMetadata var = (VariableMetadata) it;
-                return new Visual(it, "+ " + var.getName() + "='" + var.getCurrentValue() + "' [ " + var.getDescription() + " ]","", null);
+                return new Visual(it, "<html>+ <b>" + var.getName() + "</b>=<b><span color='#d2e9ff'>'" + var.getCurrentValue() + "'</span></b> [ " + var.getDescription() + " ]</html>","", null);
             }
         };
         

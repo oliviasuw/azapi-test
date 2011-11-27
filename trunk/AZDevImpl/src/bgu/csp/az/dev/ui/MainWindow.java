@@ -12,7 +12,10 @@ package bgu.csp.az.dev.ui;
 
 import bc.dsl.SwingDSL;
 import bgu.csp.az.api.infra.Experiment;
-import javax.swing.plaf.basic.BasicTabbedPaneUI;
+import bgu.csp.az.dev.ui.MessageDialogScreen.MessageType;
+import bgu.csp.az.impl.pgen.MapProblem;
+import bgu.csp.az.impl.pgen.UnstructuredADCOPGen;
+import java.util.Random;
 
 /**
  *
@@ -27,7 +30,20 @@ public class MainWindow extends javax.swing.JFrame {
     public MainWindow() {
         initComponents();
         //tabs.setUI(new BasicTabbedPaneUI());
-//        tabs.addTab("Statistics", SwingDSL.resIcon("statistics"), new StatisticsScreen());
+        MapProblem p = new MapProblem();
+        UnstructuredADCOPGen pg = new UnstructuredADCOPGen();
+        pg.bubbleDownVariable("n", 10);
+        pg.bubbleDownVariable("d", 50);
+        pg.bubbleDownVariable("p1", 1);
+        pg.generate(p, new Random());
+        
+//        tabs.addTab("Statistics", SwingDSL.resIcon("statistics"), new DebugSelectionScreen());
+        MessageDialogScreen ms =  new MessageDialogScreen(this,false,MessageType.SUCCESS,"some some\n and more some some","and more some details");
+        ms.setVisible(true);
+
+        ms =  new MessageDialogScreen(this,false,MessageType.FAIL,"some some\n and more some some",new ExceptionScreen());
+        ms.setVisible(true);
+
     }
 
     public void startRunning(Experiment experiment) {

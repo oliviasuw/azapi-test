@@ -156,12 +156,13 @@ public class StatisticsLayout extends javax.swing.JPanel implements PageLayout {
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 0.6;
+        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 3);
         chartsPanel.add(chartPan, gridBagConstraints);
 
         tablePan.setBackground(new java.awt.Color(255, 255, 255));
         tablePan.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        tablePan.setPreferredSize(new java.awt.Dimension(31, 200));
         tablePan.setLayout(new java.awt.BorderLayout());
 
         jPanel4.setBackground(new java.awt.Color(245, 245, 245));
@@ -176,7 +177,6 @@ public class StatisticsLayout extends javax.swing.JPanel implements PageLayout {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 0.4;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 3);
         chartsPanel.add(tablePan, gridBagConstraints);
 

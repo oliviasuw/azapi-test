@@ -19,6 +19,7 @@ import bgu.csp.az.api.infra.VariableMetadata;
 import bgu.csp.az.api.infra.stat.StatisticCollector;
 import bgu.csp.az.api.pgen.Problem;
 import bgu.csp.az.api.pgen.ProblemGenerator;
+import bgu.csp.az.impl.db.DatabaseUnit;
 import bgu.csp.az.impl.pgen.MapProblem;
 import bgu.csp.az.impl.stat.AbstractStatisticCollector;
 import java.util.HashMap;
@@ -69,18 +70,6 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     private List<RoundListener> listeners = new LinkedList<RoundListener>();
     private float currentVarValue;
 
-//    @Override
-//    public String toString() {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("round:\n").append("name = ").append(name).append("\nlength = ").append(tickSize).append("\nseed = ").append(seed).append("\np1 = ").append(p1).append("\np2-start = ").append(p2Start).append("\np2-end = ").append(p2End).append("\np2-tick = ").append(p2Tick).append("\n");
-//        if (pgen == null) {
-//            sb.append("no problem generator defined!\n");
-//        } else {
-//            sb.append("pgen = ").append(pgen.toString()).append("\n");
-//        }
-//
-//        return sb.toString();
-//    }
     public AbstractRound() {
     }
 
@@ -95,7 +84,7 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
             tick = 0.1f;
         }
         
-        return (int) ((((end - start) / tick ) + 1) * tickSize);
+        return (int) (((end-start)/tick) + 1.0) * tickSize;//(int) Math.floor((((end - start) / tick ) + 1.0) * (double)tickSize);
     }
 
     public void setPool(ExecutorService pool) {
@@ -198,6 +187,8 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
 
         } catch (Exception ex) {
             res = new RoundResult(ex, e);
+        }finally{
+            DatabaseUnit.UNIT.signal(this);
         }
 
     }

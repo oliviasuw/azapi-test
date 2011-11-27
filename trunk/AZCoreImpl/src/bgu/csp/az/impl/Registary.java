@@ -29,6 +29,9 @@ public enum Registary {
     Map<String, Class> agents = new HashMap<String, Class>();
     
     private Registary() {
+
+        //Reflections ref = new Reflections("bgu.csp.az", new TypeAnnotationsScanner());
+
     Reflections ref = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage("bgu.csp.az"), ClasspathHelper.forPackage("ext.sim")).setScanners(new TypeAnnotationsScanner()));
 
         //SCANNING XML ENTITIES

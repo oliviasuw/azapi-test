@@ -29,16 +29,8 @@ public enum Registary {
     Map<String, Class> agents = new HashMap<String, Class>();
     
     private Registary() {
-<<<<<<< .mine
-        //Reflections ref = new Reflections("bgu.csp.az", new TypeAnnotationsScanner());
-        Reflections ref = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage("bgu.csp.az"), ClasspathHelper.forPackage("ext.sim")).setScanners(new TypeAnnotationsScanner()));
-=======
-//        Reflections ref = new Reflections("bgu.csp.az", new TypeAnnotationsScanner());
-        Reflections ref = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage("bgu.csp.az"), ClasspathHelper.forPackage("ext.sim.agents"))
-                .setScanners(new TypeAnnotationsScanner())); 
+    Reflections ref = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage("bgu.csp.az"), ClasspathHelper.forPackage("ext.sim")).setScanners(new TypeAnnotationsScanner()));
 
->>>>>>> .r159
-        
         //SCANNING XML ENTITIES
         Set<Class<?>> types = ref.getTypesAnnotatedWith(Register.class);
         for (Class<?> type : types) {

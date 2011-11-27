@@ -10,11 +10,13 @@
  */
 package bgu.csp.az.dev.ui;
 
+import bc.dsl.SwingDSL;
 import bc.ui.swing.visuals.Visual;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.Experiment;
 import bgu.csp.az.api.infra.Round;
 import com.sun.java.swing.plaf.motif.MotifProgressBarUI;
+import java.util.LinkedList;
 import java.util.List;
 import javax.swing.BoundedRangeModel;
 import javax.swing.event.ListSelectionEvent;
@@ -27,6 +29,8 @@ import javax.swing.plaf.metal.MetalProgressBarUI;
  */
 public class StatusScreen extends javax.swing.JPanel {
 
+    private LinkedList<Visual> visualRounds;
+
     /** Creates new form StatusScreen */
     public StatusScreen() {
         initComponents();
@@ -34,24 +38,25 @@ public class StatusScreen extends javax.swing.JPanel {
     }
 
     void setModel(Experiment experiment) {
-        roundList.setItems(Visual.adapt(experiment.getRounds(), new Visual.VisualGen() {
+        visualRounds = Visual.adapt(experiment.getRounds(), new Visual.VisualGen() {
 
             @Override
             public Visual gen(Object it) {
                 Round r = (Round) it;
                 return new Visual(it, r.getName(), "", null);
             }
-        }));
-        
+        });
+        roundList.setItems(visualRounds);
+
         roundList.addSelectionListner(new ListSelectionListener() {
 
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 List<Visual> items = roundList.getSelectedItems();
-                if (items.isEmpty()){
+                if (items.isEmpty()) {
                     roundData.unSetData();
-                }else {
-                    roundView.setModel((Round)items.get(0).getItem());
+                } else {
+                    roundView.setModel((Round) items.get(0).getItem());
                     roundData.setData(roundDataScroll);
                 }
             }
@@ -59,14 +64,14 @@ public class StatusScreen extends javax.swing.JPanel {
         // EXECUTION PROGRESS BAR
         final BoundedRangeModel mod = execProgress.getModel();
         mod.setMinimum(0);
-        
+
         int sum = 0;
-        for (Round r : experiment.getRounds()){
+        for (Round r : experiment.getRounds()) {
             sum += r.getLength();
         }
-        
+
         final int finalSum = sum;
-        
+
         mod.setMaximum(sum);
         progressLabel.setText("Execution 0 " + " of " + finalSum);
         experiment.addListener(new Experiment.ExperimentListener() {
@@ -77,10 +82,26 @@ public class StatusScreen extends javax.swing.JPanel {
 
             @Override
             public void onExpirementEnded(Experiment source) {
+                for (Visual v : visualRounds) {
+                    v.setIcon(null);
+                }
+
+                roundList.revalidate();
+                roundList.repaint();
             }
 
             @Override
             public void onNewRoundStarted(Experiment source, Round round) {
+                for (Visual v : visualRounds) {
+                    if (v.getItem().equals(round)) {
+                        v.setIcon(SwingDSL.resIcon("running"));
+                    } else {
+                        v.setIcon(null);
+                    }
+                }
+
+                roundList.revalidate();
+                roundList.repaint();
             }
 
             @Override
@@ -89,7 +110,7 @@ public class StatusScreen extends javax.swing.JPanel {
 
             @Override
             public void onExecutionEnded(Experiment source, Round round, Execution exec) {
-                mod.setValue(mod.getValue()+1);
+                mod.setValue(mod.getValue() + 1);
                 progressLabel.setText("Execution " + (mod.getValue()) + " of " + finalSum);
             }
         });

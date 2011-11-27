@@ -11,17 +11,16 @@
 package bgu.csp.az.dev.ui;
 
 import bc.dsl.SwingDSL;
+import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.Experiment;
-import bgu.csp.az.dev.ui.MessageDialogScreen.MessageType;
-import bgu.csp.az.impl.pgen.MapProblem;
-import bgu.csp.az.impl.pgen.UnstructuredADCOPGen;
-import java.util.Random;
+import bgu.csp.az.api.infra.Round;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
 
 /**
  *
  * @author bennyl
  */
-public class MainWindow extends javax.swing.JFrame {
+public class MainWindow extends javax.swing.JFrame implements Experiment.ExperimentListener {
 
     private StatusScreen statusScreen;
     private StatisticsScreen statisticsScreen;
@@ -29,20 +28,6 @@ public class MainWindow extends javax.swing.JFrame {
     /** Creates new form MainWindow */
     public MainWindow() {
         initComponents();
-        //tabs.setUI(new BasicTabbedPaneUI());
-        MapProblem p = new MapProblem();
-        UnstructuredADCOPGen pg = new UnstructuredADCOPGen();
-        pg.bubbleDownVariable("n", 10);
-        pg.bubbleDownVariable("d", 50);
-        pg.bubbleDownVariable("p1", 1);
-        pg.generate(p, new Random());
-        
-//        tabs.addTab("Statistics", SwingDSL.resIcon("statistics"), new DebugSelectionScreen());
-        MessageDialogScreen ms =  new MessageDialogScreen(this,false,MessageType.SUCCESS,"some some\n and more some some","and more some details");
-        ms.setVisible(true);
-
-        ms =  new MessageDialogScreen(this,false,MessageType.FAIL,"some some\n and more some some",new ExceptionScreen());
-        ms.setVisible(true);
 
     }
 
@@ -51,13 +36,14 @@ public class MainWindow extends javax.swing.JFrame {
         statusScreen.setModel(experiment);
         statisticsScreen = new StatisticsScreen();
         statisticsScreen.setModel(experiment);
-        
+
         //Status Screen!
         tabs.addTab("Status", SwingDSL.resIcon("status"), statusScreen);
-        
+
         //Statistics Screen!
         tabs.addTab("Statistics", SwingDSL.resIcon("statistics"), statisticsScreen);
-        
+
+        experiment.addListener(this);
         //show!
         java.awt.EventQueue.invokeLater(new Runnable() {
 
@@ -87,10 +73,14 @@ public class MainWindow extends javax.swing.JFrame {
         contentPan = new org.jdesktop.swingx.JXPanel();
         topPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
+        donePanel = new javax.swing.JPanel();
         jXHyperlink1 = new org.jdesktop.swingx.JXHyperlink();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        executingPanel = new javax.swing.JPanel();
+        jXHyperlink2 = new org.jdesktop.swingx.JXHyperlink();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        errorPanel = new javax.swing.JPanel();
+        jXHyperlink3 = new org.jdesktop.swingx.JXHyperlink();
         tabs = new bc.ui.swing.tabs.Tabs();
 
         pinstripePainter1.setCacheable(true);
@@ -123,11 +113,11 @@ public class MainWindow extends javax.swing.JFrame {
         gridBagConstraints.weightx = 1.0;
         topPanel.add(jLabel1, gridBagConstraints);
 
-        jPanel2.setOpaque(false);
-        jPanel2.setLayout(new java.awt.GridBagLayout());
+        donePanel.setOpaque(false);
+        donePanel.setLayout(new java.awt.GridBagLayout());
 
         jXHyperlink1.setForeground(new java.awt.Color(51, 51, 51));
-        jXHyperlink1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/cross-button.png"))); // NOI18N
+        jXHyperlink1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/done.png"))); // NOI18N
         jXHyperlink1.setText("");
         jXHyperlink1.setClickedColor(new java.awt.Color(51, 51, 51));
         jXHyperlink1.setUnclickedColor(new java.awt.Color(51, 51, 51));
@@ -137,14 +127,35 @@ public class MainWindow extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
-        jPanel2.add(jXHyperlink1, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        donePanel.add(jXHyperlink1, gridBagConstraints);
 
-        jLabel3.setBackground(new java.awt.Color(245, 245, 245));
-        jLabel3.setForeground(new java.awt.Color(240, 240, 240));
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel3.setText("Executing");
-        jLabel3.setFocusable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        topPanel.add(donePanel, gridBagConstraints);
+
+        executingPanel.setOpaque(false);
+        executingPanel.setLayout(new java.awt.GridBagLayout());
+
+        jXHyperlink2.setForeground(new java.awt.Color(51, 51, 51));
+        jXHyperlink2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/cross-button.png"))); // NOI18N
+        jXHyperlink2.setText("");
+        jXHyperlink2.setClickedColor(new java.awt.Color(51, 51, 51));
+        jXHyperlink2.setUnclickedColor(new java.awt.Color(51, 51, 51));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
+        executingPanel.add(jXHyperlink2, gridBagConstraints);
+
+        jLabel4.setBackground(new java.awt.Color(245, 245, 245));
+        jLabel4.setForeground(new java.awt.Color(240, 240, 240));
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel4.setText("Executing");
+        jLabel4.setFocusable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -152,20 +163,39 @@ public class MainWindow extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
-        jPanel2.add(jLabel3, gridBagConstraints);
+        executingPanel.add(jLabel4, gridBagConstraints);
 
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/progress.gif"))); // NOI18N
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/progress.gif"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
-        jPanel2.add(jLabel2, gridBagConstraints);
+        executingPanel.add(jLabel5, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        topPanel.add(jPanel2, gridBagConstraints);
+        topPanel.add(executingPanel, gridBagConstraints);
+
+        errorPanel.setOpaque(false);
+        errorPanel.setLayout(new java.awt.GridBagLayout());
+
+        jXHyperlink3.setForeground(new java.awt.Color(51, 51, 51));
+        jXHyperlink3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/error.png"))); // NOI18N
+        jXHyperlink3.setText("");
+        jXHyperlink3.setClickedColor(new java.awt.Color(51, 51, 51));
+        jXHyperlink3.setUnclickedColor(new java.awt.Color(51, 51, 51));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        errorPanel.add(jXHyperlink3, gridBagConstraints);
+
+        topPanel.add(errorPanel, new java.awt.GridBagConstraints());
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -217,14 +247,51 @@ public class MainWindow extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.jdesktop.swingx.JXPanel backPan;
     private org.jdesktop.swingx.JXPanel contentPan;
+    private javax.swing.JPanel donePanel;
+    private javax.swing.JPanel errorPanel;
+    private javax.swing.JPanel executingPanel;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private org.jdesktop.swingx.JXHyperlink jXHyperlink1;
+    private org.jdesktop.swingx.JXHyperlink jXHyperlink2;
+    private org.jdesktop.swingx.JXHyperlink jXHyperlink3;
     private org.jdesktop.swingx.painter.PinstripePainter pinstripePainter1;
     private bc.ui.swing.tabs.Tabs tabs;
     private javax.swing.JPanel topPanel;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void onExpirementStarted(Experiment source) {
+        executingPanel.setVisible(true);
+        errorPanel.setVisible(false);
+        donePanel.setVisible(false);
+    }
+
+    @Override
+    public void onExpirementEnded(Experiment source) {
+        executingPanel.setVisible(false);
+
+        if (source.getResult().succeded) {
+            donePanel.setVisible(true);
+        } else {
+            errorPanel.setVisible(true);
+        }
+    }
+
+    @Override
+    public void onNewRoundStarted(Experiment source, Round round) {
+//        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void onNewExecutionStarted(Experiment source, Round round, Execution exec) {
+//        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void onExecutionEnded(Experiment source, Round round, Execution exec) {
+//        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

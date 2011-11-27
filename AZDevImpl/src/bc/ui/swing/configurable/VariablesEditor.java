@@ -6,6 +6,9 @@ package bc.ui.swing.configurable;
 
 import bc.ui.swing.lists.ComponentList;
 import bgu.csp.az.api.infra.VariableMetadata;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.swing.JComponent;
 
 /**
@@ -29,5 +32,16 @@ public class VariablesEditor extends ComponentList{
         
         revalidate();
         repaint();
+    }
+    
+    public Map<String, Object> getConfiguration(){
+        Map<String, Object> ret = new HashMap<String, Object>();
+        for (Entry<Object, JComponent> v : this.items.entrySet()){
+            final Object value = ((SingleVariableEditor)v.getValue()).getValue();
+            //TODO - IF VALUE IS NULL => provide feedback to the user.
+            ret.put(((VariableMetadata)v.getKey()).getName(), value);
+        }
+        
+        return ret;
     }
 }

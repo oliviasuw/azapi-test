@@ -16,7 +16,6 @@ public class DSAAgent extends SimpleAgent {
 		values = new Assignment();
 		localChange = true;
 		if (isFirstAgent()){
-			report(1).to("ticksPerCycle");			// DSA Ticks per Cycles = 1
 			//log(getProblem().toString());
 		}
 		p = 0;

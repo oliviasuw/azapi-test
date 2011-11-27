@@ -14,6 +14,8 @@ public class DeltaHint {
     public static final int ONE_ITEM_REOMVED_TYPE = 1;
     public static final int ONE_ITEM_CHANGED_TYPE = 2;
     public static final int ONE_ITEM_ADDED_TYPE = 3;
+    public static final int NO_HINT = 4;
+    
     public int type;
     public Object item;
 
@@ -40,5 +42,9 @@ public class DeltaHint {
 
     public static DeltaHint lastItemAdded() {
         return new DeltaHint(LAST_ITEM_ADDED_TYPE);
+    }
+    
+    public static DeltaHint noHint(){
+        return new DeltaHint(NO_HINT);
     }
 }

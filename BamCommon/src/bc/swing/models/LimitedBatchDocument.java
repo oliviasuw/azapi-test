@@ -17,8 +17,8 @@ public class LimitedBatchDocument extends BatchDocument{
     int minDelSize;
 
     public LimitedBatchDocument() {
-        this.maxDocSize = 10000;
-        this.minDelSize = 1000;
+        this.maxDocSize = 1000000;
+        this.minDelSize = 100000;
     }
 
     public LimitedBatchDocument(int maxDocSize, int minDelSize) {

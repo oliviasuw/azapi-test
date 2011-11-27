@@ -15,7 +15,7 @@ import bc.swing.models.GenericListModel;
 import bc.swing.pfrm.Action;
 import bc.swing.pfrm.ano.ViewHints.DND;
 import bc.swing.pfrm.DeltaHint;
-import bc.swing.pfrm.BaseParamModel;
+import bc.swing.pfrm.Parameter;
 import bc.swing.pfrm2.Att;
 import bc.swing.pfrm2.Node;
 import bc.swing.pfrm2.NodeView;
@@ -137,13 +137,13 @@ public class ListNodeView extends javax.swing.JPanel implements NodeView {
     private javax.swing.JList lst;
     // End of variables declaration//GEN-END:variables
 
-    public void reflectChangesToParam(BaseParamModel to) {
+    public void reflectChangesToParam(Parameter to) {
         List tol = (List) to.getValue();
         tol.clear();
         tol.addAll(innerModel.getInnerList());
     }
 
-    public void onChange(BaseParamModel source, Object newValue, Object deltaHint) {
+    public void onChange(Parameter source, Object newValue, Object deltaHint) {
         if (deltaHint != null && deltaHint instanceof DeltaHint) {
             DeltaHint delta = (DeltaHint) deltaHint;
             List nval = (List) newValue;

@@ -151,7 +151,7 @@ public class ReflectionDSL {
 
         return ret;
     }
-
+    
     public static <T> T valueOf(String s, Class<T> c) {
         if (String.class.isAssignableFrom(c)) {
             return (T) s;
@@ -161,14 +161,14 @@ public class ReflectionDSL {
             final String simpleName = c.getSimpleName();
             c = PRIMITIVE_MAP.get(simpleName);
             if (c == null) {
-                System.out.println("NO PRIMITIVE FOUND WITH THE NAME " + simpleName);
+                System.err.println("NO PRIMITIVE FOUND WITH THE NAME " + simpleName);
                 return null;
             }
         }
 
         Method m = methodByNameAndArgs(c, "valueOf", String.class);
         if (m == null) {
-            System.out.println("cannot found value of " + c.getSimpleName());
+            System.err.println("cannot found value of " + c.getSimpleName());
             return null;
         }
 
@@ -176,18 +176,20 @@ public class ReflectionDSL {
             try {
                 return (T) m.invoke(null, s);
             } catch (IllegalAccessException ex) {
-                Logger.getLogger(ReflectionDSL.class.getName()).log(Level.SEVERE, null, ex);
+//                Logger.getLogger(ReflectionDSL.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalArgumentException ex) {
-                Logger.getLogger(ReflectionDSL.class.getName()).log(Level.SEVERE, null, ex);
+//                Logger.getLogger(ReflectionDSL.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InvocationTargetException ex) {
-                Logger.getLogger(ReflectionDSL.class.getName()).log(Level.SEVERE, null, ex);
+//                Logger.getLogger(ReflectionDSL.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            System.out.println("cannot found value of " + c.getSimpleName());
+            System.err.println("cannot found value of " + c.getSimpleName());
             return null;
 
         } else {
             return null;
         }
     }
+    
+    
 }

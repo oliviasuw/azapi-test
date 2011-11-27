@@ -39,7 +39,8 @@ public class ExceptionDialog extends javax.swing.JDialog {
             this.exitButton.setText("Damn, close the program!");
         }
         
-        this.advancedLabel.setVisible(false);
+        this.advancedPanel.setVisible(false);
+//        this.advancedLabel.setVisible(false);
         this.setLocationRelativeTo(null);
     }
 
@@ -72,9 +73,11 @@ public class ExceptionDialog extends javax.swing.JDialog {
         jPanel16 = new javax.swing.JPanel();
         whatToDoLabel = new org.jdesktop.swingx.JXLabel();
         jPanel13 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jPanel17 = new javax.swing.JPanel();
-        advancedLabel = new org.jdesktop.swingx.JXLabel();
+        advancedButton = new javax.swing.JButton();
+        advancedPanel = new javax.swing.JPanel();
+        advancedScrollPanel = new javax.swing.JScrollPane();
+        advancedLabel = new javax.swing.JTextArea();
+        spacer = new javax.swing.JLabel();
         jPanel14 = new javax.swing.JPanel();
         exitButton = new javax.swing.JButton();
 
@@ -89,8 +92,8 @@ public class ExceptionDialog extends javax.swing.JDialog {
         jPanel1.setLayout(new java.awt.BorderLayout());
 
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(186, 185, 185)));
-        jPanel2.setMinimumSize(new java.awt.Dimension(236, 50));
-        jPanel2.setPreferredSize(new java.awt.Dimension(236, 50));
+        jPanel2.setMinimumSize(new java.awt.Dimension(108, 50));
+        jPanel2.setPreferredSize(new java.awt.Dimension(108, 60));
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/exception.png"))); // NOI18N
@@ -98,13 +101,15 @@ public class ExceptionDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridheight = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel2.add(jLabel1, gridBagConstraints);
 
-        progressLabel.setFont(new java.awt.Font("Consolas", 1, 14));
+        progressLabel.setFont(new java.awt.Font("Consolas", 1, 18));
         progressLabel.setText("Something Went Wrong...");
         progressLabel.setDoubleBuffered(true);
+        progressLabel.setMaximumSize(new java.awt.Dimension(70, 22));
+        progressLabel.setMinimumSize(new java.awt.Dimension(70, 22));
+        progressLabel.setPreferredSize(new java.awt.Dimension(70, 22));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
@@ -122,16 +127,17 @@ public class ExceptionDialog extends javax.swing.JDialog {
         jPanel11.setOpaque(false);
         jPanel11.setLayout(new java.awt.GridBagLayout());
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 11));
+        jLabel4.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(210, 233, 255));
         jLabel4.setText("Exception description : ");
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         jPanel11.add(jLabel4, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         jPanel3.add(jPanel11, gridBagConstraints);
@@ -142,9 +148,11 @@ public class ExceptionDialog extends javax.swing.JDialog {
 
         descriptionLabel.setForeground(new java.awt.Color(255, 255, 255));
         descriptionLabel.setText("jXLabel2");
+        descriptionLabel.setFont(new java.awt.Font("Consolas", 0, 12));
         descriptionLabel.setLineWrap(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
         jPanel15.add(descriptionLabel, gridBagConstraints);
@@ -152,6 +160,7 @@ public class ExceptionDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         jPanel3.add(jPanel15, gridBagConstraints);
@@ -160,12 +169,12 @@ public class ExceptionDialog extends javax.swing.JDialog {
         jPanel12.setOpaque(false);
         jPanel12.setLayout(new java.awt.GridBagLayout());
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11));
+        jLabel5.setFont(new java.awt.Font("Consolas", 1, 14));
         jLabel5.setForeground(new java.awt.Color(210, 233, 255));
         jLabel5.setText("what can you do ?");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         jPanel12.add(jLabel5, gridBagConstraints);
 
@@ -182,9 +191,11 @@ public class ExceptionDialog extends javax.swing.JDialog {
 
         whatToDoLabel.setForeground(new java.awt.Color(255, 255, 255));
         whatToDoLabel.setText("jXLabel2");
+        whatToDoLabel.setFont(new java.awt.Font("Consolas", 0, 12));
         whatToDoLabel.setLineWrap(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
         jPanel16.add(whatToDoLabel, gridBagConstraints);
@@ -200,17 +211,23 @@ public class ExceptionDialog extends javax.swing.JDialog {
         jPanel13.setOpaque(false);
         jPanel13.setLayout(new java.awt.GridBagLayout());
 
-        jButton1.setBackground(null);
-        jButton1.setText("Advanced");
-        jButton1.setOpaque(false);
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+        advancedButton.setBackground(null);
+        advancedButton.setText("Advanced");
+        advancedButton.setOpaque(false);
+        advancedButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
+                advancedButtonMouseClicked(evt);
+            }
+        });
+        advancedButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                advancedButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.insets = new java.awt.Insets(0, 1, 0, 0);
-        jPanel13.add(jButton1, gridBagConstraints);
+        jPanel13.add(advancedButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -219,26 +236,28 @@ public class ExceptionDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         jPanel3.add(jPanel13, gridBagConstraints);
 
-        jPanel17.setBackground(new java.awt.Color(120, 120, 120));
-        jPanel17.setOpaque(false);
-        jPanel17.setLayout(new java.awt.GridBagLayout());
+        advancedPanel.setBackground(new java.awt.Color(120, 120, 120));
+        advancedPanel.setOpaque(false);
+        advancedPanel.setLayout(new javax.swing.BoxLayout(advancedPanel, javax.swing.BoxLayout.LINE_AXIS));
 
-        advancedLabel.setForeground(new java.awt.Color(255, 255, 255));
-        advancedLabel.setText("jXLabel2");
-        advancedLabel.setMaximumSize(new java.awt.Dimension(560, 300));
-        advancedLabel.setMinimumSize(new java.awt.Dimension(560, 300));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
-        jPanel17.add(advancedLabel, gridBagConstraints);
+        advancedLabel.setColumns(20);
+        advancedLabel.setFont(new java.awt.Font("Consolas", 0, 12));
+        advancedLabel.setRows(5);
+        advancedScrollPanel.setViewportView(advancedLabel);
+
+        advancedPanel.add(advancedScrollPanel);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-        jPanel3.add(jPanel17, gridBagConstraints);
+        jPanel3.add(advancedPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.weighty = 1.0;
+        jPanel3.add(spacer, gridBagConstraints);
 
         jPanel14.setBackground(new java.awt.Color(120, 120, 120));
         jPanel14.setOpaque(false);
@@ -260,7 +279,7 @@ public class ExceptionDialog extends javax.swing.JDialog {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 3);
@@ -271,7 +290,6 @@ public class ExceptionDialog extends javax.swing.JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         jPanel3.add(jPanel14, gridBagConstraints);
 
@@ -282,9 +300,9 @@ public class ExceptionDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+private void advancedButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_advancedButtonMouseClicked
     this.advancedLabel.setVisible(true);
-}//GEN-LAST:event_jButton1MouseClicked
+}//GEN-LAST:event_advancedButtonMouseClicked
     
 private void exitButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitButtonMouseClicked
 }//GEN-LAST:event_exitButtonMouseClicked
@@ -292,14 +310,23 @@ private void exitButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:
 private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
     this.setVisible(false);
 }//GEN-LAST:event_exitButtonActionPerformed
+
+private void advancedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_advancedButtonActionPerformed
+    // TODO add your handling code here:
+    this.setSize((int)this.getSize().getWidth(),500 );
+    this.spacer.setVisible(false);
+    this.advancedPanel.setVisible(true);
+}//GEN-LAST:event_advancedButtonActionPerformed
     /**
      * @param args the command line arguments
      */
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private org.jdesktop.swingx.JXLabel advancedLabel;
+    private javax.swing.JButton advancedButton;
+    private javax.swing.JTextArea advancedLabel;
+    private javax.swing.JPanel advancedPanel;
+    private javax.swing.JScrollPane advancedScrollPanel;
     private org.jdesktop.swingx.JXLabel descriptionLabel;
     private javax.swing.JButton exitButton;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -310,10 +337,10 @@ private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
-    private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel progressLabel;
+    private javax.swing.JLabel spacer;
     private org.jdesktop.swingx.JXLabel whatToDoLabel;
     // End of variables declaration//GEN-END:variables
 }

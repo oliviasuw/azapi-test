@@ -55,6 +55,12 @@ public abstract class ComponentList extends javax.swing.JPanel {
         items.clear();
     }
     
+    public void addAll(List items){
+        for (Object i : items){
+            add(i);
+        }
+    }
+    
     public void add(final Object item) {
         
         final JComponent comp = createComponentFor(item);

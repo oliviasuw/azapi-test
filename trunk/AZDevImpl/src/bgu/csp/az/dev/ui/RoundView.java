@@ -31,9 +31,9 @@ public class RoundView extends javax.swing.JPanel {
         initComponents();
         faildProblemPan.setVisible(false);
         debugProblemButtonPan.setVisible(false);
-        roundVars.getList().setFixedCellHeight(18);
-        pgenVars.getList().setFixedCellHeight(18);
-        algos.getList().setFixedCellHeight(18);
+        roundVars.getList().setFixedCellHeight(16);
+        pgenVars.getList().setFixedCellHeight(16);
+        algos.getList().setFixedCellHeight(16);
     }
 
     public void setModel(Round r) {
@@ -112,6 +112,7 @@ public class RoundView extends javax.swing.JPanel {
 
         jPanel3.setMinimumSize(new java.awt.Dimension(155, 150));
         jPanel3.setOpaque(false);
+        jPanel3.setPreferredSize(new java.awt.Dimension(549, 115));
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
         jPanel1.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
@@ -146,7 +147,9 @@ public class RoundView extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         jPanel1.add(jXLabel2, gridBagConstraints);
 
-        jPanel3.add(jPanel1, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        jPanel3.add(jPanel1, gridBagConstraints);
 
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
         jPanel2.setOpaque(false);
@@ -157,17 +160,19 @@ public class RoundView extends javax.swing.JPanel {
         jPanel2.add(roundVars, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
         jPanel3.add(jPanel2, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         add(jPanel3, gridBagConstraints);
 
         jPanel4.setMinimumSize(new java.awt.Dimension(155, 150));
         jPanel4.setOpaque(false);
+        jPanel4.setPreferredSize(new java.awt.Dimension(549, 115));
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
         jPanel5.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
@@ -202,7 +207,10 @@ public class RoundView extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         jPanel5.add(jXLabel3, gridBagConstraints);
 
-        jPanel4.add(jPanel5, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 1.0;
+        jPanel4.add(jPanel5, gridBagConstraints);
 
         jPanel6.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
         jPanel6.setOpaque(false);
@@ -213,7 +221,7 @@ public class RoundView extends javax.swing.JPanel {
         jPanel6.add(pgenVars, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         jPanel4.add(jPanel6, gridBagConstraints);
 
@@ -225,6 +233,7 @@ public class RoundView extends javax.swing.JPanel {
 
         jPanel7.setMinimumSize(new java.awt.Dimension(155, 150));
         jPanel7.setOpaque(false);
+        jPanel7.setPreferredSize(new java.awt.Dimension(549, 115));
         jPanel7.setLayout(new java.awt.GridBagLayout());
 
         jPanel8.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
@@ -259,7 +268,10 @@ public class RoundView extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         jPanel8.add(jXLabel4, gridBagConstraints);
 
-        jPanel7.add(jPanel8, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 1.0;
+        jPanel7.add(jPanel8, gridBagConstraints);
 
         jPanel9.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
         jPanel9.setOpaque(false);
@@ -270,8 +282,9 @@ public class RoundView extends javax.swing.JPanel {
         jPanel9.add(algos, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
         jPanel7.add(jPanel9, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -282,6 +295,7 @@ public class RoundView extends javax.swing.JPanel {
 
         faildProblemPan.setMinimumSize(new java.awt.Dimension(155, 150));
         faildProblemPan.setOpaque(false);
+        faildProblemPan.setPreferredSize(new java.awt.Dimension(549, 115));
         faildProblemPan.setLayout(new java.awt.GridBagLayout());
 
         jPanel11.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
@@ -316,7 +330,10 @@ public class RoundView extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         jPanel11.add(jXLabel5, gridBagConstraints);
 
-        faildProblemPan.add(jPanel11, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 1.0;
+        faildProblemPan.add(jPanel11, gridBagConstraints);
 
         jPanel12.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
         jPanel12.setOpaque(false);
@@ -327,8 +344,9 @@ public class RoundView extends javax.swing.JPanel {
         jPanel12.add(transparentList4, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
         faildProblemPan.add(jPanel12, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();

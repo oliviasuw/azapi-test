@@ -11,12 +11,24 @@
 package bc.ui.swing.charts;
 
 import bgu.csp.az.api.infra.stat.vmod.LineVisualModel;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.util.Map.Entry;
+import javax.swing.JFrame;
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.labels.ItemLabelAnchor;
+import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.TextAnchor;
 
 /**
  *
@@ -24,23 +36,47 @@ import org.jfree.data.xy.XYSeriesCollection;
  */
 public class LineChart extends javax.swing.JPanel {
 
+    ChartPanel chartPanel;
+    private XYLineAndShapeRenderer renderer;
+
     /** Creates new form LineChart */
     public LineChart() {
         initComponents();
     }
-    
-    public void setModel(LineVisualModel line){
+
+    public void setModel(LineVisualModel line) {
         XYDataset dataset = createDataset(line);
         JFreeChart chart = ChartFactory.createXYLineChart(
-            "Line Chart Demo 2",      // chart title
-            "X",                      // x axis label
-            "Y",                      // y axis label
-            dataset,                  // data
-            PlotOrientation.HORIZONTAL,
-            true,                     // include legend
-            true,                     // tooltips
-            false                     // urls
-        );
+                line.getTitle(), // chart title
+                line.getxAxisName(), // x axis label
+                line.getyAxisName(), // y axis label
+                dataset, // data
+                PlotOrientation.VERTICAL,
+                false, // include legend
+                true, // tooltips
+                false // urls
+                );
+
+        chart.setBackgroundPaint(Color.white);
+
+        XYPlot plot = chart.getXYPlot();
+        plot.setBackgroundPaint(Color.WHITE);
+        plot.setDomainGridlinePaint(Color.lightGray);
+        plot.setRangeGridlinePaint(Color.lightGray);
+
+        renderer = (XYLineAndShapeRenderer) plot.getRenderer();
+        renderer.setBaseShapesVisible(true);
+        renderer.setBaseShapesFilled(true);
+
+        NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+
+        renderer.setSeriesPaint(0, new Color(153, 215, 255));
+
+
+        removeAll();
+        chartPanel = new ChartPanel(chart);
+        add(chartPanel, BorderLayout.CENTER);
     }
 
     /** This method is called from within the constructor to
@@ -52,56 +88,35 @@ public class LineChart extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
+        setBackground(new java.awt.Color(202, 224, 195));
+        setLayout(new java.awt.BorderLayout());
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 
     private XYDataset createDataset(LineVisualModel line) {
-        XYSeries series1 = new XYSeries("First");
-        series1.add(1.0, 1.0);
-        series1.add(2.0, 4.0);
-        series1.add(3.0, 3.0);
-        series1.add(4.0, 5.0);
-        series1.add(5.0, 5.0);
-        series1.add(6.0, 7.0);
-        series1.add(7.0, 7.0);
-        series1.add(8.0, 8.0);
-
-        XYSeries series2 = new XYSeries("Second");
-        series2.add(1.0, 5.0);
-        series2.add(2.0, 7.0);
-        series2.add(3.0, 6.0);
-        series2.add(4.0, 8.0);
-        series2.add(5.0, 4.0);
-        series2.add(6.0, 4.0);
-        series2.add(7.0, 2.0);
-        series2.add(8.0, 1.0);
-
-        XYSeries series3 = new XYSeries("Third");
-        series3.add(3.0, 4.0);
-        series3.add(4.0, 3.0);
-        series3.add(5.0, 2.0);
-        series3.add(6.0, 3.0);
-        series3.add(7.0, 6.0);
-        series3.add(8.0, 3.0);
-        series3.add(9.0, 4.0);
-        series3.add(10.0, 3.0);
+        XYSeries series1 = new XYSeries(""); //HERE SHOULD BE THE ALGORITHM NAME
+        for (Entry<Double, Double> v : line.getValues().entrySet()) {
+            series1.add(v.getKey(), v.getValue());
+        }
 
         XYSeriesCollection dataset = new XYSeriesCollection();
         dataset.addSeries(series1);
-        dataset.addSeries(series2);
-        dataset.addSeries(series3);
-                
         return dataset;
+    }
+
+    public static void main(String[] args) {
+        JFrame j = new JFrame();
+        j.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        LineChart chart = new LineChart();
+        LineVisualModel model = new LineVisualModel("aaaa", "bbbb", "ccccc");
+        model.setPoint(5, 5);
+        model.setPoint(7, 8);
+        model.setPoint(4, 9);
+        model.setPoint(12, 5);
+        chart.setModel(model);
+        j.setContentPane(chart);
+        j.pack();
+        j.setVisible(true);
     }
 }

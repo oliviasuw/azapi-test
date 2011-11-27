@@ -10,6 +10,7 @@
  */
 package bc.ui.swing.configurable;
 
+import bc.dsl.ReflectionDSL;
 import bgu.csp.az.api.infra.VariableMetadata;
 
 /**
@@ -19,7 +20,6 @@ import bgu.csp.az.api.infra.VariableMetadata;
 public class SingleVariableEditor extends javax.swing.JPanel {
 
     VariableMetadata var;
-    Object value;
     
     /** Creates new form SingleVariableEditor */
     public SingleVariableEditor() {
@@ -35,6 +35,16 @@ public class SingleVariableEditor extends javax.swing.JPanel {
 
     public VariableMetadata getModel(){
         return var;
+    }
+    
+    /**
+     * can return null if the type not contain a valueOf function
+     * @return 
+     */
+    public Object getValue(){
+        String val = varVal.getText();
+        Object ret = ReflectionDSL.valueOf(val, var.getType());
+        return ret;
     }
     
     /** This method is called from within the constructor to

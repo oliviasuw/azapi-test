@@ -10,13 +10,24 @@
  */
 package bgu.csp.az.dev.ui;
 
+import bc.swing.models.DataExtractor;
+import bc.swing.models.GenericTableModel;
+import bc.ui.swing.charts.LineChart;
 import bc.ui.swing.listeners.SelectionListener;
 import bc.ui.swing.lists.OptionList;
 import bc.ui.swing.visuals.Visual;
 import bgu.csp.az.api.infra.Experiment;
 import bgu.csp.az.api.infra.Round;
+import bgu.csp.az.api.infra.VariableMetadata;
 import bgu.csp.az.api.infra.stat.StatisticCollector;
+import bgu.csp.az.api.infra.stat.vmod.LineVisualModel;
+import bgu.csp.az.impl.db.DatabaseUnit;
+import java.awt.BorderLayout;
+import java.util.Formatter;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.swing.JFrame;
 
 /**
@@ -25,8 +36,10 @@ import javax.swing.JFrame;
  */
 public class StatisticsScreen extends javax.swing.JPanel {
 
-    OptionList availableStatisticsList;
-    OptionList roundsList;
+    private OptionList availableStatisticsList;
+    private OptionList roundsList;
+    private StatisticCollector selectedCollector = null;
+    private Round selectedRound = null;
 
     /** Creates new form StatisticsScreen */
     public StatisticsScreen() {
@@ -62,29 +75,31 @@ public class StatisticsScreen extends javax.swing.JPanel {
             @Override
             public void onSelectionChanged(Object source, List selectedItems) {
                 varsDataPan.unSetData();
-                
-                if (!selectedItems.isEmpty()){
-                    StatisticCollector sc = (StatisticCollector) ((Visual)selectedItems.get(0)).getItem();
-                    if (sc.provideExpectedVariables().length > 0){
+                selectedCollector = null;
+
+                if (!selectedItems.isEmpty()) {
+                    StatisticCollector sc = (StatisticCollector) ((Visual) selectedItems.get(0)).getItem();
+                    selectedCollector = sc;
+                    if (sc.provideExpectedVariables().length > 0) {
                         vars.setModel(sc.provideExpectedVariables());
                         varsDataPan.setData(varscrolls);
-                        
                     }
                 }
-                
+
             }
         });
-        
+
         roundsList.getSelectionListeners().addListener(new SelectionListener() {
 
             @Override
             public void onSelectionChanged(Object source, List selectedItems) {
                 availableStatisticsList.clear();
+                selectedRound = null;
 
                 if (!selectedItems.isEmpty()) {
 
-                    Round selected = ((Round) ((Visual) selectedItems.get(0)).getItem());
-                    availableStatisticsList.setItems(Visual.adapt(selected.getRegisteredStatisticCollectors(), new Visual.VisualGen() {
+                    selectedRound = ((Round) ((Visual) selectedItems.get(0)).getItem());
+                    availableStatisticsList.setItems(Visual.adapt(selectedRound.getRegisteredStatisticCollectors(), new Visual.VisualGen() {
 
                         @Override
                         public Visual gen(Object it) {
@@ -125,8 +140,9 @@ public class StatisticsScreen extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         resultsPan = new javax.swing.JSplitPane();
-        jPanel13 = new javax.swing.JPanel();
+        chartResultPan = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
+        resultList = new bc.ui.swing.tables.ScrolleableStripeTable();
         varscrolls = new javax.swing.JScrollPane();
         vars = new bc.ui.swing.configurable.VariablesEditor();
         jPanel12 = new javax.swing.JPanel();
@@ -153,10 +169,25 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jPanel10 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        nodataPan = new bc.ui.swing.useful.DataPanel();
+        resultDataPan = new bc.ui.swing.useful.DataPanel();
 
-        resultsPan.setResizeWeight(0.65);
-        resultsPan.setLeftComponent(jPanel13);
+        resultsPan.setBorder(null);
+        resultsPan.setResizeWeight(0.6);
+
+        chartResultPan.setLayout(new java.awt.BorderLayout());
+        resultsPan.setLeftComponent(chartResultPan);
+
+        jPanel14.setBackground(new java.awt.Color(153, 153, 153));
+        jPanel14.setMinimumSize(new java.awt.Dimension(150, 10));
+        jPanel14.setPreferredSize(new java.awt.Dimension(150, 10));
+        jPanel14.setLayout(new java.awt.BorderLayout());
+
+        resultList.setBackground(new java.awt.Color(255, 102, 102));
+        resultList.setForeground(new java.awt.Color(218, 236, 255));
+        resultList.setEvenRowColor(new java.awt.Color(173, 173, 173));
+        resultList.setOddRowColor(new java.awt.Color(153, 153, 153));
+        jPanel14.add(resultList, java.awt.BorderLayout.CENTER);
+
         resultsPan.setRightComponent(jPanel14);
 
         varscrolls.setBorder(null);
@@ -287,10 +318,15 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jXHyperlink1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/statistics-collection-view.png"))); // NOI18N
         jXHyperlink1.setText("Analyze");
         jXHyperlink1.setClickedColor(new java.awt.Color(0, 102, 204));
-        jXHyperlink1.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
+        jXHyperlink1.setFont(new java.awt.Font("Consolas", 1, 12));
         jXHyperlink1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jXHyperlink1.setUnclickedColor(new java.awt.Color(0, 102, 204));
         jXHyperlink1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jXHyperlink1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jXHyperlink1ActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 5);
         jPanel7.add(jXHyperlink1, gridBagConstraints);
@@ -321,7 +357,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jPanel11.add(jLabel4);
 
         jPanel10.add(jPanel11, java.awt.BorderLayout.PAGE_START);
-        jPanel10.add(nodataPan, java.awt.BorderLayout.CENTER);
+        jPanel10.add(resultDataPan, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -329,7 +365,41 @@ public class StatisticsScreen extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         add(jPanel10, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jXHyperlink1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink1ActionPerformed
+        //Assign Variables
+        if (selectedCollector == null) {
+            System.out.println("no statistic collector selected - TODO IN MSGBOX");
+            return;
+        }
+        Map<String, Object> v = vars.getConfiguration();
+        VariableMetadata.assign(selectedCollector, v);
+        chartResultPan.removeAll();
+        LineChart chart = new LineChart();
+        final LineVisualModel model = (LineVisualModel) selectedCollector.analyze(DatabaseUnit.UNIT.createDatabase(), selectedRound);
+        chart.setModel(model);
+        chartResultPan.add(chart, BorderLayout.CENTER);
+        resultDataPan.setData(resultsPan);
+        GenericTableModel tableModel = new GenericTableModel(new DataExtractor(model.getxAxisName(), model.getyAxisName()) {
+
+            @Override
+            public Object getData(String dataName, Object from) {
+                Entry<Double, Double> e = (Entry<Double, Double>) from;
+                if (model.getxAxisName().equals(dataName)) {
+                    return "" + String.format("%.2f", e.getKey());
+                } else {
+                    return "" + String.format("%.2f", e.getValue());
+                }
+            }
+        });
+        
+        tableModel.setInnerList(new LinkedList(model.getValues().entrySet()));
+        resultList.setModel(tableModel);
+        revalidate();
+        repaint();
+    }//GEN-LAST:event_jXHyperlink1ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel chartResultPan;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -342,7 +412,6 @@ public class StatisticsScreen extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
-    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -353,7 +422,8 @@ public class StatisticsScreen extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private org.jdesktop.swingx.JXHyperlink jXHyperlink1;
-    private bc.ui.swing.useful.DataPanel nodataPan;
+    private bc.ui.swing.useful.DataPanel resultDataPan;
+    private bc.ui.swing.tables.ScrolleableStripeTable resultList;
     private javax.swing.JSplitPane resultsPan;
     private javax.swing.JScrollPane roundScroll;
     private javax.swing.JScrollPane statScroll;

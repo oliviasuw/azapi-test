@@ -10,6 +10,7 @@
  */
 package bc.ui.swing.lists;
 
+import bc.ui.swing.visuals.Visual;
 import java.awt.Color;
 import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
@@ -120,6 +121,8 @@ public class StripeListItemRenderer extends javax.swing.JPanel implements ListCe
         }
         text.setText(value.toString());
 
+        text.setIcon(((Visual)value).getIcon());
+        
         return this;
     }
 }

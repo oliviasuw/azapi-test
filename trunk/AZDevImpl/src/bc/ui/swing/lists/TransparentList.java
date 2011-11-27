@@ -12,6 +12,7 @@ package bc.ui.swing.lists;
 
 import bc.swing.models.GenericListModel;
 import bc.ui.swing.visuals.Visual;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.LinkedList;
@@ -48,6 +49,11 @@ public class TransparentList extends javax.swing.JPanel {
             }
         });
 
+    }
+    
+    public void removeScroll(){
+        remove(scroll);
+        add(list, BorderLayout.CENTER);
     }
 
     public void addSelectionListner(ListSelectionListener listener) {

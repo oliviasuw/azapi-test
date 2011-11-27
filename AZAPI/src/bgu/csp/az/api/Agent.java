@@ -116,9 +116,9 @@ public abstract class Agent extends Agt0DSL {
         return ret;
     }
     
-    public ReportMediator report(Object... args){
-        return new ReportMediator(args, this);
-    }
+//    public ReportMediator report(Object... args){
+//        return new ReportMediator(args, this);
+//    }
 
     /**
      * override this function in the case you want to make some action every time before sending a message

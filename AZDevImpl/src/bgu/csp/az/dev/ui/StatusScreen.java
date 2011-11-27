@@ -15,13 +15,14 @@ import bc.ui.swing.visuals.Visual;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.Experiment;
 import bgu.csp.az.api.infra.Round;
+import bgu.csp.az.dev.ExecutionUnit;
 import com.sun.java.swing.plaf.motif.MotifProgressBarUI;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.BoundedRangeModel;
+import javax.swing.Icon;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.plaf.metal.MetalProgressBarUI;
 
 /**
  *
@@ -29,6 +30,11 @@ import javax.swing.plaf.metal.MetalProgressBarUI;
  */
 public class StatusScreen extends javax.swing.JPanel {
 
+    private static final Icon ROUND_WAIT_ICON = SwingDSL.resIcon("round-wait");
+    private static final Icon ROUND_DONE_ICON = SwingDSL.resIcon("round-done");
+    private static final Icon ROUND_PLAY_ICON = SwingDSL.resIcon("round-play");
+
+    
     private LinkedList<Visual> visualRounds;
 
     /** Creates new form StatusScreen */
@@ -43,7 +49,7 @@ public class StatusScreen extends javax.swing.JPanel {
             @Override
             public Visual gen(Object it) {
                 Round r = (Round) it;
-                return new Visual(it, r.getName(), "", null);
+                return new Visual(it, r.getName(), "", ROUND_WAIT_ICON);
             }
         });
         roundList.setItems(visualRounds);
@@ -74,7 +80,7 @@ public class StatusScreen extends javax.swing.JPanel {
 
         mod.setMaximum(sum);
         progressLabel.setText("Execution 0 " + " of " + finalSum);
-        experiment.addListener(new Experiment.ExperimentListener() {
+        ExecutionUnit.UNIT.addExperimentListener(new Experiment.ExperimentListener() {
 
             @Override
             public void onExpirementStarted(Experiment source) {
@@ -83,7 +89,7 @@ public class StatusScreen extends javax.swing.JPanel {
             @Override
             public void onExpirementEnded(Experiment source) {
                 for (Visual v : visualRounds) {
-                    v.setIcon(null);
+                    v.setIcon(ROUND_DONE_ICON);
                 }
 
                 roundList.revalidate();
@@ -94,9 +100,10 @@ public class StatusScreen extends javax.swing.JPanel {
             public void onNewRoundStarted(Experiment source, Round round) {
                 for (Visual v : visualRounds) {
                     if (v.getItem().equals(round)) {
-                        v.setIcon(SwingDSL.resIcon("running"));
+                        v.setIcon(ROUND_PLAY_ICON);
+                        break;
                     } else {
-                        v.setIcon(null);
+                        v.setIcon(ROUND_DONE_ICON);
                     }
                 }
 
@@ -201,6 +208,7 @@ public class StatusScreen extends javax.swing.JPanel {
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
         roundList.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 3, new java.awt.Color(153, 153, 153)));
+        roundList.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
         roundList.setMinimumSize(new java.awt.Dimension(200, 24));
         roundList.setOddBackColor(new java.awt.Color(230, 230, 230));
         roundList.setOddForeColor(new java.awt.Color(61, 61, 61));

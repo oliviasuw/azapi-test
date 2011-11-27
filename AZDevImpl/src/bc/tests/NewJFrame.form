@@ -28,7 +28,10 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="110" max="-2" attributes="0"/>
-              <Component id="vars" min="-2" pref="357" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="vars" alignment="0" min="-2" pref="357" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace pref="119" max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -38,13 +41,20 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="80" max="-2" attributes="0"/>
               <Component id="vars" min="-2" pref="215" max="-2" attributes="0"/>
-              <EmptySpace pref="108" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="88" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
     <Component class="bc.ui.swing.configurable.VariablesEditor" name="vars">
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt; this &lt;span color=&apos;red&apos;&gt; is &lt;/span&gt; &lt;/html&gt; "/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

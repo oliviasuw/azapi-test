@@ -14,6 +14,8 @@ import bc.dsl.SwingDSL;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.Experiment;
 import bgu.csp.az.api.infra.Round;
+import bgu.csp.az.dev.ExecutionUnit;
+import javax.swing.JFrame;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 
 /**
@@ -24,6 +26,7 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
 
     private StatusScreen statusScreen;
     private StatisticsScreen statisticsScreen;
+    private LogScreen logsScreen;
 
     /** Creates new form MainWindow */
     public MainWindow() {
@@ -36,6 +39,8 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
         statusScreen.setModel(experiment);
         statisticsScreen = new StatisticsScreen();
         statisticsScreen.setModel(experiment);
+        logsScreen = new LogScreen();
+        logsScreen.setModel(experiment);
 
         //Status Screen!
         tabs.addTab("Status", SwingDSL.resIcon("status"), statusScreen);
@@ -43,11 +48,16 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
         //Statistics Screen!
         tabs.addTab("Statistics", SwingDSL.resIcon("statistics"), statisticsScreen);
 
-        experiment.addListener(this);
+        //Logs Screen
+        tabs.addTab("Log", SwingDSL.resIcon("balloon-ellipsis"), logsScreen);
+
+
+        ExecutionUnit.UNIT.addExperimentListener(this);
         //show!
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             public void run() {
+                setExtendedState(JFrame.MAXIMIZED_BOTH);
                 setVisible(true);
             }
         });
@@ -142,6 +152,11 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
         jXHyperlink2.setText("");
         jXHyperlink2.setClickedColor(new java.awt.Color(51, 51, 51));
         jXHyperlink2.setUnclickedColor(new java.awt.Color(51, 51, 51));
+        jXHyperlink2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jXHyperlink2ActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridheight = 2;
@@ -232,6 +247,10 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jXHyperlink2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink2ActionPerformed
+        ExecutionUnit.UNIT.stop();
+    }//GEN-LAST:event_jXHyperlink2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -275,8 +294,20 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
 
         if (source.getResult().succeded) {
             donePanel.setVisible(true);
+            MessageDialog.showSuccess("the execution completed successfully", "there ware no errors\n"
+                    + "if you define correctness testers thay didnt found any wrong solution.");
         } else {
             errorPanel.setVisible(true);
+            switch (source.getResult().badRoundResult.finishStatus) {
+                case CRUSH:
+                    ExceptionDialog.showRecoverable("the execution crushed", "you should take a look at the logs\n"
+                            + "check the stack trace using the advance button\n"
+                            + "or start a debug session", source.getResult().badRoundResult.crushReason);
+                    break;
+                case WRONG_RESULT:
+                    MessageDialog.showFail("the execution completed with errors", "the correctness tester found wrong results provided by the algorithm");
+                    break;
+            }
         }
     }
 

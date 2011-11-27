@@ -37,8 +37,8 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
     WorkerThread worker = new WorkerThread();
     Experiment runningExperiment;
     Round currentRound;
-    NewUIController ui = null;
     LogListener logListener = null;
+    boolean running;
 
     void execute(File xml, boolean withGui) {
         try {
@@ -52,16 +52,10 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
             MainWindow mainW = new MainWindow();
             mainW.startRunning(runningExperiment);
 
-            
-            //            if (withGui) {
-//                ui = new NewUIController();
-//                ui.startUi();
-//            }
+            running = true;
             runningExperiment.run();
-            runningExperiment.removeListener(this);
-            DatabaseUnit.UNIT.stopCollectorThread();
-            DatabaseUnit.UNIT.disconnect();
-//            System.out.println(runningExperiment.getResult().toString());
+            running = false;
+            stop();
         } catch (ConnectionFaildException ex) {
             Logger.getLogger(ExecutionUnit.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -71,6 +65,16 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
         } catch (IllegalAccessException ex) {
             Logger.getLogger(ExecutionUnit.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void stop() {
+        if (running){
+            runningExperiment.stop();
+        }
+        
+//        runningExperiment.removeListener(this);
+        DatabaseUnit.UNIT.stopCollectorThread();
+        DatabaseUnit.UNIT.disconnect();
     }
 
     public Experiment getRunningExperiment() {

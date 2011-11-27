@@ -4,7 +4,7 @@
  */
 
 /*
- * MessageDialogScreen.java
+ * MessageDialog.java
  *
  * Created on 27/11/2011, 01:34:18
  */
@@ -18,7 +18,7 @@ import javax.swing.JPanel;
  *
  * @author kdima85
  */
-public class MessageDialogScreen extends javax.swing.JDialog {
+public class MessageDialog extends javax.swing.JDialog {
 
      public static enum MessageType {
 
@@ -56,7 +56,7 @@ public class MessageDialogScreen extends javax.swing.JDialog {
     }
 
      
-    public MessageDialogScreen(java.awt.Frame parent, boolean modal,MessageType type, String data, String content) {
+    public MessageDialog(java.awt.Frame parent, boolean modal,MessageType type, String data, String content) {
         super(parent, modal);
         initComponents();
         this.messageContentLabel.setText(content);
@@ -64,7 +64,7 @@ public class MessageDialogScreen extends javax.swing.JDialog {
         chooseIconAndType(type);
         setLocationRelativeTo(null);
     }
-    public MessageDialogScreen(java.awt.Frame parent, boolean modal,MessageType type, String data, JPanel content) {
+    public MessageDialog(java.awt.Frame parent, boolean modal,MessageType type, String data, JPanel content) {
         super(parent, modal);
         initComponents();
         this.messageContentPanel.removeAll();
@@ -74,9 +74,18 @@ public class MessageDialogScreen extends javax.swing.JDialog {
         setLocationRelativeTo(null);
     }
     
+    public static void showSuccess(String title, String content){
+        MessageDialog x = new MessageDialog(null, true, MessageType.SUCCESS, title, content);
+        x.setVisible(true);
+    }
+    
+    public static void showFail(String title, String content){
+        MessageDialog x = new MessageDialog(null, true, MessageType.FAIL, title, content);
+        x.setVisible(true);
+    }
     
     private void chooseIconAndType(MessageType messageType) {
-        this.typeLable.setText(messageType.getIconName(messageType));
+        this.typeLable.setText(messageType.getTypeText(messageType));
         this.iconLabel.setIcon(SwingDSL.resIcon(messageType.getIconName(messageType)));
     }
 
@@ -112,6 +121,9 @@ public class MessageDialogScreen extends javax.swing.JDialog {
         jPanel1.setPreferredSize(new java.awt.Dimension(560, 300));
         jPanel1.setLayout(new java.awt.BorderLayout());
 
+        jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(186, 185, 185)));
+        jPanel2.setMinimumSize(new java.awt.Dimension(108, 50));
+        jPanel2.setPreferredSize(new java.awt.Dimension(108, 60));
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
         iconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/info-message.png"))); // NOI18N
@@ -119,11 +131,13 @@ public class MessageDialogScreen extends javax.swing.JDialog {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel2.add(iconLabel, gridBagConstraints);
 
-        typeLable.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        typeLable.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
         typeLable.setText("HMMM...");
         typeLable.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -144,13 +158,15 @@ public class MessageDialogScreen extends javax.swing.JDialog {
         messageDescriptionPanel.setOpaque(false);
         messageDescriptionPanel.setLayout(new java.awt.BorderLayout());
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 11));
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setFont(new java.awt.Font("Consolas", 1, 14));
+        jLabel4.setForeground(new java.awt.Color(210, 233, 255));
         jLabel4.setText("Description : ");
         messageDescriptionPanel.add(jLabel4, java.awt.BorderLayout.PAGE_START);
 
         messageDataLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 10, 0, 0));
+        messageDataLabel.setForeground(new java.awt.Color(255, 255, 255));
         messageDataLabel.setText("Actual Description");
+        messageDataLabel.setFont(new java.awt.Font("Consolas", 0, 12));
         messageDataLabel.setLineWrap(true);
         messageDescriptionPanel.add(messageDataLabel, java.awt.BorderLayout.CENTER);
 
@@ -166,18 +182,22 @@ public class MessageDialogScreen extends javax.swing.JDialog {
         messageContentPanel.setOpaque(false);
         messageContentPanel.setLayout(new java.awt.BorderLayout());
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setFont(new java.awt.Font("Consolas", 1, 14));
+        jLabel5.setForeground(new java.awt.Color(210, 233, 255));
         jLabel5.setText("Details:");
         messageContentPanel.add(jLabel5, java.awt.BorderLayout.PAGE_START);
 
         messageContentLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 10, 0, 0));
+        messageContentLabel.setForeground(new java.awt.Color(255, 255, 255));
         messageContentLabel.setText("Actual Content");
+        messageContentLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        messageContentLabel.setFont(new java.awt.Font("Consolas", 0, 12));
+        messageContentLabel.setLineWrap(true);
         messageContentPanel.add(messageContentLabel, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;

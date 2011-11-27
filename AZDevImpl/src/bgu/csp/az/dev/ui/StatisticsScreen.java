@@ -238,6 +238,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         jPanel1.add(jPanel2, gridBagConstraints);
 
+        jPanel3.setMinimumSize(new java.awt.Dimension(38, 180));
         jPanel3.setLayout(new java.awt.BorderLayout());
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/lineWithNumber1.png"))); // NOI18N
@@ -246,7 +247,8 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jPanel1.add(jPanel3, new java.awt.GridBagConstraints());
 
         jPanel4.setBackground(new java.awt.Color(232, 232, 232));
-        jPanel4.setMinimumSize(new java.awt.Dimension(240, 52));
+        jPanel4.setMinimumSize(new java.awt.Dimension(250, 180));
+        jPanel4.setPreferredSize(new java.awt.Dimension(240, 30));
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
         jLabel7.setFont(new java.awt.Font("Consolas", 1, 12));
@@ -271,6 +273,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         jPanel1.add(jPanel4, gridBagConstraints);
 
+        jPanel5.setMinimumSize(new java.awt.Dimension(38, 180));
         jPanel5.setLayout(new java.awt.BorderLayout());
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/lineWithNumber2.png"))); // NOI18N
@@ -279,6 +282,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jPanel1.add(jPanel5, new java.awt.GridBagConstraints());
 
         jPanel6.setBackground(new java.awt.Color(220, 220, 220));
+        jPanel6.setMinimumSize(new java.awt.Dimension(194, 180));
         jPanel6.setLayout(new java.awt.GridBagLayout());
 
         jLabel8.setFont(new java.awt.Font("Consolas", 1, 12));
@@ -304,6 +308,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         jPanel1.add(jPanel6, gridBagConstraints);
 
+        jPanel8.setMinimumSize(new java.awt.Dimension(38, 180));
         jPanel8.setLayout(new java.awt.BorderLayout());
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/lineWithNumber3.png"))); // NOI18N
@@ -312,9 +317,10 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jPanel1.add(jPanel8, new java.awt.GridBagConstraints());
 
         jPanel7.setBackground(new java.awt.Color(210, 210, 210));
+        jPanel7.setMinimumSize(new java.awt.Dimension(55, 180));
         jPanel7.setLayout(new java.awt.GridBagLayout());
 
-        jXHyperlink1.setForeground(new java.awt.Color(0, 102, 204));
+        jXHyperlink1.setForeground(new java.awt.Color(0, 153, 255));
         jXHyperlink1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/statistics-collection-view.png"))); // NOI18N
         jXHyperlink1.setText("Analyze");
         jXHyperlink1.setClickedColor(new java.awt.Color(0, 102, 204));
@@ -367,12 +373,25 @@ public class StatisticsScreen extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jXHyperlink1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink1ActionPerformed
+        //TEST IF ROUND IS READY:
+        if (!DatabaseUnit.UNIT.isSignaled(selectedRound)){
+            MessageDialog.showFail("cannot produce statistics for this round", "the round has not been analyzed yet\n"
+                    + "either it was not started yet or it is in the process of analyzing\n"
+                    + "please try again later.");
+            return;
+        }
+        
         //Assign Variables
         if (selectedCollector == null) {
             System.out.println("no statistic collector selected - TODO IN MSGBOX");
             return;
         }
         Map<String, Object> v = vars.getConfiguration();
+        
+        if (v == null) { //cannot produce configuration
+            return;
+        }
+        
         VariableMetadata.assign(selectedCollector, v);
         chartResultPan.removeAll();
         LineChart chart = new LineChart();

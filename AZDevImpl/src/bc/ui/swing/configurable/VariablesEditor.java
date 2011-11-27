@@ -6,6 +6,7 @@ package bc.ui.swing.configurable;
 
 import bc.ui.swing.lists.ComponentList;
 import bgu.csp.az.api.infra.VariableMetadata;
+import bgu.csp.az.dev.ui.MessageDialog;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,8 +39,18 @@ public class VariablesEditor extends ComponentList{
         Map<String, Object> ret = new HashMap<String, Object>();
         for (Entry<Object, JComponent> v : this.items.entrySet()){
             final Object value = ((SingleVariableEditor)v.getValue()).getValue();
+            VariableMetadata var = (VariableMetadata) v.getKey();
             //TODO - IF VALUE IS NULL => provide feedback to the user.
-            ret.put(((VariableMetadata)v.getKey()).getName(), value);
+            if (value == null){
+                MessageDialog.showFail("cannot convert input to value", "the given input for the variable " + var.getName() + " cannot be converted to a legal value\n"
+                        + "there can be number of reasons for that\n"
+                        + "- the input format is not recognizeable by the variable class valueOf function\n"
+                        + "- there is no static valueOf function defined in the given variable class\n\n"
+                        + "if the problem appear to be the later suggestion you should fix the code of the statistic collector\n"
+                        + "or contact the statistic collector provider.");
+                return null;
+            }
+            ret.put(var.getName(), value);
         }
         
         return ret;

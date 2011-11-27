@@ -11,21 +11,27 @@
 package bgu.csp.az.dev.ui;
 
 import java.awt.Component;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import javax.swing.JPanel;
 
 /**
  *
  * @author kdima85
  */
-public class ExceptionWindow extends javax.swing.JDialog {
+public class ExceptionDialog extends javax.swing.JDialog {
 
     /** Creates new form MessageDialog */
-    public ExceptionWindow(java.awt.Frame parent, boolean modal, String desc, String whatToDo, String advanced, boolean recoverable) {
+    public ExceptionDialog(java.awt.Frame parent, boolean modal, String desc, String whatToDo, Exception ex, boolean recoverable) {
         super(parent, modal);
         initComponents();
         this.descriptionLabel.setText(desc);
         this.whatToDoLabel.setText(whatToDo);
-        this.advancedLabel.setText(advanced);
+        
+        StringWriter sw = new StringWriter();
+        ex.printStackTrace(new PrintWriter(sw));
+        
+        this.advancedLabel.setText(sw.toString());
         this.advancedLabel.setVisible(false);
         if (recoverable) {
             this.exitButton.setText("OK, get me out of here!");
@@ -37,6 +43,11 @@ public class ExceptionWindow extends javax.swing.JDialog {
         this.setLocationRelativeTo(null);
     }
 
+    public static void showRecoverable(String title, String whatToDo, Exception ex){
+        ExceptionDialog d = new ExceptionDialog(null, true, title, whatToDo, ex, true);
+        d.setVisible(true);
+    }
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -77,6 +88,9 @@ public class ExceptionWindow extends javax.swing.JDialog {
         jPanel1.setPreferredSize(new java.awt.Dimension(560, 300));
         jPanel1.setLayout(new java.awt.BorderLayout());
 
+        jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(186, 185, 185)));
+        jPanel2.setMinimumSize(new java.awt.Dimension(236, 50));
+        jPanel2.setPreferredSize(new java.awt.Dimension(236, 50));
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/exception.png"))); // NOI18N
@@ -88,7 +102,7 @@ public class ExceptionWindow extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel2.add(jLabel1, gridBagConstraints);
 
-        progressLabel.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        progressLabel.setFont(new java.awt.Font("Consolas", 1, 14));
         progressLabel.setText("Something Went Wrong...");
         progressLabel.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -108,8 +122,8 @@ public class ExceptionWindow extends javax.swing.JDialog {
         jPanel11.setOpaque(false);
         jPanel11.setLayout(new java.awt.GridBagLayout());
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 11));
+        jLabel4.setForeground(new java.awt.Color(210, 233, 255));
         jLabel4.setText("Exception description : ");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
@@ -126,6 +140,7 @@ public class ExceptionWindow extends javax.swing.JDialog {
         jPanel15.setOpaque(false);
         jPanel15.setLayout(new java.awt.GridBagLayout());
 
+        descriptionLabel.setForeground(new java.awt.Color(255, 255, 255));
         descriptionLabel.setText("jXLabel2");
         descriptionLabel.setLineWrap(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -145,8 +160,8 @@ public class ExceptionWindow extends javax.swing.JDialog {
         jPanel12.setOpaque(false);
         jPanel12.setLayout(new java.awt.GridBagLayout());
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11));
+        jLabel5.setForeground(new java.awt.Color(210, 233, 255));
         jLabel5.setText("what can you do ?");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -165,6 +180,7 @@ public class ExceptionWindow extends javax.swing.JDialog {
         jPanel16.setOpaque(false);
         jPanel16.setLayout(new java.awt.GridBagLayout());
 
+        whatToDoLabel.setForeground(new java.awt.Color(255, 255, 255));
         whatToDoLabel.setText("jXLabel2");
         whatToDoLabel.setLineWrap(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -207,6 +223,7 @@ public class ExceptionWindow extends javax.swing.JDialog {
         jPanel17.setOpaque(false);
         jPanel17.setLayout(new java.awt.GridBagLayout());
 
+        advancedLabel.setForeground(new java.awt.Color(255, 255, 255));
         advancedLabel.setText("jXLabel2");
         advancedLabel.setMaximumSize(new java.awt.Dimension(560, 300));
         advancedLabel.setMinimumSize(new java.awt.Dimension(560, 300));

@@ -13,6 +13,8 @@ package bc.ui.swing.lists;
 import bc.ui.swing.visuals.Visual;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
@@ -33,6 +35,21 @@ public class StripeListItemRenderer extends javax.swing.JPanel implements ListCe
     /** Creates new form StripeListItemRenderer */
     public StripeListItemRenderer() {
         initComponents();
+    }
+
+    @Override
+    public void setFont(Font font) {
+        if (text != null) {
+            text.setFont(font);
+        }
+    }
+
+    @Override
+    public Font getFont() {
+        if (text == null) {
+            return super.getFont();
+        }
+        return text.getFont();
     }
 
     public Color getEvenBackColor() {
@@ -94,8 +111,11 @@ public class StripeListItemRenderer extends javax.swing.JPanel implements ListCe
 
         text = new javax.swing.JLabel();
 
-        setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        setMinimumSize(new java.awt.Dimension(59, 26));
+        setPreferredSize(new java.awt.Dimension(59, 26));
+        setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 3, 3));
 
+        text.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
         text.setText("jLabel1");
         add(text);
     }// </editor-fold>//GEN-END:initComponents
@@ -121,8 +141,8 @@ public class StripeListItemRenderer extends javax.swing.JPanel implements ListCe
         }
         text.setText(value.toString());
 
-        text.setIcon(((Visual)value).getIcon());
-        
+        text.setIcon(((Visual) value).getIcon());
+
         return this;
     }
 }

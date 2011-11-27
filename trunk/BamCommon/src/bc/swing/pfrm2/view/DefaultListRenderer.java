@@ -10,9 +10,9 @@
  */
 package bc.swing.pfrm2.view;
 
-import bc.swing.renderers.*;
+//import bc.swing.renderers.*;
 import bc.dsl.SwingDSL;
-import bc.swing.pfrm.BaseParamModel;
+import bc.swing.pfrm.Parameter;
 import bc.swing.pfrm2.Att;
 import bc.swing.pfrm2.Node;
 import bc.swing.pfrm2.NodeDescriptionProvider;

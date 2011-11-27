@@ -9,16 +9,15 @@ import bc.swing.pfrm.ano.OnEvent;
 import bc.swing.pfrm.ano.PageDef.DefaultPageView;
 import bc.swing.pfrm.events.Event;
 import bc.swing.pfrm.events.EventListener;
-import bc.swing.pfrm.layouts.CenterLayout;
 import bc.swing.pfrm.units.EventBusUnit;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import org.jfree.layout.CenterLayout;
 
 /**
  *
@@ -139,20 +138,7 @@ public class Model {
 
     public Class<? extends PageLayout> getPageDefaultView() {
         Class<? extends PageLayout> v = getPageAnnotation().layout();
-        if (v.equals(DefaultPageView.class)) {
-            String vname = getClass().getCanonicalName();
-            if (vname.endsWith("Model")) {
-                vname = vname.substring(0, vname.length() - "Model".length());
-            }
-            vname += "View";
-            try {
-                return (Class<? extends PageLayout>) Class.forName(vname, false, ClassLoader.getSystemClassLoader());
-            } catch (ClassNotFoundException ex) {
-                return CenterLayout.class;
-            }
-        } else {
-            return v;
-        }
+        return v;
     }
 
     public Page getPage() {

@@ -18,7 +18,7 @@ public class GenericTableModel<T> extends AbstractTableModel {
 
     List<T> model;
     DataExtractor<T> extractor;
-    DataInserter<T>  inserter;
+    DataInserter<T> inserter;
     Map<Integer, Class> columnClasses;
 
     public GenericTableModel(DataExtractor<T> extractor) {
@@ -38,20 +38,24 @@ public class GenericTableModel<T> extends AbstractTableModel {
             columnClasses.put(columnIndex, extractor.getData(extractor.getSupportedDataNames()[columnIndex], model.get(0)).getClass());
         }
 
-        return columnClasses.containsKey(columnIndex)? columnClasses.get(columnIndex): Object.class;
+        return columnClasses.containsKey(columnIndex) ? columnClasses.get(columnIndex) : Object.class;
     }
-    
-    public void changeInnerList(List<T> innerList){
+
+    public void changeInnerList(List<T> innerList) {
         model = innerList;
         fireTableStructureChanged();
     }
-    
+
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        if (inserter == null) return false;
+        if (inserter == null) {
+            return false;
+        }
         final String name = extractor.getSupportedDataNames()[columnIndex];
-        for (String s : inserter.getSupportedDataNames()){
-            if (s.equals(name)) return true;
+        for (String s : inserter.getSupportedDataNames()) {
+            if (s.equals(name)) {
+                return true;
+            }
         }
         return false;
     }
@@ -75,6 +79,11 @@ public class GenericTableModel<T> extends AbstractTableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         return extractor.getData(extractor.getSupportedDataNames()[columnIndex], model.get(rowIndex));
+    }
+
+    public void setInnerList(List<T> list) {
+        model = list;
+        fireTableRowsInserted(model.size() - list.size(), model.size());
     }
 
     public void fillWith(List<T> ts) {

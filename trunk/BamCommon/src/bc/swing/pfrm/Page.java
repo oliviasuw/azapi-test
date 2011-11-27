@@ -4,14 +4,11 @@
  */
 package bc.swing.pfrm;
 
+import bc.swing.pfrm.ano.PageDef;
 import bc.dsl.ReflectionDSL;
-import bc.swing.pfrm.ano.ViewHints;
 import java.util.LinkedHashMap;
 import bc.dsl.SwingDSL;
 import bc.swing.pfrm.ano.Param;
-import bc.swing.pfrm.viewtypes.ParamType;
-import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
 import java.util.Map;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -34,22 +31,21 @@ public class Page implements Model.ParameterChangeListener {
     private String name;
     private ImageIcon icon;
     private List<Action> actions;
-    private Map<String, BaseParamModel> parameters;
+    private Map<String, Parameter> parameters;
     private Class<? extends PageLayout> layoutClass;
-    private WeakReference<PageLayout> view; //if the view is unused throw it automaticly away..
+    private PageLayout view;
     private List<PageLayout> disposeList = new LinkedList<PageLayout>();
     private Model model;
 
     public Page(String name, ImageIcon icon) {
         this.name = name;
-
         this.actions = new LinkedList<Action>();
         this.icon = icon;
-        this.parameters = new LinkedHashMap<String, BaseParamModel>();
+        this.parameters = new LinkedHashMap<String, Parameter>();
     }
 
-    private static bc.swing.pfrm.ano.PageDef retrivePageAnnotation(final Model model) throws InvalidParameterException {
-        final bc.swing.pfrm.ano.PageDef pano = model.getClass().getAnnotation(bc.swing.pfrm.ano.PageDef.class);
+    private static PageDef retrivePageAnnotation(final Model model) throws InvalidParameterException {
+        final PageDef pano = model.getClass().getAnnotation(PageDef.class);
         if (pano == null) {
             throw new InvalidParameterException("No Page Annotation is found in class " + model.getClass().getName());
         }
@@ -62,7 +58,7 @@ public class Page implements Model.ParameterChangeListener {
 
     public int getParamIndex(String paramName) {
         int i = 0;
-        for (BaseParamModel p : getParams()) {
+        for (Parameter p : getParams()) {
             if (p.getName().equals(paramName)) {
                 return i;
             }
@@ -77,12 +73,7 @@ public class Page implements Model.ParameterChangeListener {
     }
 
     public void setModel(Model model) {
-//        if (this.model != null) {
-//            this.model.removeParameterChangedListener(this);
-//        }
-
         this.model = model;
-//        model.addParameterChangedListener(this);
         model.setPage(this);
     }
 
@@ -97,15 +88,8 @@ public class Page implements Model.ParameterChangeListener {
 
     public void disposeView() {
         if (view != null) {
-            PageLayout got = view.get();
-            if (got != null) {
-                view.get().onDispose();
-            }
+            view.onDispose();
             view = null;
-        }
-
-        for (BaseParamModel param : getParams()) {
-            param.disposeView();
         }
 
         for (PageLayout d : disposeList) {
@@ -118,21 +102,31 @@ public class Page implements Model.ParameterChangeListener {
         this.layoutClass = viewClass;
     }
 
-    protected void addParam(String name, BaseParamModel d) {
+    protected void addParam(String name, Parameter d) {
         parameters.put(name, d);
     }
 
-    public BaseParamModel getParam(String name) {
+    public Parameter param(String name) {
         return parameters.get(name);
     }
-
-    public List<BaseParamModel> getParams() {
-        return new LinkedList<BaseParamModel>(parameters.values());
+    
+    public List<Parameter> getParams() {
+        return new LinkedList<Parameter>(parameters.values());
     }
 
-    public List<BaseParamModel> getParamsWithRole(String role) {
-        LinkedList<BaseParamModel> ret = new LinkedList<BaseParamModel>();
-        for (BaseParamModel p : getParams()) {
+    public Parameter firstWithRole(String role){
+        for (Parameter p : getParams()) {
+            if (p.getRole().equals(role)) {
+                return p;
+            }
+        }
+
+        return null;
+    }
+    
+    public List<Parameter> paramsByRole(String role) {
+        LinkedList<Parameter> ret = new LinkedList<Parameter>();
+        for (Parameter p : getParams()) {
             if (p.getRole().equals(role)) {
                 ret.add(p);
             }
@@ -141,20 +135,19 @@ public class Page implements Model.ParameterChangeListener {
     }
 
     public JPanel getView() {
-        if (view == null || view.get() == null && layoutClass != null) {
+        if (view == null && layoutClass != null) {
             try {
-                final PageLayout temp = layoutClass.newInstance(); //used as anchor do not delete!
-                view = new WeakReference<PageLayout>(temp);
+                view = layoutClass.newInstance(); //used as anchor do not delete!
             } catch (InstantiationException ex) {
                 Logger.getLogger(Page.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalAccessException ex) {
                 Logger.getLogger(Page.class.getName()).log(Level.SEVERE, null, ex);
             }
-            view.get().setPage(this);
-            model.configurePageLayout((JPanel)view.get());
+            view.setPage(this);
+            model.configurePageLayout((JPanel) view);
         }
 
-        return (JPanel) view.get();
+        return (JPanel) view;
     }
 
     private static Action createActionFromActionAnnotation(final bc.swing.pfrm.ano.Action acano, final Method method, final Model x) {
@@ -220,52 +213,41 @@ public class Page implements Model.ParameterChangeListener {
     }
 
     public void syncParametersFromView() {
-        for (BaseParamModel p : getParams()) {
+        for (Parameter p : getParams()) {
             System.out.println("Syncing Parameter: " + p.getName());
             p.syncFromView();
         }
     }
 
     public void syncParameterFromModel(String param) {
-        BaseParamModel p = parameters.get(param);
+        Parameter p = parameters.get(param);
         if (p != null) {
-            p.fireValueChanged();
+            p.valueChanged();
         }
     }
 
     public void syncParameterFromModel(String param, DeltaHint hint) {
-        BaseParamModel p = parameters.get(param);
+        Parameter p = parameters.get(param);
         if (p != null) {
             p.fireValueChanged(hint);
         }
     }
 
     public void syncParameterFromView(String param) {
-        BaseParamModel p = parameters.get(param);
+        Parameter p = parameters.get(param);
         if (p != null) {
             p.syncFromView();
         }
     }
 
     private void loadParameters(Model model) {
-        List<Field> fields = ReflectionDSL.getAllFieldsWithAnnotation(model.getClass(), Param.class);
         List<Method> methods = ReflectionDSL.getAllMethodsWithAnnotation(model.getClass(), Param.class);
         Param dano;
-
-        for (Field f : fields) {
-            dano = f.getAnnotation(Param.class);
-            try {
-                BaseParamModel pmod = generateParam(dano, f, model);
-                addParam(dano.name(), pmod);
-            } catch (Exception ex) {
-                Logger.getLogger(Page.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
 
         for (Method f : methods) {
             dano = f.getAnnotation(Param.class);
             try {
-                BaseParamModel pmod = generateParam(dano, f, model);
+                Parameter pmod = generateParam(dano, f.getName().substring(3));
                 addParam(dano.name(), pmod);
             } catch (Exception ex) {
                 Logger.getLogger(Page.class.getName()).log(Level.SEVERE, null, ex);
@@ -278,75 +260,24 @@ public class Page implements Model.ParameterChangeListener {
      * dont use regulary - very heavy update :(
      */
     public void syncParametersFromModel() {
-        for (BaseParamModel p : parameters.values()) {
-            p.fireValueChanged();
+        for (Parameter p : parameters.values()) {
+            p.valueChanged();
         }
     }
 
-    private void configureParamModel(BaseParamModel pmod, Model m, Param dano, ViewHints vh) {
-        pmod.setPage(this);
-        pmod.setModel(m);
-        pmod.setRole(dano.role());
-        pmod.setVhints(vh);
-        pmod.setNumber(dano.num());
+    private Parameter generateParam(Param dano, String field) {
+//        Parameter pmod = new Parameter(dano.name(), SwingDSL.resIcon(dano.icon()), dano.preferedAdapter(), new ReflectionDSL.GetterAndSetter(getModel(), field));
+//        pmod.setModel(getModel());
+//        pmod.setRole(dano.role());
 
         //ADD ACTIONS
-        for (Method mtd : ReflectionDSL.getAllMethodsWithAnnotation(m.getClass(), bc.swing.pfrm.ano.Action.class)) {
-            bc.swing.pfrm.ano.Action acano = mtd.getAnnotation(bc.swing.pfrm.ano.Action.class);
-            if (acano.forParam().equals(dano.name())) {
-                pmod.addAction(createActionFromActionAnnotation(acano, mtd, m));
-            }
-        }
-    }
-
-    private BaseParamModel generateParam(Param dano, Field field, Model m) {
-        FieldParamModel pmod = null;
-        if (dano.type().equals(ParamType.CUSTOM)) {
-            pmod = new FieldParamModel(dano.name(), SwingDSL.resIcon(dano.icon()), dano.customView());
-        } else {
-            pmod = new FieldParamModel(dano.name(), SwingDSL.resIcon(dano.icon()), dano.type().getViewClass());
-        }
-        
-        pmod.setField(field);
-
-        ViewHints vh = null;
-        if (field.isAnnotationPresent(ViewHints.class)) {
-            vh = field.getAnnotation(ViewHints.class);
-        } else {
-            vh = dano.vhints();
-        }
-
-        configureParamModel(pmod, m, dano, vh);
-        return pmod;
-    }
-
-    private BaseParamModel generateParam(Param dano, Method mtd, Model m) {
-
-        MethodParamModel pmod = null;
-        if (dano.type().equals(ParamType.CUSTOM)) {
-            pmod = new MethodParamModel(dano.name(), SwingDSL.resIcon(dano.icon()), dano.customView());
-        } else {
-            pmod = new MethodParamModel(dano.name(), SwingDSL.resIcon(dano.icon()), dano.type().getViewClass());
-        }
-        
-        Method mtds = null;
-        if (mtd.getName().startsWith("get")) {
-            String setterName = "set" + mtd.getName().substring("get".length());
-            mtds = ReflectionDSL.methodByName(m.getClass(), setterName);
-        }
-
-        pmod.setGetter(mtd);
-        pmod.setSetter(mtds);
-
-        ViewHints vh = null;
-        if (mtd.isAnnotationPresent(ViewHints.class)) {
-            vh = mtd.getAnnotation(ViewHints.class);
-        } else {
-            vh = dano.vhints();
-        }
-
-        configureParamModel(pmod, m, dano, vh);
-        return pmod;
+//        for (Method mtd : ReflectionDSL.getAllMethodsWithAnnotation(getModel().getClass(), bc.swing.pfrm.ano.Action.class)) {
+//            bc.swing.pfrm.ano.Action acano = mtd.getAnnotation(bc.swing.pfrm.ano.Action.class);
+//            if (acano.forParam().equals(dano.name())) {
+//                pmod.addAction(createActionFromActionAnnotation(acano, mtd, getModel()));
+//            }
+//        }
+        return null;
     }
 
     /**
@@ -394,7 +325,7 @@ public class Page implements Model.ParameterChangeListener {
     }
 
     public void onChange(Model model, String propertyName, Object hint) {
-        parameters.get(propertyName).fireValueChanged();
+        parameters.get(propertyName).valueChanged();
     }
 
     public void setName(String name) {

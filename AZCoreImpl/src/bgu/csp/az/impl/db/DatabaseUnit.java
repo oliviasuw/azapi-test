@@ -88,6 +88,7 @@ public enum DatabaseUnit {
 
     public void signal(Object signal) {
         Signal s = new Signal(signal);
+        signals.put(s, s);
         dbQueue.add(s);
     }
 

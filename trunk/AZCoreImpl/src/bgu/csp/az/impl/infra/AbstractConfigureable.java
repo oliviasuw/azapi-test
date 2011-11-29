@@ -29,6 +29,13 @@ public abstract class AbstractConfigureable implements Configureable{
     }
 
     @Override
+    public List<Configureable> getConfiguredChilds() {
+        return Collections.emptyList();
+    }
+    
+    
+
+    @Override
     public boolean canAccept(Class<? extends Configureable> cls) {
         return false;
     }

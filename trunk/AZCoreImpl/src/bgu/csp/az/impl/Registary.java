@@ -7,6 +7,7 @@ package bgu.csp.az.impl;
 import bgu.csp.az.api.Agent;
 import bgu.csp.az.api.ano.Algorithm;
 import bgu.csp.az.api.ano.Register;
+import bgu.csp.az.api.infra.Configureable;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,15 +25,14 @@ import org.reflections.util.ConfigurationBuilder;
 public enum Registary {
 
     UNIT;
-
     Map<String, Class> registeredXMLEntities = new HashMap<String, Class>();
     Map<String, Class> agents = new HashMap<String, Class>();
-    
+
     private Registary() {
 
         //Reflections ref = new Reflections("bgu.csp.az", new TypeAnnotationsScanner());
 
-    Reflections ref = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage("bgu.csp.az"), ClasspathHelper.forPackage("ext.sim")).setScanners(new TypeAnnotationsScanner()));
+        Reflections ref = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage("bgu.csp.az"), ClasspathHelper.forPackage("ext.sim")).setScanners(new TypeAnnotationsScanner()));
 
         //SCANNING XML ENTITIES
         Set<Class<?>> types = ref.getTypesAnnotatedWith(Register.class);
@@ -45,7 +45,7 @@ public enum Registary {
                 registeredXMLEntities.put(name, type);
             }
         }
-        
+
         //SCANNING AGENTS
         types = ref.getTypesAnnotatedWith(Algorithm.class);
         for (Class<?> type : types) {
@@ -58,12 +58,16 @@ public enum Registary {
             }
         }
     }
-    
-    public Class getXMLEntity(String type){
+
+    public Class getXMLEntity(String type) {
         return registeredXMLEntities.get(type);
     }
 
     Class<? extends Agent> getAgentByAlgorithmName(String name) {
         return agents.get(name);
+    }
+
+    public String getEntityName(Configureable conf) {
+        return conf.getClass().getAnnotation(Register.class).name();
     }
 }

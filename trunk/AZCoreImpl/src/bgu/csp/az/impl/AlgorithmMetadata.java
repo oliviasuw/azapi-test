@@ -132,16 +132,4 @@ public class AlgorithmMetadata extends AbstractConfigureable {
         return agent;
     }
 
-    @Register(name = "assign")
-    public static class VarAssign extends AbstractConfigureable {
-
-        @Variable(name = "var", description = "the variable name")
-        String varName;
-        @Variable(name = "val", description = "the variable value to assign")
-        String value;
-
-        @Override
-        protected void configurationDone() {
-        }
-    }
 }

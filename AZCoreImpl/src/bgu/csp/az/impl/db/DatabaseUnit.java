@@ -95,7 +95,11 @@ public enum DatabaseUnit {
     public void disconnect() {
         if (connection != null) {
             try {
+                signal("DONE");
+                awaitSignal("DONE");
                 connection.disconnect();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(DatabaseUnit.class.getName()).log(Level.SEVERE, null, ex);
             } catch (SQLException ex) {
                 Logger.getLogger(DatabaseUnit.class.getName()).log(Level.SEVERE, null, ex);
             }

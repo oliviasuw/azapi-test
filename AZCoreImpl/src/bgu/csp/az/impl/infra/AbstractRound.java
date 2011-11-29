@@ -11,6 +11,7 @@ import bgu.csp.az.api.ano.Variable;
 import bgu.csp.az.api.exp.InvalidValueException;
 import bgu.csp.az.api.infra.Configureable;
 import bgu.csp.az.api.infra.CorrectnessTester.TestResult;
+import bgu.csp.az.impl.DebugInfo;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.ExecutionResult;
 import bgu.csp.az.api.infra.Round;
@@ -19,6 +20,7 @@ import bgu.csp.az.api.infra.VariableMetadata;
 import bgu.csp.az.api.infra.stat.StatisticCollector;
 import bgu.csp.az.api.pgen.Problem;
 import bgu.csp.az.api.pgen.ProblemGenerator;
+import bgu.csp.az.impl.VarAssign;
 import bgu.csp.az.impl.db.DatabaseUnit;
 import bgu.csp.az.impl.pgen.MapProblem;
 import bgu.csp.az.impl.stat.AbstractStatisticCollector;
@@ -69,8 +71,26 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     private CorrectnessTester ctester = null;
     private List<RoundListener> listeners = new LinkedList<RoundListener>();
     private float currentVarValue;
+    private DebugInfo di = null;
+    private long lastProblemSeed = -1; //USED FOR DEBUGING INFORMATION
 
     public AbstractRound() {
+    }
+
+    @Override
+    public List<Configureable> getConfiguredChilds() {
+        LinkedList<Configureable> ret = new LinkedList<Configureable>();
+        ret.addAll(collectors);
+        ret.addAll(algorithms);
+        if (pgen != null) {
+            ret.add(pgen);
+        }
+
+        if (ctester != null) {
+            ret.add(ctester);
+        }
+
+        return ret;
     }
 
     @Override
@@ -80,11 +100,11 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
 
     @Override
     public int getLength() {
-        if (tick == 0){
+        if (tick == 0) {
             tick = 0.1f;
         }
-        
-        return (int) (((end-start)/tick) + 1.0) * tickSize;//(int) Math.floor((((end - start) / tick ) + 1.0) * (double)tickSize);
+
+        return (int) (((end - start) / tick) + 1.0) * tickSize;//(int) Math.floor((((end - start) / tick ) + 1.0) * (double)tickSize);
     }
 
     public void setPool(ExecutorService pool) {
@@ -147,11 +167,41 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
         pgen.bubbleDownVariable(var, val);
     }
 
+    public void debug(DebugInfo di) {
+        fireRoundStarted();
+        try {
+            for (VarAssign v : di.getProblemGeneratorConfiguration()) {
+                pgen.bubbleDownVariable(v.getVarName(), v.getValue());
+            }
+
+            Problem p = new MapProblem();
+            pgen.generate(p, rand);
+
+            AlgorithmMetadata alg = null;
+            for (AlgorithmMetadata a : algorithms) {
+                if (a.getName().equals(di.getAlgorithmName())) {
+                    alg = a;
+                    break;
+                }
+            }
+
+            if (alg != null) {
+
+                if (!execute(p, alg)) {
+                    return;
+                }
+            }
+
+            res = new RoundResult();
+        } catch (Exception ex) {
+            res = new RoundResult(ex, null);
+        } finally {
+            DatabaseUnit.UNIT.signal(this);
+        }
+    }
+
     @Override
     protected void _run() {
-        ExecutionResult r;
-        TestResult testRes;
-        Execution e = null;
         try {
             fireRoundStarted();
 
@@ -164,33 +214,50 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
                 for (int i = 0; i < tickSize; i++) {
                     Problem p = nextProblem();
                     for (AlgorithmMetadata alg : getAlgorithms()) {
-                        e = provideExecution(p, alg);
-                        e.setStatisticCollectors(collectors);
-                        fireNewExecution(e);
-                        e.run();
-                        r = e.getResult();
-                        if (r.isExecutionCrushed()) {
-                            res = new RoundResult(r.getCrushReason(), e);
+                        if (!execute(p, alg)) {
+                            di = new DebugInfo(this.getName(), alg.getName(), lastProblemSeed);
                             return;
-                        } else if (getCorrectnessTester() != null) {
-                            testRes = getCorrectnessTester().test(e, r);
-                            if (!testRes.passed) {
-                                res = new RoundResult(testRes.rightAnswer, e);
-                                return;
-                            }
                         }
-                        fireExecutionEnded(e);
                     }
                 }
             }
             res = new RoundResult();
 
         } catch (Exception ex) {
-            res = new RoundResult(ex, e);
-        }finally{
+            res = new RoundResult(ex, null);
+        } finally {
             DatabaseUnit.UNIT.signal(this);
         }
 
+    }
+    
+    public DebugInfo getFailoreDebugInfo(){
+        return di;
+    }
+
+    private boolean execute(Problem p, AlgorithmMetadata alg) {
+        Execution e = provideExecution(p, alg);
+        try {
+            e.setStatisticCollectors(collectors);
+            fireNewExecution(e);
+            e.run();
+            ExecutionResult r = e.getResult();
+            if (r.isExecutionCrushed()) {
+                res = new RoundResult(r.getCrushReason(), e);
+                return false;
+            } else if (getCorrectnessTester() != null) {
+                TestResult testRes = getCorrectnessTester().test(e, r);
+                if (!testRes.passed) {
+                    res = new RoundResult(testRes.rightAnswer, e);
+                    return false;
+                }
+            }
+            fireExecutionEnded(e);
+            return true;
+        } catch (Exception ex) {
+            res = new RoundResult(ex, e);
+            return false;
+        }
     }
 
     protected abstract Execution provideExecution(Problem p, AlgorithmMetadata alg);
@@ -269,12 +336,12 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     }
 
     protected Problem nextProblem() {
-        final long nseed = rand.nextLong();
-        Random nrand = new Random(nseed);
+        lastProblemSeed = rand.nextLong();
+        Random nrand = new Random(lastProblemSeed);
         MapProblem p = new MapProblem();
         HashMap<String, Object> metadata = p.getMetadata();
 
-        metadata.put(SEED_PROBLEM_METADATA, nseed);
+        metadata.put(SEED_PROBLEM_METADATA, lastProblemSeed);
         metadata.put(PROBLEM_GENERATOR_PROBLEM_METADATA, pgen.getClass().getName());
 
         pgen.generate(p, nrand);

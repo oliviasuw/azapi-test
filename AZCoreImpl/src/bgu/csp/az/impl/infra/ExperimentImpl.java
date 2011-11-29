@@ -7,6 +7,7 @@ package bgu.csp.az.impl.infra;
 import bgu.csp.az.api.ano.Register;
 import bgu.csp.az.api.exp.InvalidValueException;
 import bgu.csp.az.api.infra.Configureable;
+import bgu.csp.az.impl.DebugInfo;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.Round.RoundResult;
 import bgu.csp.az.api.infra.VariableMetadata;
@@ -32,15 +33,29 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
     private List<Round> rounds = new ArrayList<Round>();
     private ExperimentResult result;
     private LinkedList<Experiment.ExperimentListener> listeners = new LinkedList<ExperimentListener>();
+    private DebugInfo di;
 
     @Override
     public void _run() {
+
         ExecutorService pool = Executors.newCachedThreadPool();
         try {
 
             fireExperimentStarted();
 
-            for (Round current : rounds) {
+            List<Round> roundsToRun = new LinkedList<Round>();
+            if (di == null){
+                roundsToRun.addAll(rounds);
+            }else {
+                for (Round r : rounds){
+                    if (r.getName().equals(di.getRoundName())){
+                        roundsToRun.add(r);
+                        break;
+                    }
+                }
+            }
+            
+            for (Round current : roundsToRun) {
                 if (Thread.interrupted()) {
                     result = new ExperimentResult(true);
                 }
@@ -51,7 +66,12 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
                     ((AbstractRound) current).setPool(pool);
                 }
 
-                current.run();
+                if (di == null) {
+                    current.run();
+                }else {
+                    ((AbstractRound) current).debug(di);
+                }
+                
                 DatabaseUnit.UNIT.signal(current); // SIGNALING - TELLING THAT STATISTICS COLLECTION TO THE CURRENT ROUND IS OVER
                 current.removeListener(this);
                 RoundResult res = current.getResult();
@@ -68,6 +88,20 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
             fireExperimentEnded();
             pool.shutdownNow();
         }
+    }
+
+    @Override
+    public List<Configureable> getConfiguredChilds() {
+        LinkedList<Configureable> ret = new LinkedList<Configureable>(rounds);
+        if (di != null){
+            ret.add(di);
+        }else if (getResult() != null && !getResult().succeded){
+            if (getResult().problematicRound instanceof AbstractRound && ((AbstractRound) getResult().problematicRound).getFailoreDebugInfo() != null){
+                ret.add(((AbstractRound) getResult().problematicRound).getFailoreDebugInfo());
+            }
+        }
+        
+        return ret;
     }
 
     @Override
@@ -95,11 +129,15 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
         Class<? extends Configureable> ret = Round.class;
         LinkedList<Class<? extends Configureable>> ll = new LinkedList<Class<? extends Configureable>>();
         ll.add(ret);
+        ll.add(DebugInfo.class);
         return ll;
     }
 
     @Override
     public boolean canAccept(Class<? extends Configureable> cls) {
+        if (DebugInfo.class.isAssignableFrom(cls)){
+            return di == null;
+        }
         return Round.class.isAssignableFrom(cls);
     }
 
@@ -107,9 +145,11 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
     public void addSubConfiguration(Configureable sub) throws InvalidValueException {
         if (!canAccept(sub.getClass())) {
             throw new InvalidValueException("only except rounds");
-        } else {
+        } else if (sub instanceof Round) {
             Round r = (Round) sub;
             addRound(r);
+        } else {
+            di = (DebugInfo) sub;
         }
     }
 
@@ -167,6 +207,20 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
         for (Round r : rounds) {
             r.bubbleDownVariable(var, val);
         }
+    }
+
+    @Override
+    public int getLength() {
+        if (di != null){
+            return 1;
+        }else {
+            int sum = 0;
+            for (Round r : rounds){
+                sum+=r.getLength();
+            }
+            return sum;
+        }
+        
     }
 
 }

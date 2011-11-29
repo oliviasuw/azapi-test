@@ -5,6 +5,7 @@
 package bgu.csp.az.impl.pgen;
 
 import bgu.csp.az.api.ProblemType;
+import bgu.csp.az.api.ano.Variable;
 import bgu.csp.az.api.infra.VariableMetadata;
 import bgu.csp.az.api.pgen.ProblemGenerator;
 import bgu.csp.az.impl.infra.AbstractConfigureable;
@@ -15,6 +16,7 @@ import bgu.csp.az.impl.infra.AbstractConfigureable;
  */
 public abstract class AbstractProblemGenerator extends AbstractConfigureable implements ProblemGenerator {
 
+    
     @Override
     public VariableMetadata[] provideExpectedVariables() {
         return VariableMetadata.scan(this);

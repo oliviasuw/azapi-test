@@ -64,20 +64,6 @@ public abstract class AbstractProcess implements Process {
         epipe.append(element);
     }
 
-    /**
-     * starts the execution of the inner project
-     * when ever a simulator returns back a runtime object it attached a project and step
-     * list to it (as defined in the execution call) but the simulator not realy start the
-     * run - this method does,
-     *
-     * this method is a non-blocking one (it started in its own thread)
-     * if you want to use a blocking method call the run method
-     */
-    @Override
-    public void start() {
-        new Thread(this).start();
-    }
-
     @Override
     public void stop() {
         if (executingThread != null) {

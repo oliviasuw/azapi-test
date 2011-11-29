@@ -44,17 +44,17 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
             fireExperimentStarted();
 
             List<Round> roundsToRun = new LinkedList<Round>();
-            if (di == null){
+            if (di == null) {
                 roundsToRun.addAll(rounds);
-            }else {
-                for (Round r : rounds){
-                    if (r.getName().equals(di.getRoundName())){
+            } else {
+                for (Round r : rounds) {
+                    if (r.getName().equals(di.getRoundName())) {
                         roundsToRun.add(r);
                         break;
                     }
                 }
             }
-            
+
             for (Round current : roundsToRun) {
                 if (Thread.interrupted()) {
                     result = new ExperimentResult(true);
@@ -68,10 +68,10 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
 
                 if (di == null) {
                     current.run();
-                }else {
+                } else {
                     ((AbstractRound) current).debug(di);
                 }
-                
+
                 DatabaseUnit.UNIT.signal(current); // SIGNALING - TELLING THAT STATISTICS COLLECTION TO THE CURRENT ROUND IS OVER
                 current.removeListener(this);
                 RoundResult res = current.getResult();
@@ -93,15 +93,19 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
     @Override
     public List<Configureable> getConfiguredChilds() {
         LinkedList<Configureable> ret = new LinkedList<Configureable>(rounds);
-        if (di != null){
+        if (di != null) {
             ret.add(di);
-        }else if (getResult() != null && !getResult().succeded){
-            if (getResult().problematicRound instanceof AbstractRound && ((AbstractRound) getResult().problematicRound).getFailoreDebugInfo() != null){
+        } else if (getResult() != null && !getResult().succeded) {
+            if (getResult().problematicRound instanceof AbstractRound && ((AbstractRound) getResult().problematicRound).getFailoreDebugInfo() != null) {
                 ret.add(((AbstractRound) getResult().problematicRound).getFailoreDebugInfo());
             }
         }
-        
+
         return ret;
+    }
+
+    public DebugInfo getFailureDebugInfo() {
+        return di;
     }
 
     @Override
@@ -111,7 +115,19 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
 
     @Override
     public List<Round> getRounds() {
-        return Collections.unmodifiableList(rounds);
+        if (di == null) {
+            return Collections.unmodifiableList(rounds);
+        }else {
+            List<Round> ret = new LinkedList<Round>();
+            for (Round r : rounds){
+                if (r.getName().equals(di.getRoundName())){
+                    ret.add(r);
+                    return ret;
+                }
+            }
+            
+            return ret;
+        }
     }
 
     @Override
@@ -135,7 +151,7 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
 
     @Override
     public boolean canAccept(Class<? extends Configureable> cls) {
-        if (DebugInfo.class.isAssignableFrom(cls)){
+        if (DebugInfo.class.isAssignableFrom(cls)) {
             return di == null;
         }
         return Round.class.isAssignableFrom(cls);
@@ -211,16 +227,15 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
 
     @Override
     public int getLength() {
-        if (di != null){
+        if (di != null) {
             return 1;
-        }else {
+        } else {
             int sum = 0;
-            for (Round r : rounds){
-                sum+=r.getLength();
+            for (Round r : rounds) {
+                sum += r.getLength();
             }
             return sum;
         }
-        
-    }
 
+    }
 }

@@ -29,12 +29,6 @@ import java.util.logging.Logger;
 @Register(name = "nccc-sc")
 public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStatisticCollector.NCCCRecord> {
 
-    @Variable(name = "test", description = "this is the description of test")
-    long test = 7l;
-    @Variable(name = "test2", description = "this is the description of test")
-    long testt = 15;
-    @Variable(name = "test3", description = "this is the description of test")
-    String bla = "bla bla";
     long[] nccc;
     long[] lastKnownCC;
     String runningVar;

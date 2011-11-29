@@ -15,11 +15,13 @@ import java.io.File;
 import static bc.dsl.XNavDSL.*;
 import bgu.csp.az.api.infra.Configureable;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.ParsingException;
 
@@ -27,7 +29,28 @@ import nu.xom.ParsingException;
  *
  * @author bennyl
  */
-public class TestXMLReader {
+public class XMLConfigurator {
+
+    public static void write(Configureable conf, PrintWriter pw) {
+        String confName = Registary.UNIT.getEntityName(conf);
+        Element e = new Element(confName);
+        write(conf, e);
+        
+        pw.append(e.toXML());
+    }
+
+    private static void write(Configureable conf, Element root) {
+        for (VariableMetadata v : VariableMetadata.scan(conf)) {
+            root.addAttribute(new Attribute(v.getName(), v.getCurrentValue().toString()));
+        }
+        
+        for (Configureable c : conf.getConfiguredChilds()){
+            String confName = Registary.UNIT.getEntityName(c);
+            Element e = new Element(confName);
+            write(c, e);
+            root.appendChild(e);
+        }
+    }
 
     public static Experiment read(File from) throws IOException, InstantiationException, IllegalAccessException {
         try {
@@ -35,11 +58,11 @@ public class TestXMLReader {
             Element root = xload(from).getRootElement();
 
             configure(exp, root);
-            
+
             return exp;
 
         } catch (ParsingException ex) {
-            Logger.getLogger(TestXMLReader.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(XMLConfigurator.class.getName()).log(Level.SEVERE, null, ex);
             throw new IOException("cannot parse file", ex);
         }
     }
@@ -79,10 +102,10 @@ public class TestXMLReader {
         }
         c.configure(conf);
     }
-    
-    public static void main(String[] args) throws Exception{
+
+    public static void main(String[] args) throws Exception {
         Experiment exp = read(new File("exp.xml"));
-        for (Round r : exp.getRounds()){
+        for (Round r : exp.getRounds()) {
             System.out.println(r.toString());
         }
     }

@@ -141,7 +141,11 @@ public class StripeListItemRenderer extends javax.swing.JPanel implements ListCe
         }
         text.setText(value.toString());
 
-        text.setIcon(((Visual) value).getIcon());
+        if (value instanceof Visual) {
+            text.setIcon(((Visual) value).getIcon());
+        } else {
+            text.setIcon(null);
+        }
 
         return this;
     }

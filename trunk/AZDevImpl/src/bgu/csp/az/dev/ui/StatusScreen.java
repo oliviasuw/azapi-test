@@ -71,15 +71,10 @@ public class StatusScreen extends javax.swing.JPanel {
         final BoundedRangeModel mod = execProgress.getModel();
         mod.setMinimum(0);
 
-        int sum = 0;
-        for (Round r : experiment.getRounds()) {
-            sum += r.getLength();
-        }
+        final int expLength = experiment.getLength();
 
-        final int finalSum = sum;
-
-        mod.setMaximum(sum);
-        progressLabel.setText("Execution 0 " + " of " + finalSum);
+        mod.setMaximum(expLength);
+        progressLabel.setText("Execution 1 " + " of " + expLength);
         ExecutionUnit.UNIT.addExperimentListener(new Experiment.ExperimentListener() {
 
             @Override
@@ -118,7 +113,7 @@ public class StatusScreen extends javax.swing.JPanel {
             @Override
             public void onExecutionEnded(Experiment source, Round round, Execution exec) {
                 mod.setValue(mod.getValue() + 1);
-                progressLabel.setText("Execution " + (mod.getValue()) + " of " + finalSum);
+                progressLabel.setText("Execution " + (mod.getValue()) + " of " + expLength);
             }
         });
     }

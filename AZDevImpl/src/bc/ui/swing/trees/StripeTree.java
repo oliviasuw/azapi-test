@@ -1,6 +1,8 @@
 package bc.ui.swing.trees;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
 /**
  * A JTree that draws a zebra-striped background.
@@ -10,8 +12,17 @@ public class StripeTree
 
     public java.awt.Color rowColors[] = new java.awt.Color[]{new Color(245, 245, 245), new Color(225, 225, 225)};
     private boolean drawStripes = false;
+    private IconProvider iconProvider;
 
     public StripeTree() {
+    }
+
+    public void setIconProvider(IconProvider iconProvider) {
+        this.iconProvider = iconProvider;
+    }
+
+    public IconProvider getIconProvider() {
+        return iconProvider;
     }
 
     public StripeTree(java.util.Hashtable<?, ?> value) {
@@ -104,7 +115,7 @@ public class StripeTree
     }
 
     /** Wrap cell renderer and editor to add zebra background stripes. */
-    private class RendererEditorWrapper
+    public class RendererEditorWrapper
             implements javax.swing.tree.TreeCellRenderer,
             javax.swing.tree.TreeCellEditor {
 
@@ -119,14 +130,22 @@ public class StripeTree
                     ren.getTreeCellRendererComponent(
                     tree, value, selected, expanded,
                     leaf, row, hasFocus);
+
+            DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) c;
+            if (iconProvider != null) {
+                renderer.setIcon(iconProvider.provideFor(value));
+            }
+
             if (selected || !drawStripes) {
                 return c;
             }
             if (!(c instanceof javax.swing.tree.DefaultTreeCellRenderer)) {
                 c.setBackground(rowColors[row & 1]);
             } else {
+
                 ((javax.swing.tree.DefaultTreeCellRenderer) c).setBackgroundNonSelectionColor(rowColors[row & 1]);
             }
+
             return c;
         }
 
@@ -202,29 +221,4 @@ public class StripeTree
         wrapper.ed = ed;
         return wrapper;
     }
-//    /** Compute zebra background stripe colors. */
-//    private void updateZebraColors() {
-//        if ((rowColors[0] = getBackground()) == null) {
-//            rowColors[0] = rowColors[1] = java.awt.Color.white;
-//            return;
-//        }
-//        java.awt.Color sel = javax.swing.UIManager.getColor(
-//                "Tree.selectionBackground");
-//        if (sel == null) {
-//            sel = java.awt.SystemColor.textHighlight;
-//        }
-//        if (sel == null) {
-//            rowColors[1] = rowColors[0];
-//            return;
-//        }
-//        final float[] bgHSB = java.awt.Color.RGBtoHSB(
-//                rowColors[0].getRed(), rowColors[0].getGreen(),
-//                rowColors[0].getBlue(), null);
-//        final float[] selHSB = java.awt.Color.RGBtoHSB(
-//                sel.getRed(), sel.getGreen(), sel.getBlue(), null);
-//        rowColors[1] = java.awt.Color.getHSBColor(
-//                (selHSB[1] == 0.0 || selHSB[2] == 0.0) ? bgHSB[0] : selHSB[0],
-//                0.1f * selHSB[1] + 0.9f * bgHSB[1],
-//                bgHSB[2] + ((bgHSB[2] < 0.5f) ? 0.05f : -0.05f));
-//    }
 }

@@ -10,15 +10,17 @@
  */
 package bgu.csp.az.dev.ui;
 
+import bc.dsl.SwingDSL;
+import bc.ui.swing.trees.IconProvider;
 import bgu.csp.az.api.ImmutableProblem;
-import java.awt.CardLayout;
-import javax.swing.JTable;
+import bgu.csp.az.impl.pgen.MapProblem;
+import bgu.csp.az.impl.pgen.UnstructuredDCOPGen;
+import java.util.Random;
+import javax.swing.Icon;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
 /**
@@ -33,7 +35,26 @@ public class ProblemViewScreen extends javax.swing.JPanel {
     public ProblemViewScreen(ImmutableProblem p) {
         initComponents();
         prepareTree(p);
-        ((DefaultTreeCellRenderer) this.tree.getCellRenderer()).setBackgroundNonSelectionColor(null);
+        tree.setIconProvider(new IconProvider() {
+
+            private Icon AGENT1_ICON = SwingDSL.resIcon("agent1");
+            private Icon AGENT2_ICON = SwingDSL.resIcon("agent2");
+            private Icon ALL_ICON = SwingDSL.resIcon("all-constraints");
+
+            @Override
+            public Icon provideFor(Object item) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) item;
+                if (node.isLeaf()) {
+                    if (((AgentInfo) node.getUserObject()).getName().equals(CONSTRAINT_MATRIX)) {
+                        return ALL_ICON;
+                    } else {
+                        return AGENT2_ICON;
+                    }
+                } else {
+                    return AGENT1_ICON;
+                }
+            }
+        });
 
     }
 
@@ -42,7 +63,8 @@ public class ProblemViewScreen extends javax.swing.JPanel {
 
         DefaultMutableTreeNode r = (DefaultMutableTreeNode) tree.getModel().getRoot();
         r.removeAllChildren();
-        r.add(new DefaultMutableTreeNode(new AgentInfo(CONSTRAINT_MATRIX), true));
+        final DefaultMutableTreeNode node = new DefaultMutableTreeNode(new AgentInfo(CONSTRAINT_MATRIX), true);
+        r.add(node);
         loadAgents(r, p);
 
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -63,7 +85,10 @@ public class ProblemViewScreen extends javax.swing.JPanel {
                     AgentInfo agent = (AgentInfo) nodeInfo;
                     if (agent.getName().equals(CONSTRAINT_MATRIX)) {
                         prepareAll(p);
+                    } else if (parentNode == tree.getModel().getRoot()) {
+                        dataPane.unSetData();
                     } else {
+
                         Object parentInfo = parentNode.getUserObject();
                         AgentInfo parent = (AgentInfo) parentInfo;
                         prepareConstraints(parent.getId(), agent.getId(), p);
@@ -88,46 +113,19 @@ public class ProblemViewScreen extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        constraintsTablePane = new javax.swing.JScrollPane();
-        constraintsTable = new javax.swing.JTable();
-        costsTablePane = new javax.swing.JScrollPane();
-        costsTable = new javax.swing.JTable();
+        constraintsTable = new bc.ui.swing.tables.ConstraintTable();
         jPanel1 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        treeScroll = new javax.swing.JScrollPane();
-        tree = new javax.swing.JTree();
+        tree = new bc.ui.swing.trees.ScrollableStripeTree();
         dataPane = new bc.ui.swing.useful.DataPanel();
-
-        constraintsTablePane.setOpaque(false);
-
-        constraintsTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        constraintsTable.setOpaque(false);
-        constraintsTablePane.setViewportView(constraintsTable);
-
-        costsTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        costsTablePane.setViewportView(costsTable);
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        jPanel4 = new javax.swing.JPanel();
+        searchLabel1 = new javax.swing.JLabel();
+        searchTextField = new javax.swing.JTextField();
 
         setOpaque(false);
         setLayout(new java.awt.BorderLayout());
@@ -151,29 +149,88 @@ public class ProblemViewScreen extends javax.swing.JPanel {
         jPanel3.setOpaque(false);
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
-        treeScroll.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 3, new java.awt.Color(153, 153, 153)));
-        treeScroll.setMinimumSize(new java.awt.Dimension(200, 22));
-        treeScroll.setOpaque(false);
-        treeScroll.setPreferredSize(new java.awt.Dimension(200, 322));
-
-        tree.setBackground(new java.awt.Color(240, 240, 240));
-        tree.setMinimumSize(new java.awt.Dimension(200, 0));
-        tree.setOpaque(false);
+        tree.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 3, new java.awt.Color(102, 102, 102)));
+        tree.setMinimumSize(new java.awt.Dimension(200, 22));
+        tree.setPreferredSize(new java.awt.Dimension(200, 440));
         tree.setRootVisible(false);
-        treeScroll.setViewportView(tree);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridheight = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 1.0;
-        jPanel3.add(treeScroll, gridBagConstraints);
+        jPanel3.add(tree, gridBagConstraints);
 
         dataPane.setBackground(new java.awt.Color(153, 153, 153));
+        dataPane.setForeground(new java.awt.Color(255, 255, 255));
+        dataPane.setNoDataForeColor(new java.awt.Color(255, 255, 255));
+        dataPane.setNoDataText("No Constraint Table To Show");
         dataPane.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         jPanel3.add(dataPane, gridBagConstraints);
+
+        jPanel2.setBackground(new java.awt.Color(189, 188, 188));
+        jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(3, 0, 3, 3, new java.awt.Color(102, 102, 102)));
+        jPanel2.setMinimumSize(new java.awt.Dimension(10, 200));
+        jPanel2.setPreferredSize(new java.awt.Dimension(100, 200));
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        jScrollPane1.setBorder(null);
+
+        jTextArea1.setBackground(new java.awt.Color(0, 0, 0));
+        jTextArea1.setColumns(20);
+        jTextArea1.setFont(new java.awt.Font("Consolas", 1, 12));
+        jTextArea1.setForeground(new java.awt.Color(51, 255, 0));
+        jTextArea1.setRows(5);
+        jTextArea1.setText("Hello World\nThis is the next line");
+        jScrollPane1.setViewportView(jTextArea1);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        jPanel2.add(jScrollPane1, gridBagConstraints);
+
+        jPanel4.setBackground(new java.awt.Color(0, 0, 0));
+        jPanel4.setLayout(new java.awt.GridBagLayout());
+
+        searchLabel1.setBackground(new java.awt.Color(226, 225, 225));
+        searchLabel1.setFont(new java.awt.Font("Consolas", 1, 12));
+        searchLabel1.setForeground(new java.awt.Color(102, 102, 102));
+        searchLabel1.setText("?> ");
+        searchLabel1.setOpaque(true);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
+        jPanel4.add(searchLabel1, gridBagConstraints);
+
+        searchTextField.setBackground(new java.awt.Color(226, 225, 225));
+        searchTextField.setFont(new java.awt.Font("Consolas", 1, 12));
+        searchTextField.setForeground(new java.awt.Color(102, 102, 102));
+        searchTextField.setBorder(null);
+        searchTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchTextFieldActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipady = 6;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 5);
+        jPanel4.add(searchTextField, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        jPanel2.add(jPanel4, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        jPanel3.add(jPanel2, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -185,18 +242,25 @@ public class ProblemViewScreen extends javax.swing.JPanel {
 
         add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void searchTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchTextFieldActionPerformed
+        
+}//GEN-LAST:event_searchTextFieldActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable constraintsTable;
-    private javax.swing.JScrollPane constraintsTablePane;
-    private javax.swing.JTable costsTable;
-    private javax.swing.JScrollPane costsTablePane;
+    private bc.ui.swing.tables.ConstraintTable constraintsTable;
     private bc.ui.swing.useful.DataPanel dataPane;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JTree tree;
-    private javax.swing.JScrollPane treeScroll;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JLabel searchLabel1;
+    private javax.swing.JTextField searchTextField;
+    private bc.ui.swing.trees.ScrollableStripeTree tree;
     // End of variables declaration//GEN-END:variables
 
     private void loadAgents(DefaultMutableTreeNode r, ImmutableProblem p) {
@@ -228,10 +292,10 @@ public class ProblemViewScreen extends javax.swing.JPanel {
                 }
             }
         }
-        this.constraintsTable.setModel(model);
-        this.constraintsTable.setTableHeader(null);
-        this.constraintsTablePane.setColumnHeaderView(null);
-        this.dataPane.setData(constraintsTablePane);
+        this.constraintsTable.getTable().setModel(model);
+        this.constraintsTable.getTable().setTableHeader(null);
+//        this.constraintsTablePane.setColumnHeaderView(null);
+        this.dataPane.setData(constraintsTable);
         this.constraintsTable.updateUI();
 
     }
@@ -241,7 +305,7 @@ public class ProblemViewScreen extends javax.swing.JPanel {
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnCount(domVars + 1);
         model.setRowCount(domVars + 1);
-        String name = "Agent " + ai + " / Agent " + aj;
+        String name = "" + ai + " / " + aj;
         model.setValueAt(name, 0, 0);
         for (int i = 0; i < domVars; i++) {
             model.setValueAt(i, 0, i + 1);
@@ -254,16 +318,26 @@ public class ProblemViewScreen extends javax.swing.JPanel {
             }
         }
 
-        this.costsTable.setModel(model);
-        this.costsTable.setTableHeader(
+        this.constraintsTable.getTable().setModel(model);
+        this.constraintsTable.getTable().setTableHeader(
                 null);
 
 
-        this.costsTablePane.setColumnHeaderView(null);
-        this.dataPane.setData(costsTablePane);
+//        this.constraintsTable.setColumnHeaderView(null);
+        this.dataPane.setData(constraintsTable);
 
 
-        this.costsTable.updateUI();
+        this.constraintsTable.getTable().updateUI();
+    }
+
+    public static void main(String[] args) {
+        MapProblem p = new MapProblem();
+        final UnstructuredDCOPGen gen = new UnstructuredDCOPGen();
+        gen.bubbleDownVariable("n", 12);
+        gen.bubbleDownVariable("d", 7);
+        gen.generate(p, new Random());
+        SwingDSL.configureUI();
+        SwingDSL.showInFrame(new ProblemViewScreen(p));
     }
 
     private static class AgentInfo {

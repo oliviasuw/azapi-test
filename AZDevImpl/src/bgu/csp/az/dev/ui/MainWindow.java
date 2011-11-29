@@ -50,9 +50,9 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
 
         //Logs Screen
         tabs.addTab("Log", SwingDSL.resIcon("balloon-ellipsis"), logsScreen);
-
-
+        
         ExecutionUnit.UNIT.addExperimentListener(this);
+        
         //show!
         java.awt.EventQueue.invokeLater(new Runnable() {
 

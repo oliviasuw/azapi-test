@@ -162,6 +162,9 @@ public class ConstraintCalcConsole extends javax.swing.JPanel {
         StringBuilder output = new StringBuilder("Calculating cost for: ");
         for (Integer i : values.keySet()) {
             final Integer value = values.get(i);
+            if (!p.getDomainOf(i).contains(value)){
+              this.cons.append("There is no value " + value + " in the domain of agent " + i + "\n");  
+            }
             output.append("[").append(i).append("=").append(value).append("],");
             ass.assign(i, value);
         }

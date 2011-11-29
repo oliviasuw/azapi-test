@@ -9,7 +9,6 @@ import java.awt.Color;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Formatter;
 import java.util.HashMap;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -45,12 +44,14 @@ public class AgentLogDocument extends LimitedBatchDocument {
 
     }
 
-    public SimpleEntry<Integer,Integer> search(String what,boolean ragex,boolean matchCase,int offset){
-        
+    
+    public SimpleEntry<Integer,Integer> search(String what,boolean ragex,int offset){
             if(!ragex){
                 what=Pattern.quote(what);
+                
             }
-            Pattern p =(Pattern.compile(what ,(matchCase ? Pattern.LITERAL :Pattern.CASE_INSENSITIVE)));
+            Pattern p =(Pattern.compile(what ,Pattern.CASE_INSENSITIVE ));
+            
             try {
                 match=p.matcher(getText(offset, getLength()-offset));
             } catch (BadLocationException ex) {

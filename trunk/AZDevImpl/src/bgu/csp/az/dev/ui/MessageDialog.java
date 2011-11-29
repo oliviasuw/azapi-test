@@ -137,7 +137,7 @@ public class MessageDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel2.add(iconLabel, gridBagConstraints);
 
-        typeLable.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+        typeLable.setFont(new java.awt.Font("Consolas", 1, 18));
         typeLable.setText("HMMM...");
         typeLable.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -150,7 +150,7 @@ public class MessageDialog extends javax.swing.JDialog {
 
         jPanel1.add(jPanel2, java.awt.BorderLayout.NORTH);
 
-        jPanel3.setBackground(new java.awt.Color(153, 153, 153));
+        jPanel3.setBackground(new java.awt.Color(102, 102, 102));
         jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 3, 5, 5));
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
@@ -182,7 +182,7 @@ public class MessageDialog extends javax.swing.JDialog {
         messageContentPanel.setOpaque(false);
         messageContentPanel.setLayout(new java.awt.BorderLayout());
 
-        jLabel5.setFont(new java.awt.Font("Consolas", 1, 14));
+        jLabel5.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(210, 233, 255));
         jLabel5.setText("Details:");
         messageContentPanel.add(jLabel5, java.awt.BorderLayout.PAGE_START);

@@ -120,7 +120,7 @@ public class ExceptionDialog extends javax.swing.JDialog {
 
         jPanel1.add(jPanel2, java.awt.BorderLayout.NORTH);
 
-        jPanel3.setBackground(new java.awt.Color(153, 153, 153));
+        jPanel3.setBackground(new java.awt.Color(102, 102, 102));
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
         jPanel11.setBackground(new java.awt.Color(120, 120, 120));

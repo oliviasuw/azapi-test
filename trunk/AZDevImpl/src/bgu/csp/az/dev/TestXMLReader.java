@@ -6,7 +6,6 @@ package bgu.csp.az.dev;
 
 import bc.dsl.ReflectionDSL;
 import bgu.csp.az.api.exp.InvalidValueException;
-import bgu.csp.az.api.infra.Configureable;
 import bgu.csp.az.api.infra.Experiment;
 import bgu.csp.az.api.infra.Round;
 import bgu.csp.az.api.infra.VariableMetadata;
@@ -14,6 +13,7 @@ import bgu.csp.az.impl.Registary;
 import bgu.csp.az.impl.infra.ExperimentImpl;
 import java.io.File;
 import static bc.dsl.XNavDSL.*;
+import bgu.csp.az.api.infra.Configureable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;

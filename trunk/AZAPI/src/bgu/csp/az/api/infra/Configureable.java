@@ -5,6 +5,7 @@
 package bgu.csp.az.api.infra;
 
 import bgu.csp.az.api.exp.InvalidValueException;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ import java.util.Map;
  * 
  * @author bennyl
  */
-public interface Configureable {
+public interface Configureable{
 
     /**
      * @return the expected variables 
@@ -54,4 +55,6 @@ public interface Configureable {
      * @param variables 
      */
     void configure(Map<String, Object> variables);   
+    
+    List<Configureable> getConfiguredChilds();
 }

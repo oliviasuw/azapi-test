@@ -4,6 +4,7 @@
  */
 package bc.dsl;
 
+import javax.swing.JPanel;
 import java.util.List;
 import java.awt.Desktop;
 import java.awt.Font;
@@ -18,6 +19,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -125,6 +127,14 @@ public class SwingDSL {
         return cn;
     }
 
+    public static void showInFrame(JPanel pan){
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setContentPane(pan);
+        frame.pack();
+        frame.setVisible(true);
+    }
+    
     public static JComboBox append(JComboBox combo, Object obj) {
         ((DefaultComboBoxModel) combo.getModel()).addElement(obj);
         return combo;

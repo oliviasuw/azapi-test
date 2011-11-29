@@ -108,12 +108,13 @@ public class StatusScreen extends javax.swing.JPanel {
 
             @Override
             public void onNewExecutionStarted(Experiment source, Round round, Execution exec) {
+                mod.setValue(mod.getValue() + 1);
+                progressLabel.setText("Execution " + (mod.getValue()) + " of " + expLength);
             }
 
             @Override
             public void onExecutionEnded(Experiment source, Round round, Execution exec) {
-                mod.setValue(mod.getValue() + 1);
-                progressLabel.setText("Execution " + (mod.getValue()) + " of " + expLength);
+                
             }
         });
     }

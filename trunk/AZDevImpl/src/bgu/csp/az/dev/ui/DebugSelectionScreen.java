@@ -10,19 +10,112 @@
  */
 package bgu.csp.az.dev.ui;
 
-import javax.swing.plaf.metal.MetalProgressBarUI;
+import bc.dsl.SwingDSL;
+import bc.ui.swing.listeners.Listeners;
+import bc.ui.swing.visuals.Visual;
+import bgu.csp.az.api.infra.Experiment;
+import bgu.csp.az.api.infra.Round;
+import bgu.csp.az.dev.XMLConfigurator;
+import bgu.csp.az.impl.infra.ExperimentImpl;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
  * @author bennyl
  */
-public class DebugSelectionScreen extends javax.swing.JPanel {
+public class DebugSelectionScreen extends javax.swing.JPanel implements RoundView.DebugRequestListener {
+
+    File problemsPath;
+    List<Experiment> badExperiments;
+    Map<Experiment, File> efMap;
+    Listeners<DebugSelectionListener> debugListeners = Listeners.Builder.newInstance(DebugSelectionListener.class);  
 
     /** Creates new form StatusScreen */
+    @SuppressWarnings("LeakingThisInConstructor")
     public DebugSelectionScreen() {
         initComponents();
-        this.problemView.setDebugProblemButtonPanVisibility(true);
-        this.problemView.setFaildProblemPanVisibility(true);
+        roundView.addDebugRequestListener(this);
+    }
+
+    void setProblemDir(File dir) {
+        problemsPath = dir;
+        badExperiments = new LinkedList<Experiment>();
+        efMap = new HashMap<Experiment, File>();
+        loadExperiments(dir);
+        failList.setItems(Visual.adapt(badExperiments, new Visual.VisualGen() {
+
+            @Override
+            public Visual gen(Object it) {
+                ExperimentImpl ee = (ExperimentImpl) it;
+                SimpleDateFormat format = new SimpleDateFormat("dd'/'MM'/'yy' 'HH':'mm':'ss");
+                return new Visual(it, format.format(new Date(Long.valueOf(ee.getFailureDebugInfo().getName()))), "", null);
+            }
+        }));
+
+        failList.addSelectionListner(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                roundData.unSetData();
+                if (!failList.getSelectedItems().isEmpty()) {
+                    ExperimentImpl selected = (ExperimentImpl) ((Visual)failList.getSelectedItems().get(0)).getItem();
+                    List<Round> rounds = selected.getRounds();
+                    String roundName = selected.getFailureDebugInfo().getRoundName();
+
+                    for (Round r : rounds) {
+                        if (r.getName().equals(roundName)) {
+                            roundView.setModel(r);
+                            roundView.addFailureData(selected.getFailureDebugInfo());
+                            roundData.setData(roundViewScroll);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        SwingDSL.configureUI();
+        DebugSelectionScreen me = new DebugSelectionScreen();
+        me.setProblemDir(new File("fail-problems"));
+        SwingDSL.showInFrame(me);
+    }
+
+    private void deleteItem(Visual i) {
+        Experiment e = (Experiment) i.getItem();
+        File f = efMap.get(e);
+        f.delete();
+        efMap.remove(e);
+        badExperiments.remove(e);
+        failList.remove(i);
+    }
+
+    private void loadExperiments(File dir) {
+        for (File f : dir.listFiles()) {
+            try {
+                Experiment e = XMLConfigurator.read(f);
+                badExperiments.add(e);
+                efMap.put(e, f);
+            } catch (IOException ex) {
+                Logger.getLogger(DebugSelectionScreen.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InstantiationException ex) {
+                Logger.getLogger(DebugSelectionScreen.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalAccessException ex) {
+                Logger.getLogger(DebugSelectionScreen.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     /** This method is called from within the constructor to
@@ -35,16 +128,19 @@ public class DebugSelectionScreen extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        roundViewScroll = new javax.swing.JScrollPane();
+        roundView = new bgu.csp.az.dev.ui.RoundView();
         jPanel1 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
         deleteSelected = new javax.swing.JButton();
-        deleteAll = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        stripeList1 = new bc.ui.swing.lists.StripeList();
-        jPanel4 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        problemView = new bgu.csp.az.dev.ui.RoundView();
+        failList = new bc.ui.swing.lists.StripeList();
+        debugProblemButtonPan = new javax.swing.JPanel();
+        jXHyperlink1 = new org.jdesktop.swingx.JXHyperlink();
+        roundData = new bc.ui.swing.useful.DataPanel();
+
+        roundViewScroll.setViewportView(roundView);
 
         setOpaque(false);
         setLayout(new java.awt.BorderLayout());
@@ -61,15 +157,12 @@ public class DebugSelectionScreen extends javax.swing.JPanel {
         deleteSelected.setMinimumSize(new java.awt.Dimension(25, 25));
         deleteSelected.setOpaque(false);
         deleteSelected.setPreferredSize(new java.awt.Dimension(25, 25));
+        deleteSelected.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteSelectedActionPerformed(evt);
+            }
+        });
         jPanel11.add(deleteSelected);
-
-        deleteAll.setBackground(null);
-        deleteAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/delete-all.png"))); // NOI18N
-        deleteAll.setToolTipText("Delete all problems but the last from the list");
-        deleteAll.setMinimumSize(new java.awt.Dimension(25, 25));
-        deleteAll.setOpaque(false);
-        deleteAll.setPreferredSize(new java.awt.Dimension(25, 25));
-        jPanel11.add(deleteAll);
 
         jLabel4.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
@@ -84,32 +177,55 @@ public class DebugSelectionScreen extends javax.swing.JPanel {
 
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
-        stripeList1.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 3, new java.awt.Color(153, 153, 153)));
-        stripeList1.setMinimumSize(new java.awt.Dimension(200, 24));
-        stripeList1.setOddBackColor(new java.awt.Color(230, 230, 230));
-        stripeList1.setOddForeColor(new java.awt.Color(61, 61, 61));
-        stripeList1.setPreferredSize(new java.awt.Dimension(200, 194));
+        failList.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 3, new java.awt.Color(120, 120, 120)));
+        failList.setMinimumSize(new java.awt.Dimension(200, 24));
+        failList.setOddBackColor(new java.awt.Color(230, 230, 230));
+        failList.setOddForeColor(new java.awt.Color(61, 61, 61));
+        failList.setPreferredSize(new java.awt.Dimension(200, 194));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 1.0;
-        jPanel3.add(stripeList1, gridBagConstraints);
+        jPanel3.add(failList, gridBagConstraints);
 
-        jPanel4.setBackground(new java.awt.Color(204, 204, 204));
-        jPanel4.setLayout(new java.awt.GridBagLayout());
+        debugProblemButtonPan.setBackground(new java.awt.Color(102, 102, 102));
+        debugProblemButtonPan.setBorder(javax.swing.BorderFactory.createMatteBorder(3, 0, 0, 3, new java.awt.Color(120, 120, 120)));
+        debugProblemButtonPan.setLayout(new java.awt.GridBagLayout());
 
-        jScrollPane1.setViewportView(problemView);
-
+        jXHyperlink1.setForeground(new java.awt.Color(255, 255, 255));
+        jXHyperlink1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/debug-all.png"))); // NOI18N
+        jXHyperlink1.setText("Debug Full Experiment");
+        jXHyperlink1.setClickedColor(new java.awt.Color(255, 255, 255));
+        jXHyperlink1.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        jXHyperlink1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jXHyperlink1.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        jXHyperlink1.setUnclickedColor(new java.awt.Color(255, 255, 255));
+        jXHyperlink1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jXHyperlink1ActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel4.add(jScrollPane1, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        debugProblemButtonPan.add(jXHyperlink1, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
+        jPanel3.add(debugProblemButtonPan, gridBagConstraints);
+
+        roundData.setBackground(new java.awt.Color(153, 153, 153));
+        roundData.setOpaque(true);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridheight = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
-        jPanel3.add(jPanel4, gridBagConstraints);
+        gridBagConstraints.weighty = 1.0;
+        jPanel3.add(roundData, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -120,16 +236,43 @@ public class DebugSelectionScreen extends javax.swing.JPanel {
 
         add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void deleteSelectedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteSelectedActionPerformed
+        for (Visual i : failList.getSelectedItems()){
+            deleteItem(i);
+        }
+    }//GEN-LAST:event_deleteSelectedActionPerformed
+
+    private void jXHyperlink1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink1ActionPerformed
+        debugListeners.fire().onFullExperimentDebugRequested();
+    }//GEN-LAST:event_jXHyperlink1ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton deleteAll;
+    private javax.swing.JPanel debugProblemButtonPan;
     private javax.swing.JButton deleteSelected;
+    private bc.ui.swing.lists.StripeList failList;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JScrollPane jScrollPane1;
-    private bgu.csp.az.dev.ui.RoundView problemView;
-    private bc.ui.swing.lists.StripeList stripeList1;
+    private org.jdesktop.swingx.JXHyperlink jXHyperlink1;
+    private bc.ui.swing.useful.DataPanel roundData;
+    private bgu.csp.az.dev.ui.RoundView roundView;
+    private javax.swing.JScrollPane roundViewScroll;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void onDebugRequested() {
+        debugListeners.fire().onSpecificExperimentDebugRequested((Experiment)((Visual)failList.getSelectedItems().get(0)).getItem());
+    }
+
+    public Listeners<DebugSelectionListener> getDebugListeners() {
+        return debugListeners;
+    }
+    
+    
+    public static interface DebugSelectionListener{
+        void onFullExperimentDebugRequested();
+        void onSpecificExperimentDebugRequested(Experiment exp);
+    }
 }

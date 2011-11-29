@@ -11,33 +11,35 @@
 package bgu.csp.az.dev.ui;
 
 
-import javax.swing.JPanel;
 
 import bc.ui.swing.visuals.Visual;
 import bc.ui.swing.visuals.Visual.VisualGen;
 import bgu.csp.az.api.infra.Round;
 import bgu.csp.az.api.infra.VariableMetadata;
 import bgu.csp.az.impl.AlgorithmMetadata;
+import bgu.csp.az.impl.DebugInfo;
 import bgu.csp.az.impl.infra.AbstractRound;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
  * @author bennyl
  */
 public class RoundView extends javax.swing.JPanel {
+    private VisualGen varsGen;
+    private List<DebugRequestListener> debugListeners = new LinkedList<DebugRequestListener>(); 
 
     /** Creates new form RoundView */
     public RoundView() {
         initComponents();
-        faildProblemPan.setVisible(false);
+        failurePan.setVisible(false);
         debugProblemButtonPan.setVisible(false);
         roundVars.getList().setFixedCellHeight(16);
         pgenVars.getList().setFixedCellHeight(16);
         algos.getList().setFixedCellHeight(16);
-    }
-
-    public void setModel(Round r) {
-        VisualGen varsGen = new Visual.VisualGen() {
+        
+        varsGen = new Visual.VisualGen() {
 
             @Override
             public Visual gen(Object it) {
@@ -45,6 +47,14 @@ public class RoundView extends javax.swing.JPanel {
                 return new Visual(it, "<html>+ <b>" + var.getName() + "</b>=<b><span color='#d2e9ff'>'" + var.getCurrentValue() + "'</span></b> [ " + var.getDescription() + " ]</html>","", null);
             }
         };
+    }
+
+    public void addDebugRequestListener(DebugRequestListener l){
+        debugListeners.add(l);
+    }
+    
+    public void setModel(Round r) {
+         
         
         roundVars.setItems(Visual.adapt(r.provideExpectedVariables(),varsGen));
         pgenVars.setItems(Visual.adapt(r.getProblemGenerator().provideExpectedVariables(), varsGen));
@@ -56,6 +66,7 @@ public class RoundView extends javax.swing.JPanel {
                 return new Visual(alg, "+ " + alg.getName(), "", null);
             }
         }));
+        
     }
 
     /** This method is called from within the constructor to
@@ -90,13 +101,13 @@ public class RoundView extends javax.swing.JPanel {
         jXLabel4 = new org.jdesktop.swingx.JXLabel();
         jPanel9 = new javax.swing.JPanel();
         algos = new bc.ui.swing.lists.TransparentList();
-        faildProblemPan = new javax.swing.JPanel();
+        failurePan = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         spacer3 = new org.jdesktop.swingx.JXLabel();
         jXLabel5 = new org.jdesktop.swingx.JXLabel();
         jPanel12 = new javax.swing.JPanel();
-        transparentList4 = new bc.ui.swing.lists.TransparentList();
+        failureData = new bc.ui.swing.lists.TransparentList();
         spacerPan = new javax.swing.JPanel();
         debugProblemButtonPan = new javax.swing.JPanel();
         jXHyperlink1 = new org.jdesktop.swingx.JXHyperlink();
@@ -293,10 +304,10 @@ public class RoundView extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
         add(jPanel7, gridBagConstraints);
 
-        faildProblemPan.setMinimumSize(new java.awt.Dimension(155, 150));
-        faildProblemPan.setOpaque(false);
-        faildProblemPan.setPreferredSize(new java.awt.Dimension(549, 115));
-        faildProblemPan.setLayout(new java.awt.GridBagLayout());
+        failurePan.setMinimumSize(new java.awt.Dimension(155, 150));
+        failurePan.setOpaque(false);
+        failurePan.setPreferredSize(new java.awt.Dimension(549, 115));
+        failurePan.setLayout(new java.awt.GridBagLayout());
 
         jPanel11.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
         jPanel11.setMinimumSize(new java.awt.Dimension(200, 16));
@@ -306,7 +317,7 @@ public class RoundView extends javax.swing.JPanel {
 
         jLabel4.setFont(new java.awt.Font("Consolas", 1, 12));
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Failed Problem");
+        jLabel4.setText("Failure Description");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -320,7 +331,7 @@ public class RoundView extends javax.swing.JPanel {
         jPanel11.add(spacer3, gridBagConstraints);
 
         jXLabel5.setForeground(new java.awt.Color(210, 233, 255));
-        jXLabel5.setText("the parameters of the faild problem\nin this round");
+        jXLabel5.setText("the data about the failure\nthis is whats controlling the debugging ");
         jXLabel5.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         jXLabel5.setLineWrap(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -333,27 +344,27 @@ public class RoundView extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 1.0;
-        faildProblemPan.add(jPanel11, gridBagConstraints);
+        failurePan.add(jPanel11, gridBagConstraints);
 
         jPanel12.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
         jPanel12.setOpaque(false);
         jPanel12.setPreferredSize(new java.awt.Dimension(349, 100));
         jPanel12.setLayout(new java.awt.BorderLayout());
 
-        transparentList4.setForeColor(new java.awt.Color(255, 255, 255));
-        jPanel12.add(transparentList4, java.awt.BorderLayout.CENTER);
+        failureData.setForeColor(new java.awt.Color(255, 255, 255));
+        jPanel12.add(failureData, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        faildProblemPan.add(jPanel12, gridBagConstraints);
+        failurePan.add(jPanel12, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
-        add(faildProblemPan, gridBagConstraints);
+        add(failurePan, gridBagConstraints);
 
         spacerPan.setMinimumSize(new java.awt.Dimension(155, 150));
         spacerPan.setOpaque(false);
@@ -371,6 +382,11 @@ public class RoundView extends javax.swing.JPanel {
         jXHyperlink1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jXHyperlink1.setUnclickedColor(new java.awt.Color(255, 255, 255));
         jXHyperlink1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jXHyperlink1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jXHyperlink1ActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
@@ -392,10 +408,18 @@ public class RoundView extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
         add(spacerPan, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jXHyperlink1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink1ActionPerformed
+        for (DebugRequestListener l : debugListeners){
+            l.onDebugRequested();
+        }
+    }//GEN-LAST:event_jXHyperlink1ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private bc.ui.swing.lists.TransparentList algos;
     private javax.swing.JPanel debugProblemButtonPan;
-    private javax.swing.JPanel faildProblemPan;
+    private bc.ui.swing.lists.TransparentList failureData;
+    private javax.swing.JPanel failurePan;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -424,19 +448,18 @@ public class RoundView extends javax.swing.JPanel {
     private org.jdesktop.swingx.JXLabel spacer2;
     private org.jdesktop.swingx.JXLabel spacer3;
     private javax.swing.JPanel spacerPan;
-    private bc.ui.swing.lists.TransparentList transparentList4;
     // End of variables declaration//GEN-END:variables
 
 
 
-    public void setFaildProblemPanVisibility(boolean b) {
-        this.faildProblemPan.setVisible(b);
+    public void addFailureData(DebugInfo di) {
+        this.failurePan.setVisible(true);
+        this.debugProblemButtonPan.setVisible(true);
+        
+        failureData.setItems(Visual.adapt(VariableMetadata.scan(di), varsGen));
     }
-
-    public void setDebugProblemButtonPanVisibility(boolean b) {
-        this.debugProblemButtonPan.setVisible(b);
+    
+    public static interface DebugRequestListener{
+        void onDebugRequested();
     }
-
-
-
 }

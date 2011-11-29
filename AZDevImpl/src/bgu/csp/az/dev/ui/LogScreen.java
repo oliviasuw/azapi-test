@@ -101,7 +101,6 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
         searchTextField = new javax.swing.JTextField();
         nextMatch = new javax.swing.JButton();
         ragexCheckBox = new javax.swing.JCheckBox();
-        matchCaseCheckBox = new javax.swing.JCheckBox();
         outScroll = new javax.swing.JScrollPane();
         output = new javax.swing.JTextPane();
 
@@ -160,23 +159,11 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
         ragexCheckBox.setFont(new java.awt.Font("Consolas", 0, 11)); // NOI18N
         ragexCheckBox.setForeground(new java.awt.Color(255, 255, 255));
         ragexCheckBox.setText("Regex");
-        ragexCheckBox.setActionCommand("Regex");
         ragexCheckBox.setBorder(null);
         ragexCheckBox.setOpaque(false);
-        jPanel1.add(ragexCheckBox, new java.awt.GridBagConstraints());
-
-        matchCaseCheckBox.setFont(new java.awt.Font("Consolas", 0, 11));
-        matchCaseCheckBox.setForeground(new java.awt.Color(255, 255, 255));
-        matchCaseCheckBox.setText("Match Case");
-        matchCaseCheckBox.setOpaque(false);
-        matchCaseCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                matchCaseCheckBoxActionPerformed(evt);
-            }
-        });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel1.add(matchCaseCheckBox, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 3);
+        jPanel1.add(ragexCheckBox, gridBagConstraints);
 
         add(jPanel1, java.awt.BorderLayout.PAGE_END);
 
@@ -193,21 +180,20 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
         add(outScroll, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-    private boolean search() {
+    private void search() {
         Highlighter highlighter = output.getHighlighter();
         if (!this.searchTextField.getText().equals(this.lastSearch)) {
             highlighter.removeAllHighlights();
         }
         this.lastSearch = this.searchTextField.getText();
         offset = output.getCaretPosition();
-        SimpleEntry<Integer, Integer> place = doc.search(this.searchTextField.getText(), this.ragexCheckBox.isSelected(), this.matchCaseCheckBox.isSelected(), offset);
+        SimpleEntry<Integer, Integer> place = doc.search(this.searchTextField.getText(), this.ragexCheckBox.isSelected(), offset);
         highlighter.removeAllHighlights();
         if (place.getKey() == -1) {
             output.setCaretPosition(0);
-            return true;
+            return;
         }
-        highLightText(highlighter, place);
-        return false;
+        highLightText(highlighter, place);     
     }
 
 private void searchTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchTextFieldActionPerformed
@@ -219,12 +205,8 @@ private void nextMatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
         search();
 }//GEN-LAST:event_nextMatchActionPerformed
 
-private void matchCaseCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_matchCaseCheckBoxActionPerformed
-
-}//GEN-LAST:event_matchCaseCheckBoxActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JCheckBox matchCaseCheckBox;
     private javax.swing.JButton nextMatch;
     private javax.swing.JScrollPane outScroll;
     private javax.swing.JTextPane output;

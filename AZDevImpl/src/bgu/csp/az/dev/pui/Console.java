@@ -154,7 +154,7 @@ private void nextMatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
     }
     this.lastSearch=this.searchTextField.getText();
     offset=output.getCaretPosition();
-    SimpleEntry<Integer,Integer> place=doc.search(this.searchTextField.getText(), true, this.matchCaseCheckBox.isSelected(), offset);
+    SimpleEntry<Integer,Integer> place=doc.search(this.searchTextField.getText(), true, offset);
     Highlighter highlighter = output.getHighlighter();
     highlighter.removeAllHighlights();
     if(place.getKey()==-1){

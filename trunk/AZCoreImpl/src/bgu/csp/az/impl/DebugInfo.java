@@ -23,6 +23,8 @@ public class DebugInfo extends AbstractConfigureable {
     String roundName = "";
     @Variable(name="algorithm-name", description="failing algorithm name")
     String algName = "";
+    @Variable(name="name", description="identifier for this debug info")
+    String name = ""+ System.currentTimeMillis();
     @Variable(name="seed", description="seed of the failing problem")
     long seed = -1;
     
@@ -77,5 +79,9 @@ public class DebugInfo extends AbstractConfigureable {
     @Override
     protected void configurationDone() {
 //        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public String getName() {
+        return name;
     }
 }

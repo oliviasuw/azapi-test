@@ -33,60 +33,7 @@ public class Agent0Tester  {
     public void go() throws ParsingException, IOException, MalformedURLException, ClassNotFoundException {
         System.setProperty(LocalLog.LOCAL_LOG_FILE_PROPERTY, "log.out");
 
-        ExecutionUnit.UNIT.execute(test, true);
-//        TestExpirement expirament = null;
-
-        //TYPE OF EXECUTION
-//        if (executionMode.equals("run")) {
-//            expirament = new TestExpirement(xload(test).getRootElement(), loadAlgorithm());
-//            //FileUtils.delete(new File(TestExpirement.TEMP_SCENARIO_LOG_DB_PATH));
-//        } else {
-//            if (failedProblemsDir == null && prob == null) {
-//                System.out.println("Cannot use debug mode without option --sfp or --prob given");
-//                return;
-//            }
-//            //debug is defaults to use gui
-//            useGui = true;
-//
-//            Problem selectedProblem = (prob == null ? null : FileUtils.unPersistObject(prob, Problem.class));
-//
-//            if (selectedProblem == null) {
-//                SwingDSL.configureUI();
-//                ProblemSelectionModel selectPModel = selectProblemByGUI();
-//
-//                if (selectPModel.isDebugFullTest()) {
-//                    expirament = new TestExpirement(xload(test).getRootElement(), loadAlgorithm());
-//                } else {
-//                    selectedProblem = selectPModel.getSelectedProblemFile() == null ? null : selectPModel.getSelectedProblem();
-//                }
-//            }
-//            if (selectedProblem != null) {
-//                expirament = new TestExpirement(selectedProblem, loadAlgorithm());
-//            }
-//        }
-//
-//        if (expirament == null) {
-//            System.out.println("User Termination.");
-//            System.exit(0);
-//        }
-//
-//        expirament.addListener(this);
-//        //TEST GUI USAGE
-//        EventDistributer edist = null;
-//
-//        if (useGui) {
-//            final EventPipe pipe = new EventPipe();
-//            expirament.setEventPipe(pipe);
-//            edist = new EventDistributer(pipe);
-//            edist.start();
-//            new UIController().go(expirament);
-//        }
-//
-//        if (failedProblemsDir != null) {
-//            expirament.setFailedProblemsDir(failedProblemsDir);
-//        }
-//
-//        expirament.run();
+        ExecutionUnit.UNIT.run(test, true);
     }
 
 //    @Override

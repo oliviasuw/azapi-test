@@ -65,6 +65,7 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
     }
 
     public void startDebugging() {
+//        DebugSelectionScreen dsel = new DebugSelectionScreen();
     }
 
     /** This method is called from within the constructor to

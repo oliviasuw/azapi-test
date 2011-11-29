@@ -17,6 +17,7 @@ public class SBBAgent extends SimpleAgent {
 	
     @Override
     public void start() {
+//        log("I'm an agent!!!");
         if (isFirstAgent()) {
             System.out.println(getProblem().toString());
         	cpa = new Assignment();

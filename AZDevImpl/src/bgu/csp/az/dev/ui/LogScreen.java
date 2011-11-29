@@ -71,6 +71,20 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
 
     }
 
+    private void highLightText(Highlighter highlighter, SimpleEntry<Integer, Integer> place) {
+        offset = output.getCaretPosition();
+        Highlighter.HighlightPainter myHighlightPainter = new DefaultHighlighter.DefaultHighlightPainter(new Color(0,102,255));
+        try {
+            highlighter.addHighlight(offset + place.getKey(),
+                    offset + place.getValue(),
+                    myHighlightPainter);
+            offset = offset + place.getValue();
+            output.moveCaretPosition(offset);
+        } catch (BadLocationException ex) {
+            Logger.getLogger(LogScreen.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -86,6 +100,7 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
         searchLabel1 = new javax.swing.JLabel();
         searchTextField = new javax.swing.JTextField();
         nextMatch = new javax.swing.JButton();
+        ragexCheckBox = new javax.swing.JCheckBox();
         matchCaseCheckBox = new javax.swing.JCheckBox();
         outScroll = new javax.swing.JScrollPane();
         output = new javax.swing.JTextPane();
@@ -98,7 +113,7 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
         jPanel1.setBackground(new java.awt.Color(102, 102, 102));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        searchLabel.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
+        searchLabel.setFont(new java.awt.Font("Consolas", 1, 12));
         searchLabel.setForeground(new java.awt.Color(255, 255, 255));
         searchLabel.setText("Search");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -106,7 +121,7 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
         jPanel1.add(searchLabel, gridBagConstraints);
 
         searchLabel1.setBackground(new java.awt.Color(226, 225, 225));
-        searchLabel1.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
+        searchLabel1.setFont(new java.awt.Font("Consolas", 1, 12));
         searchLabel1.setForeground(new java.awt.Color(102, 102, 102));
         searchLabel1.setText("?> ");
         searchLabel1.setOpaque(true);
@@ -116,7 +131,7 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
         jPanel1.add(searchLabel1, gridBagConstraints);
 
         searchTextField.setBackground(new java.awt.Color(226, 225, 225));
-        searchTextField.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
+        searchTextField.setFont(new java.awt.Font("Consolas", 1, 12));
         searchTextField.setForeground(new java.awt.Color(102, 102, 102));
         searchTextField.setBorder(null);
         searchTextField.addActionListener(new java.awt.event.ActionListener() {
@@ -142,7 +157,15 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 5);
         jPanel1.add(nextMatch, gridBagConstraints);
 
-        matchCaseCheckBox.setFont(new java.awt.Font("Consolas", 0, 11)); // NOI18N
+        ragexCheckBox.setFont(new java.awt.Font("Consolas", 0, 11)); // NOI18N
+        ragexCheckBox.setForeground(new java.awt.Color(255, 255, 255));
+        ragexCheckBox.setText("Regex");
+        ragexCheckBox.setActionCommand("Regex");
+        ragexCheckBox.setBorder(null);
+        ragexCheckBox.setOpaque(false);
+        jPanel1.add(ragexCheckBox, new java.awt.GridBagConstraints());
+
+        matchCaseCheckBox.setFont(new java.awt.Font("Consolas", 0, 11));
         matchCaseCheckBox.setForeground(new java.awt.Color(255, 255, 255));
         matchCaseCheckBox.setText("Match Case");
         matchCaseCheckBox.setOpaque(false);
@@ -162,7 +185,7 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
         outScroll.setPreferredSize(new java.awt.Dimension(32, 50));
 
         output.setBackground(new java.awt.Color(0, 0, 0));
-        output.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        output.setFont(new java.awt.Font("Consolas", 0, 14));
         output.setForeground(new java.awt.Color(51, 255, 0));
         output.setText("bla");
         outScroll.setViewportView(output);
@@ -170,40 +193,34 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
         add(outScroll, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
+    private boolean search() {
+        Highlighter highlighter = output.getHighlighter();
+        if (!this.searchTextField.getText().equals(this.lastSearch)) {
+            highlighter.removeAllHighlights();
+        }
+        this.lastSearch = this.searchTextField.getText();
+        offset = output.getCaretPosition();
+        SimpleEntry<Integer, Integer> place = doc.search(this.searchTextField.getText(), this.ragexCheckBox.isSelected(), this.matchCaseCheckBox.isSelected(), offset);
+        highlighter.removeAllHighlights();
+        if (place.getKey() == -1) {
+            output.setCaretPosition(0);
+            return true;
+        }
+        highLightText(highlighter, place);
+        return false;
+    }
+
 private void searchTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchTextFieldActionPerformed
+        search();
 }//GEN-LAST:event_searchTextFieldActionPerformed
 
+
 private void nextMatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextMatchActionPerformed
-    if (!this.searchTextField.getText().equals(this.lastSearch)) {
-        output.getHighlighter().removeAllHighlights();
-
-    }
-    this.lastSearch = this.searchTextField.getText();
-    offset = output.getCaretPosition();
-    SimpleEntry<Integer, Integer> place = doc.search(this.searchTextField.getText(), true, this.matchCaseCheckBox.isSelected(), offset);
-    Highlighter highlighter = output.getHighlighter();
-    highlighter.removeAllHighlights();
-    if (place.getKey() == -1) {
-        output.setCaretPosition(0);
-        return;
-    }
-    offset = output.getCaretPosition();
-
-    Highlighter.HighlightPainter myHighlightPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
-    try {
-        highlighter.addHighlight(offset + place.getKey(),
-                offset + place.getValue(),
-                myHighlightPainter);
-        offset = offset + place.getValue();
-        output.moveCaretPosition(offset);
-    } catch (BadLocationException ex) {
-        Logger.getLogger(LogScreen.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-
+        search();
 }//GEN-LAST:event_nextMatchActionPerformed
 
 private void matchCaseCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_matchCaseCheckBoxActionPerformed
+
 }//GEN-LAST:event_matchCaseCheckBoxActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
@@ -211,6 +228,7 @@ private void matchCaseCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
     private javax.swing.JButton nextMatch;
     private javax.swing.JScrollPane outScroll;
     private javax.swing.JTextPane output;
+    private javax.swing.JCheckBox ragexCheckBox;
     private javax.swing.JLabel searchLabel;
     private javax.swing.JLabel searchLabel1;
     private javax.swing.JTextField searchTextField;

@@ -73,7 +73,7 @@
                   <Color blue="0" green="ff" red="33" type="rgb"/>
                 </Property>
                 <Property name="rows" type="int" value="5"/>
-                <Property name="text" type="java.lang.String" value="Hello World&#xa;This is the next line"/>
+                <Property name="text" type="java.lang.String" value="CONSTRAINTS QUERY CONSOLE&#xa;&#xa;use &quot; i vs. j &quot; for watching the i vs. j constraint table (ex. &quot;1 vs. 2&quot;)&#xa;use &quot; i=vi, j=vj, ...&quot; for watching the cost of the given assignment (ex. &quot;1=0,2=4,3=2&quot;)&#xa;&#xa;"/>
               </Properties>
             </Component>
           </SubComponents>

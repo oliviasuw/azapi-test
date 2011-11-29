@@ -32,8 +32,19 @@ public abstract class Problem implements Serializable, ImmutableProblem {
     }
 
     private void problemToString(StringBuilder sb) {
-        int maxCostSize = (int) Math.log10(maxCost);
-        int domainSize = (int) Math.log10(getDomainSize(0) - 1);
+        
+        int maxCostSize = 0;
+        int domainSize = 0;
+        if(maxCost==1){
+            maxCostSize = 1;
+        }else{
+            maxCostSize = (int) Math.log10(maxCost);
+        }
+        if(getDomainSize(0)==1){
+            domainSize = 1;
+        }else{
+            domainSize = (int) Math.log10(getDomainSize(0) - 1);
+        }
         String tmpForMaxCost[] = new String[maxCostSize + 2];
         String tmpForDomainSize[] = new String[domainSize + 2];
         String tmpLineForMaxCost = "";

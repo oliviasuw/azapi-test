@@ -46,7 +46,11 @@ public class AgentLogDocument extends LimitedBatchDocument {
     }
 
     public SimpleEntry<Integer,Integer> search(String what,boolean ragex,boolean matchCase,int offset){
-            Pattern p =(Pattern.compile(what,(matchCase ? Pattern.LITERAL :Pattern.CASE_INSENSITIVE)));
+        
+            if(!ragex){
+                what=Pattern.quote(what);
+            }
+            Pattern p =(Pattern.compile(what ,(matchCase ? Pattern.LITERAL :Pattern.CASE_INSENSITIVE)));
             try {
                 match=p.matcher(getText(offset, getLength()-offset));
             } catch (BadLocationException ex) {
@@ -91,27 +95,26 @@ public class AgentLogDocument extends LimitedBatchDocument {
     private void generateColors() {
 
         colors = new Color[]{
-            new Color(50,101,255),
+            new Color(15,108,248),
             new Color(152,203,50),
-            new Color(204,50,152),
-            new Color(87,225,255),
-            new Color(203,203,50),
-            new Color(200,50,255),
-            new Color(203,203,203),
-            new Color(255,203,101),
-            new Color(255,201,201),
-            /***************************/
-            new Color(205, 205, 80),
-            new Color(170, 170, 170),
+            new Color(217,27,153),
+            new Color(255,72,0),
+            new Color(19,238,189),
+            new Color(228,0,249),
+            new Color(105, 251, 44),
+            new Color(255,225,25),
+            new Color(53,153,255),
+            new Color(0,238,118),
+            new Color(132, 132, 242),
+            new Color(255, 255, 153),
             new Color(255, 148, 47),
             new Color(0, 247, 105),
+            new Color(255, 38, 109),
             new Color(53, 197, 208),
-            new Color(105, 251, 44),
-            new Color(255, 170, 134),
             new Color(153, 255, 153),
-            new Color(255, 153, 153),
+            new Color(240, 71, 71),
             new Color(153, 153, 255),
-            new Color(255, 255, 153),
+            new Color(170, 170, 170),
             Color.BLACK,
             new Color(255, 0, 0),
             new Color(255, 204, 0)};

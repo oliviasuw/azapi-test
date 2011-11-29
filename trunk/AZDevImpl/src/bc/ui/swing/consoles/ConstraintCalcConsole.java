@@ -11,8 +11,14 @@
 package bc.ui.swing.consoles;
 
 import bc.dsl.SwingDSL;
+import bgu.csp.az.api.ImmutableProblem;
+import bgu.csp.az.api.pgen.Problem;
+import bgu.csp.az.api.tools.Assignment;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -21,25 +27,30 @@ import java.util.List;
 public class ConstraintCalcConsole extends javax.swing.JPanel {
 
     List<ConstraintShowListener> listeners = new LinkedList<ConstraintShowListener>();
-    
+    private static final Pattern COMPATEBILITY_PATTERN_1 = Pattern.compile("(\\s*((\\d+)\\s*=\\s*(\\d+))\\s*,*)*\\s*((\\d+)\\s*=\\s*(\\d+))\\s*");
+    private static final Pattern SPLITER = Pattern.compile(",*\\s*\\d+\\s*=\\s*\\d+");
+    private static final Pattern SEPERATOR = Pattern.compile(",*\\s*(\\d+)\\s*=\\s*(\\d+)");
+    private static final Pattern COMPATEBILITY_PATTERN_2 = Pattern.compile("\\s*(\\d+)\\s*vs\\.{0,1}\\s*(\\d+)\\s*");
+    private ImmutableProblem p;
+
     /** Creates new form ConstraintCalcConsole */
     public ConstraintCalcConsole() {
         initComponents();
     }
-    
-    public void setInitialConsoleText(String text){
+
+    public void setInitialConsoleText(String text) {
         cons.setText(text);
     }
-    
-    public String getInitialConsoleText(){
+
+    public String getInitialConsoleText() {
         return cons.getText();
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         SwingDSL.configureUI();
         SwingDSL.showInFrame(new ConstraintCalcConsole());
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -72,7 +83,7 @@ public class ConstraintCalcConsole extends javax.swing.JPanel {
         cons.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
         cons.setForeground(new java.awt.Color(51, 255, 0));
         cons.setRows(5);
-        cons.setText("Hello World\nThis is the next line");
+        cons.setText("CONSTRAINTS QUERY CONSOLE\n\nuse \" i vs. j \" for watching the i vs. j constraint table (ex. \"1 vs. 2\")\nuse \" i=vi, j=vj, ...\" for watching the cost of the given assignment (ex. \"1=0,2=4,3=2\")\n\n");
         jScrollPane1.setViewportView(cons);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -96,7 +107,7 @@ public class ConstraintCalcConsole extends javax.swing.JPanel {
         jPanel4.add(searchLabel1, gridBagConstraints);
 
         text.setBackground(new java.awt.Color(226, 225, 225));
-        text.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
+        text.setFont(new java.awt.Font("Consolas", 1, 12));
         text.setForeground(new java.awt.Color(102, 102, 102));
         text.setBorder(null);
         text.addActionListener(new java.awt.event.ActionListener() {
@@ -120,9 +131,15 @@ public class ConstraintCalcConsole extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void textActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textActionPerformed
-        System.out.println("Enter!");
+        String t = this.text.getText();
+        if (COMPATEBILITY_PATTERN_1.matcher(t).matches()) {
+            calcCost(t);
+        } else if (COMPATEBILITY_PATTERN_2.matcher(t).matches()) {
+            calcConstraint(t);
+        } else {
+            //TODO crying DIMA
+        }
 }//GEN-LAST:event_textActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea cons;
     private javax.swing.JPanel jPanel2;
@@ -132,7 +149,57 @@ public class ConstraintCalcConsole extends javax.swing.JPanel {
     private javax.swing.JTextField text;
     // End of variables declaration//GEN-END:variables
 
-    public static interface ConstraintShowListener{
-        void onConstraintShowRequested(int i, int j);
+    private void calcCost(String t) {
+        Matcher m = SPLITER.matcher(t);
+        HashMap<Integer, Integer> values = new HashMap<Integer, Integer>();
+        while (m.find()) {
+            String g0 = m.group();
+            Matcher mm = SEPERATOR.matcher(g0);
+            mm.find();
+            values.put(Integer.valueOf(mm.group(1)), Integer.valueOf(mm.group(2)));
+        }
+        Assignment ass = new Assignment();
+        StringBuilder output = new StringBuilder("Calculating cost for: ");
+        for (Integer i : values.keySet()) {
+            final Integer value = values.get(i);
+            output.append("[").append(i).append("=").append(value).append("],");
+            ass.assign(i, value);
+        }
+//        String substring = output.substring(0, output.length()-1);
+        output.deleteCharAt(output.length() - 1);
+        double cost = ass.calcCost(p);
+        output.append("\nCost is: ").append(cost).append("\n");
+        this.cons.append(output.toString());
+    }
+
+    private void calcConstraint(String t) {
+        Matcher m = COMPATEBILITY_PATTERN_2.matcher(t);
+        m.find();
+        String g0 = m.group();
+//        mm.find();
+        Integer i = Integer.valueOf(m.group(1));
+        Integer j = Integer.valueOf(m.group(2));
+        boolean onConstraintShowRequested = true;
+        for (ConstraintShowListener ls : this.listeners) {
+            onConstraintShowRequested = onConstraintShowRequested & ls.onConstraintShowRequested(i, j);
+        }
+        if (onConstraintShowRequested) {
+            String output = "Showing constraint table for Agent " + i + " and agent " + j + "\n";
+            this.cons.append(output);
+            this.cons.setCaretPosition(this.cons.getDocument().getLength());
+        }
+    }
+
+    public void setProblem(ImmutableProblem p) {
+        this.p = p;
+    }
+
+    public void addListener(ConstraintShowListener ls) {
+        this.listeners.add(ls);
+    }
+
+    public static interface ConstraintShowListener {
+
+        boolean onConstraintShowRequested(int i, int j);
     }
 }

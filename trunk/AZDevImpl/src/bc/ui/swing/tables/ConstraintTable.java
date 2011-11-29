@@ -55,7 +55,7 @@ public class ConstraintTable extends javax.swing.JPanel {
         jPanel1.setAutoscrolls(true);
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        table.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153), 2));
+        table.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102), 2));
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {"5", "7", "2", "1"},

@@ -21,9 +21,9 @@ import javax.swing.table.TableCellRenderer;
  */
 public class ConstraintTableRenderer extends javax.swing.JPanel implements TableCellRenderer {
 
-    private static final Color CONSTRAINT_COLOR = new Color(215, 62, 51);
+    private static final Color CONSTRAINT_COLOR = new Color(120,120,120);//(215, 62, 51);
     private static final Color HEADER_COLOR = new Color(139, 164, 193);
-    private static final Color UNCONSTRAINT_COLOR = new Color(102, 102, 102);
+    private static final Color UNCONSTRAINT_COLOR = new Color(143,143,143);//(102, 102, 102);
 
     /** Creates new form ConstraintTableRenderer */
     public ConstraintTableRenderer() {
@@ -41,8 +41,8 @@ public class ConstraintTableRenderer extends javax.swing.JPanel implements Table
 
         text = new javax.swing.JLabel();
 
-        setBackground(new java.awt.Color(0, 153, 255));
-        setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        setBackground(new java.awt.Color(144, 143, 143));
+        setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102)));
         setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 3, 3));
 
         text.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N

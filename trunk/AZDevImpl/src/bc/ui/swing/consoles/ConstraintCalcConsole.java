@@ -187,6 +187,10 @@ public class ConstraintCalcConsole extends javax.swing.JPanel {
             String output = "Showing constraint table for Agent " + i + " and agent " + j + "\n";
             this.cons.append(output);
             this.cons.setCaretPosition(this.cons.getDocument().getLength());
+        }else{
+            String output = "There is no constraint table for Agent " + i + " and agent " + j + "\n";
+            this.cons.append(output);
+            this.cons.setCaretPosition(this.cons.getDocument().getLength());
         }
     }
 

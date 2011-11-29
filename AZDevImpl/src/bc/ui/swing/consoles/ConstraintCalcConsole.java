@@ -179,15 +179,14 @@ public class ConstraintCalcConsole extends javax.swing.JPanel {
 //        mm.find();
         Integer i = Integer.valueOf(m.group(1));
         Integer j = Integer.valueOf(m.group(2));
-        boolean onConstraintShowRequested = true;
-        for (ConstraintShowListener ls : this.listeners) {
-            onConstraintShowRequested = onConstraintShowRequested & ls.onConstraintShowRequested(i, j);
-        }
-        if (onConstraintShowRequested) {
+        if (p.isConstrained(i, j)) {
+            for (ConstraintShowListener ls : this.listeners) {
+                ls.onConstraintShowRequested(i, j);
+            }
             String output = "Showing constraint table for Agent " + i + " and agent " + j + "\n";
             this.cons.append(output);
             this.cons.setCaretPosition(this.cons.getDocument().getLength());
-        }else{
+        } else {
             String output = "There is no constraint table for Agent " + i + " and agent " + j + "\n";
             this.cons.append(output);
             this.cons.setCaretPosition(this.cons.getDocument().getLength());

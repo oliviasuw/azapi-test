@@ -38,13 +38,6 @@ public interface Process extends Runnable {
     void setEventPipe(EventPipe epipe);
 
     /**
-     * starts the execution of the inner project
-     * this method is a non-blocking one (it started in its own thread)
-     * if you want to use a blocking method call the run method
-     */
-    void start();
-
-    /**
      * each execution should supply a way to stop
      * stopping every child process or thread that "belongs" to this process.
      * //TODO: maybe more sutable name will be "kill"

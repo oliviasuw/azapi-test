@@ -5,7 +5,6 @@
 package bgu.csp.az.dev;
 
 import bc.dsl.SwingDSL;
-import bgu.csp.az.dev.ui.NewUIController;
 import bgu.csp.az.api.exp.ConnectionFaildException;
 import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.Experiment;
@@ -21,7 +20,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -46,24 +44,24 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
     boolean running;
     File badProblemStorage = new File("fail-problems");
 
-    void run(File xml, boolean withGui) {
+    void run(File xml, boolean withGui, boolean debug) throws InterruptedException {
         try {
             worker.start();
             runningExperiment = XMLConfigurator.read(xml);
-
-            //TEST SAVING:
-            final PrintWriter printWriter = new PrintWriter(new File("blblb.xml"));
-            XMLConfigurator.write(runningExperiment, printWriter);
-            printWriter.close();
+            SwingDSL.configureUI();
+            MainWindow mainW = new MainWindow();
 
             DatabaseUnit.UNIT.delete();
             DatabaseUnit.UNIT.connect();
             DatabaseUnit.UNIT.startCollectorThread();
-            runningExperiment.addListener(this);
-            SwingDSL.configureUI();
-            MainWindow mainW = new MainWindow();
-            mainW.startRunning(runningExperiment);
 
+            if (debug) {
+                runningExperiment = mainW.startDebugging(runningExperiment, badProblemStorage);
+            }
+            
+            runningExperiment.addListener(this);
+
+            mainW.startRunning(runningExperiment);
             running = true;
             runningExperiment.run();
             running = false;
@@ -79,10 +77,12 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
         }
     }
 
-    public void setFailProblemStorage(File path){
+    public void setFailProblemStorage(File path) {
+        System.out.println("Failed Problem Dir Set To: " + (path == null? "none!!":  path.getAbsolutePath()));
         badProblemStorage = path;
+        badProblemStorage.mkdirs();
     }
-    
+
     public void stop() {
         if (running) {
             runningExperiment.stop();
@@ -105,8 +105,8 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
         experimentListeners.remove(l);
     }
 
-    public static void main(String[] args) {
-        UNIT.run(new File("exp.xml"), true);
+    public static void main(String[] args) throws InterruptedException {
+        UNIT.run(new File("exp.xml"), true, true);
     }
 
     public AlgorithmMetadata getRunningAlgorithm() {
@@ -160,11 +160,11 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
         return currentRound;
     }
 
-    private String newFileName(){
+    private String newFileName() {
         SimpleDateFormat df = new SimpleDateFormat("yyyy'-'DD'-'HH'-'mm'-'ss'.xml'");
         return df.format(new Date());
     }
-    
+
     @Override
     public void onNewRoundStarted(final Experiment source, final Round round) {
         currentRound = round;

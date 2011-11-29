@@ -15,8 +15,9 @@ import bgu.csp.az.api.infra.Execution;
 import bgu.csp.az.api.infra.Experiment;
 import bgu.csp.az.api.infra.Round;
 import bgu.csp.az.dev.ExecutionUnit;
+import java.io.File;
+import java.util.concurrent.Semaphore;
 import javax.swing.JFrame;
-import javax.swing.plaf.basic.BasicTabbedPaneUI;
 
 /**
  *
@@ -27,11 +28,16 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
     private StatusScreen statusScreen;
     private StatisticsScreen statisticsScreen;
     private LogScreen logsScreen;
+    private ProblemViewScreen problemScreen;
+    private boolean showProblemView = false;
+    private boolean started = false;
 
     /** Creates new form MainWindow */
     public MainWindow() {
         initComponents();
-
+        executingPanel.setVisible(false);
+        errorPanel.setVisible(false);
+        donePanel.setVisible(false);
     }
 
     public void startRunning(Experiment experiment) {
@@ -50,10 +56,25 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
 
         //Logs Screen
         tabs.addTab("Log", SwingDSL.resIcon("balloon-ellipsis"), logsScreen);
-        
+
+        if (showProblemView) {
+            //tabs.addTab(null, null, donePanel);
+            System.out.println("Problem View");
+        }
+
         ExecutionUnit.UNIT.addExperimentListener(this);
-        
+
+        start();
+
+    }
+
+    private void start() {
         //show!
+        if (started) {
+            return;
+        }
+
+        started = true;
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             public void run() {
@@ -61,11 +82,34 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
                 setVisible(true);
             }
         });
-
     }
 
-    public void startDebugging() {
-//        DebugSelectionScreen dsel = new DebugSelectionScreen();
+    public Experiment startDebugging(final Experiment fullExp, File badProblemPath) throws InterruptedException {
+        DebugSelectionScreen dsel = new DebugSelectionScreen();
+        dsel.setProblemDir(badProblemPath);
+        tabs.addTab("Debug", SwingDSL.resIcon("bug"), dsel);
+        final Semaphore s = new Semaphore(0);
+        final Experiment[] chosen = new Experiment[1];
+        dsel.getDebugListeners().addListener(new DebugSelectionScreen.DebugSelectionListener() {
+
+            @Override
+            public void onFullExperimentDebugRequested() {
+                chosen[0] = fullExp;
+                s.release();
+            }
+
+            @Override
+            public void onSpecificExperimentDebugRequested(Experiment exp) {
+                chosen[0] = exp;
+                showProblemView = true;
+                s.release();
+            }
+        });
+
+        start();
+        s.acquire();
+        tabs.removeTab("Debug");
+        return chosen[0];
     }
 
     /** This method is called from within the constructor to
@@ -319,7 +363,10 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
 
     @Override
     public void onNewExecutionStarted(Experiment source, Round round, Execution exec) {
-//        throw new UnsupportedOperationException("Not supported yet.");
+        if (showProblemView) {
+            problemScreen = new ProblemViewScreen(exec.getGlobalProblem());
+            tabs.addTab("Problem", SwingDSL.resIcon("problem"), problemScreen);
+        }
     }
 
     @Override

@@ -10,11 +10,11 @@
  */
 package bc.ui.swing.tabs;
 
-import bc.dsl.SwingDSL;
 import bc.ui.swing.buttons.FlatToggleButton;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import javax.swing.Icon;
 import javax.swing.JPanel;
@@ -25,23 +25,34 @@ import javax.swing.JPanel;
  */
 public class Tabs extends javax.swing.JPanel {
 
-    LinkedHashMap<String, JPanel> tabs = new LinkedHashMap<String, JPanel> ();
-    
+    LinkedHashMap<String, JPanel> tabs = new LinkedHashMap<String, JPanel>();
+    HashMap<String, FlatToggleButton> buttons = new HashMap<String, FlatToggleButton> ();
     /** Creates new form Tabs */
     public Tabs() {
         initComponents();
     }
 
-    public void addTab(String name, Icon icon, JPanel content){
+    public void addTab(String name, Icon icon, JPanel content) {
         tabs.put(name, content);
         createTab(name, icon, content);
         //this is the first tab then select it
-        if (tabs.size() == 1){
+        if (tabs.size() == 1) {
             showTab(name);
         }
     }
-    
-    private void createTab(final String name, Icon icon, JPanel content){
+
+    public void removeTab(String name) {
+        JPanel c = tabs.remove(name);
+        FlatToggleButton b = buttons.remove(name);
+        header.remove(b);
+        buttonGroup1.remove(b);
+        content.remove(c);
+        
+        revalidate();
+        repaint();
+    }
+
+    private void createTab(final String name, Icon icon, JPanel content) {
         //CREATE THE BUTTON
         FlatToggleButton button = new FlatToggleButton();
         button.setBackground(new java.awt.Color(51, 153, 255));
@@ -52,10 +63,11 @@ public class Tabs extends javax.swing.JPanel {
         button.setText(name);
         button.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
         header.add(button);
-        
+        buttons.put(name, button);
+
         //ADD THE CARD
         this.content.add(content, name);
-        
+
         //BIND 
         button.addActionListener(new ActionListener() {
 
@@ -65,11 +77,11 @@ public class Tabs extends javax.swing.JPanel {
             }
         });
     }
-    
-    public void showTab(String name){
-        ((CardLayout)Tabs.this.content.getLayout()).show(this.content, name);
+
+    public void showTab(String name) {
+        ((CardLayout) Tabs.this.content.getLayout()).show(this.content, name);
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is

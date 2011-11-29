@@ -52,9 +52,13 @@ public class StripeList extends javax.swing.JPanel {
         data.setInnerList(visuals);
 
         list.setModel(data);
-
     }
 
+    public void remove(Visual item){
+        GenericListModel<Visual> data = (GenericListModel<Visual>) list.getModel();
+        data.remove(item);
+    }
+    
     @Override
     public void setFont(Font font) {
         if (itemRenderer != null) {

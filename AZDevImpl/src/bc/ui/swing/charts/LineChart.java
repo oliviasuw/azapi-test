@@ -10,7 +10,7 @@
  */
 package bc.ui.swing.charts;
 
-import bgu.csp.az.api.infra.stat.vmod.LineVisualModel;
+import bgu.dcr.az.api.infra.stat.vmod.LineVisualModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.util.Map.Entry;

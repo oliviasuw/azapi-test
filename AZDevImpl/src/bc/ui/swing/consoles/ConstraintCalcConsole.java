@@ -11,9 +11,9 @@
 package bc.ui.swing.consoles;
 
 import bc.dsl.SwingDSL;
-import bgu.csp.az.api.ImmutableProblem;
-import bgu.csp.az.api.pgen.Problem;
-import bgu.csp.az.api.tools.Assignment;
+import bgu.dcr.az.api.ImmutableProblem;
+import bgu.dcr.az.api.pgen.Problem;
+import bgu.dcr.az.api.tools.Assignment;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;

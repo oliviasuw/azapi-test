@@ -5,8 +5,8 @@
 package bc.ui.swing.configurable;
 
 import bc.ui.swing.lists.ComponentList;
-import bgu.csp.az.api.infra.VariableMetadata;
-import bgu.csp.az.dev.ui.MessageDialog;
+import bgu.dcr.az.api.infra.VariableMetadata;
+import bgu.dcr.az.dev.ui.MessageDialog;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;

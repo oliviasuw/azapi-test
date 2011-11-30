@@ -2,20 +2,20 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.csp.az.dev;
+package bgu.dcr.az.dev;
 
 import bc.dsl.SwingDSL;
-import bgu.csp.az.api.exp.ConnectionFaildException;
-import bgu.csp.az.api.infra.Execution;
-import bgu.csp.az.api.infra.Experiment;
-import bgu.csp.az.api.infra.Experiment.ExperimentListener;
-import bgu.csp.az.api.infra.Round;
-import bgu.csp.az.dev.ui.MainWindow;
-import bgu.csp.az.impl.AlgorithmMetadata;
-import bgu.csp.az.impl.db.DatabaseUnit;
-import bgu.csp.az.impl.infra.AbstractExecution;
-import bgu.csp.az.impl.infra.AbstractRound;
-import bgu.csp.az.impl.infra.LogListener;
+import bgu.dcr.az.api.exp.ConnectionFaildException;
+import bgu.dcr.az.api.infra.Execution;
+import bgu.dcr.az.api.infra.Experiment;
+import bgu.dcr.az.api.infra.Experiment.ExperimentListener;
+import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.dev.ui.MainWindow;
+import bgu.dcr.az.impl.AlgorithmMetadata;
+import bgu.dcr.az.impl.db.DatabaseUnit;
+import bgu.dcr.az.impl.infra.AbstractExecution;
+import bgu.dcr.az.impl.infra.AbstractRound;
+import bgu.dcr.az.impl.infra.LogListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

@@ -2,18 +2,18 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.csp.az.dev;
+package bgu.dcr.az.dev;
 
 import bc.dsl.ReflectionDSL;
-import bgu.csp.az.api.exp.InvalidValueException;
-import bgu.csp.az.api.infra.Experiment;
-import bgu.csp.az.api.infra.Round;
-import bgu.csp.az.api.infra.VariableMetadata;
-import bgu.csp.az.impl.Registary;
-import bgu.csp.az.impl.infra.ExperimentImpl;
+import bgu.dcr.az.api.exp.InvalidValueException;
+import bgu.dcr.az.api.infra.Experiment;
+import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.VariableMetadata;
+import bgu.dcr.az.impl.Registary;
+import bgu.dcr.az.impl.infra.ExperimentImpl;
 import java.io.File;
 import static bc.dsl.XNavDSL.*;
-import bgu.csp.az.api.infra.Configureable;
+import bgu.dcr.az.api.infra.Configureable;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;

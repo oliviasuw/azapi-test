@@ -2,16 +2,16 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.csp.az.dev;
+package bgu.dcr.az.dev;
 
-import bgu.csp.az.api.ano.Variable;
-import bgu.csp.az.api.infra.CorrectnessTester;
-import bgu.csp.az.api.infra.EventPipe;
-import bgu.csp.az.api.infra.Round;
-import bgu.csp.az.api.infra.stat.StatisticCollector;
-import bgu.csp.az.api.pgen.ProblemGenerator;
-import bgu.csp.az.impl.infra.AbstractConfigureable;
-import bgu.csp.az.impl.pgen.MapProblem;
+import bgu.dcr.az.api.ano.Variable;
+import bgu.dcr.az.api.infra.CorrectnessTester;
+import bgu.dcr.az.api.infra.EventPipe;
+import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.stat.StatisticCollector;
+import bgu.dcr.az.api.pgen.ProblemGenerator;
+import bgu.dcr.az.impl.infra.AbstractConfigureable;
+import bgu.dcr.az.impl.pgen.MapProblem;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;

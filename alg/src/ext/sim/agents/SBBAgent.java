@@ -3,11 +3,11 @@ package ext.sim.agents;
 import java.util.LinkedList;
 import java.util.List;
 
-import bgu.csp.az.api.ProblemType;
-import bgu.csp.az.api.agt.SimpleAgent;
-import bgu.csp.az.api.ano.Algorithm;
-import bgu.csp.az.api.ano.WhenReceived;
-import bgu.csp.az.api.tools.Assignment;
+import bgu.dcr.az.api.ProblemType;
+import bgu.dcr.az.api.agt.SimpleAgent;
+import bgu.dcr.az.api.ano.Algorithm;
+import bgu.dcr.az.api.ano.WhenReceived;
+import bgu.dcr.az.api.tools.Assignment;
 
 @Algorithm(name="SBB", problemType=ProblemType.COP, useIdleDetector=true)
 public class SBBAgent extends SimpleAgent {

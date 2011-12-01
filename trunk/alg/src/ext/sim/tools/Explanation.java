@@ -2,7 +2,7 @@ package ext.sim.tools;
 
 import java.util.Collection;
 
-import bgu.csp.az.api.tools.Assignment;
+import bgu.dcr.az.api.tools.Assignment;
 
 public class Explanation {
 	private boolean isEmpty;

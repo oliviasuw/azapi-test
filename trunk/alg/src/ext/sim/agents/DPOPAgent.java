@@ -1,12 +1,12 @@
 package ext.sim.agents;
 
-import bgu.csp.az.api.Continuation;
-import bgu.csp.az.api.ProblemType;
-import bgu.csp.az.api.agt.SimpleAgent;
-import bgu.csp.az.api.ano.Algorithm;
-import bgu.csp.az.api.ano.WhenReceived;
-import bgu.csp.az.api.tools.Assignment;
-import bgu.csp.az.impl.tools.DFSPsaudoTree;
+import bgu.dcr.az.api.Continuation;
+import bgu.dcr.az.api.ProblemType;
+import bgu.dcr.az.api.agt.SimpleAgent;
+import bgu.dcr.az.api.ano.Algorithm;
+import bgu.dcr.az.api.ano.WhenReceived;
+import bgu.dcr.az.api.tools.Assignment;
+import bgu.dcr.az.impl.tools.DFSPsaudoTree;
 import ext.sim.tools.DPOPUtil;
 
 @Algorithm(name="DPOP", useIdleDetector=true, problemType=ProblemType.CONNECTED_COP)

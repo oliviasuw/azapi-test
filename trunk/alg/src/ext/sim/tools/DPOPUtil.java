@@ -4,9 +4,9 @@ package ext.sim.tools;
 import java.util.LinkedList;
 import java.util.List;
 
-import bgu.csp.az.api.DeepCopyable;
-import bgu.csp.az.api.ImuteableProblem;
-import bgu.csp.az.api.tools.Assignment;
+import bgu.dcr.az.api.DeepCopyable;
+import bgu.dcr.az.api.ImuteableProblem;
+import bgu.dcr.az.api.tools.Assignment;
 import ext.sim.agents.DPOPAgent;
 
 public class DPOPUtil implements DeepCopyable{

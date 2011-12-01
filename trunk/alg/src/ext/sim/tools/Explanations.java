@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
-import bgu.csp.az.api.Agent;
+import bgu.dcr.az.api.Agent;
 
 public class Explanations implements Iterable<Explanation> {
 	private Map<Integer, Explanation>explanations;

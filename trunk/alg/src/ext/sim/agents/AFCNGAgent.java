@@ -6,11 +6,11 @@ import java.util.Collection;
 import ext.sim.tools.Explanation;
 import ext.sim.tools.Explanations;
 
-import bgu.csp.az.api.ProblemType;
-import bgu.csp.az.api.agt.SimpleAgent;
-import bgu.csp.az.api.ano.Algorithm;
-import bgu.csp.az.api.tools.Assignment;
-import bgu.csp.az.api.ano.WhenReceived;
+import bgu.dcr.az.api.ProblemType;
+import bgu.dcr.az.api.agt.SimpleAgent;
+import bgu.dcr.az.api.ano.Algorithm;
+import bgu.dcr.az.api.tools.Assignment;
+import bgu.dcr.az.api.ano.WhenReceived;
 
 @Algorithm(problemType=ProblemType.CSP, name="AFC-NG")
 public class AFCNGAgent extends SimpleAgent {

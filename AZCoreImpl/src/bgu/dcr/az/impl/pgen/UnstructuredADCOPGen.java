@@ -24,7 +24,7 @@ public class UnstructuredADCOPGen extends UnstructuredDCOPGen {
         for (int i = 0; i < p.getNumberOfVariables(); i++) {
             for (int j = 0; j < p.getNumberOfVariables(); j++) {
                 if (rand.nextDouble() < p1) {
-                    buildConstraint(i, j, p, false, rand, p2);
+                    buildConstraint(i, j, p, false, rand);
                 }
             }
         }

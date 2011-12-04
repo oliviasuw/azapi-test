@@ -27,8 +27,8 @@ public class UnstructuredDCOPGen extends AbstractProblemGenerator {
     int maxCost = 100;
     @Variable(name = "p1", description = "probablity of constraint between two variables")
     float p1 = 0.6f;
-    @Variable(name = "p2", description = "probablity of conflict between two constrainted variables")
-    float p2 = 0.4f;
+//    @Variable(name = "p2", description = "probablity of conflict between two constrainted variables")
+//    float p2 = 0.4f;
 
     @Override
     public String toString() {
@@ -43,25 +43,24 @@ public class UnstructuredDCOPGen extends AbstractProblemGenerator {
         for (int i = 0; i < p.getNumberOfVariables(); i++) {
             for (int j = 0; j < p.getNumberOfVariables(); j++) {
                 if (rand.nextDouble() < p1) {
-                    buildConstraint(i, j, p, true, rand, p2);
+                    buildConstraint(i, j, p, true, rand);
                 }
             }
         }
     }
 
-    protected void buildConstraint(int i, int j, Problem p, boolean sym, Random rand, float p2) {
+    protected void buildConstraint(int i, int j, Problem p, boolean sym, Random rand) {
         for (int vi = 0; vi < p.getDomain().size(); vi++) {
             for (int vj = 0; vj < p.getDomain().size(); vj++) {
-                if (i == j ) {
+                if (i == j) {
                     continue;
                 }
-                if (rand.nextDouble() < p2) {
-                    final int cost = rand.nextInt(maxCost) + 1;
-                    p.setConstraintCost(i, vi, j, vj, cost);
-                    if (sym) {
-                        p.setConstraintCost(j, vj, i, vi, cost);
-                    }
+                final int cost = rand.nextInt(maxCost) + 1;
+                p.setConstraintCost(i, vi, j, vj, cost);
+                if (sym) {
+                    p.setConstraintCost(j, vj, i, vi, cost);
                 }
+
             }
         }
     }

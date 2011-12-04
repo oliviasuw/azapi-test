@@ -14,6 +14,9 @@ import bc.dsl.SwingDSL;
 import bc.ui.swing.consoles.ConstraintCalcConsole.ConstraintShowListener;
 import bc.ui.swing.trees.IconProvider;
 import bgu.dcr.az.api.ImmutableProblem;
+import bgu.dcr.az.api.infra.Execution;
+import bgu.dcr.az.api.infra.Experiment;
+import bgu.dcr.az.api.infra.Round;
 import bgu.dcr.az.impl.pgen.MapProblem;
 import bgu.dcr.az.impl.pgen.UnstructuredDCOPGen;
 import java.util.Enumeration;
@@ -30,10 +33,12 @@ import javax.swing.tree.TreeSelectionModel;
  *
  * @author bennyl
  */
-public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintShowListener {
+public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintShowListener, Experiment.ExperimentListener {
 
     public static final String CONSTRAINT_MATRIX = "Constraints Matrix";
 
+    private boolean isShowingProblem;
+    
     /** Creates new form StatusScreen */
     @SuppressWarnings("LeakingThisInConstructor")
     public ProblemViewScreen(ImmutableProblem p) {
@@ -131,7 +136,8 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         constraintsTable = new bc.ui.swing.tables.ConstraintTable();
         jPanel1 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
+        problemViewingDescription = new javax.swing.JLabel();
+        jXHyperlink1 = new org.jdesktop.swingx.JXHyperlink();
         jPanel3 = new javax.swing.JPanel();
         tree = new bc.ui.swing.trees.ScrollableStripeTree();
         dataPane = new bc.ui.swing.useful.DataPanel();
@@ -146,9 +152,18 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         jPanel11.setBackground(new java.awt.Color(120, 120, 120));
         jPanel11.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 3, 3));
 
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Constraints view");
-        jPanel11.add(jLabel4);
+        problemViewingDescription.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        problemViewingDescription.setForeground(new java.awt.Color(255, 255, 255));
+        problemViewingDescription.setText("No Problem To View");
+        jPanel11.add(problemViewingDescription);
+
+        jXHyperlink1.setForeground(new java.awt.Color(210, 233, 255));
+        jXHyperlink1.setText("change?");
+        jXHyperlink1.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
+        jXHyperlink1.setVerifyInputWhenFocusTarget(false);
+        jXHyperlink1.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        jXHyperlink1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jPanel11.add(jXHyperlink1);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -197,10 +212,11 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
     private bc.ui.swing.consoles.ConstraintCalcConsole calc;
     private bc.ui.swing.tables.ConstraintTable constraintsTable;
     private bc.ui.swing.useful.DataPanel dataPane;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel3;
+    private org.jdesktop.swingx.JXHyperlink jXHyperlink1;
+    private javax.swing.JLabel problemViewingDescription;
     private bc.ui.swing.trees.ScrollableStripeTree tree;
     // End of variables declaration//GEN-END:variables
 
@@ -305,6 +321,31 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
             }
         }
         return false;
+    }
+
+    @Override
+    public void onExpirementStarted(Experiment source) {
+//        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void onExpirementEnded(Experiment source) {
+//        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void onNewRoundStarted(Experiment source, Round round) {
+//        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void onNewExecutionStarted(Experiment source, Round round, Execution exec) {
+//        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void onExecutionEnded(Experiment source, Round round, Execution exec) {
+//        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     private static class AgentInfo {

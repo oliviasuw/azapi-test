@@ -10,6 +10,7 @@
  */
 package bgu.dcr.az.dev.ui;
 
+import bc.dsl.SwingDSL;
 import bc.swing.models.DataExtractor;
 import bc.swing.models.GenericTableModel;
 import bc.ui.swing.charts.LineChart;
@@ -20,9 +21,11 @@ import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Round;
 import bgu.dcr.az.api.infra.VariableMetadata;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
+import bgu.dcr.az.api.infra.stat.VisualModel;
 import bgu.dcr.az.api.infra.stat.vmod.LineVisualModel;
 import bgu.dcr.az.impl.db.DatabaseUnit;
 import java.awt.BorderLayout;
+import java.io.File;
 import java.util.Formatter;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +43,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
     private OptionList roundsList;
     private StatisticCollector selectedCollector = null;
     private Round selectedRound = null;
+    private VisualModel showedVisualization = null;
 
     /** Creates new form StatisticsScreen */
     public StatisticsScreen() {
@@ -143,6 +147,8 @@ public class StatisticsScreen extends javax.swing.JPanel {
         chartResultPan = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
         resultList = new bc.ui.swing.tables.ScrolleableStripeTable();
+        exportToCSVButton = new javax.swing.JPanel();
+        jXHyperlink2 = new org.jdesktop.swingx.JXHyperlink();
         varscrolls = new javax.swing.JScrollPane();
         vars = new bc.ui.swing.configurable.VariablesEditor();
         jPanel12 = new javax.swing.JPanel();
@@ -187,6 +193,32 @@ public class StatisticsScreen extends javax.swing.JPanel {
         resultList.setEvenRowColor(new java.awt.Color(173, 173, 173));
         resultList.setOddRowColor(new java.awt.Color(153, 153, 153));
         jPanel14.add(resultList, java.awt.BorderLayout.CENTER);
+
+        exportToCSVButton.setBackground(new java.awt.Color(102, 102, 102));
+        exportToCSVButton.setBorder(javax.swing.BorderFactory.createMatteBorder(3, 0, 0, 3, new java.awt.Color(120, 120, 120)));
+        exportToCSVButton.setLayout(new java.awt.GridBagLayout());
+
+        jXHyperlink2.setForeground(new java.awt.Color(255, 255, 255));
+        jXHyperlink2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/export-to-csv.png"))); // NOI18N
+        jXHyperlink2.setText("Export To CSV");
+        jXHyperlink2.setClickedColor(new java.awt.Color(255, 255, 255));
+        jXHyperlink2.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        jXHyperlink2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jXHyperlink2.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        jXHyperlink2.setUnclickedColor(new java.awt.Color(255, 255, 255));
+        jXHyperlink2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jXHyperlink2ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        exportToCSVButton.add(jXHyperlink2, gridBagConstraints);
+
+        jPanel14.add(exportToCSVButton, java.awt.BorderLayout.SOUTH);
 
         resultsPan.setRightComponent(jPanel14);
 
@@ -320,7 +352,6 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jPanel7.setMinimumSize(new java.awt.Dimension(55, 180));
         jPanel7.setLayout(new java.awt.GridBagLayout());
 
-        jXHyperlink1.setForeground(new java.awt.Color(0, 153, 255));
         jXHyperlink1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/statistics-collection-view.png"))); // NOI18N
         jXHyperlink1.setText("Analyze");
         jXHyperlink1.setClickedColor(new java.awt.Color(0, 102, 204));
@@ -395,16 +426,17 @@ public class StatisticsScreen extends javax.swing.JPanel {
         VariableMetadata.assign(selectedCollector, v);
         chartResultPan.removeAll();
         LineChart chart = new LineChart();
-        final LineVisualModel model = (LineVisualModel) selectedCollector.analyze(DatabaseUnit.UNIT.createDatabase(), selectedRound);
-        chart.setModel(model);
+        final LineVisualModel vismodel = (LineVisualModel) selectedCollector.analyze(DatabaseUnit.UNIT.createDatabase(), selectedRound);
+        showedVisualization = vismodel;
+        chart.setModel(vismodel);
         chartResultPan.add(chart, BorderLayout.CENTER);
         resultDataPan.setData(resultsPan);
-        GenericTableModel tableModel = new GenericTableModel(new DataExtractor(model.getxAxisName(), model.getyAxisName()) {
+        GenericTableModel tableModel = new GenericTableModel(new DataExtractor(vismodel.getxAxisName(), vismodel.getyAxisName()) {
 
             @Override
             public Object getData(String dataName, Object from) {
                 Entry<Double, Double> e = (Entry<Double, Double>) from;
-                if (model.getxAxisName().equals(dataName)) {
+                if (vismodel.getxAxisName().equals(dataName)) {
                     return "" + String.format("%.2f", e.getKey());
                 } else {
                     return "" + String.format("%.2f", e.getValue());
@@ -412,13 +444,23 @@ public class StatisticsScreen extends javax.swing.JPanel {
             }
         });
         
-        tableModel.setInnerList(new LinkedList(model.getValues().entrySet()));
+        tableModel.setInnerList(new LinkedList(vismodel.getValues().entrySet()));
         resultList.setModel(tableModel);
         revalidate();
         repaint();
     }//GEN-LAST:event_jXHyperlink1ActionPerformed
+
+    private void jXHyperlink2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink2ActionPerformed
+        if (showedVisualization != null){
+            final File file = new File("temp.csv");
+            showedVisualization.exportToCSV(file);
+            SwingDSL.dopen(file);
+        }
+}//GEN-LAST:event_jXHyperlink2ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel chartResultPan;
+    private javax.swing.JPanel exportToCSVButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -441,6 +483,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private org.jdesktop.swingx.JXHyperlink jXHyperlink1;
+    private org.jdesktop.swingx.JXHyperlink jXHyperlink2;
     private bc.ui.swing.useful.DataPanel resultDataPan;
     private bc.ui.swing.tables.ScrolleableStripeTable resultList;
     private javax.swing.JSplitPane resultsPan;

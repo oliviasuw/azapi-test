@@ -103,9 +103,9 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
     public static class NCCCRecord extends DBRecord {
 
         float rVar;
-        long value;
+        float value;
 
-        public NCCCRecord(float rVar, long value) {
+        public NCCCRecord(float rVar, float value) {
             this.rVar = rVar;
             this.value = value;
         }

@@ -32,11 +32,11 @@ public class MapProblem extends Problem {
         }
         
         int id = calcId(var1, var2);
-        if (cost != 0) {
-            super.constraints.put(id, Boolean.TRUE);
-            setNeighbor(var1, var2);
-//            setNeighbor(var2, var1);
-        }
+//        if (cost != 0) {
+//            super.constraints.put(id, Boolean.TRUE);
+        setNeighbor(var1, var2);
+        setNeighbor(var2, var1);
+//        }
         createMap(id);
         ((double[][]) map[id])[val1][val2] = cost;
     }

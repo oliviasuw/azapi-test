@@ -11,7 +11,6 @@
 package bgu.dcr.az.dev.ui;
 
 //import bc.dsl.PageDSL;
-import bgu.dcr.az.dev.pui.*;
 import bc.swing.models.BatchDocument;
 import bc.swing.pfrm.Parameter;
 import bc.swing.pfrm.Model;
@@ -244,7 +243,7 @@ private void nextMatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
                     doc.processBatchUpdates();
 
                 } catch (BadLocationException ex) {
-                    Logger.getLogger(UIController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(LogScreen.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         };

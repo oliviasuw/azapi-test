@@ -17,6 +17,10 @@ public class ReportMediator {
         this.a = a;
     }
     
+    /**
+     * send report to the given module name
+     * @param who
+     */
     public void to(String who){
         Agent.PlatformOperationsExtractor.extract(a).getExecution().report(who, a, args);
     }

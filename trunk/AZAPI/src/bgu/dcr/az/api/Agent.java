@@ -79,6 +79,9 @@ public abstract class Agent extends Agt0DSL {
      * collection of hooks that will get called before message processing on this agent.
      */
     protected List<Hooks.BeforeMessageProcessingHook> beforeMessageProcessingHooks;
+    /**
+     * hooks that will be called before agent calling finish
+     */
     protected List<Hooks.BeforeCallingFinishHook> beforeCallingFinishHooks;
 
     /**
@@ -93,6 +96,9 @@ public abstract class Agent extends Agt0DSL {
         this.pops = new PlatformOps();
     }
 
+    /**
+     * @return the number of constraint checks this agent performed
+     */
     public long getNumberOfConstraintChecks() {
         return cc;
     }
@@ -116,6 +122,11 @@ public abstract class Agent extends Agt0DSL {
         return ret;
     }
     
+    /**
+     * report to statistic analyzer / algorithm visualization
+     * @param args
+     * @return
+     */
     public ReportMediator report(Object... args){
         return new ReportMediator(args, this);
     }
@@ -156,6 +167,10 @@ public abstract class Agent extends Agt0DSL {
         beforeMessageProcessingHooks.add(hook);
     }
 
+    /**
+     * hook to be callback before agent calling finish
+     * @param hook
+     */
     public void hookIn(Hooks.BeforeCallingFinishHook hook) {
         beforeCallingFinishHooks.add(hook);
     }
@@ -596,6 +611,10 @@ public abstract class Agent extends Agt0DSL {
      */
     public class AgentProblem implements ImmutableProblem {
 
+        public int getAgentId(){
+            return Agent.this.getId();
+        }
+        
         @Override
         public int getNumberOfVariables() {
             return exec.getGlobalProblem().getNumberOfVariables();
@@ -654,6 +673,9 @@ public abstract class Agent extends Agt0DSL {
             return exec.getGlobalProblem().isConstrained(var1, var2);
         }
 
+        /**
+         * @return the type of the problem
+         */
         @Override
         public ProblemType type() {
             return exec.getGlobalProblem().type();

@@ -19,7 +19,7 @@ public abstract class Problem implements Serializable, ImmutableProblem {
     protected int numvars;
     protected ImmutableSet<Integer> domain;
     protected HashMap<Integer, Set<Integer>> neighbores = new HashMap<Integer, Set<Integer>>();
-    protected HashMap<Integer, Boolean> constraints = new HashMap<Integer, Boolean>();
+//    protected HashMap<Integer, Boolean> constraints = new HashMap<Integer, Boolean>();
     protected ProblemType type;
     protected double maxCost = 0;
 
@@ -32,8 +32,19 @@ public abstract class Problem implements Serializable, ImmutableProblem {
     }
 
     private void problemToString(StringBuilder sb) {
-        int maxCostSize = (int) Math.log10(maxCost);
-        int domainSize = (int) Math.log10(getDomainSize(0) - 1);
+
+        int maxCostSize = 0;
+        int domainSize = 0;
+        if (maxCost == 1) {
+            maxCostSize = 1;
+        } else {
+            maxCostSize = (int) Math.log10(maxCost);
+        }
+        if (getDomainSize(0) == 1) {
+            domainSize = 1;
+        } else {
+            domainSize = (int) Math.log10(getDomainSize(0) - 1);
+        }
         String tmpForMaxCost[] = new String[maxCostSize + 2];
         String tmpForDomainSize[] = new String[domainSize + 2];
         String tmpLineForMaxCost = "";
@@ -63,7 +74,7 @@ public abstract class Problem implements Serializable, ImmutableProblem {
                 if (!isConstrained(i, j)) {
                     continue;
                 }
-                if (i<j && type()!=ProblemType.ADCOP){
+                if (i < j && type() != ProblemType.ADCOP) {
                     continue;
                 }
                 sb.append("\n").append("Agent ").append(i).append(" --> Agent ").append(j).append("\n").append("\n");
@@ -94,7 +105,7 @@ public abstract class Problem implements Serializable, ImmutableProblem {
                             sizeCons = (int) Math.log10(constraintCost);
                         }
                         if (first) {
-                            sb.append(dj).append(tmpForDomainSize[tmpForDomainSize.length - sizeDomain-2]).append("|");
+                            sb.append(dj).append(tmpForDomainSize[tmpForDomainSize.length - sizeDomain - 2]).append("|");
                             first = false;
                         }
                         sb.append(constraintCost).append(tmpForMaxCost[tmpForMaxCost.length - sizeCons - 1]);
@@ -168,25 +179,7 @@ public abstract class Problem implements Serializable, ImmutableProblem {
      */
     @Override
     public boolean isConstrained(int var1, int var2) {
-        int id = calcId(var1, var2);
-        Boolean ans = constraints.get(id);
-        if (ans == null) {
-
-            return false;
-//            OUTER_FOR:
-//            for (Integer d1 : getDomainOf(var1)) {
-//                for (Integer d2 : getDomainOf(var2)) {
-//                    if (getConstraintCost(var1, d1, var2, d2) != 0) {
-//                        found = true;
-//                        break OUTER_FOR;
-//                    }
-//                }
-//            }
-
-//            return found;
-        } else {
-            return ans;
-        }
+        return neighbores.get(var1).contains(var2);
     }
 
     /**

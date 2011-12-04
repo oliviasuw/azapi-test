@@ -36,6 +36,12 @@ public class Agt0DSL {
         return ret;
     }
     
+    /**
+     * add [start, end] to c
+     * @param c
+     * @param start
+     * @param end
+     */
     public static void fillRange(Collection c, int start, int end){
         if (end < start) {
             return;

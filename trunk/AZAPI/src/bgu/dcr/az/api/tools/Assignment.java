@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import bgu.dcr.az.api.ImmutableProblem;
 import bgu.dcr.az.api.ProblemType;
 import bgu.dcr.az.api.ds.ImmutableSet;
+import bgu.dcr.az.api.exp.UnassignedVariableException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -77,7 +78,11 @@ public class Assignment implements Serializable, DeepCopyable{
      * @return the value assigned to var or null if no such assignment
      */
     public Integer getAssignment(int var) {
-        return assignment.get(var);
+        final Integer ass = assignment.get(var);
+        if (ass == null){
+            throw new UnassignedVariableException("calling getAssignment with variable " + var + " while its is not assigned");
+        }
+        return ass;
     }
 
     /**
@@ -85,24 +90,55 @@ public class Assignment implements Serializable, DeepCopyable{
      * @return the cost of this assignment
      */
     public double calcCost(ImmutableProblem p) {
-        if (cachedCost >= 0) return cachedCost;
-        
+        if (p instanceof Agent.AgentProblem) {
+            if (cachedCost >= 0) {
+                return cachedCost;
+            }
+        }
+
         double c = 0;
         LinkedList<Entry<Integer, Integer>> past = new LinkedList<Entry<Integer, Integer>>();
+        if (p.type() == ProblemType.ADCOP) {
+            if (p instanceof Agent.AgentProblem) {
+                int agent = ((Agent.AgentProblem) p).getAgentId();
+                int value = assignment.get(agent);
+                for (Entry<Integer, Integer> e : assignment.entrySet()) {
+                    int var = e.getKey();
+                    int val = e.getValue();
+                    c += p.getConstraintCost(agent, value, var, val);
+                }
+            } else {
+                for (Entry<Integer, Integer> e : assignment.entrySet()) {
+                    int var = e.getKey();
+                    int val = e.getValue();
+                    c += p.getConstraintCost(var, val);
 
-        for (Entry<Integer, Integer> e : assignment.entrySet()) {
-            int var = e.getKey();
-            int val = e.getValue();
-            c += p.getConstraintCost(var, val);
+                    for (Entry<Integer, Integer> pe : past) {
+                        int pvar = pe.getKey();
+                        int pval = pe.getValue();
 
-            for (Entry<Integer, Integer> pe : past) {
-                int pvar = pe.getKey();
-                int pval = pe.getValue();
+                        c += p.getConstraintCost(pvar, pval, var, val);
+                        c += p.getConstraintCost(var, val, pvar, pval);
+                    }
 
-                c += p.getConstraintCost(pvar, pval, var, val);
+                    past.add(e);
+                }
             }
+        }else{
+                for (Entry<Integer, Integer> e : assignment.entrySet()) {
+                int var = e.getKey();
+                int val = e.getValue();
+                c += p.getConstraintCost(var, val);
 
-            past.add(e);
+                for (Entry<Integer, Integer> pe : past) {
+                    int pvar = pe.getKey();
+                    int pval = pe.getValue();
+
+                    c += p.getConstraintCost(pvar, pval, var, val);
+                }
+                past.add(e);
+            }
+            
         }
 
         cachedCost = c;
@@ -125,9 +161,6 @@ public class Assignment implements Serializable, DeepCopyable{
             var2 = e.getKey();
             val2 = e.getValue();
             c += p.getConstraintCost(var, val, var2, val2);
-            if (p.type() == ProblemType.ADCOP){
-                c+= p.getConstraintCost(var2, val2, var, val);
-            }
         }
         return c;
     }

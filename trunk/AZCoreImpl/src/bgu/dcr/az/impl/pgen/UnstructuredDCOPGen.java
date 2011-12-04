@@ -55,10 +55,14 @@ public class UnstructuredDCOPGen extends AbstractProblemGenerator {
                 if (i == j) {
                     continue;
                 }
-                final int cost = rand.nextInt(maxCost) + 1;
-                p.setConstraintCost(i, vi, j, vj, cost);
+                final int cost1 = rand.nextInt(maxCost) + 1;
+                final int cost2 = rand.nextInt(maxCost) + 1;
+                p.setConstraintCost(i, vi, j, vj, cost1);
                 if (sym) {
-                    p.setConstraintCost(j, vj, i, vi, cost);
+                    p.setConstraintCost(j, vj, i, vi, cost1);
+                } else {
+                    p.setConstraintCost(j, vj, i, vi, cost2);
+
                 }
 
             }

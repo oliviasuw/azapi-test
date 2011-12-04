@@ -4,8 +4,7 @@
  */
 package bgu.dcr.az.impl.pgen;
 
-import bgu.dcr.az.api.ProblemType;
-import bgu.dcr.az.api.ano.Variable;
+import bgu.dcr.az.api.DeepCopyable;
 import bgu.dcr.az.api.infra.VariableMetadata;
 import bgu.dcr.az.api.pgen.ProblemGenerator;
 import bgu.dcr.az.impl.infra.AbstractConfigureable;
@@ -14,14 +13,13 @@ import bgu.dcr.az.impl.infra.AbstractConfigureable;
  *
  * @author bennyl
  */
-public abstract class AbstractProblemGenerator extends AbstractConfigureable implements ProblemGenerator {
+public abstract class AbstractProblemGenerator extends AbstractConfigureable implements ProblemGenerator{
 
     
     @Override
     public VariableMetadata[] provideExpectedVariables() {
         return VariableMetadata.scan(this);
     }
-
 
     @Override
     protected void configurationDone() {

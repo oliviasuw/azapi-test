@@ -25,15 +25,15 @@ public class DebugInfo extends AbstractConfigureable {
     String algName = "";
     @Variable(name="name", description="identifier for this debug info")
     String name = ""+ System.currentTimeMillis();
-    @Variable(name="seed", description="seed of the failing problem")
-    long seed = -1;
+    @Variable(name="number", description="number of the failing problem")
+    int number = -1;
     
     List<VarAssign> pgenVars = new LinkedList<VarAssign>();
 
-    public DebugInfo(String roundName, String algName, long seed) {
+    public DebugInfo(String roundName, String algName, int number) {
         this.roundName = roundName;
         this.algName = algName;
-        this.seed = seed;
+        this.number = number;
     }
 
     public DebugInfo() {
@@ -45,9 +45,11 @@ public class DebugInfo extends AbstractConfigureable {
     public String getAlgorithmName(){
         return algName;
     }
-    public long getProblemSeed(){
-        return seed;
+    
+    public int getFailedProblemNumber(){
+        return number;
     }
+    
     public List<VarAssign> getProblemGeneratorConfiguration(){
         return pgenVars;
     }

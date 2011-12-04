@@ -23,6 +23,7 @@ public class DefaultSystemClock implements SystemClock {
     private long time;
     private volatile boolean closed = false;
     private volatile boolean ticked = false;
+    private volatile long notified = -1;
     private List<TickHook> tickHooks = new LinkedList<TickHook>();
     private Semaphore tickHookLock = new Semaphore(1);
 
@@ -50,15 +51,17 @@ public class DefaultSystemClock implements SystemClock {
              * thus its local cpu cache will get updated.
              */
             time = nextTime;
-            if (ticked) {
+            if (notified < time) {
                 try {
                     tickHookLock.acquire();
-                    if (ticked) {
+                    if (notified < time) {
+                        notified = time;
                         for (TickHook t : tickHooks) {
                             t.hook(this);
                         }
                     }
                 } finally {
+                    ticked = false;
                     tickHookLock.release();
                 }
             }

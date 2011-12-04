@@ -62,9 +62,7 @@ public class UnstructuredDCOPGen extends AbstractProblemGenerator {
                     p.setConstraintCost(j, vj, i, vi, cost1);
                 } else {
                     p.setConstraintCost(j, vj, i, vi, cost2);
-
                 }
-
             }
         }
     }

@@ -74,11 +74,11 @@ public class SyncAgentRunner implements AgentRunner {
                         allFinished = false;
                         break;
                     }
-                    
+
                     if (!s.current.isFinished()) {
                         allFinished = false;
                     }
-                    
+
                     long got = s.time.getAndSet(currentTime);
                     if (got == -1) {
                         s.current.start();
@@ -103,6 +103,10 @@ public class SyncAgentRunner implements AgentRunner {
                     }
                 }
 
+                if (allFinished) {
+                    clock.close();
+                    return; //DONE..
+                }
                 if (!Thread.currentThread().isInterrupted()) {
                     try {
 //                        System.out.println("Agent Runner '" + Thread.currentThread().getName() + "' Ticking");

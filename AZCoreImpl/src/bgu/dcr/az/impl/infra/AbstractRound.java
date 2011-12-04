@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.impl.infra;
 
+import bgu.dcr.az.api.DeepCopyable;
 import bgu.dcr.az.api.infra.CorrectnessTester;
 import bgu.dcr.az.impl.AlgorithmMetadata;
 import bgu.dcr.az.api.ano.Variable;
@@ -24,6 +25,8 @@ import bgu.dcr.az.impl.VarAssign;
 import bgu.dcr.az.impl.db.DatabaseUnit;
 import bgu.dcr.az.impl.pgen.MapProblem;
 import bgu.dcr.az.impl.stat.AbstractStatisticCollector;
+import bgu.dcr.az.utils.DeepCopyUtil;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,8 +75,10 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     private List<RoundListener> listeners = new LinkedList<RoundListener>();
     private float currentVarValue;
     private DebugInfo di = null;
-    private long lastProblemSeed = -1; //USED FOR DEBUGING INFORMATION
-
+//    private long lastProblemSeed = -1; //USED FOR DEBUGING INFORMATION
+    private List<Long> problemSeeds;
+    
+    
     public AbstractRound() {
     }
 
@@ -167,15 +172,22 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
         pgen.bubbleDownVariable(var, val);
     }
 
+    public Problem generateProblem(int number){
+        if (number > getLength() || number <= 0) throw new InvalidValueException("there is no such problem");
+        int ticksPerformed = number /tickSize;
+        float vvar = start + tick*(float)ticksPerformed;
+        ProblemGenerator tpgen = DeepCopyUtil.deepCopy(pgen);
+        tpgen.bubbleDownVariable(runVar, vvar);
+        Problem p = new MapProblem();
+        
+        tpgen.generate(p, new Random(problemSeeds.get(number)));
+        return p;
+    }
+    
     public void debug(DebugInfo di) {
         fireRoundStarted();
         try {
-            for (VarAssign v : di.getProblemGeneratorConfiguration()) {
-                pgen.bubbleDownVariable(v.getVarName(), v.getValue());
-            }
-
-            Problem p = new MapProblem();
-            pgen.generate(p, rand);
+            Problem p = generateProblem(di.getFailedProblemNumber());
 
             AlgorithmMetadata alg = null;
             for (AlgorithmMetadata a : algorithms) {
@@ -209,13 +221,14 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
                 tick = 0.1f;
             }
 
+            int pnum = 0;
             for (currentVarValue = start; currentVarValue <= end; currentVarValue = (float) (((float) (100*(currentVarValue + tick))) / 100.0) ) {
                 bubbleDownVariable(runVar, currentVarValue);
                 for (int i = 0; i < tickSize; i++) {
-                    Problem p = nextProblem();
+                    Problem p = nextProblem(++pnum);
                     for (AlgorithmMetadata alg : getAlgorithms()) {
                         if (!execute(p, alg)) {
-                            di = new DebugInfo(this.getName(), alg.getName(), lastProblemSeed);
+                            di = new DebugInfo(this.getName(), alg.getName(), pnum);
                             return;
                         }
                     }
@@ -322,8 +335,14 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     public void configure(Map<String, Object> variables) {
         VariableMetadata.assign(this, variables);
         rand = new Random(seed);
+        //creating problem seeds 
+        problemSeeds = new ArrayList<Long>(getLength());
+        for (int i=0; i<getLength(); i++){
+            problemSeeds.add(rand.nextLong());
+        }
         onConfigurationComplete();
     }
+    
 
     @Override
     public RoundResult getResult() {
@@ -335,13 +354,18 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
         return pgen;
     }
 
-    protected Problem nextProblem() {
-        lastProblemSeed = rand.nextLong();
-        Random nrand = new Random(lastProblemSeed);
+    /**
+     * 1 is the first problem
+     * @param num
+     * @return 
+     */
+    protected Problem nextProblem(int num) {
+        long pseed = problemSeeds.get(num-1);
+        Random nrand = new Random(pseed);
         MapProblem p = new MapProblem();
         HashMap<String, Object> metadata = p.getMetadata();
 
-        metadata.put(SEED_PROBLEM_METADATA, lastProblemSeed);
+        metadata.put(SEED_PROBLEM_METADATA, pseed);
         metadata.put(PROBLEM_GENERATOR_PROBLEM_METADATA, pgen.getClass().getName());
 
         pgen.generate(p, nrand);

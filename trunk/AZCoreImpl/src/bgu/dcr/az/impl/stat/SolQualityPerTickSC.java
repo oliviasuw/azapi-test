@@ -86,4 +86,10 @@ public class SolQualityPerTickSC extends AbstractStatisticCollector<SolQualityPe
             }
         });
     }
+
+    @Override
+    public String getName() {
+        return "Solution Quality Per Ticks";
+    }
+    
 }

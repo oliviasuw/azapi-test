@@ -22,11 +22,6 @@ public abstract class AbstractStatisticCollector<T extends DBRecord> extends Abs
     public void setRound(Round round) {
         this.round = round;
     }
-
-    @Override
-    public String getName() {
-        return "UN NAMED";
-    }
     
     
     @Override

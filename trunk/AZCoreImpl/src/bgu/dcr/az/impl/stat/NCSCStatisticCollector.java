@@ -91,10 +91,10 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
     
     public static class NCSCRecord extends DBRecord{
 
-        long ncsc;
+        float ncsc;
         float rVar;
 
-        public NCSCRecord(long ncsc, float rVar) {
+        public NCSCRecord(float ncsc, float rVar) {
             this.ncsc = ncsc;
             this.rVar = rVar;
         }

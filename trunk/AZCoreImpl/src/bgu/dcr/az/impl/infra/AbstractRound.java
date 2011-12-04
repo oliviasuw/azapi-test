@@ -45,7 +45,7 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
      */
     @Variable(name = "name", description = "the round name")
     private String name = "";
-    @Variable(name = "seed", description = "seed for determining roundiness")
+    @Variable(name = "seed", description = "seed for creating randoms for the problem generator")
     private long seed = -1;
     //TODO: FOR NOW THIS PARAMETERS ARE GOOD BUT NEED TO TALK WITH ALON AND SEE WHAT TYPE OF EXPIREMENT MORE EXISTS
     @Variable(name = "tick-size", description = "the number of executions in each tick")
@@ -209,7 +209,7 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
                 tick = 0.1f;
             }
 
-            for (currentVarValue = start; currentVarValue <= end; currentVarValue += tick) {
+            for (currentVarValue = start; currentVarValue <= end; currentVarValue = (float) (((float) (100*(currentVarValue + tick))) / 100.0) ) {
                 bubbleDownVariable(runVar, currentVarValue);
                 for (int i = 0; i < tickSize; i++) {
                     Problem p = nextProblem();

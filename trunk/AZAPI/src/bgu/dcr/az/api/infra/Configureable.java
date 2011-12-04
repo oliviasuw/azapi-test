@@ -4,6 +4,7 @@
  */
 package bgu.dcr.az.api.infra;
 
+import bgu.dcr.az.api.DeepCopyable;
 import bgu.dcr.az.api.exp.InvalidValueException;
 import java.io.Serializable;
 import java.util.List;

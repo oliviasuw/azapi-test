@@ -31,6 +31,9 @@ import java.util.Set;
  */
 public abstract class Agent extends Agt0DSL {
 
+    /**
+     * will output the logs to the stdout
+     */
     private static final boolean USE_DEBUG_LOGS = false;
     /**
      * the name of the statistic that collect the number of non concurrent constraing checks

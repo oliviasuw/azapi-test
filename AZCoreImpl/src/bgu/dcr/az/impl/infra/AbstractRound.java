@@ -174,13 +174,13 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
 
     public Problem generateProblem(int number){
         if (number > getLength() || number <= 0) throw new InvalidValueException("there is no such problem");
-        int ticksPerformed = number /tickSize;
+        int ticksPerformed = (number-1) /tickSize;
         float vvar = start + tick*(float)ticksPerformed;
         ProblemGenerator tpgen = DeepCopyUtil.deepCopy(pgen);
         tpgen.bubbleDownVariable(runVar, vvar);
         Problem p = new MapProblem();
         
-        tpgen.generate(p, new Random(problemSeeds.get(number)));
+        tpgen.generate(p, new Random(problemSeeds.get(number-1)));
         return p;
     }
     

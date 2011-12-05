@@ -13,7 +13,7 @@ import bgu.dcr.az.api.ano.WhenReceived;
 @Algorithm(name="___DSAA", searchType = SearchType.SYNCHRONOUS, useIdleDetector=false)
 public class DSAA extends SimpleAgent {
 	private final double p=0.5; 
-	private final int cycles=1000;
+	private final int cycles=100;
 	private Assignment localView;
         private long lastTime = -1;
 	

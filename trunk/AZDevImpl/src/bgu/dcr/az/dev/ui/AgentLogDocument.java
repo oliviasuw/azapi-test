@@ -4,7 +4,7 @@
  */
 package bgu.dcr.az.dev.ui;
 
-import bc.swing.models.LimitedBatchDocument;
+import bc.ui.swing.models.LimitedBatchDocument;
 import java.awt.Color;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Formatter;

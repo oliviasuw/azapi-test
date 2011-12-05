@@ -13,15 +13,21 @@ package bgu.dcr.az.dev.ui;
 import bc.dsl.SwingDSL;
 import bc.ui.swing.consoles.ConstraintCalcConsole.ConstraintShowListener;
 import bc.ui.swing.trees.IconProvider;
+import bc.ui.swing.useful.DataPanel;
+import bc.ui.swing.visuals.Visual;
 import bgu.dcr.az.api.ImmutableProblem;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.pgen.Problem;
+import bgu.dcr.az.impl.infra.AbstractRound;
 import bgu.dcr.az.impl.pgen.MapProblem;
 import bgu.dcr.az.impl.pgen.UnstructuredDCOPGen;
+import java.awt.BorderLayout;
 import java.util.Enumeration;
 import java.util.Random;
 import javax.swing.Icon;
+import javax.swing.SwingWorker;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -33,22 +39,21 @@ import javax.swing.tree.TreeSelectionModel;
  *
  * @author bennyl
  */
-public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintShowListener, Experiment.ExperimentListener {
+public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintShowListener {
 
     public static final String CONSTRAINT_MATRIX = "Constraints Matrix";
-    
+
     /** Creates new form StatusScreen */
     @SuppressWarnings("LeakingThisInConstructor")
-    public ProblemViewScreen(ImmutableProblem p) {
+    public ProblemViewScreen() {
         initComponents();
-        prepareTree(p);
+        calc.addListener(this);
         tree.setIconProvider(new IconProvider() {
 
             private Icon AGENT1_ICON = SwingDSL.resIcon("agent1");
             private Icon AGENT2_ICON = SwingDSL.resIcon("agent2");
             private Icon ALL_ICON = SwingDSL.resIcon("all-constraints");
             private Icon PROBLEM_ICON = SwingDSL.resIcon("problem");
-            
 
             @Override
             public Icon provideFor(Object item) {
@@ -59,17 +64,64 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
                     } else {
                         return AGENT2_ICON;
                     }
-                } else if (node.isRoot()){
+                } else if (node.isRoot()) {
                     return PROBLEM_ICON;
-                }else{
+                } else {
                     return AGENT1_ICON;
                 }
             }
         });
 
-        calc.addListener(this);
+    }
+
+    private void showProblem(ImmutableProblem p) {
+        prepareTree(p);
         calc.setProblem(p);
         problemChangePan.setVisible(false);
+    }
+
+    public void setModel(Experiment exp) {
+        Visual.populate(roundSelect, Visual.adapt(exp.getRounds(), new Visual.VisualGen() {
+
+            @Override
+            public Visual gen(Object it) {
+                Round r = (Round) it;
+                return new Visual(it, r.getName(), "", null);
+            }
+        }));
+
+        if (exp.getLength() == 0) {
+            remove(contentPan);
+            DataPanel msg = new DataPanel();
+            msg.setNoDataText("There are no problems to view");
+            add(msg, BorderLayout.CENTER);
+        } else {
+            pnumSelect.setValue(1);
+            switchProblemView();
+        }
+
+        revalidate();
+        repaint();
+    }
+
+    private void switchProblemView() {
+        new SwingWorker() {
+
+            @Override
+            protected Object doInBackground() throws Exception {
+                try {
+                    AbstractRound c = (AbstractRound) Visual.getSelected(roundSelect);
+                    Integer pnum = (Integer) pnumSelect.getValue();
+                    Problem p = c.generateProblem(pnum);
+                    showProblem(p);
+                    problemViewingDescription.setText("Showing problem " + pnum + " of round " + c.getName());
+                } catch (Exception ex) {
+                    MessageDialog.showValidationFaild("" + ex.getMessage());
+                }
+                return null;
+            }
+        }.execute();
+
     }
 
     private void prepareTree(final ImmutableProblem p) {
@@ -80,7 +132,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         r.setUserObject(new AgentInfo("Problem"));
         final DefaultMutableTreeNode node = new DefaultMutableTreeNode(new AgentInfo(CONSTRAINT_MATRIX), true);
         r.add(node);
-        System.out.println(r.getIndex(node));
+//        System.out.println(r.getIndex(node));
         loadAgents(r, p);
 
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -91,9 +143,9 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
             @Override
             public void valueChanged(TreeSelectionEvent e) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-                System.out.println(node);
-                TreePath selectionPath = tree.getSelectionPath();
-                System.out.println(selectionPath.toString());
+//                System.out.println(node);
+//                TreePath selectionPath = tree.getSelectionPath();
+//                System.out.println(selectionPath.toString());
 
                 if (node == null) { //Nothing is selected.
                     return;
@@ -133,15 +185,15 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         java.awt.GridBagConstraints gridBagConstraints;
 
         constraintsTable = new bc.ui.swing.tables.ConstraintTable();
-        jPanel1 = new javax.swing.JPanel();
+        contentPan = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
         problemViewingDescription = new javax.swing.JLabel();
         jXHyperlink1 = new org.jdesktop.swingx.JXHyperlink();
         problemChangePan = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox();
+        roundSelect = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
-        jSpinner1 = new javax.swing.JSpinner();
+        pnumSelect = new javax.swing.JSpinner();
         jButton1 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         tree = new bc.ui.swing.trees.ScrollableStripeTree();
@@ -151,13 +203,13 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         setOpaque(false);
         setLayout(new java.awt.BorderLayout());
 
-        jPanel1.setBackground(new java.awt.Color(120, 120, 120));
-        jPanel1.setLayout(new java.awt.GridBagLayout());
+        contentPan.setBackground(new java.awt.Color(120, 120, 120));
+        contentPan.setLayout(new java.awt.GridBagLayout());
 
         jPanel11.setBackground(new java.awt.Color(120, 120, 120));
         jPanel11.setLayout(new java.awt.GridBagLayout());
 
-        problemViewingDescription.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        problemViewingDescription.setFont(new java.awt.Font("Consolas", 1, 14));
         problemViewingDescription.setForeground(new java.awt.Color(255, 255, 255));
         problemViewingDescription.setText("Viewing Problem X of Round Y");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -167,7 +219,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         jXHyperlink1.setForeground(new java.awt.Color(210, 233, 255));
         jXHyperlink1.setText("change?");
         jXHyperlink1.setClickedColor(new java.awt.Color(210, 233, 255));
-        jXHyperlink1.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
+        jXHyperlink1.setFont(new java.awt.Font("Consolas", 1, 12));
         jXHyperlink1.setUnclickedColor(new java.awt.Color(210, 233, 255));
         jXHyperlink1.setVerifyInputWhenFocusTarget(false);
         jXHyperlink1.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
@@ -186,21 +238,21 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         problemChangePan.setOpaque(false);
         problemChangePan.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        jLabel1.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Consolas", 0, 12));
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Round");
         problemChangePan.add(jLabel1);
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        problemChangePan.add(jComboBox1);
+        roundSelect.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        problemChangePan.add(roundSelect);
 
-        jLabel2.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Consolas", 0, 12));
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText(", Problem Number");
         problemChangePan.add(jLabel2);
 
-        jSpinner1.setPreferredSize(new java.awt.Dimension(50, 20));
-        problemChangePan.add(jSpinner1);
+        pnumSelect.setPreferredSize(new java.awt.Dimension(50, 20));
+        problemChangePan.add(pnumSelect);
 
         jButton1.setText("View");
         jButton1.setOpaque(false);
@@ -221,7 +273,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-        jPanel1.add(jPanel11, gridBagConstraints);
+        contentPan.add(jPanel11, gridBagConstraints);
 
         jPanel3.setOpaque(false);
         jPanel3.setLayout(new java.awt.GridBagLayout());
@@ -256,9 +308,9 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 3, 3);
-        jPanel1.add(jPanel3, gridBagConstraints);
+        contentPan.add(jPanel3, gridBagConstraints);
 
-        add(jPanel1, java.awt.BorderLayout.CENTER);
+        add(contentPan, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jXHyperlink1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink1ActionPerformed
@@ -266,24 +318,24 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
     }//GEN-LAST:event_jXHyperlink1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        switchProblemView();
         problemChangePan.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private bc.ui.swing.consoles.ConstraintCalcConsole calc;
     private bc.ui.swing.tables.ConstraintTable constraintsTable;
+    private javax.swing.JPanel contentPan;
     private bc.ui.swing.useful.DataPanel dataPane;
     private javax.swing.JButton jButton1;
-    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JSpinner jSpinner1;
     private org.jdesktop.swingx.JXHyperlink jXHyperlink1;
+    private javax.swing.JSpinner pnumSelect;
     private javax.swing.JPanel problemChangePan;
     private javax.swing.JLabel problemViewingDescription;
+    private javax.swing.JComboBox roundSelect;
     private bc.ui.swing.trees.ScrollableStripeTree tree;
     // End of variables declaration//GEN-END:variables
 
@@ -357,16 +409,6 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         this.constraintsTable.getTable().updateUI();
     }
 
-    public static void main(String[] args) {
-        MapProblem p = new MapProblem();
-        final UnstructuredDCOPGen gen = new UnstructuredDCOPGen();
-        gen.bubbleDownVariable("n", 12);
-        gen.bubbleDownVariable("d", 7);
-        gen.generate(p, new Random());
-        SwingDSL.configureUI();
-        SwingDSL.showInFrame(new ProblemViewScreen(p));
-    }
-
     @Override
     public boolean onConstraintShowRequested(int i, int j) {
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
@@ -388,31 +430,6 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
             }
         }
         return false;
-    }
-
-    @Override
-    public void onExpirementStarted(Experiment source) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void onExpirementEnded(Experiment source) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void onNewRoundStarted(Experiment source, Round round) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void onNewExecutionStarted(Experiment source, Round round, Execution exec) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void onExecutionEnded(Experiment source, Round round, Execution exec) {
-//        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     private static class AgentInfo {

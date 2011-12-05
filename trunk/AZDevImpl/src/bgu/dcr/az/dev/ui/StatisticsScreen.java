@@ -11,8 +11,8 @@
 package bgu.dcr.az.dev.ui;
 
 import bc.dsl.SwingDSL;
-import bc.swing.models.DataExtractor;
-import bc.swing.models.GenericTableModel;
+import bc.ui.swing.models.DataExtractor;
+import bc.ui.swing.models.GenericTableModel;
 import bc.ui.swing.charts.LineChart;
 import bc.ui.swing.listeners.SelectionListener;
 import bc.ui.swing.lists.OptionList;

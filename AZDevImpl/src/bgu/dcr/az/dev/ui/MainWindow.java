@@ -29,7 +29,6 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
     private StatisticsScreen statisticsScreen;
     private LogScreen logsScreen;
     private ProblemViewScreen problemScreen;
-    private boolean showProblemView = false;
     private boolean started = false;
 
     /** Creates new form MainWindow */
@@ -45,6 +44,8 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
         statusScreen.setModel(experiment);
         statisticsScreen = new StatisticsScreen();
         statisticsScreen.setModel(experiment);
+        problemScreen = new ProblemViewScreen();
+        problemScreen.setModel(experiment);
         logsScreen = new LogScreen();
         logsScreen.setModel(experiment);
 
@@ -57,11 +58,9 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
         //Logs Screen
         tabs.addTab("Log", SwingDSL.resIcon("balloon-ellipsis"), logsScreen);
 
-        if (showProblemView) {
-            //tabs.addTab(null, null, donePanel);
-            System.out.println("Problem View");
-        }
-
+        //Problems Screen
+        tabs.addTab("Problem", SwingDSL.resIcon("problem"), problemScreen);
+        
         ExecutionUnit.UNIT.addExperimentListener(this);
 
         start();
@@ -101,7 +100,7 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
             @Override
             public void onSpecificExperimentDebugRequested(Experiment exp) {
                 chosen[0] = exp;
-                showProblemView = true;
+//                showProblemView = true; //TODO SHOULD SWITCH TO THE SPECIFIC REQUEST
                 s.release();
             }
         });
@@ -363,10 +362,10 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
 
     @Override
     public void onNewExecutionStarted(Experiment source, Round round, Execution exec) {
-        if (showProblemView) {
-            problemScreen = new ProblemViewScreen(exec.getGlobalProblem());
-            tabs.addTab("Problem", SwingDSL.resIcon("problem"), problemScreen);
-        }
+//        if (showProblemView) {
+//            problemScreen = new ProblemViewScreen(exec.getGlobalProblem());
+//            tabs.addTab("Problem", SwingDSL.resIcon("problem"), problemScreen);
+//        }
     }
 
     @Override

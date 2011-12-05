@@ -6,7 +6,9 @@ package bc.ui.swing.visuals;
 
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
+import javax.swing.JComboBox;
 
 /**
  *
@@ -86,6 +88,15 @@ public class Visual {
         return text;
     }
 
+    public static void populate(JComboBox cbox, List<Visual> visuals){
+        DefaultComboBoxModel boxModel = new DefaultComboBoxModel(visuals.toArray());
+        cbox.setModel(boxModel);
+    }
+    
+    public static Object getSelected(JComboBox cbox){
+        return ((Visual) cbox.getSelectedItem()).getItem();
+    }
+    
     public static LinkedList<Visual> adapt(List items) {
         LinkedList<Visual> ret = new LinkedList<Visual>();
         for (Object i : items) {

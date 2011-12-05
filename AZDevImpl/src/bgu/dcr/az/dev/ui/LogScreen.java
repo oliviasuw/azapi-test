@@ -11,11 +11,6 @@
 package bgu.dcr.az.dev.ui;
 
 //import bc.dsl.PageDSL;
-import bc.swing.models.BatchDocument;
-import bc.swing.pfrm.Parameter;
-import bc.swing.pfrm.Model;
-//import bc.swing.pfrm.ParamView;
-import bc.swing.pfrm.ano.PageDef;
 import bc.utils.PokedWorker;
 import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.dev.ExecutionUnit;
@@ -72,7 +67,7 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
 
     private void highLightText(Highlighter highlighter, SimpleEntry<Integer, Integer> place) {
         offset = output.getCaretPosition();
-        Highlighter.HighlightPainter myHighlightPainter = new DefaultHighlighter.DefaultHighlightPainter(new Color(0,102,255));
+        Highlighter.HighlightPainter myHighlightPainter = new DefaultHighlighter.DefaultHighlightPainter(new Color(0, 102, 255));
         try {
             highlighter.addHighlight(offset + place.getKey(),
                     offset + place.getValue(),
@@ -192,18 +187,16 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
             output.setCaretPosition(0);
             return;
         }
-        highLightText(highlighter, place);     
+        highLightText(highlighter, place);
     }
 
 private void searchTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchTextFieldActionPerformed
-        search();
+    search();
 }//GEN-LAST:event_searchTextFieldActionPerformed
 
-
 private void nextMatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextMatchActionPerformed
-        search();
+    search();
 }//GEN-LAST:event_nextMatchActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton nextMatch;
@@ -235,14 +228,14 @@ private void nextMatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
         });
         output.setDocument(doc);
         ExecutionUnit.UNIT.setLogListener(this);
-        pw = new PokedWorker(100) {
+        pw = new PokedWorker(2000) {
 
             @Override
             public void work() {
                 try {
                     doc.processBatchUpdates();
 
-                } catch (BadLocationException ex) {
+                } catch (Exception ex) {
                     Logger.getLogger(LogScreen.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -251,13 +244,6 @@ private void nextMatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
 
     }
 
-//    @Override
-    public void reflectChangesToParam(Parameter to) {
-    }
-
-//    @Override
-    public void onChange(Parameter source, Object newValue, Object deltaHint) {
-    }
 
     @Override
     public void onLog(int agent, String mailGroupKey, String log) {
@@ -266,25 +252,4 @@ private void nextMatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
         pw.poke();
     }
 
-    @PageDef
-    public static class TestModel extends Model {
-
-        BatchDocument b = new AgentLogDocument();
-
-        public TestModel() {
-        }
-
-//        @Param(name = "console", customView = Console.class)
-        public BatchDocument getBatchdoc() {
-
-            return b;
-        }
-    }
-
-    public static void main(String[] args) {
-
-        TestModel tm = new TestModel();
-//        PageDSL.showInFrame(tm);
-
-    }
 }

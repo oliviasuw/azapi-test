@@ -10,7 +10,7 @@
  */
 package bc.ui.swing.lists;
 
-import bc.swing.models.GenericListModel;
+import bc.ui.swing.models.GenericListModel;
 import bc.ui.swing.visuals.Visual;
 import java.awt.Color;
 import java.awt.Font;

@@ -24,7 +24,8 @@ public class MessageDialog extends javax.swing.JDialog {
 
         INFO,
         SUCCESS,
-        FAIL;
+        FAIL, 
+        VALIDATION_FAILD;
 
         public String getIconName(MessageType type) {
             switch (type) {
@@ -32,6 +33,8 @@ public class MessageDialog extends javax.swing.JDialog {
                     return "fail-message";
                 case SUCCESS:
                     return "success-message";
+                case VALIDATION_FAILD:
+                    return "validation-faild-message";
                 case INFO:
                     return "info-message";
 
@@ -47,6 +50,8 @@ public class MessageDialog extends javax.swing.JDialog {
                     return "WHOOPY!";
                 case INFO:
                     return "HMMM...";
+                case VALIDATION_FAILD:
+                    return "WHOOPS..";
 
             }
 
@@ -76,6 +81,11 @@ public class MessageDialog extends javax.swing.JDialog {
     
     public static void showSuccess(String title, String content){
         MessageDialog x = new MessageDialog(null, true, MessageType.SUCCESS, title, content);
+        x.setVisible(true);
+    }
+    
+    public static void showValidationFaild(String description){
+        MessageDialog x = new MessageDialog(null, true, MessageType.VALIDATION_FAILD, "input validation failed", description);
         x.setVisible(true);
     }
     

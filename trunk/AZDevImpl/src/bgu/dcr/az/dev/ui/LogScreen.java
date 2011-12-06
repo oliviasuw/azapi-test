@@ -228,7 +228,7 @@ private void nextMatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
         });
         output.setDocument(doc);
         ExecutionUnit.UNIT.setLogListener(this);
-        pw = new PokedWorker(2000) {
+        pw = new PokedWorker(250) {
 
             @Override
             public void work() {

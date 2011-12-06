@@ -2,16 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.impl.infra;
+package bgu.dcr.az.impl.correctness;
 
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.ExecutionResult;
 import bgu.dcr.az.api.pgen.Problem;
 import bgu.dcr.az.api.tools.Assignment;
-import bgu.dcr.az.impl.correctness.BranchAndBound;
 import bgu.dcr.az.impl.correctness.IterativeCSPSolver.Status;
-import bgu.dcr.az.impl.correctness.MACSolver;
 
 /**
  *

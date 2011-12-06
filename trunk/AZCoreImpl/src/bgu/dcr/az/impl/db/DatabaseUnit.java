@@ -64,6 +64,15 @@ public enum DatabaseUnit {
     }
     
     /**
+     * will wait until all the submited statistics to the time of the call was writen to the db
+     */
+    public void awaitStatistics() throws InterruptedException{
+        final String sig = "AWAIT_STATISTICS";
+        signal(sig);
+        awaitSignal(sig);
+    }
+    
+    /**
      * will return true if signal with that key exists in the system and 
      * the requesting thread waited untill this signal received
      * @param signal
@@ -112,7 +121,7 @@ public enum DatabaseUnit {
         FileUtils.delete(new File(DATA_BASE_NAME + ".trace.db"));
     }
 
-    public Database createDatabase() {
+    public Database getDatabase() {
         return new H2Database();
     }
 

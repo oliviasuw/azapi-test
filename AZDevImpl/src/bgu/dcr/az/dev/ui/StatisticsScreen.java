@@ -426,7 +426,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         VariableMetadata.assign(selectedCollector, v);
         chartResultPan.removeAll();
         LineChart chart = new LineChart();
-        final LineVisualModel vismodel = (LineVisualModel) selectedCollector.analyze(DatabaseUnit.UNIT.createDatabase(), selectedRound);
+        final LineVisualModel vismodel = (LineVisualModel) selectedCollector.analyze(DatabaseUnit.UNIT.getDatabase(), selectedRound);
         showedVisualization = vismodel;
         chart.setModel(vismodel);
         chartResultPan.add(chart, BorderLayout.CENTER);

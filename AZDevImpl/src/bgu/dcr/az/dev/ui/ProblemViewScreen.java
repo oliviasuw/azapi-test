@@ -115,7 +115,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
                     AbstractRound c = (AbstractRound) Visual.getSelected(roundSelect);
                     Integer pnum = (Integer) pnumSelect.getValue();
                     Problem p = c.generateProblem(pnum);        
-                    System.out.println(p.toString());
+//                    System.out.println(p.toString());
                     showProblem(p);
                     problemViewingDescription.setText("Showing problem " + pnum + " of round " + c.getName());
                 } catch (Exception ex) {

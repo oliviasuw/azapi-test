@@ -42,6 +42,7 @@ import javax.swing.tree.TreeSelectionModel;
 public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintShowListener {
 
     public static final String CONSTRAINT_MATRIX = "Constraints Matrix";
+    private ImmutableProblem p;
 
     /** Creates new form StatusScreen */
     @SuppressWarnings("LeakingThisInConstructor")
@@ -74,8 +75,9 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
 
     }
 
-    private void showProblem(ImmutableProblem p) {
-        prepareTree(p);
+    private void showProblem(final ImmutableProblem p) {
+        this.p = p;
+        prepareTree();
         calc.setProblem(p);
         problemChangePan.setVisible(false);
     }
@@ -112,7 +114,8 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
                 try {
                     AbstractRound c = (AbstractRound) Visual.getSelected(roundSelect);
                     Integer pnum = (Integer) pnumSelect.getValue();
-                    Problem p = c.generateProblem(pnum);
+                    Problem p = c.generateProblem(pnum);        
+                    System.out.println(p.toString());
                     showProblem(p);
                     problemViewingDescription.setText("Showing problem " + pnum + " of round " + c.getName());
                 } catch (Exception ex) {
@@ -124,7 +127,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
 
     }
 
-    private void prepareTree(final ImmutableProblem p) {
+    private void prepareTree() {
 
 
         DefaultMutableTreeNode r = (DefaultMutableTreeNode) tree.getModel().getRoot();
@@ -133,7 +136,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         final DefaultMutableTreeNode node = new DefaultMutableTreeNode(new AgentInfo(CONSTRAINT_MATRIX), true);
         r.add(node);
 //        System.out.println(r.getIndex(node));
-        loadAgents(r, p);
+        loadAgents(r);
 
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
@@ -155,14 +158,14 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
                 if (node.isLeaf()) {
                     AgentInfo agent = (AgentInfo) nodeInfo;
                     if (agent.getName().equals(CONSTRAINT_MATRIX)) {
-                        prepareAll(p);
+                        prepareAll();
                     } else if (parentNode == tree.getModel().getRoot()) {
                         dataPane.unSetData();
                     } else {
 
                         Object parentInfo = parentNode.getUserObject();
                         AgentInfo parent = (AgentInfo) parentInfo;
-                        prepareConstraints(parent.getId(), agent.getId(), p);
+                        prepareConstraints(parent.getId(), agent.getId());
                     }
                 } else {
                     dataPane.unSetData();
@@ -339,7 +342,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
     private bc.ui.swing.trees.ScrollableStripeTree tree;
     // End of variables declaration//GEN-END:variables
 
-    private void loadAgents(DefaultMutableTreeNode r, ImmutableProblem p) {
+    private void loadAgents(DefaultMutableTreeNode r) {
         int varNum = p.getNumberOfVariables();
         for (int i = 0; i < varNum; i++) {
             DefaultMutableTreeNode node = new DefaultMutableTreeNode(new AgentInfo(i), true);
@@ -353,7 +356,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         }
     }
 
-    private void prepareAll(ImmutableProblem p) {
+    private void prepareAll() {
         int numVars = p.getNumberOfVariables();
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnCount(numVars + 1);
@@ -379,7 +382,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
 
     }
 
-    private void prepareConstraints(int ai, int aj, ImmutableProblem p) {
+    private void prepareConstraints(int ai, int aj) {
         int domVars = p.getDomainSize(ai);
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnCount(domVars + 1);

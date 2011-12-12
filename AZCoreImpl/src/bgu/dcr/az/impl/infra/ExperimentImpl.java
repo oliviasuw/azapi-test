@@ -84,6 +84,8 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
             }
 
             result = new ExperimentResult(false);
+        }catch(Exception ex){
+            ex.printStackTrace();
         } finally {
             fireExperimentEnded();
             pool.shutdownNow();

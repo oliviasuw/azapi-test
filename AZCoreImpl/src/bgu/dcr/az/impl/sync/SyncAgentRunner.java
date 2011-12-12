@@ -66,51 +66,64 @@ public class SyncAgentRunner implements AgentRunner {
         ContinuationMediator cmed;
         boolean allFinished = false;
         try {
+            long prevTime = -1;
             while (!Thread.currentThread().isInterrupted() && !allFinished) {
                 long currentTime = clock.time();
-                allFinished = true;
-                for (State s : states) {
-                    if (clock.isTicked()) {
-                        allFinished = false;
-                        break;
-                    }
+                if (prevTime != currentTime) { //if the clock stop working then it is closed
+                    prevTime = currentTime;
+                    allFinished = true;
+                    for (State s : states) {
+                        if (clock.isTicked()) {
+                            allFinished = false;
+                            break;
+                        }
 
-                    if (!s.current.isFinished()) {
-                        allFinished = false;
-                    }
-
-                    long got = s.time.getAndSet(currentTime);
-                    if (got == -1) {
-                        s.current.start();
-                    } else if (got < currentTime) {
                         if (!s.current.isFinished()) {
-                            try {
-                                while (s.current.hasPendingMessages()) {
-                                    s.current.processNextMessage();
-                                }
-                                s.current.onMailBoxEmpty();
-                                if (s.current.isFinished() && !s.nested.isEmpty()) {
-                                    cmed = s.nestedContinuations.removeFirst();
-                                    s.current = s.nested.removeFirst();
-                                    cmed.executeContinuation();
+                            allFinished = false;
+                        }
+
+                        long got = s.time.getAndSet(currentTime);
+                        if (got == -1) {
+                            s.current.start();
+                        } else if (got < currentTime) {
+                            if (!s.current.isFinished()) {
+                                try {
+                                    while (s.current.hasPendingMessages()) {
+                                        s.current.processNextMessage();
+                                    }
+                                    s.current.onMailBoxEmpty();
+                                    if (s.current.isFinished() && !s.nested.isEmpty()) {
+                                        cmed = s.nestedContinuations.removeFirst();
+                                        s.current = s.nested.removeFirst();
+                                        cmed.executeContinuation();
 //                                    System.out.println("Returning Back to " + s.current.getClass().getSimpleName());
+                                    }
+                                } catch (InterruptedException ex) {
+                                    Thread.currentThread().interrupt(); //REFLAGING THE CURRENT THREAD.
+                                    System.out.println("Agent Runner Interupted While Handling " + "[" + Agent.PlatformOperationsExtractor.extract(s.current).getMailGroupKey() + "]: " + s.current.getId());
                                 }
-                            } catch (InterruptedException ex) {
-                                Thread.currentThread().interrupt(); //REFLAGING THE CURRENT THREAD.
-                                System.out.println("Agent Runner Interupted While Handling " + "[" + Agent.PlatformOperationsExtractor.extract(s.current).getMailGroupKey() + "]: " + s.current.getId());
                             }
                         }
                     }
+                } else {
+                    allFinished = true;
                 }
 
                 if (allFinished) {
+//                    System.out.println("Agent Runner '" + Thread.currentThread().getName() + "' Requesting ShutDown");
                     clock.close();
-                    return; //DONE..
+                    //System.out.println("Agent Find Idle, Joining The Rest");
+                    //clock.tick(); // joining the rest... 
+                    //System.out.println("Joind!");
+                    //return; //DONE..
                 }
                 if (!Thread.currentThread().isInterrupted()) {
                     try {
 //                        System.out.println("Agent Runner '" + Thread.currentThread().getName() + "' Ticking");
+                        
                         clock.tick();
+                        if (clock.isClosed()) return;
+                        
 //                        System.out.println("Agent Runner '" + Thread.currentThread().getName() + "' Done Ticking");
                     } catch (InterruptedException ex) {
                         Thread.currentThread().interrupt(); //REFLAGING THE CURRENT THREAD.
@@ -126,7 +139,11 @@ public class SyncAgentRunner implements AgentRunner {
             //AFTER THIS POINT THE EXCEPTION WILL BE LOST (BUT CAN BE RETRIVED VIA THE RESULT OF THIS ALGORITHM)) 
             ex.printStackTrace();
         } finally {
-            clock.close();
+            try {
+                clock.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             System.out.println("Agent Runner '" + Thread.currentThread().getName() + "' Terminated.");
             joinLock.release();
         }

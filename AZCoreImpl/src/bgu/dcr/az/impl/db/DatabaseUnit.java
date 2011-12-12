@@ -46,7 +46,8 @@ public enum DatabaseUnit {
     
     public void connect() throws ConnectionFaildException {
         try {
-            connection = new DBConnectionHandler("org.h2.Driver", "jdbc:h2:" + DATA_BASE_NAME, "sa", "");
+            String options = "LOG=0;CACHE_SIZE=65536;LOCK_MODE=0;UNDO_LOG=0";
+            connection = new DBConnectionHandler("org.h2.Driver", "jdbc:h2:" + DATA_BASE_NAME + ";" + options, "sa", "");
             connection.connect();
         } catch (SQLException ex) {
             throw new ConnectionFaildException("cannot connect to statistics database", ex);
@@ -66,7 +67,7 @@ public enum DatabaseUnit {
     /**
      * will wait until all the submited statistics to the time of the call was writen to the db
      */
-    public void awaitStatistics() throws InterruptedException{
+    public synchronized void awaitStatistics() throws InterruptedException{
         final String sig = "AWAIT_STATISTICS";
         signal(sig);
         awaitSignal(sig);
@@ -79,7 +80,7 @@ public enum DatabaseUnit {
      * @return
      * @throws InterruptedException 
      */
-    public boolean awaitSignal(Object signal) throws InterruptedException {
+    public synchronized boolean awaitSignal(Object signal) throws InterruptedException {
         final Signal fake = new Signal(signal);
         if (signals.containsKey(fake)) {
             Signal real = signals.get(fake);
@@ -90,12 +91,12 @@ public enum DatabaseUnit {
         }
     }
     
-    public boolean isSignaled(Object signal){
+    public synchronized boolean isSignaled(Object signal){
         Signal fake = new Signal(signal);
         return signals.containsKey(fake) && signals.get(fake).isSignaled();
     }
 
-    public void signal(Object signal) {
+    public synchronized void signal(Object signal) {
         Signal s = new Signal(signal);
         signals.put(s, s);
         dbQueue.add(s);
@@ -186,6 +187,10 @@ public enum DatabaseUnit {
         return connection.prepare(sb.toString());
     }
 
+    public PreparedStatement prepare(String statment) throws SQLException{
+        return connection.prepare(statment);
+    }
+    
     public void insertLater(DBRecord record, Round round) {
         try {
             dbQueue.put(new SimpleEntry<DBRecord, Round>(record, round));
@@ -202,9 +207,9 @@ public enum DatabaseUnit {
             if (Boolean.class == f.getType() || boolean.class == f.getType()) {
                 exe.append(" BOOLEAN");
             } else if (Double.class == f.getType() || double.class == f.getType()) {
-                exe.append(" DOUBLE");
+                exe.append(" DECIMAL(20, 3)");
             } else if (Float.class == f.getType() || float.class == f.getType()) {
-                exe.append(" FLOAT");
+                exe.append(" DECIMAL(14, 3)");
             } else if (Integer.class == f.getType() || int.class == f.getType()) {
                 exe.append(" INTEGER");
             } else if (Character.class == f.getType() || char.class == f.getType()) {
@@ -299,6 +304,7 @@ public enum DatabaseUnit {
                         UNIT.startBatch();
                     }
 
+//                    long before = System.currentTimeMillis();
                     for (SimpleEntry<DBRecord, Round> m : multi) {
                         if (m instanceof Signal) {
                             ((Signal) m).signal();
@@ -310,6 +316,7 @@ public enum DatabaseUnit {
                             }
                         }
                     }
+//                    System.out.println("Writing Statistics took " + (System.currentTimeMillis() - before) + " milis");
                     
                     if (multi.size() > 1) {
                         try {

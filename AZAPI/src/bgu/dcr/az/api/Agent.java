@@ -2,6 +2,7 @@ package bgu.dcr.az.api;
 
 import bgu.dcr.az.api.Hooks.BeforeCallingFinishHook;
 import bgu.dcr.az.api.Hooks.BeforeMessageSentHook;
+import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.ano.WhenReceived;
 import bgu.dcr.az.api.ds.ImmutableSet;
 import bgu.dcr.az.api.exp.InvalidValueException;
@@ -88,6 +89,11 @@ public abstract class Agent extends Agt0DSL {
     protected List<Hooks.BeforeCallingFinishHook> beforeCallingFinishHooks;
 
     /**
+     * METADATA
+     */
+    private String algorithmName;
+    
+    /**
      * create a default agent - this agent will have id = -1 so you must reassign it 
      */
     public Agent() {
@@ -97,6 +103,7 @@ public abstract class Agent extends Agt0DSL {
         beforeMessageProcessingHooks = new LinkedList<Hooks.BeforeMessageProcessingHook>();
         beforeCallingFinishHooks = new LinkedList<Hooks.BeforeCallingFinishHook>();
         this.pops = new PlatformOps();
+        this.algorithmName = getClass().getAnnotation(Algorithm.class).name();
     }
 
     /**
@@ -124,13 +131,13 @@ public abstract class Agent extends Agt0DSL {
         beforeMessageSending(ret);
         return ret;
     }
-    
+
     /**
      * report to statistic analyzer / algorithm visualization
      * @param args
      * @return
      */
-    public ReportMediator report(Object... args){
+    public ReportMediator report(Object... args) {
         return new ReportMediator(args, this);
     }
 
@@ -213,7 +220,7 @@ public abstract class Agent extends Agt0DSL {
      * @throws InterruptedException
      */
     protected Message nextMessage() throws InterruptedException {
-        currentMessage =  mailbox.take();
+        currentMessage = mailbox.take();
         return currentMessage;
     }
 
@@ -530,6 +537,13 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
+     * @return the registered algorithm name for this agent
+     */
+    public String getAlgorithmName() {
+        return algorithmName;
+    }
+
+    /**
      * this class contains all the "hidden but public" methods,
      * because the user should extend the agent class all the "platform" operations 
      * can be called mistekanly by him, 
@@ -614,10 +628,10 @@ public abstract class Agent extends Agt0DSL {
      */
     public class AgentProblem implements ImmutableProblem {
 
-        public int getAgentId(){
+        public int getAgentId() {
             return Agent.this.getId();
         }
-        
+
         @Override
         public int getNumberOfVariables() {
             return exec.getGlobalProblem().getNumberOfVariables();

@@ -5,6 +5,8 @@
 package bgu.dcr.az.api.infra.stat;
 
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -13,4 +15,8 @@ import java.io.File;
 public interface VisualModel {
     String getTitle();
     void exportToCSV(File csv);
+    List<String> getAlgorithms();
+    String getDomainAxisLabel();
+    String getRangeAxisLabel();
+    Map getValues(String algorithm);
 }

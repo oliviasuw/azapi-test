@@ -13,5 +13,6 @@ public interface SystemClock {
     long time();
     boolean isTicked();
     void close();
+    boolean isClosed();
     void hookIn(Hooks.TickHook hook);
 }

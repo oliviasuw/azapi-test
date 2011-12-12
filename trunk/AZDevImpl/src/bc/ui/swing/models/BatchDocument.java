@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
+import javax.swing.JTextPane;
 import javax.swing.text.Element;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -14,12 +15,15 @@ import javax.swing.text.DefaultStyledDocument;
  */
 public class BatchDocument extends DefaultStyledDocument {
 
+    private final DefaultStyledDocument SWAP_DOCUMENT = new DefaultStyledDocument();
+    
     /**
      * EOL tag that we re-use when creating ElementSpecs
      */
     private static final char[] EOL_ARRAY = {'\n'};
     private int batchSize = 0;
     private boolean start = false;
+    private JTextPane container;
     
     /**
      * Batched ElementSpecs
@@ -27,9 +31,10 @@ public class BatchDocument extends DefaultStyledDocument {
     //private ArrayList batch = null;
     private LinkedBlockingQueue batch;
 
-    public BatchDocument() {
+    public BatchDocument(JTextPane container) {
         //batch = new ArrayList();
         batch = new LinkedBlockingQueue();
+        this.container = container;
     }
 
     
@@ -132,6 +137,7 @@ public class BatchDocument extends DefaultStyledDocument {
         // there was a chance multiple threads would be in here.
         //ElementSpec[] inserts = new ElementSpec[batch.size()];
         //batch.toArray(inserts);
+//        container.setDocument(SWAP_DOCUMENT);
         this.appendBatchLineFeed(null);
         ArrayList<ElementSpec> l = new ArrayList<ElementSpec>(100);
         batchSize = 0;
@@ -141,7 +147,7 @@ public class BatchDocument extends DefaultStyledDocument {
         // Process all of the inserts in bulk
 //        super.insert(offs, inserts);
         super.insert(this.getLength() + 1, inserts);
-
+        container.setDocument(this);
     }
 
     public int getBatchSize() {

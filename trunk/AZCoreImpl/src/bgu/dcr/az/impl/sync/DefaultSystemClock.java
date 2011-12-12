@@ -21,7 +21,7 @@ public class DefaultSystemClock implements SystemClock {
 
     private CyclicBarrier barrier;
     private long time;
-    private volatile boolean closed = false;
+    private volatile long closed = -2;
     private volatile boolean ticked = false;
     private volatile long notified = -1;
     private List<TickHook> tickHooks = new LinkedList<TickHook>();
@@ -38,38 +38,41 @@ public class DefaultSystemClock implements SystemClock {
 
     @Override
     public void tick() throws InterruptedException {
-        if (closed) {
-            return;
-        }
         try {
             ticked = true;
             long nextTime = time + 1;
+
             barrier.await();
 
+//            System.out.println(Thread.currentThread().getName() + " out of berrier");
+            if (closed == nextTime - 1) {
+//                System.out.println(Thread.currentThread().getName() + " found closed clock - out!");
+                return;
+            }
             /**
              * visibility problem should not occure here as every thread must pass through the following line
              * thus its local cpu cache will get updated.
              */
             time = nextTime;
-            if (notified < time) {
-                try {
-                    tickHookLock.acquire();
-                    if (notified < time) {
-                        notified = time;
-                        for (TickHook t : tickHooks) {
-                            t.hook(this);
-                        }
+
+            tickHookLock.acquire();
+            try {
+                if (notified < time) {
+                    notified = time;
+//                    System.out.println(Thread.currentThread().getName() + " notifing tick " + time);
+
+                    for (TickHook t : tickHooks) {
+                        t.hook(this);
                     }
-                } finally {
-                    ticked = false;
-                    tickHookLock.release();
                 }
+            } finally {
+                tickHookLock.release();
             }
 
             ticked = false;
 
         } catch (BrokenBarrierException ex) {
-            if (closed) {
+            if (closed == time) {
                 return;
             }
             System.err.println("got BrokenBarrierException, translating it to InterruptedException (DefaultSystemClock)");
@@ -84,10 +87,16 @@ public class DefaultSystemClock implements SystemClock {
 
     @Override
     public void close() {
-        closed = true;
-        barrier.reset();
+        if (closed == -2) {
+            closed = time + 1;
+        }
     }
 
+    public boolean isClosed() {
+        return closed == time;
+    }
+
+    @Override
     public boolean isTicked() {
         return ticked;
     }

@@ -27,12 +27,12 @@ public class CCStatisticCollector extends AbstractStatisticCollector<CCStatistic
 
     @Override
     public VisualModel analyze(Database db, Round r) {
-        String query = "select AVG(cc) as avg, rVar from CC where ROUND = '" + r.getName() + "' group by rVar order by rVar";
+        String query = "select AVG(cc) as avg, rVar, algorithm from CC where ROUND = '" + r.getName() + "' group by algorithm, rVar order by rVar";
         LineVisualModel line = new LineVisualModel(r.getRunningVarName(), "Avg(CC)", "CC");
         try {
             ResultSet rs = db.query(query);
             while (rs.next()) {
-                line.setPoint(rs.getFloat("rVar"), rs.getFloat("avg"));
+                line.setPoint(rs.getString("algorithm"), rs.getFloat("rVar"), rs.getFloat("avg"));
             }
             return line;
         } catch (SQLException ex) {
@@ -53,7 +53,7 @@ public class CCStatisticCollector extends AbstractStatisticCollector<CCStatistic
                     sum += ag.getNumberOfConstraintChecks();
                 }
 
-                submit(new CCRecord(ex.getRound().getCurrentVarValue(), sum));
+                submit(new CCRecord(ex.getRound().getCurrentVarValue(), sum, a.getAlgorithmName()));
             }
         });
     }
@@ -62,21 +62,17 @@ public class CCStatisticCollector extends AbstractStatisticCollector<CCStatistic
     public String getName() {
         return "Constraint Checks";
     }
-
-//    @Override
-//    public String getName() {
-//        return "Constraint Checks";
-//    }
-//    
     
     public static class CCRecord extends DBRecord {
 
-        float rVar;
+        double rVar;
         int cc;
+        String algorithm;
 
-        public CCRecord(float rVal, int cc) {
+        public CCRecord(double rVal, int cc, String algorithm) {
             this.rVar = rVal;
             this.cc = cc;
+            this.algorithm = algorithm;
         }
 
         @Override

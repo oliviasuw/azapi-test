@@ -211,6 +211,13 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
             DatabaseUnit.UNIT.signal(this);
         }
     }
+    
+    private float inc(float original, float inc, int precesion){
+        long p = (int) Math.pow(10, precesion);
+        long iorg = (int) (original*p);
+        long iinc = (int) (inc*p);
+        return ((float)(iorg+iinc))/(float)p;
+    }
 
     @Override
     protected void _run() {
@@ -222,8 +229,10 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
             }
 
             int pnum = 0;
-            for (currentVarValue = start; currentVarValue <= end; currentVarValue = (float) (((float) (100*(currentVarValue + tick))) / 100.0) ) {
-                bubbleDownVariable(runVar, currentVarValue);
+            current = 0;
+            
+            for (currentVarValue = start; currentVarValue <= end; currentVarValue = inc(currentVarValue, tick, 1000))  {
+                bubbleDownVariable(runVar, (float)currentVarValue);
                 for (int i = 0; i < tickSize; i++) {
                     Problem p = nextProblem(++pnum);
                     for (AlgorithmMetadata alg : getAlgorithms()) {
@@ -232,6 +241,7 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
                             return;
                         }
                     }
+                    current++;
                 }
             }
             res = new RoundResult();

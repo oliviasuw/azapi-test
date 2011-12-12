@@ -33,12 +33,12 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
     
     @Override
     public VisualModel analyze(Database db, Round r) {
-        String query = "select AVG(ncsc) as avg, rVar from NCSC where ROUND = '" + r.getName() + "' group by rVar order by rVar";
+        String query = "select AVG(ncsc) as avg, rVar, algorithm from NCSC where ROUND = '" + r.getName() + "' group by algorithm, rVar order by rVar";
         LineVisualModel line = new LineVisualModel(r.getRunningVarName(), "Avg(NCSC)", "NCSC");
         try {
             ResultSet rs = db.query(query);
             while (rs.next()){
-                line.setPoint(rs.getFloat("rVar"), rs.getFloat("avg"));
+                line.setPoint(rs.getString("algorithm"), rs.getFloat("rVar"), rs.getFloat("avg"));
             }
             return line;
         } catch (SQLException ex) {
@@ -53,7 +53,7 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
         System.out.println("NCSC Statistic Collector registered");
         
         ncsc = new long[agents.length];
-        final float rvar = ex.getRound().getCurrentVarValue();
+        final double rvar = ex.getRound().getCurrentVarValue();
         
         for (Agent a : agents){
             a.hookIn(new BeforeMessageProcessingHook() {
@@ -79,7 +79,7 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
 
             @Override
             public void hook(Agent a) {
-                submit(new NCSCRecord(ncsc[0], rvar));
+                submit(new NCSCRecord(ncsc[0], rvar, a.getAlgorithmName()));
             }
         });
     }
@@ -92,11 +92,13 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
     public static class NCSCRecord extends DBRecord{
 
         float ncsc;
-        float rVar;
-
-        public NCSCRecord(float ncsc, float rVar) {
+        double rVar;
+        String algorithm;
+        
+        public NCSCRecord(float ncsc, double rVar, String algorithm) {
             this.ncsc = ncsc;
             this.rVar = rVar;
+            this.algorithm = algorithm;
         }
         
         @Override

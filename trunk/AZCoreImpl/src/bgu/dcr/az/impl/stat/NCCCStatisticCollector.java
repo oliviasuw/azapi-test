@@ -35,12 +35,12 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
 
     @Override
     public VisualModel analyze(Database db, Round r) {
-        String query = "select AVG(value) as avg, rVar from NCCC where ROUND = '" + r.getName() + "' group by rVar order by rVar";
+        String query = "select AVG(value) as avg, rVar, algorithm from NCCC where ROUND = '" + r.getName() + "' group by algorithm, rVar order by rVar";
         LineVisualModel line = new LineVisualModel(runningVar, "Avg(NCCC)", "NCCC");
         try {
             ResultSet rs = db.query(query);
             while (rs.next()) {
-                line.setPoint(rs.getFloat("rVar"), rs.getFloat("avg"));
+                line.setPoint(rs.getString("algorithm"), rs.getFloat("rVar"), rs.getFloat("avg"));
             }
             return line;
         } catch (SQLException ex) {
@@ -84,7 +84,7 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
 
             @Override
             public void hook(Agent a) {
-                submit(new NCCCRecord(ex.getRound().getCurrentVarValue(), nccc[0]));
+                submit(new NCCCRecord(ex.getRound().getCurrentVarValue(), nccc[0], a.getAlgorithmName()));
             }
         });
     }
@@ -104,10 +104,12 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
 
         float rVar;
         float value;
+        String algorithm;
 
-        public NCCCRecord(float rVar, float value) {
+        public NCCCRecord(float rVar, float value, String algorithm) {
             this.rVar = rVar;
             this.value = value;
+            this.algorithm = algorithm;
         }
 
         @Override

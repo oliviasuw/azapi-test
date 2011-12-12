@@ -29,18 +29,25 @@ public class SolQualityPerTickSC extends AbstractStatisticCollector<SolQualityPe
     private int ticksPerCycle = 1;
     @Variable(name = "sample-rate", description = "The sampling rate for solution quality")
     private int samplingRate = 1;
+    private double lastCost = -1;
 
     public static class Record extends DBRecord {
 
         public final float solQuality;
         public final long tickNum;
         public long cycles;
+        public int execution;
+        public float prevSolutionQuality;
+        private final String algorithm;
 
-        public Record(float solQuality, long tickNum, int tpc) {
+        public Record(float solQuality, long tickNum, int tpc, int execution, float prevSolutionQuality, String algo) {
             super();
+            this.algorithm = algo;
             this.solQuality = solQuality;
+            this.prevSolutionQuality = prevSolutionQuality;
             this.tickNum = tickNum;
             this.cycles = tickNum / tpc;
+            this.execution = execution;
         }
 
         @Override
@@ -53,9 +60,9 @@ public class SolQualityPerTickSC extends AbstractStatisticCollector<SolQualityPe
     public VisualModel analyze(Database db, Round r) {
         LineVisualModel lvm = new LineVisualModel("Time", "Solution Quality", "Solution Quality Progress");
         try {
-            ResultSet res = db.query("SELECT AVG (solQuality) AS s, tickNum FROM Solution_Quality where ROUND = '" + r.getName() + "' GROUP BY tickNum ORDER BY tickNum");
+            ResultSet res = db.query("SELECT AVG (solQuality) AS s, tickNum, algorithm FROM Solution_Quality where ROUND = '" + r.getName() + "' GROUP BY algorithm, tickNum ORDER BY tickNum");
             while (res.next()) {
-                lvm.setPoint(res.getLong("tickNum"), res.getDouble("s"));
+                lvm.setPoint(res.getString("algorithm"), res.getLong("tickNum"), res.getDouble("s"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -64,16 +71,19 @@ public class SolQualityPerTickSC extends AbstractStatisticCollector<SolQualityPe
     }
 
     @Override
-    public void hookIn(Agent[] arg0, final Execution e) {
+    public void hookIn(final Agent[] a, final Execution e) {
 
+        lastCost = -1;
+        
         e.getSystemClock().hookIn(new TickHook() {
 
             @Override
-            public void hook(SystemClock clock) {
+            public synchronized void hook(SystemClock clock) {
                 if (clock.time() % samplingRate == 0) {
                     float cost = (float) e.getPartialResult().getAssignment().calcCost(e.getGlobalProblem());
-                    submit(new Record(cost, clock.time(), ticksPerCycle));
-                    System.out.println("Tick " + clock.time() + " with assignment value of " + cost);
+//                    System.out.println("in tick " + clock.time() + " the cost was " + cost);
+                    submit(new Record(cost, clock.time(), ticksPerCycle, e.getRound().getCurrentExecutionNumber(), (float)lastCost, a[0].getAlgorithmName()));
+                    lastCost = cost;
                 }
             }
         });

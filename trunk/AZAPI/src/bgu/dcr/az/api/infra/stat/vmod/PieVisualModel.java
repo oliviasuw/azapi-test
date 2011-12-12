@@ -8,19 +8,22 @@ import bgu.dcr.az.api.infra.stat.VisualModel;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
- * @author bennyl
+ * //NOT READY!!!
+ * 
  */
 public class PieVisualModel implements VisualModel {
 
-    private Map<String, Double> values = new LinkedHashMap<String, Double>();
+    private Map<String, Map<String, Double>> values = new HashMap<String, Map<String, Double>>();
     private String title;
 
     public PieVisualModel(String title) {
@@ -32,12 +35,23 @@ public class PieVisualModel implements VisualModel {
         return title;
     }
 
-    public void putSlice(String sliceName, double value) {
-        values.put(sliceName, value);
+    public void putSlice(String algorithm, String sliceName, double value) {
+        Map<String, Double> map = values.get(algorithm);
+        if (map == null) {
+            map = new LinkedHashMap<String, Double>();
+            values.put(algorithm, map);
+        }
+
+        map.put(sliceName, value);
     }
 
-    public Map<String, Double> getValues() {
-        return values;
+    public Map<String, Double> getValues(String algorithm) {
+        return values.get(algorithm);
+    }
+
+    @Override
+    public List<String> getAlgorithms() {
+        return new LinkedList<String>(values.keySet());
     }
 
     @Override
@@ -45,9 +59,11 @@ public class PieVisualModel implements VisualModel {
         PrintWriter pw = null;
         try {
             pw = new PrintWriter(csv);
-            pw.println("name, value");
-            for (Entry<String, Double> v : getValues().entrySet()) {
-                pw.println("" + v.getKey() + ", " + v.getValue());
+            pw.println("algorithm, name, value");
+            for (Entry<String, Map<String, Double>> v : values.entrySet()) {
+                for (Entry<String, Double> vs : v.getValue().entrySet()) {
+                    pw.println("" + v.getKey() + ", " + vs.getKey() + ", " + vs.getValue());
+                }
             }
             pw.close();
         } catch (FileNotFoundException ex) {
@@ -55,5 +71,15 @@ public class PieVisualModel implements VisualModel {
         } finally {
             pw.close();
         }
+    }
+
+    @Override
+    public String getDomainAxisLabel() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String getRangeAxisLabel() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

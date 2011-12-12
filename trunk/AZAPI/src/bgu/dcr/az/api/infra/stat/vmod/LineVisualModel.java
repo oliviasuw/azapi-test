@@ -8,7 +8,10 @@ import bgu.dcr.az.api.infra.stat.VisualModel;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -18,36 +21,42 @@ import java.util.logging.Logger;
  *
  * @author bennyl
  */
-public class LineVisualModel implements VisualModel{
+public class LineVisualModel implements VisualModel {
+
     String xAxisName;
     String yAxisName;
     String title;
-    Map<Double, Double> values = new LinkedHashMap<Double, Double>();
+    Map<String, Map<Double, Double>> values = new HashMap<String, Map<Double, Double>>();
 
     public LineVisualModel(String xAxisName, String yAxisName, String title) {
         this.xAxisName = xAxisName;
         this.yAxisName = yAxisName;
         this.title = title;
     }
-    
-    public void setPoint(double x, double y){
-        values.put(x, y);
+
+    public void setPoint(String algorithm, double x, double y) {
+        Map<Double, Double> map = values.get(algorithm);
+        if (map == null) {
+            map = new LinkedHashMap<Double, Double>();
+            values.put(algorithm, map);
+        }
+
+        map.put(x, y);
     }
 
-    public Map<Double, Double> getValues() {
-        return values;
+    @Override
+    public List<String> getAlgorithms() {
+        return new LinkedList<String>(values.keySet());
     }
 
+    @Override
+    public Map<Double, Double> getValues(String algorithm) {
+        return values.get(algorithm);
+    }
+
+    @Override
     public String getTitle() {
         return title;
-    }
-
-    public String getxAxisName() {
-        return xAxisName;
-    }
-
-    public String getyAxisName() {
-        return yAxisName;
     }
 
     @Override
@@ -55,9 +64,11 @@ public class LineVisualModel implements VisualModel{
         PrintWriter pw = null;
         try {
             pw = new PrintWriter(csv);
-            pw.println(getxAxisName() + ", " + getyAxisName());
-            for (Entry<Double, Double> v : getValues().entrySet()){
-                pw.println("" + v.getKey() + ", " + v.getValue());
+            pw.println("Algorithm, " + getDomainAxisLabel() + ", " + getRangeAxisLabel());
+            for (Entry<String, Map<Double, Double>> v : values.entrySet()) {
+                for (Entry<Double, Double> vin : v.getValue().entrySet()) {
+                    pw.println(v.getKey() + ", " + vin.getKey() + ", " + vin.getValue());
+                }
             }
             pw.close();
         } catch (FileNotFoundException ex) {
@@ -66,5 +77,14 @@ public class LineVisualModel implements VisualModel{
             pw.close();
         }
     }
-    
+
+    @Override
+    public String getDomainAxisLabel() {
+        return xAxisName;
+    }
+
+    @Override
+    public String getRangeAxisLabel() {
+        return yAxisName;
+    }
 }

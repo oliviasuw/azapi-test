@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.JTextPane;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
@@ -37,8 +38,8 @@ public class AgentLogDocument extends LimitedBatchDocument {
     private Matcher match=null;
     
     
-    public AgentLogDocument() {
-        super();
+    public AgentLogDocument(JTextPane container) {
+        super(container);
         this.AttributeSets = new HashMap<String, SimpleAttributeSet>();
         generateColors();
 

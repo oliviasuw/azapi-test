@@ -4,6 +4,7 @@
  */
 package bc.ui.swing.models;
 
+import javax.swing.JTextPane;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
 
@@ -16,12 +17,14 @@ public class LimitedBatchDocument extends BatchDocument{
     int maxDocSize;
     int minDelSize;
 
-    public LimitedBatchDocument() {
+    public LimitedBatchDocument(JTextPane container) {
+        super(container);
         this.maxDocSize = 2000000;
         this.minDelSize = 200000;
     }
 
-    public LimitedBatchDocument(int maxDocSize, int minDelSize) {
+    public LimitedBatchDocument(int maxDocSize, int minDelSize, JTextPane container) {
+        super(container);
         this.maxDocSize = maxDocSize;
         this.minDelSize = minDelSize;
     }

@@ -11,6 +11,7 @@
 package bgu.dcr.az.dev.ui;
 
 import bc.dsl.SwingDSL;
+import bc.ui.swing.charts.BarChart;
 import bc.ui.swing.models.DataExtractor;
 import bc.ui.swing.models.GenericTableModel;
 import bc.ui.swing.charts.LineChart;
@@ -22,11 +23,11 @@ import bgu.dcr.az.api.infra.Round;
 import bgu.dcr.az.api.infra.VariableMetadata;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
 import bgu.dcr.az.api.infra.stat.VisualModel;
+import bgu.dcr.az.api.infra.stat.vmod.BarVisualModel;
 import bgu.dcr.az.api.infra.stat.vmod.LineVisualModel;
 import bgu.dcr.az.impl.db.DatabaseUnit;
 import java.awt.BorderLayout;
 import java.io.File;
-import java.util.Formatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -59,18 +60,6 @@ public class StatisticsScreen extends javax.swing.JPanel {
         statScroll.getViewport().setOpaque(false);
         varscrolls.getViewport().setOpaque(false);
         roundScroll.getViewport().setOpaque(false);
-
-        //TESTING 
-//        availableStatisticsList.add("stat 1");
-//        availableStatisticsList.add("stat 2");
-//        
-//        roundsList.add("stat 1");
-//        roundsList.add("stat 2");
-//        
-//        vars.add(new VariableMetadata("test1", "this is test 1", 5, Integer.class));
-//        vars.add(new VariableMetadata("test2", "this is test 2", 5, Integer.class));
-//        vars.add(new VariableMetadata("test3", "this is test 3", 5, Integer.class));
-
     }
 
     public void setModel(Experiment exp) {
@@ -405,59 +394,72 @@ public class StatisticsScreen extends javax.swing.JPanel {
 
     private void jXHyperlink1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink1ActionPerformed
         //TEST IF ROUND IS READY:
-        if (!DatabaseUnit.UNIT.isSignaled(selectedRound)){
+        if (!DatabaseUnit.UNIT.isSignaled(selectedRound)) {
             MessageDialog.showFail("cannot produce statistics for this round", "the round has not been analyzed yet\n"
                     + "either it was not started yet or it is in the process of analyzing\n"
                     + "please try again later.");
             return;
         }
-        
+
         //Assign Variables
         if (selectedCollector == null) {
             System.out.println("no statistic collector selected - TODO IN MSGBOX");
             return;
         }
         Map<String, Object> v = vars.getConfiguration();
-        
+
         if (v == null) { //cannot produce configuration
             return;
         }
-        
+
         VariableMetadata.assign(selectedCollector, v);
         chartResultPan.removeAll();
-        LineChart chart = new LineChart();
-        final LineVisualModel vismodel = (LineVisualModel) selectedCollector.analyze(DatabaseUnit.UNIT.getDatabase(), selectedRound);
-        showedVisualization = vismodel;
-        chart.setModel(vismodel);
-        chartResultPan.add(chart, BorderLayout.CENTER);
+
+        final VisualModel vismodel = selectedCollector.analyze(DatabaseUnit.UNIT.getDatabase(), selectedRound);
+        if (vismodel instanceof LineVisualModel) {
+            showChart((LineVisualModel) vismodel);
+        } else if (vismodel instanceof BarVisualModel) {
+            showChart((BarVisualModel) vismodel);
+        }
         resultDataPan.setData(resultsPan);
-        GenericTableModel tableModel = new GenericTableModel(new DataExtractor(vismodel.getxAxisName(), vismodel.getyAxisName()) {
+        GenericTableModel tableModel = new GenericTableModel(new DataExtractor("Algorithm", vismodel.getDomainAxisLabel(), vismodel.getRangeAxisLabel()) {
 
             @Override
             public Object getData(String dataName, Object from) {
-                Entry<Double, Double> e = (Entry<Double, Double>) from;
-                if (vismodel.getxAxisName().equals(dataName)) {
-                    return "" + String.format("%.2f", e.getKey());
+                Object[] e = (Object[]) from;
+//                Entry<Double, Double> e = (Entry<Double, Double>) from;
+                if (dataName.equals("Algorithm")) {
+                    return e[0].toString();
+                } else if (vismodel.getDomainAxisLabel().equals(dataName)) {
+                    return ""+e[1];
                 } else {
-                    return "" + String.format("%.2f", e.getValue());
+                    return ""+e[2];
                 }
             }
         });
-        
-        tableModel.setInnerList(new LinkedList(vismodel.getValues().entrySet()));
+
+        LinkedList<Object[]> all = new LinkedList<Object[]>();
+        Entry vse;
+        for (String a : vismodel.getAlgorithms()) {
+            for (Object vs : vismodel.getValues(a).entrySet()) {
+                vse = (Entry) vs;
+                all.add(new Object[]{a, vse.getKey(), vse.getValue()});
+            }
+        }
+
+        tableModel.setInnerList(all);
         resultList.setModel(tableModel);
         revalidate();
         repaint();
     }//GEN-LAST:event_jXHyperlink1ActionPerformed
 
     private void jXHyperlink2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink2ActionPerformed
-        if (showedVisualization != null){
+        if (showedVisualization != null) {
             final File file = new File("temp.csv");
             showedVisualization.exportToCSV(file);
             SwingDSL.dopen(file);
         }
 }//GEN-LAST:event_jXHyperlink2ActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel chartResultPan;
     private javax.swing.JPanel exportToCSVButton;
@@ -493,4 +495,18 @@ public class StatisticsScreen extends javax.swing.JPanel {
     private bc.ui.swing.useful.DataPanel varsDataPan;
     private javax.swing.JScrollPane varscrolls;
     // End of variables declaration//GEN-END:variables
+
+    private void showChart(LineVisualModel lineVisualModel) {
+        LineChart chart = new LineChart();
+        showedVisualization = lineVisualModel;
+        chart.setModel(lineVisualModel);
+        chartResultPan.add(chart, BorderLayout.CENTER);
+    }
+
+    private void showChart(BarVisualModel barVisualModel) {
+        BarChart chart = new BarChart();
+        showedVisualization = barVisualModel;
+        chart.setModel(barVisualModel);
+        chartResultPan.add(chart, BorderLayout.CENTER);
+    }
 }

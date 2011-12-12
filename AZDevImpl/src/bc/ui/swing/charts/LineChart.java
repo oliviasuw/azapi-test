@@ -13,18 +13,17 @@ package bc.ui.swing.charts;
 import bgu.dcr.az.api.infra.stat.vmod.LineVisualModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.util.List;
 import java.util.Map.Entry;
 import javax.swing.JFrame;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.labels.ItemLabelAnchor;
-import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.jdbc.JDBCXYDataset;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -47,11 +46,11 @@ public class LineChart extends javax.swing.JPanel {
         XYDataset dataset = createDataset(line);
         JFreeChart chart = ChartFactory.createXYLineChart(
                 line.getTitle(), // chart title
-                line.getxAxisName(), // x axis label
-                line.getyAxisName(), // y axis label
+                line.getDomainAxisLabel(), // x axis label
+                line.getRangeAxisLabel(), // y axis label
                 dataset, // data
                 PlotOrientation.VERTICAL,
-                false, // include legend
+                true, // include legend
                 true, // tooltips
                 false // urls
                 );
@@ -94,28 +93,23 @@ public class LineChart extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
     private XYDataset createDataset(LineVisualModel line) {
-        XYSeries series1 = new XYSeries(""); //HERE SHOULD BE THE ALGORITHM NAME
-        for (Entry<Double, Double> v : line.getValues().entrySet()) {
-            series1.add(v.getKey(), v.getValue());
+        final List<String> algorithms = line.getAlgorithms();
+        XYSeries[] series = new XYSeries[algorithms.size()];
+        int i = 0;
+        for (String algorithm : algorithms) {
+            XYSeries series1 = new XYSeries(algorithm); //HERE SHOULD BE THE ALGORITHM NAME
+            for (Entry<Double, Double> v : line.getValues(algorithm).entrySet()) {
+                series1.add(v.getKey(), v.getValue());
+            }
+            series[i++] = series1;
         }
 
+
         XYSeriesCollection dataset = new XYSeriesCollection();
-        dataset.addSeries(series1);
+        for (XYSeries s  : series) {
+            dataset.addSeries(s);
+        }
         return dataset;
     }
 
-    public static void main(String[] args) {
-        JFrame j = new JFrame();
-        j.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        LineChart chart = new LineChart();
-        LineVisualModel model = new LineVisualModel("aaaa", "bbbb", "ccccc");
-        model.setPoint(5, 5);
-        model.setPoint(7, 8);
-        model.setPoint(4, 9);
-        model.setPoint(12, 5);
-        chart.setModel(model);
-        j.setContentPane(chart);
-        j.pack();
-        j.setVisible(true);
-    }
 }

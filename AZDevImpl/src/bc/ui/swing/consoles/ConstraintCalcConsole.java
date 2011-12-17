@@ -14,6 +14,8 @@ import bc.dsl.SwingDSL;
 import bgu.dcr.az.api.ImmutableProblem;
 import bgu.dcr.az.api.pgen.Problem;
 import bgu.dcr.az.api.tools.Assignment;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,6 +38,7 @@ public class ConstraintCalcConsole extends javax.swing.JPanel {
     /** Creates new form ConstraintCalcConsole */
     public ConstraintCalcConsole() {
         initComponents();
+       
     }
 
     public void setInitialConsoleText(String text) {
@@ -139,6 +142,8 @@ public class ConstraintCalcConsole extends javax.swing.JPanel {
         } else {
             //TODO crying DIMA
         }
+        this.text.setText("");
+        this.cons.setCaretPosition(this.cons.getDocument().getLength());
 }//GEN-LAST:event_textActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea cons;
@@ -162,8 +167,8 @@ public class ConstraintCalcConsole extends javax.swing.JPanel {
         StringBuilder output = new StringBuilder("Calculating cost for: ");
         for (Integer i : values.keySet()) {
             final Integer value = values.get(i);
-            if (!p.getDomainOf(i).contains(value)){
-              this.cons.append("There is no value " + value + " in the domain of agent " + i + "\n");  
+            if (!p.getDomainOf(i).contains(value)) {
+                this.cons.append("There is no value " + value + " in the domain of agent " + i + "\n");
             }
             output.append("[").append(i).append("=").append(value).append("],");
             ass.assign(i, value);
@@ -202,6 +207,10 @@ public class ConstraintCalcConsole extends javax.swing.JPanel {
 
     public void addListener(ConstraintShowListener ls) {
         this.listeners.add(ls);
+    }
+    
+    public void startTyping(){
+        this.text.requestFocusInWindow();
     }
 
     public static interface ConstraintShowListener {

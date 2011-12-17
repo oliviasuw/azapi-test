@@ -72,13 +72,14 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
                 }
             }
         });
-
+        
     }
 
     private void showProblem(final ImmutableProblem p) {
         this.p = p;
         prepareTree();
         calc.setProblem(p);
+//        this.calc.requestFocusInWindow();
         problemChangePan.setVisible(false);
     }
 
@@ -114,7 +115,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
                 try {
                     AbstractRound c = (AbstractRound) Visual.getSelected(roundSelect);
                     Integer pnum = (Integer) pnumSelect.getValue();
-                    Problem p = c.generateProblem(pnum);        
+                    Problem p = c.generateProblem(pnum);
 //                    System.out.println(p.toString());
                     showProblem(p);
                     problemViewingDescription.setText("Showing problem " + pnum + " of round " + c.getName());
@@ -323,6 +324,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         switchProblemView();
         problemChangePan.setVisible(false);
+        this.calc.startTyping();
     }//GEN-LAST:event_jButton1ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private bc.ui.swing.consoles.ConstraintCalcConsole calc;
@@ -387,7 +389,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnCount(domVars + 1);
         model.setRowCount(domVars + 1);
-        String name = "" + ai + " / " + aj;
+        String name = "" + aj + " / " + ai;
         model.setValueAt(name, 0, 0);
         for (int i = 0; i < domVars; i++) {
             model.setValueAt(i, 0, i + 1);
@@ -433,6 +435,12 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
             }
         }
         return false;
+    }
+    
+    @Override
+    public void setVisible(boolean visible){
+        super.setVisible(visible);
+        this.calc.startTyping();
     }
 
     private static class AgentInfo {

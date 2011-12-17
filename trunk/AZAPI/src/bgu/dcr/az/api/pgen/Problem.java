@@ -5,6 +5,7 @@ import bgu.dcr.az.api.ProblemType;
 import bgu.dcr.az.api.ds.ImmutableSet;
 import bgu.dcr.az.api.tools.Assignment;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +20,7 @@ public abstract class Problem implements Serializable, ImmutableProblem {
     protected int numvars;
     protected ImmutableSet<Integer> domain;
     protected HashMap<Integer, Set<Integer>> neighbores = new HashMap<Integer, Set<Integer>>();
+    protected HashMap<Integer, Set<Integer>> immutableNeighbores = new HashMap<Integer, Set<Integer>>();
 //    protected HashMap<Integer, Boolean> constraints = new HashMap<Integer, Boolean>();
     protected ProblemType type;
     protected double maxCost = 0;
@@ -219,8 +221,12 @@ public abstract class Problem implements Serializable, ImmutableProblem {
      */
     @Override
     public Set<Integer> getNeighbors(int var) {
-        Set<Integer> l = this.neighbores.get(var);
-        return l;
+        if (immutableNeighbores.get(var) == null) {
+            Set<Integer> l = this.neighbores.get(var);
+            Set<Integer> tmp = Collections.unmodifiableSet(l);
+            immutableNeighbores.put(var, tmp);
+        }
+        return immutableNeighbores.get(var);
     }
 
     @Override

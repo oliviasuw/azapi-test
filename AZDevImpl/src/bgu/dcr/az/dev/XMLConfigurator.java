@@ -9,7 +9,7 @@ import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Round;
 import bgu.dcr.az.api.infra.VariableMetadata;
-import bgu.dcr.az.impl.Registary;
+import bgu.dcr.az.impl.Registery;
 import bgu.dcr.az.impl.infra.ExperimentImpl;
 import java.io.File;
 import static bc.dsl.XNavDSL.*;
@@ -32,7 +32,7 @@ import nu.xom.ParsingException;
 public class XMLConfigurator {
 
     public static void write(Configureable conf, PrintWriter pw) {
-        String confName = Registary.UNIT.getEntityName(conf);
+        String confName = Registery.UNIT.getEntityName(conf);
         Element e = new Element(confName);
         write(conf, e);
         
@@ -45,7 +45,7 @@ public class XMLConfigurator {
         }
         
         for (Configureable c : conf.getConfiguredChilds()){
-            String confName = Registary.UNIT.getEntityName(c);
+            String confName = Registery.UNIT.getEntityName(c);
             Element e = new Element(confName);
             write(c, e);
             root.appendChild(e);
@@ -71,7 +71,7 @@ public class XMLConfigurator {
         Configureable cc;
         for (Element child : childs(root)) {
             String name = child.getLocalName();
-            Class cls = Registary.UNIT.getXMLEntity(name);
+            Class cls = Registery.UNIT.getXMLEntity(name);
             if (cls == null) {
                 throw new InvalidValueException("cannot parse " + name + " xml entity: no entity with that name on the registery");
             } else if (!c.canAccept(cls)) {

@@ -12,13 +12,13 @@ import bgu.dcr.az.api.tools.Assignment;
  */
 public interface CorrectnessTester extends Configureable{
     
-    TestResult test(Execution exec, ExecutionResult result);
+    TestedResult test(Execution exec, ExecutionResult result);
     
-    public static class TestResult{
+    public static class TestedResult{
         public final Assignment rightAnswer;
         public final boolean passed;
 
-        public TestResult(Assignment rightAnswer, boolean passed) {
+        public TestedResult(Assignment rightAnswer, boolean passed) {
             this.rightAnswer = rightAnswer;
             this.passed = passed;
         }

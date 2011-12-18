@@ -7,7 +7,7 @@ package bgu.dcr.az.api.infra.stat;
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.infra.Configureable;
 import bgu.dcr.az.api.infra.Execution;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 
 /**
  *
@@ -15,7 +15,7 @@ import bgu.dcr.az.api.infra.Round;
  */
 public interface StatisticCollector<T extends DBRecord> extends Configureable{
     
-    VisualModel analyze(Database db, Round r);
+    VisualModel analyze(Database db, Test r);
     
     void hookIn(Agent[] a, Execution ex); //TODO - REPLACE WITH EXECUTION VIEW
     

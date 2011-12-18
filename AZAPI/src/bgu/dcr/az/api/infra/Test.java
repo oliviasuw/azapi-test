@@ -11,55 +11,55 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- * round is a configureable execution - it is part of the expirement and it define 
+ * test is a configureable execution - it is part of the expirement and it define 
  * the execution of the collection of problems + algorithms it contains
- * the round also contains the means to analyze the statistics that gathered during it execution
+ * the test also contains the means to analyze the statistics that gathered during it execution
  * @author bennyl
  * 
  * TODO: MISSING FUNCTIONS FOR ADD AND REMOVE ALGORITHM METADATA (NEDD TO API THE ALGORITHM METADATA)
  * 
  */
-public interface Round extends Configureable, Process {
+public interface Test extends Configureable, Process {
 
-    void addListener(RoundListener l);
+    void addListener(TestListener l);
     
-    void removeListener(RoundListener l);
+    void removeListener(TestListener l);
     
     int getLength();
     
     /**
-     * @return the name of this round
+     * @return the name of this test
      */
     String getName();
 
     /**
-     * the round seed - if there are any random elements on the round 
-     * then this seed will give the ability to recreate the same round - if the seed is -1 
+     * the test seed - if there are any random elements on the test 
+     * then this seed will give the ability to recreate the same test - if the seed is -1 
      * or not supplied (-1 is the default) then the seed will be the current time in miliseconds
-     * @return the round seed 
+     * @return the test seed 
      */
     long getSeed();
     String getRunningVarName();
     float getVarStart();
     float getVarEnd();
-    float getTick();
-    int getTickSize();
+    float getTickSize();
+    int getRepeatCount();
     float getCurrentVarValue();
 
     /**
-     * @return return the round progress - when the round is running this function 
-     * will return the current execution number between 0 and Round.getLength()
+     * @return the test progress - when the test is running this function 
+     * will return the current execution number between 0 and Test.getLength()
      */
     int getCurrentExecutionNumber();
     
     
     /**
-     * @return this round problem generator
+     * @return this test problem generator
      */
     ProblemGenerator getProblemGenerator();
     
     /**
-     * register statistic analayzer to this round
+     * register statistic analayzer to this test
      * @param analyzer 
      */
     void registerStatisticCollector(StatisticCollector analyzer);
@@ -70,9 +70,9 @@ public interface Round extends Configureable, Process {
     StatisticCollector[] getRegisteredStatisticCollectors();
     
     /**
-     * return the round result after execution
+     * return the test result after execution
      */
-    RoundResult getResult();
+    TestResult getResult();
     
     CorrectnessTester getCorrectnessTester();
     
@@ -84,7 +84,7 @@ public interface Round extends Configureable, Process {
         CRUSH;
     }
     
-    public static class RoundResult{
+    public static class TestResult{
         public final FinishStatus finishStatus;
         public final Exception crushReason;
         public final Assignment goodAssignment;
@@ -93,7 +93,7 @@ public interface Round extends Configureable, Process {
         /**
          * constract successfull result
          */
-        public RoundResult() {
+        public TestResult() {
             this.finishStatus = FinishStatus.SUCCESS;
             this.crushReason = null;
             this.goodAssignment = null;
@@ -105,7 +105,7 @@ public interface Round extends Configureable, Process {
          * @param exception
          * @param badExecution 
          */
-        public RoundResult(Exception exception, Execution badExecution) {
+        public TestResult(Exception exception, Execution badExecution) {
             this.finishStatus = FinishStatus.CRUSH;
             this.crushReason = exception;
             this.goodAssignment = null;
@@ -117,7 +117,7 @@ public interface Round extends Configureable, Process {
          * @param goodAssignment
          * @param badExecution 
          */
-        public RoundResult(Assignment goodAssignment, Execution badExecution) {
+        public TestResult(Assignment goodAssignment, Execution badExecution) {
             this.finishStatus = FinishStatus.WRONG_RESULT;
             this.crushReason = null;
             this.goodAssignment = goodAssignment;
@@ -127,7 +127,7 @@ public interface Round extends Configureable, Process {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append("round result:\n").append("status= ").append(finishStatus);
+            sb.append("test result:\n").append("status= ").append(finishStatus);
             switch (finishStatus){
                 case CRUSH:
                     StringWriter sw = new StringWriter();
@@ -148,9 +148,9 @@ public interface Round extends Configureable, Process {
         
     }
     
-    public static interface RoundListener{
-        void onRoundStarted(Round source);
-        void onExecutionStarted(Round source, Execution exec);
-        void onExecutionEnded(Round source, Execution exec);
+    public static interface TestListener{
+        void onTestStarted(Test source);
+        void onExecutionStarted(Test source, Execution exec);
+        void onExecutionEnded(Test source, Execution exec);
     }
 }

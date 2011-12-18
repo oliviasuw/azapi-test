@@ -19,4 +19,6 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Register {
     String name();
+    String display();
+    boolean visible() default true;
 }

@@ -19,7 +19,7 @@ import bc.ui.swing.listeners.SelectionListener;
 import bc.ui.swing.lists.OptionList;
 import bc.ui.swing.visuals.Visual;
 import bgu.dcr.az.api.infra.Experiment;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.VariableMetadata;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
 import bgu.dcr.az.api.infra.stat.VisualModel;
@@ -41,9 +41,9 @@ import javax.swing.JFrame;
 public class StatisticsScreen extends javax.swing.JPanel {
 
     private OptionList availableStatisticsList;
-    private OptionList roundsList;
+    private OptionList testsList;
     private StatisticCollector selectedCollector = null;
-    private Round selectedRound = null;
+    private Test selectedTest = null;
     private VisualModel showedVisualization = null;
 
     /** Creates new form StatisticsScreen */
@@ -53,13 +53,13 @@ public class StatisticsScreen extends javax.swing.JPanel {
         availableStatisticsList = new OptionList();
         statScroll.setViewportView(availableStatisticsList);
 
-        //ROUND
-        roundsList = new OptionList();
-        roundScroll.setViewportView(roundsList);
+        //TEST
+        testsList = new OptionList();
+        testScroll.setViewportView(testsList);
 
         statScroll.getViewport().setOpaque(false);
         varscrolls.getViewport().setOpaque(false);
-        roundScroll.getViewport().setOpaque(false);
+        testScroll.getViewport().setOpaque(false);
     }
 
     public void setModel(Experiment exp) {
@@ -82,17 +82,17 @@ public class StatisticsScreen extends javax.swing.JPanel {
             }
         });
 
-        roundsList.getSelectionListeners().addListener(new SelectionListener() {
+        testsList.getSelectionListeners().addListener(new SelectionListener() {
 
             @Override
             public void onSelectionChanged(Object source, List selectedItems) {
                 availableStatisticsList.clear();
-                selectedRound = null;
+                selectedTest = null;
 
                 if (!selectedItems.isEmpty()) {
 
-                    selectedRound = ((Round) ((Visual) selectedItems.get(0)).getItem());
-                    availableStatisticsList.setItems(Visual.adapt(selectedRound.getRegisteredStatisticCollectors(), new Visual.VisualGen() {
+                    selectedTest = ((Test) ((Visual) selectedItems.get(0)).getItem());
+                    availableStatisticsList.setItems(Visual.adapt(selectedTest.getRegisteredStatisticCollectors(), new Visual.VisualGen() {
 
                         @Override
                         public Visual gen(Object it) {
@@ -104,11 +104,11 @@ public class StatisticsScreen extends javax.swing.JPanel {
             }
         });
 
-        roundsList.setItems(Visual.adapt(exp.getRounds(), new Visual.VisualGen() {
+        testsList.setItems(Visual.adapt(exp.getTests(), new Visual.VisualGen() {
 
             @Override
             public Visual gen(Object it) {
-                Round r = (Round) it;
+                Test r = (Test) it;
                 return new Visual(it, r.getName(), "", null);
             }
         }));
@@ -145,7 +145,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
-        roundScroll = new javax.swing.JScrollPane();
+        testScroll = new javax.swing.JScrollPane();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
@@ -191,7 +191,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jXHyperlink2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/export-to-csv.png"))); // NOI18N
         jXHyperlink2.setText("Export To CSV");
         jXHyperlink2.setClickedColor(new java.awt.Color(255, 255, 255));
-        jXHyperlink2.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        jXHyperlink2.setFont(new java.awt.Font("Consolas", 0, 14));
         jXHyperlink2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jXHyperlink2.setMargin(new java.awt.Insets(0, 0, 0, 0));
         jXHyperlink2.setUnclickedColor(new java.awt.Color(255, 255, 255));
@@ -239,20 +239,20 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jPanel2.setMinimumSize(new java.awt.Dimension(180, 10));
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
-        jLabel6.setFont(new java.awt.Font("Consolas", 1, 12));
-        jLabel6.setText("Select Round To Analayze");
+        jLabel6.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
+        jLabel6.setText("Select Test To Analayze");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel2.add(jLabel6, gridBagConstraints);
 
-        roundScroll.setBorder(null);
-        roundScroll.setOpaque(false);
+        testScroll.setBorder(null);
+        testScroll.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 5);
-        jPanel2.add(roundScroll, gridBagConstraints);
+        jPanel2.add(testScroll, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -393,9 +393,9 @@ public class StatisticsScreen extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jXHyperlink1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink1ActionPerformed
-        //TEST IF ROUND IS READY:
-        if (!DatabaseUnit.UNIT.isSignaled(selectedRound)) {
-            MessageDialog.showFail("cannot produce statistics for this round", "the round has not been analyzed yet\n"
+        //TEST IF TEST IS READY:
+        if (!DatabaseUnit.UNIT.isSignaled(selectedTest)) {
+            MessageDialog.showFail("cannot produce statistics for this test", "the test has not been analyzed yet\n"
                     + "either it was not started yet or it is in the process of analyzing\n"
                     + "please try again later.");
             return;
@@ -415,7 +415,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         VariableMetadata.assign(selectedCollector, v);
         chartResultPan.removeAll();
 
-        final VisualModel vismodel = selectedCollector.analyze(DatabaseUnit.UNIT.getDatabase(), selectedRound);
+        final VisualModel vismodel = selectedCollector.analyze(DatabaseUnit.UNIT.getDatabase(), selectedTest);
         if (vismodel instanceof LineVisualModel) {
             showChart((LineVisualModel) vismodel);
         } else if (vismodel instanceof BarVisualModel) {
@@ -489,8 +489,8 @@ public class StatisticsScreen extends javax.swing.JPanel {
     private bc.ui.swing.useful.DataPanel resultDataPan;
     private bc.ui.swing.tables.ScrolleableStripeTable resultList;
     private javax.swing.JSplitPane resultsPan;
-    private javax.swing.JScrollPane roundScroll;
     private javax.swing.JScrollPane statScroll;
+    private javax.swing.JScrollPane testScroll;
     private bc.ui.swing.configurable.VariablesEditor vars;
     private bc.ui.swing.useful.DataPanel varsDataPan;
     private javax.swing.JScrollPane varscrolls;

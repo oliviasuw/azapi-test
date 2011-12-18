@@ -9,12 +9,12 @@ import bgu.dcr.az.api.exp.ConnectionFaildException;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Experiment.ExperimentListener;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.dev.ui.MainWindow;
 import bgu.dcr.az.impl.AlgorithmMetadata;
 import bgu.dcr.az.impl.db.DatabaseUnit;
 import bgu.dcr.az.impl.infra.AbstractExecution;
-import bgu.dcr.az.impl.infra.AbstractRound;
+import bgu.dcr.az.impl.infra.AbstractTest;
 import bgu.dcr.az.impl.infra.LogListener;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,7 +39,7 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
     LinkedBlockingQueue<Runnable> jobs = new LinkedBlockingQueue<Runnable>();
     WorkerThread worker = new WorkerThread();
     Experiment runningExperiment;
-    Round currentRound;
+    Test currentTest;
     LogListener logListener = null;
     boolean running;
     File badProblemStorage = new File("fail-problems");
@@ -110,10 +110,10 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
     }
 
     public AlgorithmMetadata getRunningAlgorithm() {
-        if (currentRound == null) {
+        if (currentTest == null) {
             return null;
         }
-        return ((AbstractRound) currentRound).getAlgorithms().get(0);
+        return ((AbstractTest) currentTest).getAlgorithms().get(0);
     }
 
     @Override
@@ -156,8 +156,8 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
         }
     }
 
-    public Round getCurrentRound() {
-        return currentRound;
+    public Test getCurrentTest() {
+        return currentTest;
     }
 
     private String newFileName() {
@@ -166,21 +166,21 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
     }
 
     @Override
-    public void onNewRoundStarted(final Experiment source, final Round round) {
-        currentRound = round;
+    public void onNewTestStarted(final Experiment source, final Test test) {
+        currentTest = test;
         jobs.add(new Runnable() {
 
             @Override
             public void run() {
                 for (ExperimentListener l : experimentListeners) {
-                    l.onNewRoundStarted(source, round);
+                    l.onNewTestStarted(source, test);
                 }
             }
         });
     }
 
     @Override
-    public void onNewExecutionStarted(final Experiment source, final Round round, final Execution exec) {
+    public void onNewExecutionStarted(final Experiment source, final Test test, final Execution exec) {
         if (logListener != null) {
             ((AbstractExecution) exec).addLogListener(logListener);
         }
@@ -190,28 +190,28 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
             @Override
             public void run() {
                 for (ExperimentListener l : experimentListeners) {
-                    l.onNewExecutionStarted(source, round, exec);
+                    l.onNewExecutionStarted(source, test, exec);
                 }
             }
         });
     }
 
     @Override
-    public void onExecutionEnded(final Experiment source, final Round round, final Execution exec) {
+    public void onExecutionEnded(final Experiment source, final Test test, final Execution exec) {
         jobs.add(new Runnable() {
 
             @Override
             public void run() {
                 for (ExperimentListener l : experimentListeners) {
-                    l.onExecutionEnded(source, round, exec);
+                    l.onExecutionEnded(source, test, exec);
                 }
             }
         });
 
     }
 
-    public List<Round> getAllRounds() {
-        return runningExperiment.getRounds();
+    public List<Test> getAllTests() {
+        return runningExperiment.getTests();
     }
 
     public void setLogListener(LogListener l) {

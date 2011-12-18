@@ -175,7 +175,7 @@ public class ConstraintCalcConsole extends javax.swing.JPanel {
         }
 //        String substring = output.substring(0, output.length()-1);
         output.deleteCharAt(output.length() - 1);
-        double cost = ass.calcCost(p);
+        int cost = ass.calcCost(p);
         output.append("\nCost is: ").append(cost).append("\n");
         this.cons.append(output.toString());
     }

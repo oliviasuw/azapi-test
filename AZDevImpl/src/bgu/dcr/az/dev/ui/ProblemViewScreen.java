@@ -18,9 +18,9 @@ import bc.ui.swing.visuals.Visual;
 import bgu.dcr.az.api.ImmutableProblem;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.Experiment;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.pgen.Problem;
-import bgu.dcr.az.impl.infra.AbstractRound;
+import bgu.dcr.az.impl.infra.AbstractTest;
 import bgu.dcr.az.impl.pgen.MapProblem;
 import bgu.dcr.az.impl.pgen.UnstructuredDCOPGen;
 import java.awt.BorderLayout;
@@ -84,11 +84,11 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
     }
 
     public void setModel(Experiment exp) {
-        Visual.populate(roundSelect, Visual.adapt(exp.getRounds(), new Visual.VisualGen() {
+        Visual.populate(testSelect, Visual.adapt(exp.getTests(), new Visual.VisualGen() {
 
             @Override
             public Visual gen(Object it) {
-                Round r = (Round) it;
+                Test r = (Test) it;
                 return new Visual(it, r.getName(), "", null);
             }
         }));
@@ -113,12 +113,12 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
             @Override
             protected Object doInBackground() throws Exception {
                 try {
-                    AbstractRound c = (AbstractRound) Visual.getSelected(roundSelect);
+                    AbstractTest c = (AbstractTest) Visual.getSelected(testSelect);
                     Integer pnum = (Integer) pnumSelect.getValue();
                     Problem p = c.generateProblem(pnum);
 //                    System.out.println(p.toString());
                     showProblem(p);
-                    problemViewingDescription.setText("Showing problem " + pnum + " of round " + c.getName());
+                    problemViewingDescription.setText("Showing problem " + pnum + " of test " + c.getName());
                 } catch (Exception ex) {
                     MessageDialog.showValidationFaild("" + ex.getMessage());
                 }
@@ -195,7 +195,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         jXHyperlink1 = new org.jdesktop.swingx.JXHyperlink();
         problemChangePan = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        roundSelect = new javax.swing.JComboBox();
+        testSelect = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
         pnumSelect = new javax.swing.JSpinner();
         jButton1 = new javax.swing.JButton();
@@ -213,9 +213,9 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         jPanel11.setBackground(new java.awt.Color(120, 120, 120));
         jPanel11.setLayout(new java.awt.GridBagLayout());
 
-        problemViewingDescription.setFont(new java.awt.Font("Consolas", 1, 14));
+        problemViewingDescription.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
         problemViewingDescription.setForeground(new java.awt.Color(255, 255, 255));
-        problemViewingDescription.setText("Viewing Problem X of Round Y");
+        problemViewingDescription.setText("Viewing Problem X of Test Y");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         jPanel11.add(problemViewingDescription, gridBagConstraints);
@@ -242,13 +242,13 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         problemChangePan.setOpaque(false);
         problemChangePan.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        jLabel1.setFont(new java.awt.Font("Consolas", 0, 12));
+        jLabel1.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Round");
+        jLabel1.setText("Test");
         problemChangePan.add(jLabel1);
 
-        roundSelect.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        problemChangePan.add(roundSelect);
+        testSelect.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        problemChangePan.add(testSelect);
 
         jLabel2.setFont(new java.awt.Font("Consolas", 0, 12));
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -340,7 +340,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
     private javax.swing.JSpinner pnumSelect;
     private javax.swing.JPanel problemChangePan;
     private javax.swing.JLabel problemViewingDescription;
-    private javax.swing.JComboBox roundSelect;
+    private javax.swing.JComboBox testSelect;
     private bc.ui.swing.trees.ScrollableStripeTree tree;
     // End of variables declaration//GEN-END:variables
 
@@ -397,7 +397,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
         for (int j = 0; j < domVars; j++) {
             model.setValueAt(j, j + 1, 0);
             for (int i = 0; i < domVars; i++) {
-                int cost = (int) p.getConstraintCost(ai, i, aj, j);
+                int cost = p.getConstraintCost(ai, i, aj, j);
                 model.setValueAt(cost, j + 1, i + 1);
             }
         }

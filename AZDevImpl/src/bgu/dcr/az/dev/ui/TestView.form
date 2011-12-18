@@ -87,7 +87,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Round Parameters"/>
+                <Property name="text" type="java.lang.String" value="Test Parameters"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -115,7 +115,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="ff" green="e9" red="d2" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="the set of parameters controlling&#xa;the execution of the round"/>
+                <Property name="text" type="java.lang.String" value="the set of parameters controlling the execution of the test"/>
                 <Property name="verticalAlignment" type="int" value="1"/>
                 <Property name="lineWrap" type="boolean" value="true"/>
               </Properties>
@@ -149,7 +149,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
           <SubComponents>
-            <Component class="bc.ui.swing.lists.TransparentList" name="roundVars">
+            <Component class="bc.ui.swing.lists.TransparentList" name="testVars">
               <Properties>
                 <Property name="foreColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
@@ -244,7 +244,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="ff" green="e9" red="d2" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="the generator of the &#xa;problems in this round"/>
+                <Property name="text" type="java.lang.String" value="the generator of the  problems in this test"/>
                 <Property name="verticalAlignment" type="int" value="1"/>
                 <Property name="lineWrap" type="boolean" value="true"/>
               </Properties>
@@ -373,7 +373,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="ff" green="e9" red="d2" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="list of the algorithms that &#xa;participating in this round"/>
+                <Property name="text" type="java.lang.String" value="list of the algorithms that  participating in this test"/>
                 <Property name="verticalAlignment" type="int" value="1"/>
                 <Property name="lineWrap" type="boolean" value="true"/>
               </Properties>

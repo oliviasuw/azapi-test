@@ -9,10 +9,10 @@ import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.infra.Configureable;
 import bgu.dcr.az.impl.DebugInfo;
 import bgu.dcr.az.api.infra.Execution;
-import bgu.dcr.az.api.infra.Round.RoundResult;
+import bgu.dcr.az.api.infra.Test.TestResult;
 import bgu.dcr.az.api.infra.VariableMetadata;
 import bgu.dcr.az.api.infra.Experiment;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.impl.db.DatabaseUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,10 +27,10 @@ import java.util.concurrent.Executors;
  * @author bennyl
  */
 @Register(name = "experiment", display="Experiment")
-public class ExperimentImpl extends AbstractProcess implements Experiment, Round.RoundListener {
+public class ExperimentImpl extends AbstractProcess implements Experiment, Test.TestListener {
 
     private static final VariableMetadata[] EMPTY_VARIABLE_ARRAY = new VariableMetadata[0];
-    private List<Round> rounds = new ArrayList<Round>();
+    private List<Test> tests = new ArrayList<Test>();
     private ExperimentResult result;
     private LinkedList<Experiment.ExperimentListener> listeners = new LinkedList<ExperimentListener>();
     private DebugInfo di;
@@ -43,38 +43,38 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
 
             fireExperimentStarted();
 
-            List<Round> roundsToRun = new LinkedList<Round>();
+            List<Test> testsToRun = new LinkedList<Test>();
             if (di == null) {
-                roundsToRun.addAll(rounds);
+                testsToRun.addAll(tests);
             } else {
-                for (Round r : rounds) {
-                    if (r.getName().equals(di.getRoundName())) {
-                        roundsToRun.add(r);
+                for (Test r : tests) {
+                    if (r.getName().equals(di.getTestName())) {
+                        testsToRun.add(r);
                         break;
                     }
                 }
             }
 
-            for (Round current : roundsToRun) {
+            for (Test current : testsToRun) {
                 if (Thread.interrupted()) {
                     result = new ExperimentResult(true);
                 }
 
                 current.addListener(this);
 
-                if (current instanceof AbstractRound) {
-                    ((AbstractRound) current).setPool(pool);
+                if (current instanceof AbstractTest) {
+                    ((AbstractTest) current).setPool(pool);
                 }
 
                 if (di == null) {
                     current.run();
                 } else {
-                    ((AbstractRound) current).debug(di);
+                    ((AbstractTest) current).debug(di);
                 }
 
-                DatabaseUnit.UNIT.signal(current); // SIGNALING - TELLING THAT STATISTICS COLLECTION TO THE CURRENT ROUND IS OVER
+                DatabaseUnit.UNIT.signal(current); // SIGNALING - TELLING THAT STATISTICS COLLECTION TO THE CURRENT TEST IS OVER
                 current.removeListener(this);
-                RoundResult res = current.getResult();
+                TestResult res = current.getResult();
                 switch (res.finishStatus) {
                     case CRUSH:
                     case WRONG_RESULT:
@@ -94,12 +94,12 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
 
     @Override
     public List<Configureable> getConfiguredChilds() {
-        LinkedList<Configureable> ret = new LinkedList<Configureable>(rounds);
+        LinkedList<Configureable> ret = new LinkedList<Configureable>(tests);
         if (di != null) {
             ret.add(di);
         } else if (getResult() != null && !getResult().succeded) {
-            if (getResult().problematicRound instanceof AbstractRound && ((AbstractRound) getResult().problematicRound).getFailoreDebugInfo() != null) {
-                ret.add(((AbstractRound) getResult().problematicRound).getFailoreDebugInfo());
+            if (getResult().problematicTest instanceof AbstractTest && ((AbstractTest) getResult().problematicTest).getFailoreDebugInfo() != null) {
+                ret.add(((AbstractTest) getResult().problematicTest).getFailoreDebugInfo());
             }
         }
 
@@ -111,18 +111,18 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
     }
 
     @Override
-    public void addRound(Round round) {
-        rounds.add(round);
+    public void addTest(Test test) {
+        tests.add(test);
     }
 
     @Override
-    public List<Round> getRounds() {
+    public List<Test> getTests() {
         if (di == null) {
-            return Collections.unmodifiableList(rounds);
+            return Collections.unmodifiableList(tests);
         }else {
-            List<Round> ret = new LinkedList<Round>();
-            for (Round r : rounds){
-                if (r.getName().equals(di.getRoundName())){
+            List<Test> ret = new LinkedList<Test>();
+            for (Test r : tests){
+                if (r.getName().equals(di.getTestName())){
                     ret.add(r);
                     return ret;
                 }
@@ -144,7 +144,7 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
 
     @Override
     public List<Class<? extends Configureable>> provideExpectedSubConfigurations() {
-        Class<? extends Configureable> ret = Round.class;
+        Class<? extends Configureable> ret = Test.class;
         LinkedList<Class<? extends Configureable>> ll = new LinkedList<Class<? extends Configureable>>();
         ll.add(ret);
         ll.add(DebugInfo.class);
@@ -156,16 +156,16 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
         if (DebugInfo.class.isAssignableFrom(cls)) {
             return di == null;
         }
-        return Round.class.isAssignableFrom(cls);
+        return Test.class.isAssignableFrom(cls);
     }
 
     @Override
     public void addSubConfiguration(Configureable sub) throws InvalidValueException {
         if (!canAccept(sub.getClass())) {
-            throw new InvalidValueException("only except rounds");
-        } else if (sub instanceof Round) {
-            Round r = (Round) sub;
-            addRound(r);
+            throw new InvalidValueException("only except tests");
+        } else if (sub instanceof Test) {
+            Test r = (Test) sub;
+            addTest(r);
         } else {
             di = (DebugInfo) sub;
         }
@@ -187,14 +187,14 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
     }
 
     @Override
-    public void onRoundStarted(Round source) {
+    public void onTestStarted(Test source) {
         for (ExperimentListener l : listeners) {
-            l.onNewRoundStarted(this, source);
+            l.onNewTestStarted(this, source);
         }
     }
 
     @Override
-    public void onExecutionStarted(Round source, Execution exec) {
+    public void onExecutionStarted(Test source, Execution exec) {
         for (ExperimentListener l : listeners) {
             l.onNewExecutionStarted(this, source, exec);
         }
@@ -214,7 +214,7 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
     }
 
     @Override
-    public void onExecutionEnded(Round source, Execution exec) {
+    public void onExecutionEnded(Test source, Execution exec) {
         for (ExperimentListener l : listeners) {
             l.onExecutionEnded(this, source, exec);
         }
@@ -222,7 +222,7 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
 
     @Override
     public void bubbleDownVariable(String var, Object val) {
-        for (Round r : rounds) {
+        for (Test r : tests) {
             r.bubbleDownVariable(var, val);
         }
     }
@@ -233,7 +233,7 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Round
             return 1;
         } else {
             int sum = 0;
-            for (Round r : rounds) {
+            for (Test r : tests) {
                 sum += r.getLength();
             }
             return sum;

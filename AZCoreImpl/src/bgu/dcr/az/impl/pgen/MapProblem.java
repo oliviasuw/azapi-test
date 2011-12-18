@@ -19,14 +19,14 @@ import java.util.Set;
 public class MapProblem extends Problem {
 
     private Object[] map;
-    //private HashMap<Integer, double[][]> map;
+    //private HashMap<Integer, int[][]> map;
 
 //    @Override
 //    public boolean isConstrained(int var1, int var2) {
 //        return super.constraints.containsKey(calcId(var1, var2));
 //    }
     @Override
-    public void setConstraintCost(int var1, int val1, int var2, int val2, double cost) {
+    public void setConstraintCost(int var1, int val1, int var2, int val2, int cost) {
         if (maxCost < cost){
             maxCost = cost;
         }
@@ -38,7 +38,7 @@ public class MapProblem extends Problem {
 //        setNeighbor(var2, var1);
 //        }
         createMap(id);
-        ((double[][]) map[id])[val1][val2] = cost;
+        ((int[][]) map[id])[val1][val2] = cost;
     }
 
     private void setNeighbor(int var1, int var2) {
@@ -47,27 +47,27 @@ public class MapProblem extends Problem {
     }
 
     @Override
-    public double getConstraintCost(int var1, int val1, int var2, int val2) {
+    public int getConstraintCost(int var1, int val1, int var2, int val2) {
         int id = calcId(var1, var2);
         if (map[id] == null) {
             return 0;
         }
-        return ((double[][]) map[id])[val1][val2];
+        return ((int[][]) map[id])[val1][val2];
     }
 
     @Override
-    public double getConstraintCost(int var1, int val1) {
+    public int getConstraintCost(int var1, int val1) {
         int id = calcId(var1, var1);
         if (map[id] == null) {
             return 0;
         }
-        return ((double[][]) map[id])[val1][val1];
+        return ((int[][]) map[id])[val1][val1];
     }
 
     private void createMap(int id) {
-        double[][] mapId = (double[][]) map[id];
+        int[][] mapId = (int[][]) map[id];
         if (mapId == null) {
-            mapId = new double[domain.size()][domain.size()];
+            mapId = new int[domain.size()][domain.size()];
             map[id] = mapId;
         }
     }

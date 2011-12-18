@@ -13,7 +13,7 @@ import bgu.dcr.az.api.SystemClock;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.infra.Execution;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.stat.DBRecord;
 import bgu.dcr.az.api.infra.stat.Database;
 import bgu.dcr.az.api.infra.stat.VisualModel;
@@ -57,10 +57,10 @@ public class SolQualityPerTickSC extends AbstractStatisticCollector<SolQualityPe
     }
 
     @Override
-    public VisualModel analyze(Database db, Round r) {
+    public VisualModel analyze(Database db, Test r) {
         LineVisualModel lvm = new LineVisualModel("Time", "Solution Quality", "Solution Quality Progress");
         try {
-            ResultSet res = db.query("SELECT AVG (solQuality) AS s, tickNum, algorithm FROM Solution_Quality where ROUND = '" + r.getName() + "' GROUP BY algorithm, tickNum ORDER BY tickNum");
+            ResultSet res = db.query("SELECT AVG (solQuality) AS s, tickNum, algorithm FROM Solution_Quality where TEST = '" + r.getName() + "' GROUP BY algorithm, tickNum ORDER BY tickNum");
             while (res.next()) {
                 lvm.setPoint(res.getString("algorithm"), res.getLong("tickNum"), res.getDouble("s"));
             }
@@ -82,7 +82,7 @@ public class SolQualityPerTickSC extends AbstractStatisticCollector<SolQualityPe
                 if (clock.time() % samplingRate == 0) {
                     float cost = (float) e.getPartialResult().getAssignment().calcCost(e.getGlobalProblem());
 //                    System.out.println("in tick " + clock.time() + " the cost was " + cost);
-                    submit(new Record(cost, clock.time(), ticksPerCycle, e.getRound().getCurrentExecutionNumber(), (float)lastCost, a[0].getAlgorithmName()));
+                    submit(new Record(cost, clock.time(), ticksPerCycle, e.getTest().getCurrentExecutionNumber(), (float)lastCost, a[0].getAlgorithmName()));
                     lastCost = cost;
                 }
             }

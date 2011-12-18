@@ -29,7 +29,7 @@ public class HillClimbingCorrectnessTester extends AbstractCorrectnessTester {
     private PreparedStatement minPstat = null;
 
     @Override
-    public TestResult test(Execution exec, ExecutionResult result) {
+    public TestedResult test(Execution exec, ExecutionResult result) {
         try {
 
             System.out.println("--- Testing Solution ---");
@@ -38,7 +38,7 @@ public class HillClimbingCorrectnessTester extends AbstractCorrectnessTester {
             Database db = DatabaseUnit.UNIT.getDatabase();
 
 
-            int execn = exec.getRound().getCurrentExecutionNumber();
+            int execn = exec.getTest().getCurrentExecutionNumber();
             System.out.println("quering statistics database");
             //            ResultSet res = db.query(""
             //                    + "SELECT a.ID FROM "
@@ -82,9 +82,9 @@ public class HillClimbingCorrectnessTester extends AbstractCorrectnessTester {
             
             System.out.println("quering complete - testing solution");
             if (res.next()) {
-                return new TestResult(null, false);
+                return new TestedResult(null, false);
             } else {
-                return new TestResult(null, true);
+                return new TestedResult(null, true);
             }
 
 

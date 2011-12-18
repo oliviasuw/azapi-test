@@ -12,7 +12,7 @@ import bgu.dcr.az.api.pgen.Problem;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.ExecutionResult;
 import bgu.dcr.az.api.SystemClock;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
 import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.api.tools.IdleDetector;
@@ -50,12 +50,12 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private LinkedList<LogListener> logListeners = new LinkedList<LogListener>();
     private SystemClock clock;
     private List<StatisticCollector> statisticCollectors = new LinkedList<StatisticCollector>();
-    private final Round round;
+    private final Test test;
     private Map<String, ReportHook> reportHooks = new HashMap<String, ReportHook>();
     /**
      * 
      */
-    public AbstractExecution(ExecutorService exec, Problem p, Mailer m, AlgorithmMetadata a, Round round) {
+    public AbstractExecution(ExecutorService exec, Problem p, Mailer m, AlgorithmMetadata a, Test test) {
         this.parameterValues = new HashMap<String, Object>();
         this.shuttingdown = false;
         this.parameterValues.clear();
@@ -63,7 +63,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         this.mailer = m;
         this.problem = p;
         this.algorithmMetadata = a;
-        this.round = round;
+        this.test = test;
     }
 
     @Override
@@ -96,8 +96,8 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     }
 
     @Override
-    public Round getRound() {
-        return round;
+    public Test getTest() {
+        return test;
     }
 
     @Override
@@ -191,7 +191,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
      * @return the global problem - 
      * each agent have its own "version" of problem that is based on the global problem 
      * using the global problem is reserved to the execution environment or to the execution tools - do not use it inside 
-     * your algorithms - use Agents getProblem() instaed.
+     * your algorithms - use Agents getProblem() instead.
      */
     @Override
     public Problem getGlobalProblem() {

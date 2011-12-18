@@ -19,8 +19,8 @@ import java.util.List;
  */
 @Register(name = "debug-info", display="Debugging Information", visible=false)
 public class DebugInfo extends AbstractConfigureable {
-    @Variable(name="round-name", description="failing round name")
-    String roundName = "";
+    @Variable(name="test-name", description="failing test name")
+    String testName = "";
     @Variable(name="algorithm-name", description="failing algorithm name")
     String algName = "";
     @Variable(name="name", description="identifier for this debug info")
@@ -30,8 +30,8 @@ public class DebugInfo extends AbstractConfigureable {
     
     List<VarAssign> pgenVars = new LinkedList<VarAssign>();
 
-    public DebugInfo(String roundName, String algName, int number) {
-        this.roundName = roundName;
+    public DebugInfo(String testName, String algName, int number) {
+        this.testName = testName;
         this.algName = algName;
         this.number = number;
     }
@@ -39,8 +39,8 @@ public class DebugInfo extends AbstractConfigureable {
     public DebugInfo() {
     }
     
-    public String getRoundName(){
-        return roundName;
+    public String getTestName(){
+        return testName;
     }
     public String getAlgorithmName(){
         return algName;

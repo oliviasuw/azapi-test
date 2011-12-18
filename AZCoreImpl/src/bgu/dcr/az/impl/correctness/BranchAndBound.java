@@ -15,10 +15,10 @@ import java.util.HashSet;
 public class BranchAndBound {
 
     public static Assignment solve(Problem p) {
-        return _solve(p, 0, new Assignment(), Double.MAX_VALUE);
+        return _solve(p, 0, new Assignment(), Integer.MAX_VALUE);
     }
 
-    private static Assignment _solve(Problem p, int var, Assignment cpa, double ub) {
+    private static Assignment _solve(Problem p, int var, Assignment cpa, int ub) {
         
         if (p.getNumberOfVariables() == var) return cpa;
         HashSet<Integer> cd = new HashSet<Integer>(p.getDomainOf(var));
@@ -38,7 +38,7 @@ public class BranchAndBound {
             
             
             if (temp != null){
-                double cost = temp.calcCost(p);
+                int cost = temp.calcCost(p);
                 if (cost < ub){
                     ub = cost;
                     bcpa = temp.copy();

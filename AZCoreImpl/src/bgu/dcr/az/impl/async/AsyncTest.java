@@ -8,14 +8,14 @@ import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.pgen.Problem;
 import bgu.dcr.az.impl.AlgorithmMetadata;
-import bgu.dcr.az.impl.infra.AbstractRound;
+import bgu.dcr.az.impl.infra.AbstractTest;
 
 /**
  *
  * @author bennyl
  */
-@Register(name= "async-round", display="Asynchronus Round")
-public class AsyncRound extends AbstractRound {
+@Register(name= "async-test", display="Asynchronus Test")
+public class AsyncTest extends AbstractTest {
 
     @Override
     protected void onConfigurationComplete() {

@@ -6,7 +6,7 @@ package bgu.dcr.az.impl.db;
 
 import bc.utils.FileUtils;
 import bgu.dcr.az.api.exp.ConnectionFaildException;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.stat.DBRecord;
 import bgu.dcr.az.api.infra.stat.Database;
 import java.io.File;
@@ -38,7 +38,7 @@ public enum DatabaseUnit {
     public static final String DATA_BASE_NAME = "agentzero";
     private DBConnectionHandler connection;
     private Thread collectorThread = null;
-    private ArrayBlockingQueue<SimpleEntry<DBRecord, Round>> dbQueue = new ArrayBlockingQueue<SimpleEntry<DBRecord, Round>>(MAXIMUM_NUMBER_OF_INMEMORY_STATISTICS);
+    private ArrayBlockingQueue<SimpleEntry<DBRecord, Test>> dbQueue = new ArrayBlockingQueue<SimpleEntry<DBRecord, Test>>(MAXIMUM_NUMBER_OF_INMEMORY_STATISTICS);
     private Set<Class<? extends DBRecord>> knownRecords = new HashSet<Class<? extends DBRecord>>();
     private Map<Class<? extends DBRecord>, PreparedStatement> insertStatments = new HashMap<Class<? extends DBRecord>, PreparedStatement>();
     private Map<Signal, Signal> signals = Collections.synchronizedMap(new HashMap<Signal, Signal>());
@@ -126,14 +126,14 @@ public enum DatabaseUnit {
         return new H2Database();
     }
 
-    public void insert(DBRecord record, Round round) throws SQLException {
+    public void insert(DBRecord record, Test test) throws SQLException {
         if (!knownRecords.contains(record.getClass())) {
             generateTable(record);
             insertStatments.put(record.getClass(), generatePreparedStatement(record));
             knownRecords.add(record.getClass());
         }
         PreparedStatement insertStatement = insertStatments.get(record.getClass());
-        insertStatement.setObject(1, round.getName());
+        insertStatement.setObject(1, test.getName());
         int i = 2;
         for (Field f : record.getFields()) {
             try {
@@ -174,7 +174,7 @@ public enum DatabaseUnit {
 
     private PreparedStatement generatePreparedStatement(DBRecord record) throws SQLException {
         StringBuilder sb = new StringBuilder("INSERT INTO ").append(record.provideTableName());
-        sb.append("(ROUND");
+        sb.append("(TEST");
         for (Field f : record.getFields()) {
             sb.append(", ").append(f.getName());
         }
@@ -191,9 +191,9 @@ public enum DatabaseUnit {
         return connection.prepare(statment);
     }
     
-    public void insertLater(DBRecord record, Round round) {
+    public void insertLater(DBRecord record, Test test) {
         try {
-            dbQueue.put(new SimpleEntry<DBRecord, Round>(record, round));
+            dbQueue.put(new SimpleEntry<DBRecord, Test>(record, test));
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
@@ -201,7 +201,7 @@ public enum DatabaseUnit {
 
     private void generateTable(DBRecord record) throws SQLException {
         StringBuilder exe = new StringBuilder("CREATE TABLE ").append(record.provideTableName()).append(" (");
-        exe.append("ID INTEGER NOT NULL AUTO_INCREMENT, ROUND VARCHAR(50) NOT NULL ");
+        exe.append("ID INTEGER NOT NULL AUTO_INCREMENT, TEST VARCHAR(50) NOT NULL ");
         for (Field f : record.getFields()) {
             exe.append(", ").append(f.getName());
             if (Boolean.class == f.getType() || boolean.class == f.getType()) {
@@ -232,7 +232,7 @@ public enum DatabaseUnit {
         }
     }
 
-    private class Signal extends SimpleEntry<DBRecord, Round> {
+    private class Signal extends SimpleEntry<DBRecord, Test> {
 
         Object key;
         Semaphore lock;
@@ -286,13 +286,13 @@ public enum DatabaseUnit {
         @Override
         public void run() {
             System.out.println("Statistics Collector Activated");
-            SimpleEntry<DBRecord, Round> stat;
+            SimpleEntry<DBRecord, Test> stat;
             while (true) {
                 try {
                     if (dbQueue.isEmpty() && Thread.interrupted()) {
                         return;
                     }
-                    List<SimpleEntry<DBRecord, Round>> multi = new LinkedList<SimpleEntry<DBRecord, Round>>();
+                    List<SimpleEntry<DBRecord, Test>> multi = new LinkedList<SimpleEntry<DBRecord, Test>>();
                     if (dbQueue.isEmpty()) {
                         stat = dbQueue.take();
                         multi.add(stat);
@@ -305,7 +305,7 @@ public enum DatabaseUnit {
                     }
 
 //                    long before = System.currentTimeMillis();
-                    for (SimpleEntry<DBRecord, Round> m : multi) {
+                    for (SimpleEntry<DBRecord, Test> m : multi) {
                         if (m instanceof Signal) {
                             ((Signal) m).signal();
                         } else {

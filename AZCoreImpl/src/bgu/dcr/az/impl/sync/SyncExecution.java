@@ -4,7 +4,7 @@
  */
 package bgu.dcr.az.impl.sync;
 
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.impl.AlgorithmMetadata;
 import bgu.dcr.az.api.pgen.Problem;
 import bgu.dcr.az.impl.infra.AbstractExecution;
@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
  */
 public class SyncExecution extends AbstractExecution {
 
-    public SyncExecution(ExecutorService exec, Problem p, AlgorithmMetadata a, Round r) {
+    public SyncExecution(ExecutorService exec, Problem p, AlgorithmMetadata a, Test r) {
         super(exec, p, new SyncMailer(), a, r);
     }
 

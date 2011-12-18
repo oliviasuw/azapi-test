@@ -11,7 +11,7 @@ import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.infra.Execution;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.stat.DBRecord;
 import bgu.dcr.az.api.infra.stat.Database;
 import bgu.dcr.az.api.infra.stat.VisualModel;
@@ -33,7 +33,7 @@ public class MessageCountStatisticCollector extends AbstractStatisticCollector<M
     Type graphType = Type.BY_RUNVAR;
 
     @Override
-    public VisualModel analyze(Database db, Round r) {
+    public VisualModel analyze(Database db, Test r) {
         try {
             ResultSet res;
             BarVisualModel bv;
@@ -43,7 +43,7 @@ public class MessageCountStatisticCollector extends AbstractStatisticCollector<M
                     res = db.query(""
                             + "select algorithm, avg(messages) as m, agent "
                             + "from Message_count "
-                            + "where round = '" + r.getName() + "' "
+                            + "where test = '" + r.getName() + "' "
                             + "group by algorithm, agent "
                             + "order by agent");
 
@@ -56,7 +56,7 @@ public class MessageCountStatisticCollector extends AbstractStatisticCollector<M
                     res = db.query(""
                             + "select algorithm, avg(messages) as m, runvar "
                             + "from Message_count "
-                            + "where round = '" + r.getName() + "' "
+                            + "where test = '" + r.getName() + "' "
                             + "group by algorithm, runvar "
                             + "order by runvar");
 
@@ -88,8 +88,8 @@ public class MessageCountStatisticCollector extends AbstractStatisticCollector<M
             @Override
             public void hook(Agent a) {
                 for (int i = 0; i < counts.length; i++) {
-//                    System.out.println("rval: " +  round.getCurrentVarValue());
-                    submit(new Record(a.getAlgorithmName(), i, counts[i], round.getCurrentVarValue()));
+//                    System.out.println("rval: " +  test.getCurrentVarValue());
+                    submit(new Record(a.getAlgorithmName(), i, counts[i], test.getCurrentVarValue()));
                 }
             }
         });

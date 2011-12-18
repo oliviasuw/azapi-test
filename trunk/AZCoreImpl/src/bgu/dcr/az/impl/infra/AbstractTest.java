@@ -11,12 +11,12 @@ import bgu.dcr.az.impl.AlgorithmMetadata;
 import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.infra.Configureable;
-import bgu.dcr.az.api.infra.CorrectnessTester.TestResult;
+import bgu.dcr.az.api.infra.CorrectnessTester.TestedResult;
 import bgu.dcr.az.impl.DebugInfo;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.ExecutionResult;
-import bgu.dcr.az.api.infra.Round;
-import bgu.dcr.az.api.infra.Round.RoundResult;
+import bgu.dcr.az.api.infra.Test;
+import bgu.dcr.az.api.infra.Test.TestResult;
 import bgu.dcr.az.api.infra.VariableMetadata;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
 import bgu.dcr.az.api.pgen.Problem;
@@ -38,7 +38,7 @@ import java.util.concurrent.ExecutorService;
  *
  * @author bennyl
  */
-public abstract class AbstractRound extends AbstractProcess implements Round {
+public abstract class AbstractTest extends AbstractProcess implements Test {
 
     public static final String PROBLEM_GENERATOR_PROBLEM_METADATA = "PROBLEM GENERATOR";
     public static final String SEED_PROBLEM_METADATA = "SEED";
@@ -46,40 +46,40 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     /**
      * V A R I A B L E S
      */
-    @Variable(name = "name", description = "the round name")
+    @Variable(name = "name", description = "the test name")
     private String name = "";
     @Variable(name = "seed", description = "seed for creating randoms for the problem generator")
     private long seed = -1;
     //TODO: FOR NOW THIS PARAMETERS ARE GOOD BUT NEED TO TALK WITH ALON AND SEE WHAT TYPE OF EXPIREMENT MORE EXISTS
-    @Variable(name = "tick-size", description = "the number of executions in each tick")
-    private int tickSize = 100;
+    @Variable(name = "repeat-count", description = "the number of executions in each tick")
+    private int repeatCount = 100;
     @Variable(name = "run-var", description = "the variable to run")
     private String runVar = "";
     @Variable(name = "start", description = "starting value of the running variable")
     private float start = 0.1f;
     @Variable(name = "end", description = "ending value of the running variable (explicit)")
     private float end = 0.9f;
-    @Variable(name = "tick", description = "the runinig variable value increasment")
-    private float tick = 0.1f;
+    @Variable(name = "tick-size", description = "the runinig variable value increasment")
+    private float tickSize = 0.1f;
     /**
      * F I E L D S
      */
     private List<AlgorithmMetadata> algorithms = new LinkedList<AlgorithmMetadata>();
     private ProblemGenerator pgen = null;
     private List<StatisticCollector> collectors = new LinkedList<StatisticCollector>();
-    private RoundResult res = null;
+    private TestResult res = null;
     private ExecutorService pool;
     private Random rand;
     private int current = 0;
     private CorrectnessTester ctester = null;
-    private List<RoundListener> listeners = new LinkedList<RoundListener>();
+    private List<TestListener> listeners = new LinkedList<TestListener>();
     private float currentVarValue;
     private DebugInfo di = null;
 //    private long lastProblemSeed = -1; //USED FOR DEBUGING INFORMATION
     private List<Long> problemSeeds;
     
     
-    public AbstractRound() {
+    public AbstractTest() {
     }
 
     @Override
@@ -105,11 +105,11 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
 
     @Override
     public int getLength() {
-        if (tick == 0) {
-            tick = 0.1f;
+        if (tickSize == 0) {
+            tickSize = 0.1f;
         }
 
-        return (int) (((end - start) / tick) + 1.0) * tickSize;//(int) Math.floor((((end - start) / tick ) + 1.0) * (double)tickSize);
+        return (int) (((end - start) / tickSize) + 1.0) * repeatCount;//(int) Math.floor((((end - start) / tickSize ) + 1.0) * (double)repeatCount);
     }
 
     public void setPool(ExecutorService pool) {
@@ -137,7 +137,7 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     @Override
     public void registerStatisticCollector(StatisticCollector collector) {
         if (collector instanceof AbstractStatisticCollector) {
-            ((AbstractStatisticCollector) collector).setRound(this);
+            ((AbstractStatisticCollector) collector).setTest(this);
         }
         collectors.add(collector);
     }
@@ -174,8 +174,8 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
 
     public Problem generateProblem(int number){
         if (number > getLength() || number <= 0) throw new InvalidValueException("there is no such problem");
-        int ticksPerformed = (number-1) /tickSize;
-        float vvar = start + tick*(float)ticksPerformed;
+        int ticksPerformed = (number-1) /repeatCount;
+        float vvar = start + tickSize*(float)ticksPerformed;
         ProblemGenerator tpgen = DeepCopyUtil.deepCopy(pgen);
         tpgen.bubbleDownVariable(runVar, vvar);
         Problem p = new MapProblem();
@@ -185,7 +185,7 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     }
     
     public void debug(DebugInfo di) {
-        fireRoundStarted();
+        fireTestStarted();
         try {
             Problem p = generateProblem(di.getFailedProblemNumber());
 
@@ -204,9 +204,9 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
                 }
             }
 
-            res = new RoundResult();
+            res = new TestResult();
         } catch (Exception ex) {
-            res = new RoundResult(ex, null);
+            res = new TestResult(ex, null);
         } finally {
             DatabaseUnit.UNIT.signal(this);
         }
@@ -222,18 +222,18 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     @Override
     protected void _run() {
         try {
-            fireRoundStarted();
+            fireTestStarted();
 
-            if (tick == 0) {
-                tick = 0.1f;
+            if (tickSize == 0) {
+                tickSize = 0.1f;
             }
 
             int pnum = 0;
             current = 0;
             
-            for (currentVarValue = start; currentVarValue <= end; currentVarValue = inc(currentVarValue, tick, 1000))  {
+            for (currentVarValue = start; currentVarValue <= end; currentVarValue = inc(currentVarValue, tickSize, 1000))  {
                 bubbleDownVariable(runVar, (float)currentVarValue);
-                for (int i = 0; i < tickSize; i++) {
+                for (int i = 0; i < repeatCount; i++) {
                     Problem p = nextProblem(++pnum);
                     for (AlgorithmMetadata alg : getAlgorithms()) {
                         if (!execute(p, alg)) {
@@ -244,10 +244,10 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
                     current++;
                 }
             }
-            res = new RoundResult();
+            res = new TestResult();
 
         } catch (Exception ex) {
-            res = new RoundResult(ex, null);
+            res = new TestResult(ex, null);
         } finally {
             DatabaseUnit.UNIT.signal(this);
         }
@@ -266,19 +266,19 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
             e.run();
             ExecutionResult r = e.getResult();
             if (r.isExecutionCrushed()) {
-                res = new RoundResult(r.getCrushReason(), e);
+                res = new TestResult(r.getCrushReason(), e);
                 return false;
             } else if (getCorrectnessTester() != null) {
-                TestResult testRes = getCorrectnessTester().test(e, r);
+                TestedResult testRes = getCorrectnessTester().test(e, r);
                 if (!testRes.passed) {
-                    res = new RoundResult(testRes.rightAnswer, e);
+                    res = new TestResult(testRes.rightAnswer, e);
                     return false;
                 }
             }
             fireExecutionEnded(e);
             return true;
         } catch (Exception ex) {
-            res = new RoundResult(ex, e);
+            res = new TestResult(ex, e);
             return false;
         }
     }
@@ -355,7 +355,7 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     
 
     @Override
-    public RoundResult getResult() {
+    public TestResult getResult() {
         return res;
     }
 
@@ -395,29 +395,29 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     }
 
     @Override
-    public void addListener(RoundListener l) {
+    public void addListener(TestListener l) {
         listeners.add(l);
     }
 
     @Override
-    public void removeListener(RoundListener l) {
+    public void removeListener(TestListener l) {
         listeners.remove(l);
     }
 
-    private void fireRoundStarted() {
-        for (RoundListener l : listeners) {
-            l.onRoundStarted(this);
+    private void fireTestStarted() {
+        for (TestListener l : listeners) {
+            l.onTestStarted(this);
         }
     }
 
     private void fireNewExecution(Execution e) {
-        for (RoundListener l : listeners) {
+        for (TestListener l : listeners) {
             l.onExecutionStarted(this, e);
         }
     }
 
     private void fireExecutionEnded(Execution e) {
-        for (RoundListener l : listeners) {
+        for (TestListener l : listeners) {
             l.onExecutionEnded(this, e);
         }
     }
@@ -438,12 +438,12 @@ public abstract class AbstractRound extends AbstractProcess implements Round {
     }
 
     @Override
-    public float getTick() {
-        return this.tick;
+    public float getTickSize() {
+        return this.tickSize;
     }
 
     @Override
-    public int getTickSize() {
-        return this.tickSize;
+    public int getRepeatCount() {
+        return this.repeatCount;
     }
 }

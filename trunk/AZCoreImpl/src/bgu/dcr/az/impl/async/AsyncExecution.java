@@ -5,7 +5,7 @@
 package bgu.dcr.az.impl.async;
 
 import bgu.dcr.az.api.AgentRunner;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.impl.AlgorithmMetadata;
 import bgu.dcr.az.api.pgen.Problem;
 import bgu.dcr.az.impl.infra.AbstractExecution;
@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
  */
 public class AsyncExecution extends AbstractExecution {
 
-    public AsyncExecution(ExecutorService exec, Problem p, AlgorithmMetadata a, Round r) {
+    public AsyncExecution(ExecutorService exec, Problem p, AlgorithmMetadata a, Test r) {
         super(exec, p, new AsyncMailer(), a, r);
     }
 

@@ -19,39 +19,39 @@ import bgu.dcr.az.impl.correctness.IterativeCSPSolver.Status;
 public class DefaultCorrectnessTester extends AbstractCorrectnessTester {
 
     @Override
-    public TestResult test(Execution exec, ExecutionResult result) {
+    public TestedResult test(Execution exec, ExecutionResult result) {
         Assignment ass;
         final Problem globalProblem = exec.getGlobalProblem();
         Status stat;
         final MACSolver solver = new MACSolver();
         switch (exec.getGlobalProblem().type()) {
             case ADCOP:
-                return new TestResult(null, true);
+                return new TestedResult(null, true);
             case DCOP:
                 ass = BranchAndBound.solve(globalProblem);
                 if (ass.calcCost(globalProblem) == result.getAssignment().calcCost(globalProblem)) {
-                    return new TestResult(ass, true);
+                    return new TestedResult(ass, true);
                 } else {
-                    return new TestResult(ass, false);
+                    return new TestedResult(ass, false);
                 }
             case DCSP:
                 stat = solver.solve(globalProblem);
                 switch (stat) {
                     case imposible:
                         if (result.hasSolution()) {
-                            return new TestResult(null, false);
+                            return new TestedResult(null, false);
                         } else {
-                            return new TestResult(null, true);
+                            return new TestedResult(null, true);
                         }
                     case solution:
                         ass = solver.getAssignment();
                         if (ass.calcCost(globalProblem) == result.getAssignment().calcCost(globalProblem)) {
-                            return new TestResult(ass, true);
+                            return new TestedResult(ass, true);
                         } else {
-                            return new TestResult(ass, false);
+                            return new TestedResult(ass, false);
                         }
                     default:
-                        return new TestResult(null, true);
+                        return new TestedResult(null, true);
                 }
             default:
                 return null;

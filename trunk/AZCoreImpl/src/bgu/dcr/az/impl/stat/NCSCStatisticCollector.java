@@ -11,7 +11,7 @@ import bgu.dcr.az.api.Hooks.BeforeMessageSentHook;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.infra.Execution;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.stat.DBRecord;
 import bgu.dcr.az.api.infra.stat.Database;
 import bgu.dcr.az.api.infra.stat.VisualModel;
@@ -32,8 +32,8 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
     long[] ncsc;
     
     @Override
-    public VisualModel analyze(Database db, Round r) {
-        String query = "select AVG(ncsc) as avg, rVar, algorithm from NCSC where ROUND = '" + r.getName() + "' group by algorithm, rVar order by rVar";
+    public VisualModel analyze(Database db, Test r) {
+        String query = "select AVG(ncsc) as avg, rVar, algorithm from NCSC where TEST = '" + r.getName() + "' group by algorithm, rVar order by rVar";
         LineVisualModel line = new LineVisualModel(r.getRunningVarName(), "Avg(NCSC)", "NCSC");
         try {
             ResultSet rs = db.query(query);
@@ -53,7 +53,7 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
         System.out.println("NCSC Statistic Collector registered");
         
         ncsc = new long[agents.length];
-        final double rvar = ex.getRound().getCurrentVarValue();
+        final double rvar = ex.getTest().getCurrentVarValue();
         
         for (Agent a : agents){
             a.hookIn(new BeforeMessageProcessingHook() {

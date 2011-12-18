@@ -5,7 +5,7 @@
 package bgu.dcr.az.impl.stat;
 
 import bgu.dcr.az.api.infra.Experiment;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.stat.DBRecord;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
 import bgu.dcr.az.impl.db.DatabaseUnit;
@@ -17,10 +17,10 @@ import bgu.dcr.az.impl.infra.AbstractConfigureable;
  */
 public abstract class AbstractStatisticCollector<T extends DBRecord> extends AbstractConfigureable implements StatisticCollector<T> {
 
-    Round round;
+    Test test;
 
-    public void setRound(Round round) {
-        this.round = round;
+    public void setTest(Test test) {
+        this.test = test;
     }
     
     
@@ -32,6 +32,6 @@ public abstract class AbstractStatisticCollector<T extends DBRecord> extends Abs
 
     @Override
     public void submit(T record) {
-        DatabaseUnit.UNIT.insertLater(record, round);
+        DatabaseUnit.UNIT.insertLater(record, test);
     }
 }

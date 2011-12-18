@@ -12,7 +12,7 @@ import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.infra.Execution;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.stat.DBRecord;
 import bgu.dcr.az.api.infra.stat.Database;
 import bgu.dcr.az.api.infra.stat.VisualModel;
@@ -34,8 +34,8 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
     String runningVar;
 
     @Override
-    public VisualModel analyze(Database db, Round r) {
-        String query = "select AVG(value) as avg, rVar, algorithm from NCCC where ROUND = '" + r.getName() + "' group by algorithm, rVar order by rVar";
+    public VisualModel analyze(Database db, Test r) {
+        String query = "select AVG(value) as avg, rVar, algorithm from NCCC where TEST = '" + r.getName() + "' group by algorithm, rVar order by rVar";
         LineVisualModel line = new LineVisualModel(runningVar, "Avg(NCCC)", "NCCC");
         try {
             ResultSet rs = db.query(query);
@@ -57,7 +57,7 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
 
         nccc = new long[agents.length];
         lastKnownCC = new long[agents.length];
-        runningVar = ex.getRound().getRunningVarName();
+        runningVar = ex.getTest().getRunningVarName();
 
         for (Agent a : agents) {
             a.hookIn(new BeforeMessageSentHook() {
@@ -84,7 +84,7 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
 
             @Override
             public void hook(Agent a) {
-                submit(new NCCCRecord(ex.getRound().getCurrentVarValue(), nccc[0], a.getAlgorithmName()));
+                submit(new NCCCRecord(ex.getTest().getCurrentVarValue(), nccc[0], a.getAlgorithmName()));
             }
         });
     }

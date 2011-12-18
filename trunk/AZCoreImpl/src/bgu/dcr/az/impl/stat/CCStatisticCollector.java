@@ -8,7 +8,7 @@ import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Hooks.BeforeCallingFinishHook;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.infra.Execution;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.stat.DBRecord;
 import bgu.dcr.az.api.infra.stat.Database;
 import bgu.dcr.az.api.infra.stat.VisualModel;
@@ -26,8 +26,8 @@ import java.util.logging.Logger;
 public class CCStatisticCollector extends AbstractStatisticCollector<CCStatisticCollector.CCRecord> {
 
     @Override
-    public VisualModel analyze(Database db, Round r) {
-        String query = "select AVG(cc) as avg, rVar, algorithm from CC where ROUND = '" + r.getName() + "' group by algorithm, rVar order by rVar";
+    public VisualModel analyze(Database db, Test r) {
+        String query = "select AVG(cc) as avg, rVar, algorithm from CC where TEST = '" + r.getName() + "' group by algorithm, rVar order by rVar";
         LineVisualModel line = new LineVisualModel(r.getRunningVarName(), "Avg(CC)", "CC");
         try {
             ResultSet rs = db.query(query);
@@ -53,7 +53,7 @@ public class CCStatisticCollector extends AbstractStatisticCollector<CCStatistic
                     sum += ag.getNumberOfConstraintChecks();
                 }
 
-                submit(new CCRecord(ex.getRound().getCurrentVarValue(), sum, a.getAlgorithmName()));
+                submit(new CCRecord(ex.getTest().getCurrentVarValue(), sum, a.getAlgorithmName()));
             }
         });
     }

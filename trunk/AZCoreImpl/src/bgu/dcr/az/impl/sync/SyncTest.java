@@ -8,14 +8,14 @@ import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.pgen.Problem;
 import bgu.dcr.az.impl.AlgorithmMetadata;
-import bgu.dcr.az.impl.infra.AbstractRound;
+import bgu.dcr.az.impl.infra.AbstractTest;
 
 /**
  *
  * @author bennyl
  */
-@Register(name="sync-round", display="Synchronus Round")
-public class SyncRound extends AbstractRound {
+@Register(name="sync-test", display="Synchronus Test")
+public class SyncTest extends AbstractTest {
 
     @Override
     protected void onConfigurationComplete() {

@@ -10,7 +10,7 @@ import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.infra.Configureable;
-import bgu.dcr.az.impl.Registary;
+import bgu.dcr.az.impl.Registery;
 import bgu.dcr.az.impl.infra.AbstractConfigureable;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -23,7 +23,7 @@ import java.util.Map;
  * creation it configurs with its given configuration.
  * @author bennyl
  */
-@Register(name = "algorithm")
+@Register(name = "algorithm", display="Algorithm")
 public class AlgorithmMetadata extends AbstractConfigureable {
 
     @Variable(name = "name", description = "the name of the algorithm")
@@ -96,7 +96,7 @@ public class AlgorithmMetadata extends AbstractConfigureable {
 
     @Override
     protected void configurationDone() {
-        Class<? extends Agent> a = Registary.UNIT.getAgentByAlgorithmName(name);
+        Class<? extends Agent> a = Registery.UNIT.getAgentByAlgorithmName(name);
         if (a == null) {
             throw new InvalidValueException("cannot find agent with the given algorithm name: '" + name + "'");
         }

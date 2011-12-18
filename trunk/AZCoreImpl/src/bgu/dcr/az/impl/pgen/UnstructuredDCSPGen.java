@@ -16,7 +16,7 @@ import java.util.Random;
  *
  * @author bennyl
  */
-@Register(name="dcsp-unstructured")
+@Register(name="dcsp-unstructured", display="Unstructured DCSP Problem Generator")
 public class UnstructuredDCSPGen extends AbstractProblemGenerator {
 
     @Variable(name = "n", description = "number of variables")

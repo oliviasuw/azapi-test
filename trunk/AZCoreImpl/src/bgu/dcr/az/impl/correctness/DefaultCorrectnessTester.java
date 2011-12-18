@@ -15,7 +15,7 @@ import bgu.dcr.az.impl.correctness.IterativeCSPSolver.Status;
  *
  * @author bennyl
  */
-@Register(name="default-tester")
+@Register(name="default-tester", display="Default Correctness Tester")
 public class DefaultCorrectnessTester extends AbstractCorrectnessTester {
 
     @Override

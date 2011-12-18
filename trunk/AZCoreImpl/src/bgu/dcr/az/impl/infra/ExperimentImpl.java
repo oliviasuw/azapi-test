@@ -26,7 +26,7 @@ import java.util.concurrent.Executors;
  *
  * @author bennyl
  */
-@Register(name = "experiment")
+@Register(name = "experiment", display="Experiment")
 public class ExperimentImpl extends AbstractProcess implements Experiment, Round.RoundListener {
 
     private static final VariableMetadata[] EMPTY_VARIABLE_ARRAY = new VariableMetadata[0];

@@ -12,7 +12,7 @@ import bgu.dcr.az.impl.infra.AbstractConfigureable;
  *
  * @author bennyl
  */
-@Register(name = "assign")
+@Register(name = "assign", display="Variable Assignment")
 public class VarAssign extends AbstractConfigureable {
 
     @Variable(name = "var", description = "the variable name")

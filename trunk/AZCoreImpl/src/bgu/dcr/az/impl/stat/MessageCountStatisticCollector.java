@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  *
  * @author bennyl
  */
-@Register(name = "msgc-sc")
+@Register(name = "msgc-sc", display="Avarage Number of Messages Sent")
 public class MessageCountStatisticCollector extends AbstractStatisticCollector<MessageCountStatisticCollector.Record> {
 
     long[] counts;

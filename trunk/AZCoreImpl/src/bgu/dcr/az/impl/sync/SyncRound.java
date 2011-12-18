@@ -14,7 +14,7 @@ import bgu.dcr.az.impl.infra.AbstractRound;
  *
  * @author bennyl
  */
-@Register(name="sync-round")
+@Register(name="sync-round", display="Synchronus Round")
 public class SyncRound extends AbstractRound {
 
     @Override

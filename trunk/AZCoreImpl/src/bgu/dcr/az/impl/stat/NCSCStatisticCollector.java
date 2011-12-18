@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  *
  * @author bennyl
  */
-@Register(name="ncsc-sc")
+@Register(name="ncsc-sc", display="Avarage NCSC")
 public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecord> {
 
     long[] ncsc;

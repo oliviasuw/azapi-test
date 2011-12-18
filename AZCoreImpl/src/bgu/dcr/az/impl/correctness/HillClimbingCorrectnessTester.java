@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  *
  * @author bennyl
  */
-@Register(name = "hill-climbing-tester")
+@Register(name = "hill-climbing-tester", display= "Hill Climbing Correctness Tester")
 public class HillClimbingCorrectnessTester extends AbstractCorrectnessTester {
 
     @Variable(name = "check-maximization", description = "check that the algorithm find result with more(true)/less(false) cost in each tick")

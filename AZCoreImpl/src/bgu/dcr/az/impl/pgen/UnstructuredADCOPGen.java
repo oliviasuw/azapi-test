@@ -15,7 +15,7 @@ import java.util.Random;
  *
  * @author bennyl
  */
-@Register(name="adcop-unstructured")
+@Register(name="adcop-unstructured", display="Unstructured ADCOP Problem Generator")
 public class UnstructuredADCOPGen extends UnstructuredDCOPGen {
 
     @Override

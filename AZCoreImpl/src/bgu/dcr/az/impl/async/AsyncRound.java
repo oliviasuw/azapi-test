@@ -14,7 +14,7 @@ import bgu.dcr.az.impl.infra.AbstractRound;
  *
  * @author bennyl
  */
-@Register(name= "async-round")
+@Register(name= "async-round", display="Asynchronus Round")
 public class AsyncRound extends AbstractRound {
 
     @Override

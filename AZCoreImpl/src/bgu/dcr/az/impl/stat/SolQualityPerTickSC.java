@@ -23,7 +23,7 @@ import bgu.dcr.az.api.infra.stat.vmod.LineVisualModel;
  * @author alongrub
  *
  */
-@Register(name = "SQPT")
+@Register(name = "SQPT", display="Solution Quality Per Tick")
 public class SolQualityPerTickSC extends AbstractStatisticCollector<SolQualityPerTickSC.Record> {
 
     private int ticksPerCycle = 1;

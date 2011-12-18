@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author bennyl
  */
-@Register(name = "debug-info")
+@Register(name = "debug-info", display="Debugging Information", visible=false)
 public class DebugInfo extends AbstractConfigureable {
     @Variable(name="round-name", description="failing round name")
     String roundName = "";

@@ -14,7 +14,7 @@ import bc.dsl.SwingDSL;
 import bc.ui.swing.listeners.Listeners;
 import bc.ui.swing.visuals.Visual;
 import bgu.dcr.az.api.infra.Experiment;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.dev.XMLConfigurator;
 import bgu.dcr.az.impl.infra.ExperimentImpl;
 import java.io.File;
@@ -34,7 +34,7 @@ import javax.swing.event.ListSelectionListener;
  *
  * @author bennyl
  */
-public class DebugSelectionScreen extends javax.swing.JPanel implements RoundView.DebugRequestListener {
+public class DebugSelectionScreen extends javax.swing.JPanel implements TestView.DebugRequestListener {
 
     File problemsPath;
     List<Experiment> badExperiments;
@@ -45,7 +45,7 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements RoundVie
     @SuppressWarnings("LeakingThisInConstructor")
     public DebugSelectionScreen() {
         initComponents();
-        roundView.addDebugRequestListener(this);
+        testView.addDebugRequestListener(this);
     }
 
     void setProblemDir(File dir) {
@@ -67,17 +67,17 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements RoundVie
 
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                roundData.unSetData();
+                testData.unSetData();
                 if (!failList.getSelectedItems().isEmpty()) {
                     ExperimentImpl selected = (ExperimentImpl) ((Visual)failList.getSelectedItems().get(0)).getItem();
-                    List<Round> rounds = selected.getRounds();
-                    String roundName = selected.getFailureDebugInfo().getRoundName();
+                    List<Test> tests = selected.getTests();
+                    String testName = selected.getFailureDebugInfo().getTestName();
 
-                    for (Round r : rounds) {
-                        if (r.getName().equals(roundName)) {
-                            roundView.setModel(r);
-                            roundView.addFailureData(selected.getFailureDebugInfo());
-                            roundData.setData(roundViewScroll);
+                    for (Test r : tests) {
+                        if (r.getName().equals(testName)) {
+                            testView.setModel(r);
+                            testView.addFailureData(selected.getFailureDebugInfo());
+                            testData.setData(testViewScroll);
                             break;
                         }
                     }
@@ -128,8 +128,8 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements RoundVie
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        roundViewScroll = new javax.swing.JScrollPane();
-        roundView = new bgu.dcr.az.dev.ui.RoundView();
+        testViewScroll = new javax.swing.JScrollPane();
+        testView = new bgu.dcr.az.dev.ui.TestView();
         jPanel1 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
         deleteSelected = new javax.swing.JButton();
@@ -138,9 +138,9 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements RoundVie
         failList = new bc.ui.swing.lists.StripeList();
         debugProblemButtonPan = new javax.swing.JPanel();
         jXHyperlink1 = new org.jdesktop.swingx.JXHyperlink();
-        roundData = new bc.ui.swing.useful.DataPanel();
+        testData = new bc.ui.swing.useful.DataPanel();
 
-        roundViewScroll.setViewportView(roundView);
+        testViewScroll.setViewportView(testView);
 
         setOpaque(false);
         setLayout(new java.awt.BorderLayout());
@@ -164,7 +164,7 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements RoundVie
         });
         jPanel11.add(deleteSelected);
 
-        jLabel4.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Consolas", 1, 12));
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Select one of the failed sessions to debug");
         jPanel11.add(jLabel4);
@@ -195,7 +195,7 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements RoundVie
         jXHyperlink1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/debug-all.png"))); // NOI18N
         jXHyperlink1.setText("Debug Full Experiment");
         jXHyperlink1.setClickedColor(new java.awt.Color(255, 255, 255));
-        jXHyperlink1.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        jXHyperlink1.setFont(new java.awt.Font("Consolas", 0, 14));
         jXHyperlink1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jXHyperlink1.setMargin(new java.awt.Insets(0, 0, 0, 0));
         jXHyperlink1.setUnclickedColor(new java.awt.Color(255, 255, 255));
@@ -218,14 +218,14 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements RoundVie
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
         jPanel3.add(debugProblemButtonPan, gridBagConstraints);
 
-        roundData.setBackground(new java.awt.Color(153, 153, 153));
-        roundData.setOpaque(true);
+        testData.setBackground(new java.awt.Color(153, 153, 153));
+        testData.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel3.add(roundData, gridBagConstraints);
+        jPanel3.add(testData, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -256,9 +256,9 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements RoundVie
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel3;
     private org.jdesktop.swingx.JXHyperlink jXHyperlink1;
-    private bc.ui.swing.useful.DataPanel roundData;
-    private bgu.dcr.az.dev.ui.RoundView roundView;
-    private javax.swing.JScrollPane roundViewScroll;
+    private bc.ui.swing.useful.DataPanel testData;
+    private bgu.dcr.az.dev.ui.TestView testView;
+    private javax.swing.JScrollPane testViewScroll;
     // End of variables declaration//GEN-END:variables
 
     @Override

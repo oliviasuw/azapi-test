@@ -13,7 +13,7 @@ package bgu.dcr.az.dev.ui;
 import bc.dsl.SwingDSL;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.Experiment;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.dev.ExecutionUnit;
 import java.io.File;
 import java.util.concurrent.Semaphore;
@@ -342,11 +342,11 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
                     + "if you define correctness testers thay didnt found any wrong solution.");
         } else {
             errorPanel.setVisible(true);
-            switch (source.getResult().badRoundResult.finishStatus) {
+            switch (source.getResult().badTestResult.finishStatus) {
                 case CRUSH:
                     ExceptionDialog.showRecoverable("the execution crushed", "you should take a look at the logs\n"
                             + "check the stack trace using the advance button\n"
-                            + "or start a debug session", source.getResult().badRoundResult.crushReason);
+                            + "or start a debug session", source.getResult().badTestResult.crushReason);
                     break;
                 case WRONG_RESULT:
                     MessageDialog.showFail("the execution completed with errors", "the correctness tester found wrong results provided by the algorithm");
@@ -356,12 +356,12 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
     }
 
     @Override
-    public void onNewRoundStarted(Experiment source, Round round) {
+    public void onNewTestStarted(Experiment source, Test test) {
 //        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void onNewExecutionStarted(Experiment source, Round round, Execution exec) {
+    public void onNewExecutionStarted(Experiment source, Test test, Execution exec) {
 //        if (showProblemView) {
 //            problemScreen = new ProblemViewScreen(exec.getGlobalProblem());
 //            tabs.addTab("Problem", SwingDSL.resIcon("problem"), problemScreen);
@@ -369,7 +369,7 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
     }
 
     @Override
-    public void onExecutionEnded(Experiment source, Round round, Execution exec) {
+    public void onExecutionEnded(Experiment source, Test test, Execution exec) {
 //        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

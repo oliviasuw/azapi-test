@@ -14,7 +14,7 @@ import bc.dsl.SwingDSL;
 import bc.ui.swing.visuals.Visual;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.Experiment;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.dev.ExecutionUnit;
 import com.sun.java.swing.plaf.motif.MotifProgressBarUI;
 import java.util.LinkedList;
@@ -30,12 +30,12 @@ import javax.swing.event.ListSelectionListener;
  */
 public class StatusScreen extends javax.swing.JPanel {
 
-    private static final Icon ROUND_WAIT_ICON = SwingDSL.resIcon("round-wait");
-    private static final Icon ROUND_DONE_ICON = SwingDSL.resIcon("round-done");
-    private static final Icon ROUND_PLAY_ICON = SwingDSL.resIcon("round-play");
+    private static final Icon TEST_WAIT_ICON = SwingDSL.resIcon("test-wait");
+    private static final Icon TEST_DONE_ICON = SwingDSL.resIcon("test-done");
+    private static final Icon TEST_PLAY_ICON = SwingDSL.resIcon("test-play");
 
     
-    private LinkedList<Visual> visualRounds;
+    private LinkedList<Visual> visualTests;
 
     /** Creates new form StatusScreen */
     public StatusScreen() {
@@ -44,26 +44,26 @@ public class StatusScreen extends javax.swing.JPanel {
     }
 
     void setModel(Experiment experiment) {
-        visualRounds = Visual.adapt(experiment.getRounds(), new Visual.VisualGen() {
+        visualTests = Visual.adapt(experiment.getTests(), new Visual.VisualGen() {
 
             @Override
             public Visual gen(Object it) {
-                Round r = (Round) it;
-                return new Visual(it, r.getName(), "", ROUND_WAIT_ICON);
+                Test r = (Test) it;
+                return new Visual(it, r.getName(), "", TEST_WAIT_ICON);
             }
         });
-        roundList.setItems(visualRounds);
+        testList.setItems(visualTests);
 
-        roundList.addSelectionListner(new ListSelectionListener() {
+        testList.addSelectionListner(new ListSelectionListener() {
 
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                List<Visual> items = roundList.getSelectedItems();
+                List<Visual> items = testList.getSelectedItems();
                 if (items.isEmpty()) {
-                    roundData.unSetData();
+                    testData.unSetData();
                 } else {
-                    roundView.setModel((Round) items.get(0).getItem());
-                    roundData.setData(roundDataScroll);
+                    testView.setModel((Test) items.get(0).getItem());
+                    testData.setData(testDataScroll);
                 }
             }
         });
@@ -83,37 +83,37 @@ public class StatusScreen extends javax.swing.JPanel {
 
             @Override
             public void onExpirementEnded(Experiment source) {
-                for (Visual v : visualRounds) {
-                    v.setIcon(ROUND_DONE_ICON);
+                for (Visual v : visualTests) {
+                    v.setIcon(TEST_DONE_ICON);
                 }
 
-                roundList.revalidate();
-                roundList.repaint();
+                testList.revalidate();
+                testList.repaint();
             }
 
             @Override
-            public void onNewRoundStarted(Experiment source, Round round) {
-                for (Visual v : visualRounds) {
-                    if (v.getItem().equals(round)) {
-                        v.setIcon(ROUND_PLAY_ICON);
+            public void onNewTestStarted(Experiment source, Test test) {
+                for (Visual v : visualTests) {
+                    if (v.getItem().equals(test)) {
+                        v.setIcon(TEST_PLAY_ICON);
                         break;
                     } else {
-                        v.setIcon(ROUND_DONE_ICON);
+                        v.setIcon(TEST_DONE_ICON);
                     }
                 }
 
-                roundList.revalidate();
-                roundList.repaint();
+                testList.revalidate();
+                testList.repaint();
             }
 
             @Override
-            public void onNewExecutionStarted(Experiment source, Round round, Execution exec) {
+            public void onNewExecutionStarted(Experiment source, Test test, Execution exec) {
                 mod.setValue(mod.getValue() + 1);
                 progressLabel.setText("Execution " + (mod.getValue()) + " of " + expLength);
             }
 
             @Override
-            public void onExecutionEnded(Experiment source, Round round, Execution exec) {
+            public void onExecutionEnded(Experiment source, Test test, Execution exec) {
                 
             }
         });
@@ -129,8 +129,8 @@ public class StatusScreen extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        roundDataScroll = new javax.swing.JScrollPane();
-        roundView = new bgu.dcr.az.dev.ui.RoundView();
+        testDataScroll = new javax.swing.JScrollPane();
+        testView = new bgu.dcr.az.dev.ui.TestView();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         progressLabel = new javax.swing.JLabel();
@@ -139,11 +139,11 @@ public class StatusScreen extends javax.swing.JPanel {
         jPanel11 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        roundList = new bc.ui.swing.lists.StripeList();
-        roundData = new bc.ui.swing.useful.DataPanel();
+        testList = new bc.ui.swing.lists.StripeList();
+        testData = new bc.ui.swing.useful.DataPanel();
 
-        roundDataScroll.setBorder(null);
-        roundDataScroll.setViewportView(roundView);
+        testDataScroll.setBorder(null);
+        testDataScroll.setViewportView(testView);
 
         setOpaque(false);
         setLayout(new java.awt.BorderLayout());
@@ -161,7 +161,7 @@ public class StatusScreen extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel2.add(jLabel1, gridBagConstraints);
 
-        progressLabel.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        progressLabel.setFont(new java.awt.Font("Consolas", 1, 14));
         progressLabel.setForeground(new java.awt.Color(255, 255, 255));
         progressLabel.setText("Execution 0 of 16");
         progressLabel.setDoubleBuffered(true);
@@ -191,7 +191,7 @@ public class StatusScreen extends javax.swing.JPanel {
         jPanel11.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 3, 3));
 
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Executing Rounds");
+        jLabel4.setText("Executing Tests");
         jPanel11.add(jLabel4);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -203,25 +203,25 @@ public class StatusScreen extends javax.swing.JPanel {
         jPanel3.setBackground(new java.awt.Color(102, 102, 102));
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
-        roundList.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 3, new java.awt.Color(153, 153, 153)));
-        roundList.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
-        roundList.setMinimumSize(new java.awt.Dimension(200, 24));
-        roundList.setOddBackColor(new java.awt.Color(230, 230, 230));
-        roundList.setOddForeColor(new java.awt.Color(61, 61, 61));
-        roundList.setPreferredSize(new java.awt.Dimension(200, 194));
+        testList.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 3, new java.awt.Color(153, 153, 153)));
+        testList.setFont(new java.awt.Font("Consolas", 0, 14));
+        testList.setMinimumSize(new java.awt.Dimension(200, 24));
+        testList.setOddBackColor(new java.awt.Color(230, 230, 230));
+        testList.setOddForeColor(new java.awt.Color(61, 61, 61));
+        testList.setPreferredSize(new java.awt.Dimension(200, 194));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 1.0;
-        jPanel3.add(roundList, gridBagConstraints);
+        jPanel3.add(testList, gridBagConstraints);
 
-        roundData.setNoDataForeColor(new java.awt.Color(255, 255, 255));
-        roundData.setNoDataText("No Round Selected");
+        testData.setNoDataForeColor(new java.awt.Color(255, 255, 255));
+        testData.setNoDataText("No Test Selected");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        jPanel3.add(roundData, gridBagConstraints);
+        jPanel3.add(testData, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -241,9 +241,9 @@ public class StatusScreen extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel progressLabel;
-    private bc.ui.swing.useful.DataPanel roundData;
-    private javax.swing.JScrollPane roundDataScroll;
-    private bc.ui.swing.lists.StripeList roundList;
-    private bgu.dcr.az.dev.ui.RoundView roundView;
+    private bc.ui.swing.useful.DataPanel testData;
+    private javax.swing.JScrollPane testDataScroll;
+    private bc.ui.swing.lists.StripeList testList;
+    private bgu.dcr.az.dev.ui.TestView testView;
     // End of variables declaration//GEN-END:variables
 }

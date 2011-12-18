@@ -4,7 +4,7 @@
  */
 
 /*
- * RoundView.java
+ * TestView.java
  *
  * Created on 27/11/2011, 02:49:49
  */
@@ -14,11 +14,11 @@ package bgu.dcr.az.dev.ui;
 
 import bc.ui.swing.visuals.Visual;
 import bc.ui.swing.visuals.Visual.VisualGen;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.VariableMetadata;
 import bgu.dcr.az.impl.AlgorithmMetadata;
 import bgu.dcr.az.impl.DebugInfo;
-import bgu.dcr.az.impl.infra.AbstractRound;
+import bgu.dcr.az.impl.infra.AbstractTest;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,16 +26,16 @@ import java.util.List;
  *
  * @author bennyl
  */
-public class RoundView extends javax.swing.JPanel {
+public class TestView extends javax.swing.JPanel {
     private VisualGen varsGen;
     private List<DebugRequestListener> debugListeners = new LinkedList<DebugRequestListener>(); 
 
-    /** Creates new form RoundView */
-    public RoundView() {
+    /** Creates new form TestView */
+    public TestView() {
         initComponents();
         failurePan.setVisible(false);
         debugProblemButtonPan.setVisible(false);
-        roundVars.getList().setFixedCellHeight(16);
+        testVars.getList().setFixedCellHeight(16);
         pgenVars.getList().setFixedCellHeight(16);
         algos.getList().setFixedCellHeight(16);
         
@@ -53,12 +53,12 @@ public class RoundView extends javax.swing.JPanel {
         debugListeners.add(l);
     }
     
-    public void setModel(Round r) {
+    public void setModel(Test r) {
          
         
-        roundVars.setItems(Visual.adapt(r.provideExpectedVariables(),varsGen));
+        testVars.setItems(Visual.adapt(r.provideExpectedVariables(),varsGen));
         pgenVars.setItems(Visual.adapt(r.getProblemGenerator().provideExpectedVariables(), varsGen));
-        algos.setItems(Visual.adapt(((AbstractRound) r).getAlgorithms(), new VisualGen() {
+        algos.setItems(Visual.adapt(((AbstractTest) r).getAlgorithms(), new VisualGen() {
 
             @Override
             public Visual gen(Object it) {
@@ -86,7 +86,7 @@ public class RoundView extends javax.swing.JPanel {
         spacer = new org.jdesktop.swingx.JXLabel();
         jXLabel2 = new org.jdesktop.swingx.JXLabel();
         jPanel2 = new javax.swing.JPanel();
-        roundVars = new bc.ui.swing.lists.TransparentList();
+        testVars = new bc.ui.swing.lists.TransparentList();
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -132,9 +132,9 @@ public class RoundView extends javax.swing.JPanel {
         jPanel1.setPreferredSize(new java.awt.Dimension(200, 100));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setFont(new java.awt.Font("Consolas", 1, 12));
+        jLabel1.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Round Parameters");
+        jLabel1.setText("Test Parameters");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -148,7 +148,7 @@ public class RoundView extends javax.swing.JPanel {
         jPanel1.add(spacer, gridBagConstraints);
 
         jXLabel2.setForeground(new java.awt.Color(210, 233, 255));
-        jXLabel2.setText("the set of parameters controlling\nthe execution of the round");
+        jXLabel2.setText("the set of parameters controlling the execution of the test");
         jXLabel2.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         jXLabel2.setLineWrap(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -167,8 +167,8 @@ public class RoundView extends javax.swing.JPanel {
         jPanel2.setPreferredSize(new java.awt.Dimension(349, 100));
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        roundVars.setForeColor(new java.awt.Color(255, 255, 255));
-        jPanel2.add(roundVars, java.awt.BorderLayout.CENTER);
+        testVars.setForeColor(new java.awt.Color(255, 255, 255));
+        jPanel2.add(testVars, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -208,7 +208,7 @@ public class RoundView extends javax.swing.JPanel {
         jPanel5.add(spacer1, gridBagConstraints);
 
         jXLabel3.setForeground(new java.awt.Color(210, 233, 255));
-        jXLabel3.setText("the generator of the \nproblems in this round");
+        jXLabel3.setText("the generator of the  problems in this test");
         jXLabel3.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         jXLabel3.setLineWrap(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -269,7 +269,7 @@ public class RoundView extends javax.swing.JPanel {
         jPanel8.add(spacer2, gridBagConstraints);
 
         jXLabel4.setForeground(new java.awt.Color(210, 233, 255));
-        jXLabel4.setText("list of the algorithms that \nparticipating in this round");
+        jXLabel4.setText("list of the algorithms that  participating in this test");
         jXLabel4.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         jXLabel4.setLineWrap(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -442,12 +442,12 @@ public class RoundView extends javax.swing.JPanel {
     private org.jdesktop.swingx.JXLabel jXLabel4;
     private org.jdesktop.swingx.JXLabel jXLabel5;
     private bc.ui.swing.lists.TransparentList pgenVars;
-    private bc.ui.swing.lists.TransparentList roundVars;
     private org.jdesktop.swingx.JXLabel spacer;
     private org.jdesktop.swingx.JXLabel spacer1;
     private org.jdesktop.swingx.JXLabel spacer2;
     private org.jdesktop.swingx.JXLabel spacer3;
     private javax.swing.JPanel spacerPan;
+    private bc.ui.swing.lists.TransparentList testVars;
     // End of variables declaration//GEN-END:variables
 
 

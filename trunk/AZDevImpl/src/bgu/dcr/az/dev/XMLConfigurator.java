@@ -7,7 +7,7 @@ package bgu.dcr.az.dev;
 import bc.dsl.ReflectionDSL;
 import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.infra.Experiment;
-import bgu.dcr.az.api.infra.Round;
+import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.VariableMetadata;
 import bgu.dcr.az.impl.Registery;
 import bgu.dcr.az.impl.infra.ExperimentImpl;
@@ -105,7 +105,7 @@ public class XMLConfigurator {
 
     public static void main(String[] args) throws Exception {
         Experiment exp = read(new File("exp.xml"));
-        for (Round r : exp.getRounds()) {
+        for (Test r : exp.getTests()) {
             System.out.println(r.toString());
         }
     }

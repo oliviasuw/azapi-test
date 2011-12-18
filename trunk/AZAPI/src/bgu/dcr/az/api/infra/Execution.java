@@ -20,7 +20,7 @@ import java.util.List;
  */
 public interface Execution extends Process {
 
-    Round getRound();
+    Test getTest();
     
     void report(String to, Agent a, Object[] args);
     

@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 public class Assignment implements Serializable, DeepCopyable{
 
     private LinkedHashMap<Integer, Integer> assignment;
-    private transient double cachedCost = -1;
+    private transient int cachedCost = -1;
 
     /**
      * constracting new empty assignment
@@ -89,14 +89,14 @@ public class Assignment implements Serializable, DeepCopyable{
      * @param p 
      * @return the cost of this assignment
      */
-    public double calcCost(ImmutableProblem p) {
+    public int calcCost(ImmutableProblem p) {
         if (p instanceof Agent.AgentProblem) {
             if (cachedCost >= 0) {
                 return cachedCost;
             }
         }
 
-        double c = 0;
+        int c = 0;
         LinkedList<Entry<Integer, Integer>> past = new LinkedList<Entry<Integer, Integer>>();
         if (p.type() == ProblemType.ADCOP) {
             if (p instanceof Agent.AgentProblem) {
@@ -152,8 +152,8 @@ public class Assignment implements Serializable, DeepCopyable{
      * @return the cost that will be added to this assignment by assigning 
      * 		   var <- val in the problem p
      */
-    public double calcAddedCost(int var, int val, ImmutableProblem p) {
-        double c = 0;
+    public int calcAddedCost(int var, int val, ImmutableProblem p) {
+        int c = 0;
         c += p.getConstraintCost(var, val);
         
         int var2, val2;
@@ -170,8 +170,8 @@ public class Assignment implements Serializable, DeepCopyable{
      * @param p
      * @return the cost of the assignment without the given variable assignment
      */
-    public double calcCostWithout(int var, ImmutableProblem p){
-        double c = 0;
+    public int calcCostWithout(int var, ImmutableProblem p){
+        int c = 0;
         LinkedList<Entry<Integer, Integer>> past = new LinkedList<Entry<Integer, Integer>>();
 
         for (Entry<Integer, Integer> e : assignment.entrySet()) {
@@ -203,8 +203,8 @@ public class Assignment implements Serializable, DeepCopyable{
      */
     public int findMinimalCostValue(int var, Collection<Integer> domain, ImmutableProblem p) {
         boolean first = true;
-        double min = 0;
-        double c;
+        int min = 0;
+        int c;
         int minv = -1;
         for (Integer dval : domain) {
             c = calcAddedCost(var, dval, p);
@@ -233,8 +233,8 @@ public class Assignment implements Serializable, DeepCopyable{
      * @param p
      * @return 
      */
-    public int findFirstAssignmentUnderUB(double upperbound, int var, Collection<Integer> domain, ImmutableProblem p){
-        double cost = calcCost(p);
+    public int findFirstAssignmentUnderUB(int upperbound, int var, Collection<Integer> domain, ImmutableProblem p){
+        int cost = calcCost(p);
         if (cost >= upperbound) return -1;
         for (Integer d : domain) if (cost + calcAddedCost(var, d, p) < upperbound) return d;
         return -1;

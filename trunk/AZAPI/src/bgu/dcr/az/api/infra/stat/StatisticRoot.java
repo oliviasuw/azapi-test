@@ -12,20 +12,20 @@ import bgu.dcr.az.api.infra.stat.Statistic;
  */
 public class StatisticRoot extends Statistic {
 
-    private String roundName;
-    private int indexInRound;
+    private String testName;
+    private int indexInTest;
 
-    public StatisticRoot(String roundName, int indexInRound) {
-        this.roundName = roundName;
-        this.indexInRound = indexInRound;
+    public StatisticRoot(String testName, int indexInTest) {
+        this.testName = testName;
+        this.indexInTest = indexInTest;
     }
 
-    public String getRoundName() {
-        return roundName;
+    public String getTestName() {
+        return testName;
     }
 
-    public int getIndexInRound() {
-        return indexInRound;
+    public int getIndexInTest() {
+        return indexInTest;
     }
     
 }

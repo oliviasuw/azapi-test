@@ -13,7 +13,7 @@ import java.util.List;
  * @author bennyl
  */
 public class Constraint {
-    private double cost;
+    private int cost;
     int[] constraintedVarValPairs;
     
     /**
@@ -21,7 +21,7 @@ public class Constraint {
      * @param cost
      * @param constraintedVarValPairs
      */
-    public Constraint(double cost, int... constraintedVarValPairs){
+    public Constraint(int cost, int... constraintedVarValPairs){
         this.cost = cost;
         this.constraintedVarValPairs = constraintedVarValPairs;
     }
@@ -50,7 +50,7 @@ public class Constraint {
     /**
      * @return the cost of braking this constraint
      */
-    public double getCost() {
+    public int getCost() {
         return cost;
     }
     

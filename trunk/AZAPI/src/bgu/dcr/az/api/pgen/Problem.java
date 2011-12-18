@@ -23,7 +23,7 @@ public abstract class Problem implements Serializable, ImmutableProblem {
     protected HashMap<Integer, Set<Integer>> immutableNeighbores = new HashMap<Integer, Set<Integer>>();
 //    protected HashMap<Integer, Boolean> constraints = new HashMap<Integer, Boolean>();
     protected ProblemType type;
-    protected double maxCost = 0;
+    protected int maxCost = 0;
 
     @Override
     public String toString() {
@@ -230,8 +230,8 @@ public abstract class Problem implements Serializable, ImmutableProblem {
     }
 
     @Override
-    public double getConstraintCost(int var, int val, Assignment ass) {
-        double sum = 0;
+    public int getConstraintCost(int var, int val, Assignment ass) {
+        int sum = 0;
         for (Integer av : ass.assignedVariables()) {
             sum += getConstraintCost(var, val, av, ass.getAssignment(av));
         }
@@ -239,7 +239,7 @@ public abstract class Problem implements Serializable, ImmutableProblem {
         return sum;
     }
 
-    abstract public void setConstraintCost(int var1, int val1, int var2, int val2, double cost);
+    abstract public void setConstraintCost(int var1, int val1, int var2, int val2, int cost);
 
     public ImmutableSet<Integer> getDomain() {
         return domain;

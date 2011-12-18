@@ -7,21 +7,21 @@ package bgu.dcr.az.api.infra;
 import java.util.List;
 
 /**
- * expirement is executeable collection of predefined rounds 
+ * expirement is executeable collection of predefined tests 
  * the expirement responsible to configure its sub executions 
- * based on its loaded rounds and analyzed their statistics via the statistics analayzers defined in the round
+ * based on its loaded tests and analyzed their statistics via the statistics analayzers defined in the test
  * @author bennyl
  */
 public interface Experiment extends Configureable, Process {
 
-    void addRound(Round round);
+    void addTest(Test test);
 
     /**
      * @return the number of executions in this experiment
      */
     int getLength();
     
-    List<Round> getRounds();
+    List<Test> getTests();
     
     ExperimentResult getResult();
 
@@ -32,8 +32,8 @@ public interface Experiment extends Configureable, Process {
     public static class ExperimentResult {
 
         public final boolean succeded;
-        public final Round problematicRound;
-        public final Round.RoundResult badRoundResult;
+        public final Test problematicTest;
+        public final Test.TestResult badTestResult;
         public final boolean interupted;
 
         /**
@@ -41,20 +41,20 @@ public interface Experiment extends Configureable, Process {
          */
         public ExperimentResult(boolean interupted) {
             this.succeded = !interupted;
-            this.problematicRound = null;
-            this.badRoundResult = null;
+            this.problematicTest = null;
+            this.badTestResult = null;
             this.interupted = interupted;
         }
 
         /**
          * constract faild result
-         * @param problematicRound
-         * @param badRoundResult 
+         * @param problematicTest
+         * @param badTestResult 
          */
-        public ExperimentResult(Round problematicRound, Round.RoundResult badRoundResult) {
+        public ExperimentResult(Test problematicTest, Test.TestResult badTestResult) {
             this.succeded = false;
-            this.problematicRound = problematicRound;
-            this.badRoundResult = badRoundResult;
+            this.problematicTest = problematicTest;
+            this.badTestResult = badTestResult;
             this.interupted = false;
         }
 
@@ -66,7 +66,7 @@ public interface Experiment extends Configureable, Process {
                 sb.append(" succeded");
             } else if (!interupted) {
                 sb.append(" failed: ");
-                sb.append(badRoundResult.toString());
+                sb.append(badTestResult.toString());
             } else {
                 sb.append("interrupted");
             }
@@ -80,10 +80,10 @@ public interface Experiment extends Configureable, Process {
 
         void onExpirementEnded(Experiment source);
 
-        void onNewRoundStarted(Experiment source, Round round);
+        void onNewTestStarted(Experiment source, Test test);
 
-        void onNewExecutionStarted(Experiment source, Round round, Execution exec);
+        void onNewExecutionStarted(Experiment source, Test test, Execution exec);
 
-        void onExecutionEnded(Experiment source, Round round, Execution exec);
+        void onExecutionEnded(Experiment source, Test test, Execution exec);
     }
 }

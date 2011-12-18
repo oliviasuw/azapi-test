@@ -380,8 +380,8 @@ public abstract class Agent extends Agt0DSL {
      * @param a
      * @return 
      */
-    public double costOf(Assignment a) {
-        return (a == null ? Double.MAX_VALUE : a.calcCost(prob));
+    public int costOf(Assignment a) {
+        return (a == null ? Integer.MAX_VALUE : a.calcCost(prob));
     }
 
     /**
@@ -391,7 +391,7 @@ public abstract class Agent extends Agt0DSL {
      * @param val2
      * @return the cost of assigning var1<-val1 while var2=val2 in the current problem
      */
-    public double getConstraintCost(int var1, int val1, int var2, int val2) {
+    public int getConstraintCost(int var1, int val1, int var2, int val2) {
         return getProblem().getConstraintCost(var1, val1, var2, val2);
     }
 
@@ -400,7 +400,7 @@ public abstract class Agent extends Agt0DSL {
      * @param val1
      * @return the unary cost of assigning var1<-val1 in the current problem
      */
-    public double getConstraintCost(int var1, int val1) {
+    public int getConstraintCost(int var1, int val1) {
         return getProblem().getConstraintCost(var1, val1);
     }
 
@@ -643,13 +643,13 @@ public abstract class Agent extends Agt0DSL {
         }
 
         @Override
-        public double getConstraintCost(int var1, int val1) {
+        public int getConstraintCost(int var1, int val1) {
             cc++;
             return exec.getGlobalProblem().getConstraintCost(var1, val1);
         }
 
         @Override
-        public double getConstraintCost(int var1, int val1, int var2, int val2) {
+        public int getConstraintCost(int var1, int val1, int var2, int val2) {
             cc++;
             return exec.getGlobalProblem().getConstraintCost(var1, val1, var2, val2);
         }
@@ -660,7 +660,7 @@ public abstract class Agent extends Agt0DSL {
         }
 
         @Override
-        public double getConstraintCost(int var, int val, Assignment ass) {
+        public int getConstraintCost(int var, int val, Assignment ass) {
             cc++;
             return exec.getGlobalProblem().getConstraintCost(var, val, ass);
         }

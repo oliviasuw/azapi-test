@@ -26,7 +26,7 @@ public interface ImmutableProblem {
      * @param val2
      * @return the cost of assigning var1=val1 when var2=val2
      */
-    double getConstraintCost(int var1, int val1, int var2, int val2);
+    int getConstraintCost(int var1, int val1, int var2, int val2);
 
     /**
      *
@@ -34,7 +34,7 @@ public interface ImmutableProblem {
      * @param val1
      * @return the cost of assigning var1=val1
      */
-    double getConstraintCost(int var1, int val1);
+    int getConstraintCost(int var1, int val1);
 
     /**
      * @param var
@@ -42,7 +42,7 @@ public interface ImmutableProblem {
      * @param ass
      * @return the constraint cost of assigning var=val and X=V for each <X=V> in ass
      */
-    double getConstraintCost(int var, int val, Assignment ass);
+    int getConstraintCost(int var, int val, Assignment ass);
 
     /**
      * return the domain of the given variable

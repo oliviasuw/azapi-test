@@ -5,14 +5,14 @@
 package bgu.dcr.az.api.pgen;
 
 import bgu.dcr.az.api.ProblemType;
-import bgu.dcr.az.api.infra.Configureable;
+import bgu.dcr.az.api.infra.Configurable;
 import java.util.Random;
 
 /**
  *
  * @author bennyl
  */
-public interface ProblemGenerator extends Configureable{
+public interface ProblemGenerator extends Configurable{
     public static final String CONFIGURATION_ID = "pgen";
     
     void generate(Problem p, Random rand);

@@ -26,30 +26,29 @@ import java.util.Set;
  * a.	make the algorithm code much more complicated 
  * b.	imposes the use of a specially defined main because the algorithm can produce a solution / no-solution with lots of ways
  * Entry point: the function start() (or init() in the abstract agent)
- * Exit point: the exit point is not accessed directly instead you can call one of the following: 
- * by calling one of the finish functions or by calling panic
- * @author bennyl
+ * Exit point: the exit point is not accessed directly instead you can call one of the finish functions or call panic
+ * 
  */
 public abstract class Agent extends Agt0DSL {
 
     /**
-     * will output the logs to the stdout
+     * will output the logs to stdout
      */
     private static final boolean USE_DEBUG_LOGS = false;
     /**
-     * the name of the statistic that collect the number of non concurrent constraing checks
+     * the name of the statistic which collects the number of non concurrent constraint checks
      */
-    public static final String NCCC_STATISTIC = "Number Of Concurent Constraint Checks";
+    public static final String NCCC_STATISTIC = "Number Of Concurrent Constraint Checks";
     /**
-     * the name of the statistic that collect the number of non concurrent steps of computation
+     * the name of the statistic which collects the number of non concurrent steps of computation
      */
-    public static final String NCSC_STATISTIC = "Number Of Concurent Steps Of Computation";
+    public static final String NCSC_STATISTIC = "Number Of Concurrent Steps Of Computation";
     /**
-     * the name of the statistic that collect the number of constraint checkes made by agent.
+     * the name of the statistic which collects the number of constraint checks made by agent
      */
     public static final String CC_PER_AGENT_STATISTIC = "Constraint Checks Per Agent";
     /**
-     * the name of the statistics that collect number of messages that this agent received during work
+     * the name of the statistics which collects number of messages that this agent have received during work
      */
     public static final String MESSAGES_RECEIVED_PER_AGENT_STATISTIC = "Messages Received Per Agent";
     /**
@@ -59,8 +58,8 @@ public abstract class Agent extends Agt0DSL {
     public static final String SYS_TERMINATION_MESSAGE = "__TERMINATE__";
     /**
      * the name for the system tick message 
-     * the system tick message is getting sent only by the local search mailer when the system clock performed a 'tick'
-     * its what wakes up the agent even if he dosent have any messages - in order for him to retick the clock
+     * the system tick message is getting sent only by the local search mailer when the system clock performs a 'tick'
+     * it wakes up the agent even if he doesn't have any messages - in order for him to re-tick the clock
      */
     public static final String SYS_TICK_MESSAGE = "__TICK__";
     private int id; //The Agent ID
@@ -68,9 +67,9 @@ public abstract class Agent extends Agt0DSL {
     private MessageQueue mailbox; //This Agent Mailbox
     private ImmutableProblem prob; // The Agent Local Problem
     private boolean finished = false; //The Status of the current Agent - TODO: TRANSFORM INTO A STATUS ENUM SO WE CAN BE ABLE TO QUERY THE AGENT ABOUT IT CURRENT STATUS
-    private Message currentMessage = null; //The Current Message (The Last Message That was taken from the mailbox
+    private Message currentMessage = null; //The Current Message (The Last Message That was taken from the mailbox)
     private PlatformOps pops; //Hidden Platform Operation 
-    private String mailGroupKey = getClass().getName(); // The Mail Group Key  - when sending mail the mail will get only to the relevant group
+    private String mailGroupKey = getClass().getName(); // The Mail Group Key  - when sending mail it will be recieved only by the relevant group
     /*
      * S T A T I S T I C S
      */
@@ -80,11 +79,11 @@ public abstract class Agent extends Agt0DSL {
      */
     protected List<Hooks.BeforeMessageSentHook> beforeMessageSentHooks;
     /**
-     * collection of hooks that will get called before message processing on this agent.
+     * collection of hooks that will get called before message processing on this agent
      */
     protected List<Hooks.BeforeMessageProcessingHook> beforeMessageProcessingHooks;
     /**
-     * hooks that will be called before agent calling finish
+     * collection of hooks that will be called before the agent calls finish
      */
     protected List<Hooks.BeforeCallingFinishHook> beforeCallingFinishHooks;
 
@@ -116,9 +115,9 @@ public abstract class Agent extends Agt0DSL {
     /**
      * creates a message object from the given parameters 
      * and attach some metadata to it.. 
-     * you can override this method to add some more metadata of your own each message that your agent sends
+     * you can override this method to add some more metadata of your own on each message that your agent sends
      * or even modify the message being sent
-     * just use super.createMessage(...) to retrive a new message and then modify it as you please.
+     * just use super.createMessage(...) to retrieve a new message and then modify it as you please
      * @param name
      * @param args
      * @return 
@@ -142,7 +141,7 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * override this function in the case you want to make some action every time before sending a message
+     * override this function in case you want to make some action every time before sending a message
      * this is a great place to write logs, attach timestamps to the message etc.
      * @param m
      */
@@ -151,8 +150,8 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * the agent is an message driven creature - each time the agent works it is because he 
-     * received some message - this is the message that the agent currently processing = the last message taken from the mailbox
+     * the agent is an message driven creature - he works only if he 
+     * received any message - this is the message that the agent currently processing = the last message taken from the mailbox
      * @return 
      */
     public Message getCurrentMessage() {
@@ -160,7 +159,7 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * hookin to this agent class in the given hook point
+     * hook-in to this agent class in the given hook point
      * hooks are mostly used for "automatic services/tools" like timestamp etc.
      * @param hook 
      */
@@ -169,7 +168,7 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * hookin to this agent class in the given hook point
+     * hook-in to this agent class in the given hook point
      * hooks are mostly used for "automatic services/tools" like timestamp etc.
      * @param hook 
      */
@@ -178,7 +177,7 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * hook to be callback before agent calling finish
+     * hook to be callback before agent calls finish
      * @param hook
      */
     public void hookIn(Hooks.BeforeCallingFinishHook hook) {
@@ -186,17 +185,17 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * @return the problem currently working on
-     * each agents has its own unique instance of the problem (based on the global problem that was given to the simulator)
-     * and he managed it differently - so if you are building tools that have to be sent with the mailer to other agent dont 
-     * include the agents problem in them as field.
+     * @return the problem currently being worked on
+     * each agent has its own unique instance of the problem (based on the global problem that was given to the simulator)
+     * and he manages it differently - so if you are building tools that have to be sent with the mailer to other agents don't 
+     * include the agent's problem in them as a field.
      */
     protected ImmutableProblem getProblem() {
         return prob;
     }
 
     /**
-     * @return the id of this agent in simple algorithms this ID is the variable that the agent "handling"
+     * @return the id of this agent. In simple algorithms this ID is the variable that the agent is "handling"
      */
     public int getId() {
         return id;
@@ -225,7 +224,7 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * waits for new messages to arraive
+     * waits for new messages to arrive
      * @throws InterruptedException
      */
     public void waitForNewMessages() throws InterruptedException {
@@ -262,7 +261,7 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * log somthing inside this agent log
+     * log something inside this agent log
      * @param what 
      */
     public void log(String what) {
@@ -274,7 +273,7 @@ public abstract class Agent extends Agt0DSL {
 
     /**
      * stop execution - returning the given assignment, will cause a TERMINATION message to be sent
-     * to all other agents, ans can be null and that will mean that there is no solution
+     * to all other agents, if ans is null there is no solution
      * @param ans
      */
     protected void finish(Assignment ans) {
@@ -285,15 +284,15 @@ public abstract class Agent extends Agt0DSL {
 
     /**
      * stop the execution (send TERMINATION to all agents) without solution - this method should be used in csp problem 
-     * as it make sense there, it is the same as calling finish(null)
+     * as it make sense there. This is the same as calling finish(null)
      */
     protected void finishWithNoSolution() {
         finish(null);
     }
 
     /**
-     * will collect all the partial assignments that got submited (from all the agents) into an assignment 'a' and 
-     * then will act as if you called to finish(a) :- see finish(Assignment) for more details.
+     * will collect all the partial assignments that got submitted (from all the agents) into an assignment 'a' and 
+     * then will act as if you called finish(a) :- see finish(Assignment) for more details.
      */
     protected void finishWithAccumulationOfSubmitedPartialAssignments() {
         finish(pops.getExecution().getPartialResult().getAssignment());
@@ -322,7 +321,7 @@ public abstract class Agent extends Agt0DSL {
      * the agent can submit its assignment
      * so that when the function finishWithAccumulationOfSubmitedPartialAssignments will get called 
      * this will be the assignment to be accumulated
-     * - if you want to reassign a new value you dont have to call unSubmitCurrentAssignment, you can just call this function again with the new value
+     * - if you want to re-assign a new value you don't have to call unSubmitCurrentAssignment, you can just call this function again with the new value
      * @param currentAssignment the assignment to submit
      */
     protected void submitCurrentAssignment(int currentAssignment) {
@@ -341,7 +340,7 @@ public abstract class Agent extends Agt0DSL {
 
     /**
      * @return the last submitted assignment
-     * will throw InvalideValueException if no assignment is submitted
+     * will throw InvalideValueException if no assignment was submitted
      */
     protected Integer getSubmitedCurrentAssignment() {
         final Assignment finalAssignment = exec.getPartialResult().getAssignment();
@@ -359,8 +358,8 @@ public abstract class Agent extends Agt0DSL {
 
     /**
      * @return true if this is the first agent
-     * current implementation only check if this agent id is 0 but later implementations can use 
-     * variable arrenger that can change the first agent id
+     * current implementation only checks if this agent's id is 0 but later implementations can use 
+     * variable arranger that can change the first agent's id
      */
     public boolean isFirstAgent() {
         return this.getId() == 0;
@@ -368,15 +367,15 @@ public abstract class Agent extends Agt0DSL {
 
     /**
      * @return true if this is the last agent
-     * current implementation just checks if this agent id +1 is num_of_vars  but later implementations can use 
-     * variable arrenger that can change the last agent id
+     * current implementation just checks if this agent's id +1 is num_of_vars  but later implementations can use 
+     * variable arranger that can change the last agent's id
      */
     public boolean isLastAgent() {
         return this.getId() + 1 == getNumberOfVariables();
     }
 
     /**
-     * same as calling a.calcCost(getProblem()); accepts - if a is null return infinity
+     * same as calling a.calcCost(getProblem()); accept - if a is null returns infinity
      * @param a
      * @return 
      */
@@ -420,7 +419,7 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * @return this agents full domain - as immutable set - if you need to change your domain copy this set and then 
+     * @return this agents full domain - as immutable set - if you need to change your domain- copy this set and then 
      * change your copy : HashSet<Integer> currentDomain = new HashSet<Integer>(getDomain());
      */
     public ImmutableSet<Integer> getDomain() {
@@ -446,14 +445,14 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * @return true if this agent call one of the finsh methods (or panic.. )
+     * @return true if this agent called one of the finish methods (or panic.. )
      */
     public boolean isFinished() {
         return finished;
     }
 
     /**
-     * send the given message+arguments to all other agents excepts the sender (read the method send javadoc for
+     * send the given message+arguments to all other agents except the sender (read the method send javadoc for
      * more details about sending the message)
      * @param msg
      * @param args
@@ -463,7 +462,7 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * broadcast a new message - preffer using broadcast(String msg, Object... args)
+     * broadcast a new message - prefer using broadcast(String msg, Object... args)
      * @param msg
      */
     public void broadcast(Message msg) {
@@ -474,7 +473,7 @@ public abstract class Agent extends Agt0DSL {
     /**
      * sends a new message 
      * the message should have a name and any number of arguments
-     * the message will be sent received by an agent in the method that 
+     * the message which will be sent here will be received by an agent in the method that 
      * defines @WhenReceived with the name of the message (case sensitive!)
      * and the arguments will be inserted to the parameters of that method
      * 
@@ -499,21 +498,21 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * a callback that is called when idle detected - this is the place to finish the algorithm or revive from idle
+     * a callback which is called when idle detected - this is the place to finish the algorithm or revive from idle
      */
     public void onIdleDetected() {
         throw new UnsupportedOperationException("if you are using IdleDetected feature you must implements Agent.onIdleDetected method");
     }
 
     /**
-     * a callback that is called only when running in synchronized mode just before the next tick (when the agent finish handling all its messages)
+     * a callback which is called (only when running in synchronized mode) just before the next tick (when the agent finish handling all its messages)
      */
     public void onMailBoxEmpty() {
 //        throw new UnsupportedOperationException("if you are running a Synchronized Search you must implements Agent.onMailBoxEmpty method");
     }
 
     /**
-     * this function called when a SYS_TERMINATION Message Arrived -> it just calls finish on the agent, 
+     * this function is called when a SYS_TERMINATION Message Arrived -> it just calls finish on the agent, 
      * you can override it to make your own termination handling.
      */
     @WhenReceived(Agent.SYS_TERMINATION_MESSAGE)
@@ -522,7 +521,7 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * Note: the concept 'system time' is only exists in synchronized execution 
+     * Note: the concept 'system time' only exists in synchronized execution 
      * @return the number of ticks passed since the algorithm start (first tick is 0), you can read about the definition of tick
      * in agent zero manual
      */
@@ -546,19 +545,18 @@ public abstract class Agent extends Agt0DSL {
     /**
      * this class contains all the "hidden but public" methods,
      * because the user should extend the agent class all the "platform" operations 
-     * can be called mistekanly by him, 
-     * instead of making those operations private and then access them via reflection - what will create a decrease in the
-     * performance - we just hiding them in this inner class, one object of this class are held by each agent 
-     * and its private, in order for the platform to obtain this instance it uses another inner class 'PlatformOperationsExtractor'
-     * this class contains a static method that extract the private field - because it also defined inside the agent it not have to use reflection to do so.
+     * can be called mistakenly by him, 
+     * instead of making those operations private and then access them via reflection - which will create a decrease in the
+     * performance - we just hide them in this inner class. One private object of this class are held by each agent.
+     * In order for the platform to obtain this instance it uses another inner class 'PlatformOperationsExtractor'
+     * this class contains a static method that extracts the private field - because it's also defined inside the agent it doesn't have to use reflection to do so.
      */
     public class PlatformOps {
 
         private int numberOfSetIdCalls = 0;
 
         /**
-         * attach an execution to this agent - this execution need to already contains global problem 
-         * as this is the step that it being taken
+         * attach an execution to this agent - this execution needs to already contains global problem 
          * @param exec
          */
         public void setExecution(Execution exec) {

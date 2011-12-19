@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- * test is a configureable execution - it is part of the expirement and it define 
+ * test is a configurable execution - it is part of the expirement and it define 
  * the execution of the collection of problems + algorithms it contains
  * the test also contains the means to analyze the statistics that gathered during it execution
  * @author bennyl
@@ -19,7 +19,7 @@ import java.io.StringWriter;
  * TODO: MISSING FUNCTIONS FOR ADD AND REMOVE ALGORITHM METADATA (NEDD TO API THE ALGORITHM METADATA)
  * 
  */
-public interface Test extends Configureable, Process {
+public interface Test extends Configurable, Process {
 
     void addListener(TestListener l);
     

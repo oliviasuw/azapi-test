@@ -13,7 +13,7 @@ import bgu.dcr.az.impl.Registery;
 import bgu.dcr.az.impl.infra.ExperimentImpl;
 import java.io.File;
 import static bc.dsl.XNavDSL.*;
-import bgu.dcr.az.api.infra.Configureable;
+import bgu.dcr.az.api.infra.Configurable;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import nu.xom.ParsingException;
  */
 public class XMLConfigurator {
 
-    public static void write(Configureable conf, PrintWriter pw) {
+    public static void write(Configurable conf, PrintWriter pw) {
         String confName = Registery.UNIT.getEntityName(conf);
         Element e = new Element(confName);
         write(conf, e);
@@ -39,12 +39,12 @@ public class XMLConfigurator {
         pw.append(e.toXML());
     }
 
-    private static void write(Configureable conf, Element root) {
+    private static void write(Configurable conf, Element root) {
         for (VariableMetadata v : VariableMetadata.scan(conf)) {
             root.addAttribute(new Attribute(v.getName(), v.getCurrentValue().toString()));
         }
         
-        for (Configureable c : conf.getConfiguredChilds()){
+        for (Configurable c : conf.getConfiguredChilds()){
             String confName = Registery.UNIT.getEntityName(c);
             Element e = new Element(confName);
             write(c, e);
@@ -67,8 +67,8 @@ public class XMLConfigurator {
         }
     }
 
-    private static void configure(Configureable c, Element root) throws InstantiationException, IllegalAccessException, InvalidValueException {
-        Configureable cc;
+    private static void configure(Configurable c, Element root) throws InstantiationException, IllegalAccessException, InvalidValueException {
+        Configurable cc;
         for (Element child : childs(root)) {
             String name = child.getLocalName();
             Class cls = Registery.UNIT.getXMLEntity(name);
@@ -77,7 +77,7 @@ public class XMLConfigurator {
             } else if (!c.canAccept(cls)) {
                 throw new InvalidValueException("element '" + root.getLocalName() + "' cannot contain child '" + name + "'");
             } else {
-                cc = (Configureable) cls.newInstance();
+                cc = (Configurable) cls.newInstance();
                 configure(cc, child);
                 c.addSubConfiguration(cc);
             }

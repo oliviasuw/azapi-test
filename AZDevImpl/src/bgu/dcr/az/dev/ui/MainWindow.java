@@ -338,18 +338,18 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
 
         if (source.getResult().succeded) {
             donePanel.setVisible(true);
-            MessageDialog.showSuccess("the execution completed successfully", "there ware no errors\n"
-                    + "if you define correctness testers thay didnt found any wrong solution.");
+            MessageDialog.showSuccess("The execution completed successfully", "There were no errors\n"
+                    + "If you've defined correctness testers they didn't find any wrong solutions.");
         } else {
             errorPanel.setVisible(true);
             switch (source.getResult().badTestResult.finishStatus) {
                 case CRUSH:
-                    ExceptionDialog.showRecoverable("the execution crushed", "you should take a look at the logs\n"
+                    ExceptionDialog.showRecoverable("The execution crushed", "You should take a look at the logs,\n"
                             + "check the stack trace using the advance button\n"
                             + "or start a debug session", source.getResult().badTestResult.crushReason);
                     break;
                 case WRONG_RESULT:
-                    MessageDialog.showFail("the execution completed with errors", "the correctness tester found wrong results provided by the algorithm");
+                    MessageDialog.showFail("The execution completed with errors", "The correctness tester found wrong results provided by the algorithm");
                     break;
             }
         }

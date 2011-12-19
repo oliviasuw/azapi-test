@@ -15,7 +15,7 @@ import bgu.dcr.az.api.infra.Execution;
  *
  * @author bennyl
  */
-public abstract class NesteableTool {
+public abstract class NestableTool {
     
     public ContinuationMediator calculate(Agent callingAgent){
         ContinuationMediator ret = new ContinuationMediator();

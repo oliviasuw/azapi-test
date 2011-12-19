@@ -10,7 +10,7 @@ import bgu.dcr.az.api.tools.Assignment;
  *
  * @author bennyl
  */
-public interface CorrectnessTester extends Configureable{
+public interface CorrectnessTester extends Configurable{
     
     TestedResult test(Execution exec, ExecutionResult result);
     

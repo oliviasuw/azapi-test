@@ -6,7 +6,7 @@ package bgu.dcr.az.impl.infra;
 
 import bc.dsl.JavaDSL;
 import bgu.dcr.az.api.exp.InvalidValueException;
-import bgu.dcr.az.api.infra.Configureable;
+import bgu.dcr.az.api.infra.Configurable;
 import bgu.dcr.az.api.infra.VariableMetadata;
 import java.util.Collections;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.Map;
  *
  * @author bennyl
  */
-public abstract class AbstractConfigureable implements Configureable{
+public abstract class AbstractConfigurable implements Configurable{
 
     @Override
     public VariableMetadata[] provideExpectedVariables() {
@@ -24,24 +24,24 @@ public abstract class AbstractConfigureable implements Configureable{
     }
 
     @Override
-    public List<Class<? extends Configureable>> provideExpectedSubConfigurations() {
+    public List<Class<? extends Configurable>> provideExpectedSubConfigurations() {
         return Collections.emptyList();
     }
 
     @Override
-    public List<Configureable> getConfiguredChilds() {
+    public List<Configurable> getConfiguredChilds() {
         return Collections.emptyList();
     }
     
     
 
     @Override
-    public boolean canAccept(Class<? extends Configureable> cls) {
+    public boolean canAccept(Class<? extends Configurable> cls) {
         return false;
     }
 
     @Override
-    public void addSubConfiguration(Configureable sub) throws InvalidValueException {
+    public void addSubConfiguration(Configurable sub) throws InvalidValueException {
         throw new InvalidValueException("no expected sub configurations");
     }
 

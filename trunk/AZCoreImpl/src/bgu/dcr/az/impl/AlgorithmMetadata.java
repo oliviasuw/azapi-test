@@ -9,9 +9,9 @@ import bgu.dcr.az.api.SearchType;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.exp.InvalidValueException;
-import bgu.dcr.az.api.infra.Configureable;
+import bgu.dcr.az.api.infra.Configurable;
 import bgu.dcr.az.impl.Registery;
-import bgu.dcr.az.impl.infra.AbstractConfigureable;
+import bgu.dcr.az.impl.infra.AbstractConfigurable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.Map;
  * @author bennyl
  */
 @Register(name = "algorithm", display="Algorithm")
-public class AlgorithmMetadata extends AbstractConfigureable {
+public class AlgorithmMetadata extends AbstractConfigurable {
 
     @Variable(name = "name", description = "the name of the algorithm")
     private String name; //the algorithm name
@@ -104,19 +104,19 @@ public class AlgorithmMetadata extends AbstractConfigureable {
     }
 
     @Override
-    public List<Class<? extends Configureable>> provideExpectedSubConfigurations() {
-        List<Class<? extends Configureable>> ret = new LinkedList<Class<? extends Configureable>>();
+    public List<Class<? extends Configurable>> provideExpectedSubConfigurations() {
+        List<Class<? extends Configurable>> ret = new LinkedList<Class<? extends Configurable>>();
         ret.add(VarAssign.class);
         return ret;
     }
 
     @Override
-    public boolean canAccept(Class<? extends Configureable> cls) {
+    public boolean canAccept(Class<? extends Configurable> cls) {
         return cls == VarAssign.class;
     }
 
     @Override
-    public void addSubConfiguration(Configureable sub) throws InvalidValueException {
+    public void addSubConfiguration(Configurable sub) throws InvalidValueException {
         if (canAccept(sub.getClass())) {
             VarAssign va = (VarAssign) sub;
             agentConfiguration.put(va.varName, va.value);

@@ -7,13 +7,13 @@ package bgu.dcr.az.impl.pgen;
 import bgu.dcr.az.api.DeepCopyable;
 import bgu.dcr.az.api.infra.VariableMetadata;
 import bgu.dcr.az.api.pgen.ProblemGenerator;
-import bgu.dcr.az.impl.infra.AbstractConfigureable;
+import bgu.dcr.az.impl.infra.AbstractConfigurable;
 
 /**
  *
  * @author bennyl
  */
-public abstract class AbstractProblemGenerator extends AbstractConfigureable implements ProblemGenerator{
+public abstract class AbstractProblemGenerator extends AbstractConfigurable implements ProblemGenerator{
 
     
     @Override

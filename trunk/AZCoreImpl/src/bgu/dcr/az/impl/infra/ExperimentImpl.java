@@ -6,7 +6,7 @@ package bgu.dcr.az.impl.infra;
 
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.exp.InvalidValueException;
-import bgu.dcr.az.api.infra.Configureable;
+import bgu.dcr.az.api.infra.Configurable;
 import bgu.dcr.az.impl.DebugInfo;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.Test.TestResult;
@@ -93,8 +93,8 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
     }
 
     @Override
-    public List<Configureable> getConfiguredChilds() {
-        LinkedList<Configureable> ret = new LinkedList<Configureable>(tests);
+    public List<Configurable> getConfiguredChilds() {
+        LinkedList<Configurable> ret = new LinkedList<Configurable>(tests);
         if (di != null) {
             ret.add(di);
         } else if (getResult() != null && !getResult().succeded) {
@@ -143,16 +143,16 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
     }
 
     @Override
-    public List<Class<? extends Configureable>> provideExpectedSubConfigurations() {
-        Class<? extends Configureable> ret = Test.class;
-        LinkedList<Class<? extends Configureable>> ll = new LinkedList<Class<? extends Configureable>>();
+    public List<Class<? extends Configurable>> provideExpectedSubConfigurations() {
+        Class<? extends Configurable> ret = Test.class;
+        LinkedList<Class<? extends Configurable>> ll = new LinkedList<Class<? extends Configurable>>();
         ll.add(ret);
         ll.add(DebugInfo.class);
         return ll;
     }
 
     @Override
-    public boolean canAccept(Class<? extends Configureable> cls) {
+    public boolean canAccept(Class<? extends Configurable> cls) {
         if (DebugInfo.class.isAssignableFrom(cls)) {
             return di == null;
         }
@@ -160,7 +160,7 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
     }
 
     @Override
-    public void addSubConfiguration(Configureable sub) throws InvalidValueException {
+    public void addSubConfiguration(Configurable sub) throws InvalidValueException {
         if (!canAccept(sub.getClass())) {
             throw new InvalidValueException("only except tests");
         } else if (sub instanceof Test) {

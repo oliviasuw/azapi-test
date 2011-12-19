@@ -8,7 +8,7 @@ import java.util.Set;
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.agt.SimpleAgent;
 import bgu.dcr.az.api.ano.WhenReceived;
-import bgu.dcr.az.api.tools.NesteableTool;
+import bgu.dcr.az.api.tools.NestableTool;
 import bgu.dcr.az.api.tools.PsaudoTree;
 import bgu.dcr.az.api.tools.RootSelectionAlgorithm;
 import java.util.HashSet;
@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author bennyl
  */
-public class DFSPsaudoTree extends NesteableTool implements PsaudoTree {
+public class DFSPsaudoTree extends NestableTool implements PsaudoTree {
 
     private static final int COLOR_BLACK = 0;
     private static final int COLOR_WHITE = 1;

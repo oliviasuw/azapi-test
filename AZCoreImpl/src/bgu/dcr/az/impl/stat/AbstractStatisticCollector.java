@@ -9,13 +9,13 @@ import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.stat.DBRecord;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
 import bgu.dcr.az.impl.db.DatabaseUnit;
-import bgu.dcr.az.impl.infra.AbstractConfigureable;
+import bgu.dcr.az.impl.infra.AbstractConfigurable;
 
 /**
  *
  * @author bennyl
  */
-public abstract class AbstractStatisticCollector<T extends DBRecord> extends AbstractConfigureable implements StatisticCollector<T> {
+public abstract class AbstractStatisticCollector<T extends DBRecord> extends AbstractConfigurable implements StatisticCollector<T> {
 
     Test test;
 

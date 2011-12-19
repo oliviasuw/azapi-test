@@ -10,7 +10,7 @@ import bgu.dcr.az.api.infra.CorrectnessTester;
 import bgu.dcr.az.impl.AlgorithmMetadata;
 import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.exp.InvalidValueException;
-import bgu.dcr.az.api.infra.Configureable;
+import bgu.dcr.az.api.infra.Configurable;
 import bgu.dcr.az.api.infra.CorrectnessTester.TestedResult;
 import bgu.dcr.az.impl.DebugInfo;
 import bgu.dcr.az.api.infra.Execution;
@@ -83,8 +83,8 @@ public abstract class AbstractTest extends AbstractProcess implements Test {
     }
 
     @Override
-    public List<Configureable> getConfiguredChilds() {
-        LinkedList<Configureable> ret = new LinkedList<Configureable>();
+    public List<Configurable> getConfiguredChilds() {
+        LinkedList<Configurable> ret = new LinkedList<Configurable>();
         ret.addAll(collectors);
         ret.addAll(algorithms);
         if (pgen != null) {
@@ -300,7 +300,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test {
     }
 
     @Override
-    public boolean canAccept(Class<? extends Configureable> cls) {
+    public boolean canAccept(Class<? extends Configurable> cls) {
         if (ProblemGenerator.class.isAssignableFrom(cls)) {
             return pgen == null;
         } else if (StatisticCollector.class.isAssignableFrom(cls)) {
@@ -315,8 +315,8 @@ public abstract class AbstractTest extends AbstractProcess implements Test {
     }
 
     @Override
-    public List<Class<? extends Configureable>> provideExpectedSubConfigurations() {
-        LinkedList<Class<? extends Configureable>> ret = new LinkedList<Class<? extends Configureable>>();
+    public List<Class<? extends Configurable>> provideExpectedSubConfigurations() {
+        LinkedList<Class<? extends Configurable>> ret = new LinkedList<Class<? extends Configurable>>();
         ret.add(ProblemGenerator.class);
         ret.add(StatisticCollector.class);
         ret.add(AlgorithmMetadata.class);
@@ -325,7 +325,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test {
     }
 
     @Override
-    public void addSubConfiguration(Configureable sub) throws InvalidValueException {
+    public void addSubConfiguration(Configurable sub) throws InvalidValueException {
         if (canAccept(sub.getClass())) {
             if (sub instanceof ProblemGenerator) {
                 pgen = (ProblemGenerator) sub;

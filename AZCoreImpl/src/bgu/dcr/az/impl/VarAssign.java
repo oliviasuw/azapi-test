@@ -6,14 +6,14 @@ package bgu.dcr.az.impl;
 
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
-import bgu.dcr.az.impl.infra.AbstractConfigureable;
+import bgu.dcr.az.impl.infra.AbstractConfigurable;
 
 /**
  *
  * @author bennyl
  */
 @Register(name = "assign", display="Variable Assignment")
-public class VarAssign extends AbstractConfigureable {
+public class VarAssign extends AbstractConfigurable {
 
     @Variable(name = "var", description = "the variable name")
     String varName;

@@ -86,7 +86,7 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
 
     @Override
     public String getName() {
-        return "Number Of Concurent Steps Of Computation";
+        return "Number Of Concurrent Steps Of Computation";
     }
     
     public static class NCSCRecord extends DBRecord{

@@ -7,8 +7,8 @@ package bgu.dcr.az.impl;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.exp.InvalidValueException;
-import bgu.dcr.az.api.infra.Configureable;
-import bgu.dcr.az.impl.infra.AbstractConfigureable;
+import bgu.dcr.az.api.infra.Configurable;
+import bgu.dcr.az.impl.infra.AbstractConfigurable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.List;
  * @author bennyl
  */
 @Register(name = "debug-info", display="Debugging Information", visible=false)
-public class DebugInfo extends AbstractConfigureable {
+public class DebugInfo extends AbstractConfigurable {
     @Variable(name="test-name", description="failing test name")
     String testName = "";
     @Variable(name="algorithm-name", description="failing algorithm name")
@@ -55,22 +55,22 @@ public class DebugInfo extends AbstractConfigureable {
     }
 
     @Override
-    public List<Class<? extends Configureable>> provideExpectedSubConfigurations() {
-        return Arrays.<Class<? extends Configureable>>asList(VarAssign.class);
+    public List<Class<? extends Configurable>> provideExpectedSubConfigurations() {
+        return Arrays.<Class<? extends Configurable>>asList(VarAssign.class);
     }
 
     @Override
-    public boolean canAccept(Class<? extends Configureable> cls) {
+    public boolean canAccept(Class<? extends Configurable> cls) {
         return VarAssign.class.isAssignableFrom(cls);
     }
 
     @Override
-    public List<Configureable> getConfiguredChilds() {
-        return new LinkedList<Configureable>(pgenVars);
+    public List<Configurable> getConfiguredChilds() {
+        return new LinkedList<Configurable>(pgenVars);
     }
 
     @Override
-    public void addSubConfiguration(Configureable sub) throws InvalidValueException {
+    public void addSubConfiguration(Configurable sub) throws InvalidValueException {
         if (canAccept(sub.getClass())){
             pgenVars.add((VarAssign)sub);
         }else {

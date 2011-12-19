@@ -41,7 +41,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
           <SubComponents>
-            <Component class="bc.ui.swing.tables.ScrolleableStripeTable" name="resultList">
+            <Component class="bc.ui.swing.tables.ScrollableStripeTable" name="resultList">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="ff" type="rgb"/>

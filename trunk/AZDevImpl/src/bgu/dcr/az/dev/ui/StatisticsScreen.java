@@ -135,7 +135,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         resultsPan = new javax.swing.JSplitPane();
         chartResultPan = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
-        resultList = new bc.ui.swing.tables.ScrolleableStripeTable();
+        resultList = new bc.ui.swing.tables.ScrollableStripeTable();
         exportToCSVButton = new javax.swing.JPanel();
         jXHyperlink2 = new org.jdesktop.swingx.JXHyperlink();
         varscrolls = new javax.swing.JScrollPane();
@@ -487,7 +487,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
     private org.jdesktop.swingx.JXHyperlink jXHyperlink1;
     private org.jdesktop.swingx.JXHyperlink jXHyperlink2;
     private bc.ui.swing.useful.DataPanel resultDataPan;
-    private bc.ui.swing.tables.ScrolleableStripeTable resultList;
+    private bc.ui.swing.tables.ScrollableStripeTable resultList;
     private javax.swing.JSplitPane resultsPan;
     private javax.swing.JScrollPane statScroll;
     private javax.swing.JScrollPane testScroll;

@@ -4,7 +4,7 @@
  */
 
 /*
- * ScrolleableStripeTable.java
+ * ScrollableStripeTable.java
  *
  * Created on 27/11/2011, 22:58:04
  */
@@ -25,12 +25,12 @@ import javax.swing.table.TableModel;
  *
  * @author bennyl
  */
-public class ScrolleableStripeTable extends javax.swing.JPanel {
+public class ScrollableStripeTable extends javax.swing.JPanel {
 
     private static final StripeTableHeader HEADER_RENDERER = new StripeTableHeader();
 
-    /** Creates new form ScrolleableStripeTable */
-    public ScrolleableStripeTable() {
+    /** Creates new form ScrollableStripeTable */
+    public ScrollableStripeTable() {
         initComponents();
         addColumnListener();
         TableModel model = table.getModel();
@@ -117,7 +117,7 @@ public class ScrolleableStripeTable extends javax.swing.JPanel {
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setContentPane(new ScrolleableStripeTable());
+        frame.setContentPane(new ScrollableStripeTable());
         frame.pack();
         frame.setVisible(true);
     }
@@ -151,7 +151,6 @@ public class ScrolleableStripeTable extends javax.swing.JPanel {
             }
         ));
         table.setIntercellSpacing(new java.awt.Dimension(0, 0));
-        table.setRowMargin(0);
         table.setShowHorizontalLines(false);
         table.setShowVerticalLines(false);
         jScrollPane1.setViewportView(table);

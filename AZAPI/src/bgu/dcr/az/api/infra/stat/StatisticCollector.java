@@ -5,7 +5,6 @@
 package bgu.dcr.az.api.infra.stat;
 
 import bgu.dcr.az.api.Agent;
-import bgu.dcr.az.api.infra.Configurable;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.Test;
 
@@ -13,7 +12,7 @@ import bgu.dcr.az.api.infra.Test;
  *
  * @author bennyl
  */
-public interface StatisticCollector<T extends DBRecord> extends Configurable{
+public interface StatisticCollector<T extends DBRecord>{
     
     VisualModel analyze(Database db, Test r);
     

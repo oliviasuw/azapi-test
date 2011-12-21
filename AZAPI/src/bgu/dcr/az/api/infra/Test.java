@@ -9,6 +9,7 @@ import bgu.dcr.az.api.pgen.ProblemGenerator;
 import bgu.dcr.az.api.tools.Assignment;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 
 /**
  * test is a configurable execution - it is part of the expirement and it define 
@@ -19,7 +20,7 @@ import java.io.StringWriter;
  * TODO: MISSING FUNCTIONS FOR ADD AND REMOVE ALGORITHM METADATA (NEDD TO API THE ALGORITHM METADATA)
  * 
  */
-public interface Test extends Configurable, Process {
+public interface Test extends Process {
 
     void addListener(TestListener l);
     
@@ -62,12 +63,12 @@ public interface Test extends Configurable, Process {
      * register statistic analayzer to this test
      * @param analyzer 
      */
-    void registerStatisticCollector(StatisticCollector analyzer);
+    void addStatisticCollector(StatisticCollector analyzer);
 
     /**
      * @return list of all the registered statistics analayzers
      */
-    StatisticCollector[] getRegisteredStatisticCollectors();
+    List<StatisticCollector> getStatisticCollectors();
     
     /**
      * return the test result after execution

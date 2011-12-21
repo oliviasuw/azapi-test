@@ -20,4 +20,5 @@ import java.lang.annotation.Target;
 public @interface Variable {
     String name();
     String description();
+    String defaultValue();
 }

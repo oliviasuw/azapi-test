@@ -12,7 +12,7 @@ import java.util.List;
  * based on its loaded tests and analyzed their statistics via the statistics analayzers defined in the test
  * @author bennyl
  */
-public interface Experiment extends Configurable, Process {
+public interface Experiment extends Process {
 
     void addTest(Test test);
 

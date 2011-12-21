@@ -39,8 +39,6 @@ public interface Execution extends Process {
      */
     Mailer getMailer();
 
-    Object getParameterValue(String name);
-
     ExecutionResult getResult();
     
     ExecutionResult getPartialResult();

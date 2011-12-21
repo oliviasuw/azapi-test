@@ -85,6 +85,19 @@ public class ReflectionUtil {
             }
         }
     }
+    
+    public static List<Method> getRecursivelyMethodsWithAnnotation(Class aClass, Class<? extends Annotation> ano) {
+        LinkedList<Method> ret = new LinkedList<Method>();
+        while (true) {
+            List<Method> l = getAllMethodsWithAnnotation(aClass, ano);
+            ret.addAll(l);
+            if (aClass == Object.class) {
+                return ret;
+            } else {
+                aClass = aClass.getSuperclass();
+            }
+        }
+    }
 
     public static List<Field> getAllFieldsWithAnnotation(Class aClass, Class<? extends Annotation> ano) {
         LinkedList<Field> ret = new LinkedList<Field>();

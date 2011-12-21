@@ -48,6 +48,36 @@ public class VariableMetadata {
         return type;
     }
 
+    
+    /**
+     * if there is a field in the given object that annotated with Variable annotation
+     * and the annotation name function is the same as 'var' then this function will try to assign 
+     * it with the given value 
+     * 
+     * if no such field - nothing will happend (aside of some wasted cpu cycles :) )
+     * @param obj
+     * @param var
+     * @param value 
+     */
+    public static void tryAssign(Object obj, String var, Object value){
+        Variable ano;
+        try {
+            for (Field field : ReflectionUtil.getRecursivelyFieldsWithAnnotation(obj.getClass(), Variable.class)) {
+                ano = field.getAnnotation(Variable.class);
+                if (ano.name().equals(var)){
+                    field.set(obj, value);
+                }
+            }
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(VariableMetadata.class.getName()).log(Level.SEVERE, null, ex);
+            throw new InternalErrorException();
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(VariableMetadata.class.getName()).log(Level.SEVERE, null, ex);
+            throw new InternalErrorException();
+        }
+
+    }
+    
     public static void assign(Object obj, Map<String, Object> variables) {
         try {
             for (Field field : ReflectionUtil.getRecursivelyFieldsWithAnnotation(obj.getClass(), Variable.class)) {
@@ -77,7 +107,6 @@ public class VariableMetadata {
     }
 
     public static VariableMetadata[] scan(Object from) {
-//        System.out.println("Scanning " + from.getClass().getSimpleName());
         List<Field> fields = ReflectionUtil.getRecursivelyFieldsWithAnnotation(from.getClass(), Variable.class);
         VariableMetadata[] ret = new VariableMetadata[fields.size()];
         int i = 0;

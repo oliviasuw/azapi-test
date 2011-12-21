@@ -56,8 +56,8 @@ public class TestView extends javax.swing.JPanel {
     public void setModel(Test r) {
          
         
-        testVars.setItems(Visual.adapt(r.provideExpectedVariables(),varsGen));
-        pgenVars.setItems(Visual.adapt(r.getProblemGenerator().provideExpectedVariables(), varsGen));
+        testVars.setItems(Visual.adapt(VariableMetadata.scan(r),varsGen));
+        pgenVars.setItems(Visual.adapt(VariableMetadata.scan(r.getProblemGenerator()), varsGen));
         algos.setItems(Visual.adapt(((AbstractTest) r).getAlgorithms(), new VisualGen() {
 
             @Override

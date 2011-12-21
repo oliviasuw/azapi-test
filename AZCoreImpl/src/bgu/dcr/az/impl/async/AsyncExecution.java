@@ -5,6 +5,7 @@
 package bgu.dcr.az.impl.async;
 
 import bgu.dcr.az.api.AgentRunner;
+import bgu.dcr.az.api.Mailer;
 import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.impl.AlgorithmMetadata;
 import bgu.dcr.az.api.pgen.Problem;
@@ -19,6 +20,10 @@ public class AsyncExecution extends AbstractExecution {
 
     public AsyncExecution(ExecutorService exec, Problem p, AlgorithmMetadata a, Test r) {
         super(exec, p, new AsyncMailer(), a, r);
+    }
+
+    public AsyncExecution(ExecutorService exec, Problem p, AlgorithmMetadata a, Test r, Mailer mailer) {
+        super(exec, p, mailer, a, r);
     }
 
     @Override

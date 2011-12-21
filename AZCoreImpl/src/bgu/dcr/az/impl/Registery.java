@@ -8,7 +8,6 @@ import bc.dsl.ReflectionDSL;
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.ano.Register;
-import bgu.dcr.az.api.infra.Configurable;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashMap;
@@ -104,12 +103,16 @@ public enum Registery {
     public List<Class> getAllAgentTypes() {
         return new LinkedList<Class>(agents.values());
     }
+    
+    public Set<String> getAllAlgorithmNames(){
+        return new HashSet<String>(agents.keySet());
+    }
 
     public Class<? extends Agent> getAgentByAlgorithmName(String name) {
         return agents.get(name);
     }
 
-    public String getEntityName(Configurable conf) {
+    public String getEntityName(Object conf) {
         return conf.getClass().getAnnotation(Register.class).name();
     }
 }

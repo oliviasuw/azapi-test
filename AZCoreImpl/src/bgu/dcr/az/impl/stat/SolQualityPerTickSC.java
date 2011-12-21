@@ -27,7 +27,7 @@ import bgu.dcr.az.api.infra.stat.vmod.LineVisualModel;
 public class SolQualityPerTickSC extends AbstractStatisticCollector<SolQualityPerTickSC.Record> {
 
     private int ticksPerCycle = 1;
-    @Variable(name = "sample-rate", description = "The sampling rate for solution quality")
+    @Variable(name = "sample-rate", description = "The sampling rate for solution quality", defaultValue="1")
     private int samplingRate = 1;
     private double lastCost = -1;
 

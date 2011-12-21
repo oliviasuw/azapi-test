@@ -19,16 +19,14 @@ import java.util.Random;
 @Register(name = "dcop-unstructured", display="Unstructured DCOP Problem Generator")
 public class UnstructuredDCOPGen extends AbstractProblemGenerator {
 
-    @Variable(name = "n", description = "number of variables")
+    @Variable(name = "n", description = "number of variables", defaultValue="2")
     int n = 2;
-    @Variable(name = "d", description = "domain size")
+    @Variable(name = "d", description = "domain size", defaultValue="2")
     int d = 2;
-    @Variable(name = "max-cost", description = "maximal cost of constraint")
+    @Variable(name = "max-cost", description = "maximal cost of constraint", defaultValue="100")
     int maxCost = 100;
-    @Variable(name = "p1", description = "probablity of constraint between two variables")
+    @Variable(name = "p1", description = "probablity of constraint between two variables", defaultValue="0.6")
     float p1 = 0.6f;
-//    @Variable(name = "p2", description = "probablity of conflict between two constrainted variables")
-//    float p2 = 0.4f;
 
     @Override
     public String toString() {

@@ -16,26 +16,25 @@ import java.util.Random;
  *
  * @author bennyl
  */
-@Register(name="dcsp-unstructured", display="Unstructured DCSP Problem Generator")
+@Register(name = "dcsp-unstructured", display = "Unstructured DCSP Problem Generator")
 public class UnstructuredDCSPGen extends AbstractProblemGenerator {
 
-    @Variable(name = "n", description = "number of variables")
+    @Variable(name = "n", description = "number of variables", defaultValue = "2")
     int n = 2;
-    @Variable(name = "d", description = "domain size")
+    @Variable(name = "d", description = "domain size", defaultValue = "2")
     int d = 2;
-    @Variable(name = "p1", description = "probablity of constraint between two variables")
+    @Variable(name = "p1", description = "probablity of constraint between two variables", defaultValue = "0.6")
     float p1 = 0.6f;
-    @Variable(name = "p2", description = "probablity of conflict between two constrainted variables")
+    @Variable(name = "p2", description = "probablity of conflict between two constrainted variables", defaultValue = "0.4")
     float p2 = 0.4f;
 
-    
-        @Override
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Generating : ").append("n = ").append(n).append("\nd = ").append(d);
         return sb.toString();
     }
-    
+
     @Override
     public void generate(Problem p, Random rand) {
         p.initialize(ProblemType.DCSP, n, new ImmutableSet<Integer>(Agt0DSL.range(0, d - 1)));

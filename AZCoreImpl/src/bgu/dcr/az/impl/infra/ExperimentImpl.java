@@ -4,9 +4,9 @@
  */
 package bgu.dcr.az.impl.infra;
 
+import bgu.dcr.az.api.ano.Configuration;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.exp.InvalidValueException;
-import bgu.dcr.az.api.infra.Configurable;
 import bgu.dcr.az.impl.DebugInfo;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.Test.TestResult;
@@ -92,24 +92,11 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
         }
     }
 
-    @Override
-    public List<Configurable> getConfiguredChilds() {
-        LinkedList<Configurable> ret = new LinkedList<Configurable>(tests);
-        if (di != null) {
-            ret.add(di);
-        } else if (getResult() != null && !getResult().succeded) {
-            if (getResult().problematicTest instanceof AbstractTest && ((AbstractTest) getResult().problematicTest).getFailoreDebugInfo() != null) {
-                ret.add(((AbstractTest) getResult().problematicTest).getFailoreDebugInfo());
-            }
-        }
-
-        return ret;
-    }
-
     public DebugInfo getFailureDebugInfo() {
         return di;
     }
 
+    @Configuration(name="Test", description="Add new test for the experiment")
     @Override
     public void addTest(Test test) {
         tests.add(test);
@@ -137,45 +124,16 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
         return result;
     }
 
-    @Override
-    public VariableMetadata[] provideExpectedVariables() {
-        return EMPTY_VARIABLE_ARRAY;
+    @Configuration(name="Debug Information", description="Required if the test is to be run in debug mode")
+    public void setDebugInfo(DebugInfo di){
+        this.di = di;
     }
-
-    @Override
-    public List<Class<? extends Configurable>> provideExpectedSubConfigurations() {
-        Class<? extends Configurable> ret = Test.class;
-        LinkedList<Class<? extends Configurable>> ll = new LinkedList<Class<? extends Configurable>>();
-        ll.add(ret);
-        ll.add(DebugInfo.class);
-        return ll;
+    
+    public DebugInfo getDebugInfo(){
+        return this.di;
     }
-
-    @Override
-    public boolean canAccept(Class<? extends Configurable> cls) {
-        if (DebugInfo.class.isAssignableFrom(cls)) {
-            return di == null;
-        }
-        return Test.class.isAssignableFrom(cls);
-    }
-
-    @Override
-    public void addSubConfiguration(Configurable sub) throws InvalidValueException {
-        if (!canAccept(sub.getClass())) {
-            throw new InvalidValueException("only except tests");
-        } else if (sub instanceof Test) {
-            Test r = (Test) sub;
-            addTest(r);
-        } else {
-            di = (DebugInfo) sub;
-        }
-    }
-
-    @Override
-    public void configure(Map<String, Object> variables) {
-        //NO VARIABLES!
-    }
-
+    
+    
     @Override
     public void addListener(ExperimentListener l) {
         listeners.add(l);
@@ -221,13 +179,6 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
     }
 
     @Override
-    public void bubbleDownVariable(String var, Object val) {
-        for (Test r : tests) {
-            r.bubbleDownVariable(var, val);
-        }
-    }
-
-    @Override
     public int getLength() {
         if (di != null) {
             return 1;
@@ -240,4 +191,5 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
         }
 
     }
+
 }

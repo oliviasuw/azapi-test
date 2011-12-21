@@ -20,7 +20,7 @@ public class SyncMailer extends AbstractMailer{
     }
 
     @Override
-    protected MessageQueue generateNewMessageQueue() {
+    protected MessageQueue generateNewMessageQueue(String groupId) {
        return new DoubleMessageQueue(clock);
     }
 

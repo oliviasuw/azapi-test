@@ -1,0 +1,188 @@
+<div id="${_id}-table-container">
+    <table id="${_id}" class="grid" width="100%" cellspacing="0px">
+        #{doBody/}
+    </table>
+</div>
+
+<script language="javascript">
+    
+    //#{ifndef "__GRID__"}
+    function Grid(t, id){
+        //FIELDS
+        var initialized = false; //true if the grid is initialized
+        var dataArray = new Array();
+        
+        //CONSTANTS
+        var ROW_SELECTED_CLASS = "grid-row-selected";
+        var GRID_EDITABLE_CLASS = id + "editable";
+        
+        this.get$ = function(){
+            return t;
+        }
+        
+        /**
+         * initializing the grid with default settings
+         */
+        this.initDefault = function(){
+            t.dataTable({
+                bSort: false,
+                "bJQueryUI": true,
+                "sPaginationType": "full_numbers"
+            });
+            
+            initialized = true;
+        }
+        
+        /**
+         * initialize the grid with list of columns 
+         * using this constractor will allow you to send objects to the grid to show (and receive then)
+         * this is the prefered method
+         * 
+         * This constractor will create a grid with several features (no sorting, searching, paging, jQueryUi)
+         * 
+         * when adding items to the grid the item should contain the same fields as the given columns
+         * 
+         * columns:array of column
+         * column:obj {field, display}
+         *    field:string 
+         *    display:string the text to display in the header
+         */
+        this.initWithColumns = function(columns){
+            t.dataTable({
+                bSort: false,
+                "bJQueryUI": true,
+                "sPaginationType": "full_numbers",
+                "aoColumns": map(columns, function(c){
+                    return {"mDataProp" : c};
+                })
+            });
+            
+            initialized = true;
+        }
+        
+        /**
+         * initialize the grid with list of columns 
+         * using this constractor will allow you to send objects to the grid to show (and receive then)
+         * this is the prefered method
+         * 
+         * This constractor will create the very basic grid (no sorting, searching, paging, jQueryUi)
+         * 
+         * when adding items to the grid the item should contain the same fields as the given columns
+         * 
+         * showColumns:array of column
+         * showColumns:obj {field, display}
+         *    field:string 
+         *    display:string the text to display in the header
+         *    
+         * changableColumnsIndexes: array of columns indexes which are set to be changable
+         * i.e - can be changed by clicking on then
+         * 0 or a positive integer - column index counting from the left
+         * a negative integer - column index counting from the right
+         */
+        this.initCleanWithColumns = function(showColumns,changableColumnsIndexes){
+            t.dataTable({
+                "bSort": false,
+                "bPaginate": false,
+                "bJQueryUI": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false,
+                "aoColumns": map(showColumns, function(c){
+                    return {"mDataProp" : c};
+                }),
+                "aoColumnDefs": [
+                    {"sClass": GRID_EDITABLE_CLASS, "aTargets": changableColumnsIndexes }]
+            });
+            
+            makeEditable();
+            initialized = true;
+        }
+        
+        var makeEditable = function(){
+            $("."+GRID_EDITABLE_CLASS).editable({
+                "submit":'save',
+                "cancel":'cancel',
+                "onSubmit": function(c){
+                    //DO - SOMETHING like saving the new value to the object
+                }                
+            });
+        }
+        
+        
+        /**
+         * load array of rows 
+         * each row should have the fields defined in the grid when initializing it
+         */
+        this.load = function(array){
+            var maxIndex = dataArray.length;
+            each(array, function(a){a.__idx = maxIndex++;});
+            t.fnAddData(array);  
+            dataArray = dataArray.concat(array);
+            makeEditable();
+        };
+        
+        
+        /**
+         * add new row to the end of the grid
+         */
+        this.append = function(row){
+            row.__idx = dataArray.length;
+            t.fnAddData(row);
+            dataArray.push(row);
+        };
+       
+        this.clear = function(){
+            if (! initialized) {
+                throw "you must initialize the grid first";
+            }
+            
+            t.fnClearTable();
+            dataArray = new Array();
+        };
+        
+        
+        /**
+         * will allow multiple selection
+         */
+        this.setMultipleSelection = function(){
+            var cfn = function(){
+                if ($(this).hasClass(ROW_SELECTED_CLASS)){
+                    $(this).removeClass(ROW_SELECTED_CLASS);
+                } else {
+                    $(this).addClass(ROW_SELECTED_CLASS);
+                }
+            };
+            var temp = $("#" + id + " tbody tr");
+            temp.click(cfn);
+        };
+        
+        /**
+         * return all the selected rows
+         */
+        this.getSelected = function () {
+            var aReturn = new Array();
+            var aTrs = t.fnGetNodes();
+            for ( var i=0 ; i<aTrs.length ; i++ ){
+                if ( $(aTrs[i]).hasClass(ROW_SELECTED_CLASS) ){
+                    aReturn.push( aTrs[i] );
+                }
+            }
+            return map(aReturn, function(aR){
+                return dataArray[t.fnGetData(aR).__idx];  
+            });
+        };
+        
+        this.getLengthDiv = function(){
+            //            return $("#grid").parent().find(".dataTables_length");
+            return $("#" + id).parent().find(".dataTables_length");
+        }
+
+        
+    };
+    //#{/ifndef}
+    
+    initialize(function(){
+        window.${_id} = new Grid($("#${_id}"), "${_id}");
+    });
+    
+</script>

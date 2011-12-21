@@ -1,0 +1,7 @@
+Person():
+  name: sami
+  age: 15
+  
+Person():
+  name: shaul
+  age: 24

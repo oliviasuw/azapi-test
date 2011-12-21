@@ -1,0 +1,241 @@
+/*
+* I C O N S 
+*/
+
+.ok-icon{
+    height: 16px !important;
+    width: 16px !important;
+    background-image: url('/public/images/expc/ok-new-16.png') !important;
+}
+
+
+body{
+    margin: 0;
+    font-size:  12px;
+    font-family: Verdana, Geneva, sans-serif;
+    background-color: rgb(51,51,51);
+}
+
+.datagrid-group {
+    background-color: rgb(230,230,230) !important;
+}
+
+.datagrid-body-inner * {
+    background-color: rgb(230,230,230) !important;
+    border-color: rgb(230,230,230) !important;
+}
+
+.datagrid-view{
+    background-color: rgb(245,245,245);
+}
+
+.ui-layout-resizer{
+    background-color: rgb(120,120,120);
+}
+
+.ui-layout-toggler{
+    background-color: rgb(51,51,51);
+}
+
+.ui-layout-resizer-north{
+    height: 0px;
+    width: 0px;
+    display: none;
+    border: none;
+}
+
+
+.logo-container {
+    background-color: rgb(51,51,51);
+    /*    margin: 5px;*/
+    /*    vertical-align: middle;*/
+}
+
+.logo {
+    background-color: rgb(51,51,51);
+    margin: 5px;
+    vertical-align: middle;
+}
+
+.ui-layout-pane{
+    border: none;
+}
+
+div.caption{
+    background-color: rgb(120,120,120);
+    color: white;
+    height: 25px;
+    line-height: 25px;
+    font-size: 14px;
+    vertical-align: bottom;
+    padding-left: 5px;
+}
+
+.ui-layout-center {
+    padding: 0px;
+}
+
+.ui-layout-north {
+    padding: 0px;
+}
+.ui-layout-west {
+    padding: 0px;
+    background: url(/public/images/tree_lines_bg.png) repeat;
+}
+.ui-layout-east {
+    padding: 0px;
+}
+.ui-layout-south {
+    padding: 0px;
+}
+
+#tree * {
+    font-size:  12px;
+    font-family: Verdana, Geneva, sans-serif;
+}
+
+/*
+    A D D   D I A L O G
+*/
+
+.welcome-text{
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+ul.links-list{
+    text-indent: 0px;
+    margin-left: 0px;
+    padding-left: 3px;
+}
+
+/*
+     G R I D
+*/
+
+
+table.grid tr.odd td {
+    background-color:  rgb(215,215,215);
+}
+
+table.grid tr.even td {
+    background-color:  rgb(245,245,245);
+}
+
+
+table.grid tr.grid-row-selected{
+    background-color: rgb(51,153,255);
+}
+
+table.grid tr.grid-row-selected td{
+    background-color: rgb(51,153,255);
+}
+
+.grid tbody tr{
+    color: black;
+    height: 25px;
+}
+
+.grid th {
+    height: 25px;
+    text-align: left;
+    padding-left: 5px;
+}
+
+.grid {
+    margin-left: 1px;
+    margin-right: 1px;
+}
+
+.grid td {
+    border-right: solid 1px rgb(180,180,180);
+    padding-left: 5px;
+}
+
+.grid .dataTables_empty{
+    padding: 3px;
+}
+
+#grid{
+    border-right: 2px solid rgb(51,51,51);
+}
+
+#grid td{
+    cursor: pointer;
+}
+
+#grid-table-container {
+    padding-top: 10px;
+}
+
+/*
+    P R O P   G R I D
+*/
+
+#propGrid{
+    border: none;
+}
+
+#propGrid thead {
+    background-color: rgb(117,117,117);
+    color: rgb(230,230,230);
+}
+
+.propGrideditable {
+    cursor: cell;
+}
+
+/*
+    L I N K S    L I S T
+*/
+
+.add-link-item {
+      list-style-type: none;
+    
+}
+.add-link-item-image.pgen{
+    background-image: url('/public/images/expc/problem-gen24.png');
+}
+
+.add-link-item-image.alg{
+    background-image: url('/public/images/expc/algorithm24.png');
+}
+
+.add-link-item-image.scol{
+    background-image: url('/public/images/expc/statisic-col24.png');
+}
+
+.add-link-item-image.test{
+    background-image: url('/public/images/expc/test24.png');
+}
+
+
+.add-link-item-image{
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 24px;
+    padding-left: 28px;
+    padding-top: 4px;
+}
+
+.node-control .links-list a{
+    color: rgb(240,240,240);
+}
+
+ul.links-list li{
+    margin-left: 0px;
+    margin-bottom: 5px;
+}
+
+.node-control{
+    background: rgb(153,153,153);
+    padding: 5px;
+}
+
+.node-control .caption {
+    line-height: 25px;
+    font-size: 11pt;
+    font-weight: bold;
+    color: rgb(240, 240, 240);
+}

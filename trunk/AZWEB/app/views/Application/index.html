@@ -1,0 +1,76 @@
+#{extends 'main.html' /}
+#{set title:'Agent Zero Home' /}
+
+*{#{welcome /}}*
+
+<div align="center" height="100%" width="100%">
+    <table id="mainLayout" border="0px" cellpadding="0" height="100%" width="100%" cellspacing="0">
+        <tr>
+            <td>
+                <img src="@{'/public/images/logo2.png'}" id="logo">
+                </img>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="background:url(@{'/public/images/temp/main/menu_bg2.png'}); background-repeat:repeat-x;">
+                #{menu /}
+            </td>
+        </tr>
+
+        <tr>
+            <td height="100%" style="vertical-align: top;">
+                <table height="100%" width="100%" cellspacing="0" border="0px" style="margin-top: 2px;">
+                    <tr>
+                        <td class="margin" />
+                        <td height="100%" id="content" >
+                            #{slides /}
+                        </td>
+                        <td class="margin" />
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script language="javascript">
+    
+    var mainLayout = "mainLayout";
+ 
+    function resizeToFull(id){
+        if( $(window).height() > $('body').height() ) {
+            $( "#" + id ).height(
+            $(window).height() - ( $('body').height() - $("#" + id).height() ));
+        }
+    }
+    
+    $(window).resize(function(e){
+        resizeToFull(mainLayout);
+    });
+    
+    //RESIZE LAYOUT TO TAKE FULL SCREEN
+    $(function(){
+        resizeToFull(mainLayout); 
+    });
+    
+    //START MENU
+    $(handleMenu);
+    
+    //START SLIDES 
+    $(function() {
+        
+        $('#banner').bjqs({
+            //            'animation' : 'slide',
+            'width' : "auto",
+            'height' : 300,
+            'showMarkers' : true,
+            'showControls' : true,
+            'centerMarkers' : false,
+            'centerControls' : false,
+            'rotationSpeed' : '7000'
+        });
+        
+    });
+    
+</script>

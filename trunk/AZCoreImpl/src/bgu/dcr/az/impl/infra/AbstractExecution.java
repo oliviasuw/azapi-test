@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  * @author bennyl
  */
 public abstract class AbstractExecution extends AbstractProcess implements Execution {
-
+    
     private Problem problem;//the *global* problem
     private Mailer mailer; //the mailer object used by this execution
     private boolean shuttingdown; //this variable is used to check that the execution is doing the process of shuting down only once.
@@ -286,9 +286,10 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     }
     
     protected void startExecution() {
+        System.out.println("Starting new execution");
         while (true) {
             for (int i = 0; i < agentRunners.length; i++) {
-                System.out.println("Executing Agent: " + getAgents()[i].getId());
+//                System.out.println("Executing Agent: " + getAgents()[i].getId());
                 getExecutorService().execute(getRunners()[i]);
             }
             break;

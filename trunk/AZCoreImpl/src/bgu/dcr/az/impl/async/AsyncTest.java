@@ -33,7 +33,7 @@ public class AsyncTest extends AbstractTest {
     @Override
     protected Execution provideExecution(Problem p, AlgorithmMetadata alg) {
         if (dman != null) {
-            AsyncExecution ret = new AsyncExecution(getPool(), p, alg, this, new AsyncDelayedMailer(dman));
+            AsyncExecution ret = new AsyncExecution(getPool(), p, alg, this, new AsyncDelayedMailer(dman, p.getNumberOfVariables()));
             ret.setIdleDetectionNeeded(true);
             dman.initialize(ret);
             return ret;

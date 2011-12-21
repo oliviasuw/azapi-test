@@ -38,7 +38,7 @@ public abstract class SimpleAgent extends Agent {
 
     @Override
     public void processNextMessage() throws InterruptedException {
-        Message msg = nextMessage();
+        Message msg = nextMessage(); //will block until there will be messages in the q
         for (BeforeMessageProcessingHook hook : beforeMessageProcessingHooks) {
             hook.hook(this, msg);
         }

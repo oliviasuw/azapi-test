@@ -112,11 +112,12 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
 
             @Override
             protected Object doInBackground() throws Exception {
+                Integer pnum = null;
+                AbstractTest c = null;
                 try {
-                    AbstractTest c = (AbstractTest) Visual.getSelected(testSelect);
-                    Integer pnum = (Integer) pnumSelect.getValue();
+                    c = (AbstractTest) Visual.getSelected(testSelect);
+                    pnum = (Integer) pnumSelect.getValue();
                     Problem p = c.generateProblem(pnum);
-//                    System.out.println(p.toString());
                     showProblem(p);
                     problemViewingDescription.setText("Showing problem " + pnum + " of test " + c.getName());
                 } catch (Exception ex) {

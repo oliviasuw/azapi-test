@@ -5,6 +5,8 @@
 package bgu.dcr.az.dev;
 
 import bc.dsl.ReflectionDSL;
+import bgu.dcr.az.api.ano.Configuration;
+import bgu.dcr.az.api.ano.Configuration.ConfigurationMetadata;
 import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Test;
@@ -13,10 +15,11 @@ import bgu.dcr.az.impl.Registery;
 import bgu.dcr.az.impl.infra.ExperimentImpl;
 import java.io.File;
 import static bc.dsl.XNavDSL.*;
-import bgu.dcr.az.api.infra.Configurable;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -31,24 +34,38 @@ import nu.xom.ParsingException;
  */
 public class XMLConfigurator {
 
-    public static void write(Configurable conf, PrintWriter pw) {
+    public static void write(Object conf, PrintWriter pw) {
         String confName = Registery.UNIT.getEntityName(conf);
         Element e = new Element(confName);
         write(conf, e);
-        
+
         pw.append(e.toXML());
     }
 
-    private static void write(Configurable conf, Element root) {
+    private static void write(Object conf, Element root) {
         for (VariableMetadata v : VariableMetadata.scan(conf)) {
             root.addAttribute(new Attribute(v.getName(), v.getCurrentValue().toString()));
         }
-        
-        for (Configurable c : conf.getConfiguredChilds()){
-            String confName = Registery.UNIT.getEntityName(c);
-            Element e = new Element(confName);
-            write(c, e);
-            root.appendChild(e);
+
+
+        for (ConfigurationMetadata c : Configuration.ConfigurationMetadata.scan(conf.getClass())) {
+            List list;
+            if (c.isList) {
+                 list = (List) c.get(conf);
+            } else {
+                list = Arrays.asList(c.get(conf));
+            }
+
+            for (Object i : list) {
+                if (i == null){
+                    continue;
+                }
+                String confName = Registery.UNIT.getEntityName(i);
+                Element e = new Element(confName);
+                write(i, e);
+                root.appendChild(e);
+            }
+
         }
     }
 
@@ -58,7 +75,8 @@ public class XMLConfigurator {
             Element root = xload(from).getRootElement();
 
             configure(exp, root);
-
+            
+            ConfigurationMetadata.notifyAfterExternalConfiguration(exp);
             return exp;
 
         } catch (ParsingException ex) {
@@ -67,23 +85,23 @@ public class XMLConfigurator {
         }
     }
 
-    private static void configure(Configurable c, Element root) throws InstantiationException, IllegalAccessException, InvalidValueException {
-        Configurable cc;
+    private static void configure(Object c, Element root) throws InstantiationException, IllegalAccessException, InvalidValueException {
+        Object cc;
         for (Element child : childs(root)) {
             String name = child.getLocalName();
             Class cls = Registery.UNIT.getXMLEntity(name);
             if (cls == null) {
                 throw new InvalidValueException("cannot parse " + name + " xml entity: no entity with that name on the registery");
-            } else if (!c.canAccept(cls)) {
+            } else if (! ConfigurationMetadata.canAccept(c, cls)) {
                 throw new InvalidValueException("element '" + root.getLocalName() + "' cannot contain child '" + name + "'");
             } else {
-                cc = (Configurable) cls.newInstance();
+                cc = cls.newInstance();
                 configure(cc, child);
-                c.addSubConfiguration(cc);
+                ConfigurationMetadata.insertConfiguration(c, cc);
             }
         }
         HashMap<String, Object> conf = new HashMap<String, Object>();
-        VariableMetadata[] evar = c.provideExpectedVariables();
+        VariableMetadata[] evar = VariableMetadata.scan(c);
         Map<String, VariableMetadata> varmap = new HashMap<String, VariableMetadata>();
 
         for (VariableMetadata v : evar) {
@@ -100,7 +118,7 @@ public class XMLConfigurator {
                 System.out.println("found attribute '" + a.getKey() + "' in element '" + root.getLocalName() + "' but this element not expecting this attribute - ignoring.");
             }
         }
-        c.configure(conf);
+        VariableMetadata.assign(c, conf);
     }
 
     public static void main(String[] args) throws Exception {

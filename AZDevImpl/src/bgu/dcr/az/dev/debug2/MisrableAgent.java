@@ -15,27 +15,28 @@ import bgu.dcr.az.api.ano.Variable;
 @Algorithm(name="MSR")
 public class MisrableAgent extends SimpleAgent{
 
-    @Variable(name="b", description="test1")
+    @Variable(name="b", description="test1", defaultValue="false")
     boolean b = false;
     
-    @Variable(name="i", description="test1")
+    @Variable(name="i", description="test1", defaultValue="100")
     int i = 100;
     
-    @Variable(name="l", description="test1")
+    @Variable(name="l", description="test1", defaultValue="999")
     long l = 999;
     
-    @Variable(name="s", description="test1")
+    @Variable(name="s", description="test1", defaultValue="Hi!")
     String s = "Hi!";
     
-    @Variable(name="c", description="test1")
+    @Variable(name="c", description="test1", defaultValue="&")
     char c = '&';
     
-    @Variable(name="d", description="test1")
+    @Variable(name="d", description="test1", defaultValue="13564498.6546")
     double d = 13564698.6546;
     
     @Override
     public void start() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        log("start!");
+        finish();
     }
     
 }

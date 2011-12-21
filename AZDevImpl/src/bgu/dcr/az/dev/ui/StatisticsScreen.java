@@ -73,8 +73,9 @@ public class StatisticsScreen extends javax.swing.JPanel {
                 if (!selectedItems.isEmpty()) {
                     StatisticCollector sc = (StatisticCollector) ((Visual) selectedItems.get(0)).getItem();
                     selectedCollector = sc;
-                    if (sc.provideExpectedVariables().length > 0) {
-                        vars.setModel(sc.provideExpectedVariables());
+                    VariableMetadata[] scaned = VariableMetadata.scan(sc);
+                    if (scaned.length > 0) {
+                        vars.setModel(scaned);
                         varsDataPan.setData(varscrolls);
                     }
                 }
@@ -92,7 +93,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
                 if (!selectedItems.isEmpty()) {
 
                     selectedTest = ((Test) ((Visual) selectedItems.get(0)).getItem());
-                    availableStatisticsList.setItems(Visual.adapt(selectedTest.getRegisteredStatisticCollectors(), new Visual.VisualGen() {
+                    availableStatisticsList.setItems(Visual.adapt(selectedTest.getStatisticCollectors(), new Visual.VisualGen() {
 
                         @Override
                         public Visual gen(Object it) {

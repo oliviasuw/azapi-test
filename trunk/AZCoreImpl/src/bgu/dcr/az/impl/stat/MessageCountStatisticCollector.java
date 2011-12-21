@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 public class MessageCountStatisticCollector extends AbstractStatisticCollector<MessageCountStatisticCollector.Record> {
 
     long[] counts;
-    @Variable(name = "type", description = "type of the graph to show (BY_AGENT/BY_RUNVAR)")
+    @Variable(name = "type", description = "type of the graph to show (BY_AGENT/BY_RUNVAR)", defaultValue="BY_RUNVAR")
     Type graphType = Type.BY_RUNVAR;
 
     @Override

@@ -14,7 +14,7 @@ import bgu.dcr.az.impl.DefaultMessageQueue;
 public class AsyncMailer extends AbstractMailer {
    
     @Override
-    protected DefaultMessageQueue generateNewMessageQueue() {
+    protected DefaultMessageQueue generateNewMessageQueue(String groupKey) {
         return new DefaultMessageQueue();
     }
 }

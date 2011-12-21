@@ -6,22 +6,25 @@ package bgu.dcr.az.impl;
 
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
-import bgu.dcr.az.impl.infra.AbstractConfigurable;
 
 /**
  *
  * @author bennyl
  */
 @Register(name = "assign", display="Variable Assignment")
-public class VarAssign extends AbstractConfigurable {
+public class VarAssign {
 
-    @Variable(name = "var", description = "the variable name")
+    @Variable(name = "var", description = "the variable name", defaultValue="")
     String varName;
-    @Variable(name = "val", description = "the variable value to assign")
+    @Variable(name = "val", description = "the variable value to assign", defaultValue="")
     String value;
 
-    @Override
-    protected void configurationDone() {
+    public VarAssign(String varName, String value) {
+        this.varName = varName;
+        this.value = value;
+    }
+
+    public VarAssign() {
     }
 
     public String getVarName() {

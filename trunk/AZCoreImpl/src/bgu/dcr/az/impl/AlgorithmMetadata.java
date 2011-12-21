@@ -1,21 +1,17 @@
 package bgu.dcr.az.impl;
 
 import bgu.dcr.az.api.Agent;
-import bgu.dcr.az.api.Agent;
-import bgu.dcr.az.api.ProblemType;
 import bgu.dcr.az.api.ProblemType;
 import bgu.dcr.az.api.SearchType;
-import bgu.dcr.az.api.SearchType;
+import bgu.dcr.az.api.ano.Configuration;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.exp.InvalidValueException;
-import bgu.dcr.az.api.infra.Configurable;
-import bgu.dcr.az.impl.Registery;
-import bgu.dcr.az.impl.infra.AbstractConfigurable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * this is a metadata of an algorithm used to create and configure an agent, 
@@ -23,10 +19,10 @@ import java.util.Map;
  * creation it configurs with its given configuration.
  * @author bennyl
  */
-@Register(name = "algorithm", display="Algorithm")
-public class AlgorithmMetadata extends AbstractConfigurable {
+@Register(name = "algorithm", display = "Algorithm")
+public class AlgorithmMetadata implements Configuration.ExternalConfigurationAware {
 
-    @Variable(name = "name", description = "the name of the algorithm")
+    @Variable(name = "name", description = "the name of the algorithm", defaultValue = "unnamed")
     private String name; //the algorithm name
     private Class<? extends Agent> agentClass; //the class of the agent that implements this algorithm
     private ProblemType problemType;
@@ -45,7 +41,7 @@ public class AlgorithmMetadata extends AbstractConfigurable {
 
     public AlgorithmMetadata() {
     }
-    
+
     private void initialize(Class<? extends Agent> agentClass) throws InvalidValueException {
         bgu.dcr.az.api.ano.Algorithm a = agentClass.getAnnotation(bgu.dcr.az.api.ano.Algorithm.class);
         if (a == null) {
@@ -94,35 +90,18 @@ public class AlgorithmMetadata extends AbstractConfigurable {
         return problemType;
     }
 
-    @Override
-    protected void configurationDone() {
-        Class<? extends Agent> a = Registery.UNIT.getAgentByAlgorithmName(name);
-        if (a == null) {
-            throw new InvalidValueException("cannot find agent with the given algorithm name: '" + name + "'");
-        }
-        initialize(a);
+    @Configuration(name = "Agent Variable Assignment", description = "if the agent defined variables you can assign new values to them")
+    public void addAgentVariableAssignment(VarAssign va) {
+        agentConfiguration.put(va.varName, va.value);
     }
 
-    @Override
-    public List<Class<? extends Configurable>> provideExpectedSubConfigurations() {
-        List<Class<? extends Configurable>> ret = new LinkedList<Class<? extends Configurable>>();
-        ret.add(VarAssign.class);
+    public List<VarAssign> getAgentVariableAssignments() {
+        List<VarAssign> ret = new LinkedList<VarAssign>();
+        for (Entry<String, Object> va : agentConfiguration.entrySet()) {
+            ret.add(new VarAssign(va.getKey(), va.getValue().toString()));
+        }
+
         return ret;
-    }
-
-    @Override
-    public boolean canAccept(Class<? extends Configurable> cls) {
-        return cls == VarAssign.class;
-    }
-
-    @Override
-    public void addSubConfiguration(Configurable sub) throws InvalidValueException {
-        if (canAccept(sub.getClass())) {
-            VarAssign va = (VarAssign) sub;
-            agentConfiguration.put(va.varName, va.value);
-        } else {
-            throw new InvalidValueException("can only accept VarAssign");
-        }
     }
 
     public Agent generateAgent() throws InstantiationException, IllegalAccessException {
@@ -132,4 +111,16 @@ public class AlgorithmMetadata extends AbstractConfigurable {
         return agent;
     }
 
+    /**
+     * the algorithm depends on calling this function before starting any execution
+     */
+    @Override
+    public void afterExternalConfiguration() {
+        Class<? extends Agent> a = Registery.UNIT.getAgentByAlgorithmName(name);
+        if (a == null) {
+            throw new InvalidValueException("cannot find agent with the given algorithm name: '" + name + "'");
+        }
+        initialize(a);
+
+    }
 }

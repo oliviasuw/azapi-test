@@ -4,12 +4,9 @@
  */
 package bgu.dcr.az.impl;
 
+import bgu.dcr.az.api.ano.Configuration;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
-import bgu.dcr.az.api.exp.InvalidValueException;
-import bgu.dcr.az.api.infra.Configurable;
-import bgu.dcr.az.impl.infra.AbstractConfigurable;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,14 +15,14 @@ import java.util.List;
  * @author bennyl
  */
 @Register(name = "debug-info", display="Debugging Information", visible=false)
-public class DebugInfo extends AbstractConfigurable {
-    @Variable(name="test-name", description="failing test name")
+public class DebugInfo {
+    @Variable(name="test-name", description="failing test name", defaultValue="unnamed")
     String testName = "";
-    @Variable(name="algorithm-name", description="failing algorithm name")
+    @Variable(name="algorithm-name", description="failing algorithm name", defaultValue="unnamed")
     String algName = "";
-    @Variable(name="name", description="identifier for this debug info")
+    @Variable(name="name", description="identifier for this debug info", defaultValue="unnamed")
     String name = ""+ System.currentTimeMillis();
-    @Variable(name="number", description="number of the failing problem")
+    @Variable(name="number", description="number of the failing problem", defaultValue="-1")
     int number = -1;
     
     List<VarAssign> pgenVars = new LinkedList<VarAssign>();
@@ -54,35 +51,15 @@ public class DebugInfo extends AbstractConfigurable {
         return pgenVars;
     }
 
-    @Override
-    public List<Class<? extends Configurable>> provideExpectedSubConfigurations() {
-        return Arrays.<Class<? extends Configurable>>asList(VarAssign.class);
+    @Configuration(name="Problem Generator Variables", description="the problem generator variables that was captured during the failore")
+    public void addProblemGeneratorVariable(VarAssign var){
+        pgenVars.add(var);
     }
 
-    @Override
-    public boolean canAccept(Class<? extends Configurable> cls) {
-        return VarAssign.class.isAssignableFrom(cls);
+    public List<VarAssign> getProblemGeneratorVariables() {
+        return pgenVars;
     }
-
-    @Override
-    public List<Configurable> getConfiguredChilds() {
-        return new LinkedList<Configurable>(pgenVars);
-    }
-
-    @Override
-    public void addSubConfiguration(Configurable sub) throws InvalidValueException {
-        if (canAccept(sub.getClass())){
-            pgenVars.add((VarAssign)sub);
-        }else {
-            throw new InvalidValueException("Debug info can't accept "+ sub.getClass().getSimpleName());
-        }
-    }
-
-    @Override
-    protected void configurationDone() {
-//        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
+    
     public String getName() {
         return name;
     }

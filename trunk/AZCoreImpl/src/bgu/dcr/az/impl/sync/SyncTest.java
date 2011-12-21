@@ -17,11 +17,6 @@ import bgu.dcr.az.impl.infra.AbstractTest;
 @Register(name="sync-test", display="Synchronus Test")
 public class SyncTest extends AbstractTest {
 
-    @Override
-    protected void onConfigurationComplete() {
-        //DONT CARE :)
-    }
-
 
     @Override
     protected Execution provideExecution(Problem p, AlgorithmMetadata alg) {

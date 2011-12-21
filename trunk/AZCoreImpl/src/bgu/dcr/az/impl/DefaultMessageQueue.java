@@ -30,11 +30,8 @@ public class DefaultMessageQueue implements MessageQueue {
 
     @Override
     public void add(Message e) {
-        //System.out.println("Mailer add message");
         if (! q.offer(e)) throw new InternalErrorException("cannot insert message " + e + " to agent queue");
-        //System.out.println("Going to notify agent");
         count.release();
-        //System.out.println("Agent notified");
     }
 
     @Override

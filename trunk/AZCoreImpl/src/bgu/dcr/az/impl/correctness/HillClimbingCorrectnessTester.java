@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 @Register(name = "hill-climbing-tester", display= "Hill Climbing Correctness Tester")
 public class HillClimbingCorrectnessTester extends AbstractCorrectnessTester {
 
-    @Variable(name = "check-maximization", description = "check that the algorithm find result with more(true)/less(false) cost in each tick")
+    @Variable(name = "check-maximization", description = "check that the algorithm find result with more(true)/less(false) cost in each tick", defaultValue="true")
     boolean maxi = true;
     private PreparedStatement maxPstat = null;
     private PreparedStatement minPstat = null;

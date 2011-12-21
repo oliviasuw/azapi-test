@@ -10,7 +10,6 @@ import bgu.dcr.az.api.Mailer;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.MessageQueue;
 import bgu.dcr.az.api.infra.Execution;
-import bgu.dcr.az.impl.DefaultMessageQueue;
 import bgu.dcr.az.impl.async.AsyncMailer;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +26,7 @@ public abstract class AbstractMailer implements Mailer {
     private Map<String, MessageQueue[]> mailBoxes = new HashMap<String, MessageQueue[]>();
     Semaphore mailBoxModifierKey = new Semaphore(1);
 
-    private MessageQueue[] takeQueues(String groupKey) {
+    protected MessageQueue[] takeQueues(String groupKey) {
         try {
             MessageQueue[] qs = mailBoxes.get(groupKey);
             if (qs == null) {
@@ -36,7 +35,7 @@ public abstract class AbstractMailer implements Mailer {
                     final int numberOfVariables = exec.getGlobalProblem().getNumberOfVariables();
                     qs = new MessageQueue[numberOfVariables];
                     for (int i = 0; i < numberOfVariables; i++) {
-                        qs[i] = generateNewMessageQueue();
+                        qs[i] = generateNewMessageQueue(groupKey);
                     }
                     mailBoxes.put(groupKey, qs);
                 } else {
@@ -65,7 +64,7 @@ public abstract class AbstractMailer implements Mailer {
         }
     }
 
-    protected abstract MessageQueue generateNewMessageQueue();
+    protected abstract MessageQueue generateNewMessageQueue(String forGroup);
 
     public Map<String, MessageQueue[]> getMailBoxes() {
         return mailBoxes;

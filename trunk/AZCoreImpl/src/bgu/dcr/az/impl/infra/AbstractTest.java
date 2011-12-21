@@ -5,23 +5,20 @@
  */
 package bgu.dcr.az.impl.infra;
 
-import bgu.dcr.az.api.DeepCopyable;
+import bgu.dcr.az.api.ano.Configuration;
 import bgu.dcr.az.api.infra.CorrectnessTester;
 import bgu.dcr.az.impl.AlgorithmMetadata;
 import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.exp.InvalidValueException;
-import bgu.dcr.az.api.infra.Configurable;
 import bgu.dcr.az.api.infra.CorrectnessTester.TestedResult;
 import bgu.dcr.az.impl.DebugInfo;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.ExecutionResult;
 import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.Test.TestResult;
-import bgu.dcr.az.api.infra.VariableMetadata;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
 import bgu.dcr.az.api.pgen.Problem;
 import bgu.dcr.az.api.pgen.ProblemGenerator;
-import bgu.dcr.az.impl.VarAssign;
 import bgu.dcr.az.impl.db.DatabaseUnit;
 import bgu.dcr.az.impl.pgen.MapProblem;
 import bgu.dcr.az.impl.stat.AbstractStatisticCollector;
@@ -30,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 
@@ -38,28 +34,27 @@ import java.util.concurrent.ExecutorService;
  *
  * @author bennyl
  */
-public abstract class AbstractTest extends AbstractProcess implements Test {
+public abstract class AbstractTest extends AbstractProcess implements Test, Configuration.ExternalConfigurationAware {
 
     public static final String PROBLEM_GENERATOR_PROBLEM_METADATA = "PROBLEM GENERATOR";
     public static final String SEED_PROBLEM_METADATA = "SEED";
-    private static final StatisticCollector[] EMPTY_STATISTIC_COLLECTORS_ARRAY = new StatisticCollector[0];
     /**
      * V A R I A B L E S
      */
-    @Variable(name = "name", description = "the test name")
+    @Variable(name = "name", description = "the test name", defaultValue="")
     private String name = "";
-    @Variable(name = "seed", description = "seed for creating randoms for the problem generator")
+    @Variable(name = "seed", description = "seed for creating randoms for the problem generator", defaultValue="-1")
     private long seed = -1;
     //TODO: FOR NOW THIS PARAMETERS ARE GOOD BUT NEED TO TALK WITH ALON AND SEE WHAT TYPE OF EXPIREMENT MORE EXISTS
-    @Variable(name = "repeat-count", description = "the number of executions in each tick")
+    @Variable(name = "repeat-count", description = "the number of executions in each tick", defaultValue="100")
     private int repeatCount = 100;
-    @Variable(name = "run-var", description = "the variable to run")
+    @Variable(name = "run-var", description = "the variable to run", defaultValue="")
     private String runVar = "";
-    @Variable(name = "start", description = "starting value of the running variable")
+    @Variable(name = "start", description = "starting value of the running variable", defaultValue="0.1")
     private float start = 0.1f;
-    @Variable(name = "end", description = "ending value of the running variable (explicit)")
+    @Variable(name = "end", description = "ending value of the running variable (explicit)", defaultValue="0.9")
     private float end = 0.9f;
-    @Variable(name = "tick-size", description = "the runinig variable value increasment")
+    @Variable(name = "tick-size", description = "the runinig variable value increasment", defaultValue="0.1")
     private float tickSize = 0.1f;
     /**
      * F I E L D S
@@ -75,27 +70,10 @@ public abstract class AbstractTest extends AbstractProcess implements Test {
     private List<TestListener> listeners = new LinkedList<TestListener>();
     private float currentVarValue;
     private DebugInfo di = null;
-//    private long lastProblemSeed = -1; //USED FOR DEBUGING INFORMATION
     private List<Long> problemSeeds;
-    
-    
+    private boolean initialized = false;
+
     public AbstractTest() {
-    }
-
-    @Override
-    public List<Configurable> getConfiguredChilds() {
-        LinkedList<Configurable> ret = new LinkedList<Configurable>();
-        ret.addAll(collectors);
-        ret.addAll(algorithms);
-        if (pgen != null) {
-            ret.add(pgen);
-        }
-
-        if (ctester != null) {
-            ret.add(ctester);
-        }
-
-        return ret;
     }
 
     @Override
@@ -112,30 +90,49 @@ public abstract class AbstractTest extends AbstractProcess implements Test {
         return (int) (((end - start) / tickSize) + 1.0) * repeatCount;//(int) Math.floor((((end - start) / tickSize ) + 1.0) * (double)repeatCount);
     }
 
+    /**
+     * set the thread pool to use by this test
+     * @param pool 
+     */
     public void setPool(ExecutorService pool) {
         this.pool = pool;
     }
 
+    /**
+     * get the thread pool that is used by this test
+     * @return 
+     */
     public ExecutorService getPool() {
         return pool;
     }
 
+    /**
+     * return the current execution number that is being tested
+     */
     @Override
     public int getCurrentExecutionNumber() {
         return current;
     }
 
+    /**
+     * set the test name
+     * @param name 
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * @return the test name
+     */
     @Override
     public String getName() {
         return name;
     }
 
     @Override
-    public void registerStatisticCollector(StatisticCollector collector) {
+    @Configuration(name = "Statistic Collector", description = "Adding statistic collector to collect statistics for this round")
+    public void addStatisticCollector(StatisticCollector collector) {
         if (collector instanceof AbstractStatisticCollector) {
             ((AbstractStatisticCollector) collector).setTest(this);
         }
@@ -143,48 +140,37 @@ public abstract class AbstractTest extends AbstractProcess implements Test {
     }
 
     @Override
-    public StatisticCollector[] getRegisteredStatisticCollectors() {
-        return collectors.toArray(EMPTY_STATISTIC_COLLECTORS_ARRAY);
+    public List<StatisticCollector> getStatisticCollectors() {
+        return collectors;
     }
 
     public List<AlgorithmMetadata> getAlgorithms() {
         return algorithms;
     }
 
+    @Configuration(name = "Algorithm", description = "add algorithm to be tested")
     public void addAlgorithm(AlgorithmMetadata alg) {
         algorithms.add(alg);
     }
 
-    @Override
-    public void bubbleDownVariable(String var, Object val) {
-        for (AlgorithmMetadata a : algorithms) {
-            a.bubbleDownVariable(var, val);
-        }
+    public Problem generateProblem(int number) {
+            if (number > getLength() || number <= 0) {
+                throw new InvalidValueException("there is no such problem");
+            }
+            
+            int ticksPerformed = (number - 1) / repeatCount;
+            float vvar = start + tickSize * (float) ticksPerformed;
+            ProblemGenerator tpgen = DeepCopyUtil.deepCopy(pgen);
+            
+            Configuration.ConfigurationMetadata.bubbleDownVariable(tpgen, runVar, vvar);
+            Problem p = new MapProblem();
 
-        for (StatisticCollector c : this.collectors) {
-            c.bubbleDownVariable(var, val);
-        }
-
-        if (ctester != null) {
-            ctester.bubbleDownVariable(var, val);
-        }
-
-        pgen.bubbleDownVariable(var, val);
+            tpgen.generate(p, new Random(problemSeeds.get(number - 1)));
+            return p;
     }
 
-    public Problem generateProblem(int number){
-        if (number > getLength() || number <= 0) throw new InvalidValueException("there is no such problem");
-        int ticksPerformed = (number-1) /repeatCount;
-        float vvar = start + tickSize*(float)ticksPerformed;
-        ProblemGenerator tpgen = DeepCopyUtil.deepCopy(pgen);
-        tpgen.bubbleDownVariable(runVar, vvar);
-        Problem p = new MapProblem();
-        
-        tpgen.generate(p, new Random(problemSeeds.get(number-1)));
-        return p;
-    }
-    
     public void debug(DebugInfo di) {
+        initialize();
         fireTestStarted();
         try {
             Problem p = generateProblem(di.getFailedProblemNumber());
@@ -211,16 +197,17 @@ public abstract class AbstractTest extends AbstractProcess implements Test {
             DatabaseUnit.UNIT.signal(this);
         }
     }
-    
-    private float inc(float original, float inc, int precesion){
+
+    private float inc(float original, float inc, int precesion) {
         long p = (int) Math.pow(10, precesion);
-        long iorg = (int) (original*p);
-        long iinc = (int) (inc*p);
-        return ((float)(iorg+iinc))/(float)p;
+        long iorg = (int) (original * p);
+        long iinc = (int) (inc * p);
+        return ((float) (iorg + iinc)) / (float) p;
     }
 
     @Override
     protected void _run() {
+        initialize();
         try {
             fireTestStarted();
 
@@ -230,9 +217,9 @@ public abstract class AbstractTest extends AbstractProcess implements Test {
 
             int pnum = 0;
             current = 0;
-            
-            for (currentVarValue = start; currentVarValue <= end; currentVarValue = inc(currentVarValue, tickSize, 1000))  {
-                bubbleDownVariable(runVar, (float)currentVarValue);
+
+            for (currentVarValue = start; currentVarValue <= end; currentVarValue = inc(currentVarValue, tickSize, 1000)) {
+                Configuration.ConfigurationMetadata.bubbleDownVariable(this, runVar, (float) currentVarValue);
                 for (int i = 0; i < repeatCount; i++) {
                     Problem p = nextProblem(++pnum);
                     for (AlgorithmMetadata alg : getAlgorithms()) {
@@ -253,8 +240,8 @@ public abstract class AbstractTest extends AbstractProcess implements Test {
         }
 
     }
-    
-    public DebugInfo getFailoreDebugInfo(){
+
+    public DebugInfo getFailoreDebugInfo() {
         return di;
     }
 
@@ -295,73 +282,29 @@ public abstract class AbstractTest extends AbstractProcess implements Test {
     }
 
     @Override
-    public VariableMetadata[] provideExpectedVariables() {
-        return VariableMetadata.scan(this);
+    public TestResult getResult() {
+        return res;
     }
 
-    @Override
-    public boolean canAccept(Class<? extends Configurable> cls) {
-        if (ProblemGenerator.class.isAssignableFrom(cls)) {
-            return pgen == null;
-        } else if (StatisticCollector.class.isAssignableFrom(cls)) {
-            return true;
-        } else if (AlgorithmMetadata.class.isAssignableFrom(cls)) {
-            return true;
-        } else if (CorrectnessTester.class.isAssignableFrom(cls)) {
-            return ctester == null;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public List<Class<? extends Configurable>> provideExpectedSubConfigurations() {
-        LinkedList<Class<? extends Configurable>> ret = new LinkedList<Class<? extends Configurable>>();
-        ret.add(ProblemGenerator.class);
-        ret.add(StatisticCollector.class);
-        ret.add(AlgorithmMetadata.class);
-        ret.add(CorrectnessTester.class);
-        return ret;
-    }
-
-    @Override
-    public void addSubConfiguration(Configurable sub) throws InvalidValueException {
-        if (canAccept(sub.getClass())) {
-            if (sub instanceof ProblemGenerator) {
-                pgen = (ProblemGenerator) sub;
-            } else if (sub instanceof StatisticCollector) {
-                registerStatisticCollector((StatisticCollector) sub);
-            } else if (sub instanceof AlgorithmMetadata) {
-                this.algorithms.add((AlgorithmMetadata) sub);
-            } else {
-                this.setCorrectnessTester((CorrectnessTester) sub);
-            }
-        } else {
-            throw new InvalidValueException("can only accept 1 problem generator and statistics analyzers");
-        }
-    }
-
-    @Override
-    public void configure(Map<String, Object> variables) {
-        VariableMetadata.assign(this, variables);
+    private void initialize() {
+        if (this.initialized ) return;
+        this.initialized = true;
         rand = new Random(seed);
         //creating problem seeds 
         problemSeeds = new ArrayList<Long>(getLength());
-        for (int i=0; i<getLength(); i++){
+        for (int i = 0; i < getLength(); i++) {
             problemSeeds.add(rand.nextLong());
         }
-        onConfigurationComplete();
-    }
-    
-
-    @Override
-    public TestResult getResult() {
-        return res;
     }
 
     @Override
     public ProblemGenerator getProblemGenerator() {
         return pgen;
+    }
+
+    @Configuration(name = "Problem Generator", description = "Set problem generator")
+    public void setProblemGenerator(ProblemGenerator pgen) {
+        this.pgen = pgen;
     }
 
     /**
@@ -370,7 +313,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test {
      * @return 
      */
     protected Problem nextProblem(int num) {
-        long pseed = problemSeeds.get(num-1);
+        long pseed = problemSeeds.get(num - 1);
         Random nrand = new Random(pseed);
         MapProblem p = new MapProblem();
         HashMap<String, Object> metadata = p.getMetadata();
@@ -382,13 +325,12 @@ public abstract class AbstractTest extends AbstractProcess implements Test {
         return p;
     }
 
-    protected abstract void onConfigurationComplete();
-
     @Override
     public CorrectnessTester getCorrectnessTester() {
         return this.ctester;
     }
 
+    @Configuration(name = "Correctness Tester", description = "set correcteness tester to check solutions")
     @Override
     public void setCorrectnessTester(CorrectnessTester ctester) {
         this.ctester = ctester;
@@ -446,4 +388,11 @@ public abstract class AbstractTest extends AbstractProcess implements Test {
     public int getRepeatCount() {
         return this.repeatCount;
     }
+
+    @Override
+    public void afterExternalConfiguration() {
+        initialize();
+    }
+    
+    
 }

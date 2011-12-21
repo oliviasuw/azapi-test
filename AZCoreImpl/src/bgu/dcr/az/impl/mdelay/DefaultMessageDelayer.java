@@ -24,6 +24,9 @@ public class DefaultMessageDelayer implements MessageDelayer {
     int seed = 42;
     @Variable(name = "maximum-delay", description = "the maximum delay that the delayer can produce for a message", defaultValue = "100")
     int maximumDelay = 100;
+    @Variable(name = "minimum-delay", description = "the minimum delay that the delayer can produce for a message", defaultValue = "0")
+    int minimumDelay = 0;
+    
     int[][] previousTime;
     Random rnd = null;
 
@@ -35,15 +38,15 @@ public class DefaultMessageDelayer implements MessageDelayer {
     @Override
     public int extractTime(Message m) {
         if (type.equals("NCCC")) {
-            return (int) ((long) m.getMetadata().get("nccc"));
+            return ((Long) m.getMetadata().get("nccc")).intValue();
         } else {
-            return (int) ((long) m.getMetadata().get("ncsc"));
+            return ((Long) m.getMetadata().get("ncsc")).intValue();
         }
     }
 
     @Override
     public void addDelay(Message m, int from, int to) {
-        int delay = rnd.nextInt(maximumDelay);
+        int delay = rnd.nextInt(maximumDelay - minimumDelay) + minimumDelay;
         int ntime = Math.max(delay + previousTime[from][to], extractTime(m) + delay);
         previousTime[from][to] = ntime;
         if (type.equals("NCCC")) {

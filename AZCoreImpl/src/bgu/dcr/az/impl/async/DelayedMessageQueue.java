@@ -49,7 +49,7 @@ public class DelayedMessageQueue implements MessageQueue {
             }
             
             int mtime = dman.extractTime(msg);
-            if (mtime < time){
+            if (mtime <= time){
                 add(msg);
             }else {
                 internalq.offer(msg);
@@ -109,14 +109,27 @@ public class DelayedMessageQueue implements MessageQueue {
         return all;
     }
 
+    @Override
     public boolean isEmpty() {
         return this.q.isEmpty();
     }
 
+    @Override
     public boolean isNotEmpty() {
         return !this.q.isEmpty();
     }
 
+    /**
+     * @return from all the messages in the innerq the minimum message time - or null if the 
+     * innerq is empty.
+     */
+    public Integer minimumMessageTime(){
+        Message m = internalq.peek();
+        if (m == null ) return null;
+        
+        return dman.extractTime(m);
+    }
+    
     public static class MessageTimeComparator implements Comparator<Message> {
         MessageDelayer dman;
 

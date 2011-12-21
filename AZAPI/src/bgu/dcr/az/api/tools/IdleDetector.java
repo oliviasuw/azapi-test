@@ -48,7 +48,7 @@ public class IdleDetector {
             waiting--;
             s.release();
 
-            
+
             if (waiting == 0) {
                 if (m.isAllMailBoxesAreEmpty(groupKey)) {
                     s.acquire();
@@ -65,17 +65,62 @@ public class IdleDetector {
 
     }
 
-    public synchronized void addListener(Listener l){
+    public synchronized void addListener(Listener l) {
         listeners.add(l);
     }
-    
+
     private void fireIdleDetected() {
-        System.out.println("IDLE DETECTED!");
-        for (Listener l : listeners) l.onIdleDetected();
-    
+//        System.out.println("IDLE DETECTED!");
+        boolean resolved = false;
+        for (Listener l : listeners) {
+            l.onIdleDetection();
+        }
+
+        for (Listener l : listeners) {
+            resolved |= l.tryResolveIdle();
+            if (resolved) {
+                break;
+            }
+        }
+
+        if (!resolved) {
+            for (Listener l : listeners) {
+                l.idleCannotBeResolved();
+            }
+        } else {
+            for (Listener l : listeners) {
+                l.idleResolved();
+            }
+        }
     }
-    
+
     public static interface Listener {
-        void onIdleDetected();
+
+        /**
+         * this callback will get called once an idle detection was found 
+         * this method should never try to resolve the idle - it is only meant to 
+         * make updates for shared stated before the resolving phase
+         */
+        void onIdleDetection();
+
+        /**
+         * this callback will get called when idle was detected - this callback should 
+         * try to recover from the idle state
+         * if the recovery succedded then the callback should return true and false otherwise
+         * once one of the listeners return true there will be no more invokations of this callback
+         */
+        boolean tryResolveIdle();
+
+        /**
+         * this callback will get called after all the listeners was notified about idle detection 
+         * and after all of them returned false
+         */
+        void idleCannotBeResolved();
+
+        /**
+         * this callback will get called if the idle was resolved
+         * like the "onIdleDetection" function it is meant to update shared state
+         */
+        void idleResolved();
     }
 }

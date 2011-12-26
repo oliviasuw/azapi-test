@@ -39,7 +39,7 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements TestView
     File problemsPath;
     List<Experiment> badExperiments;
     Map<Experiment, File> efMap;
-    Listeners<DebugSelectionListener> debugListeners = Listeners.Builder.newInstance(DebugSelectionListener.class);  
+    Listeners<DebugSelectionListener> debugListeners = Listeners.Builder.newInstance(DebugSelectionListener.class);
 
     /** Creates new form StatusScreen */
     @SuppressWarnings("LeakingThisInConstructor")
@@ -57,9 +57,14 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements TestView
 
             @Override
             public Visual gen(Object it) {
-                ExperimentImpl ee = (ExperimentImpl) it;
-                SimpleDateFormat format = new SimpleDateFormat("dd'/'MM'/'yy' 'HH':'mm':'ss");
-                return new Visual(it, format.format(new Date(Long.valueOf(ee.getFailureDebugInfo().getName()))), "", null);
+                try {
+                    ExperimentImpl ee = (ExperimentImpl) it;
+                    SimpleDateFormat format = new SimpleDateFormat("dd'/'MM'/'yy' 'HH':'mm':'ss");
+                    return new Visual(it, format.format(new Date(Long.valueOf(ee.getDebugInfo().getName()))), "", null);
+                } catch (Exception ex) {
+                    System.out.println("Cannot visualize " + it.toString() + ", ignoring. (err: " + ex.getMessage() + ")");
+                    return new Visual(it, "cannot read", "cannot read", null);
+                }
             }
         }));
 
@@ -69,14 +74,14 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements TestView
             public void valueChanged(ListSelectionEvent e) {
                 testData.unSetData();
                 if (!failList.getSelectedItems().isEmpty()) {
-                    ExperimentImpl selected = (ExperimentImpl) ((Visual)failList.getSelectedItems().get(0)).getItem();
+                    ExperimentImpl selected = (ExperimentImpl) ((Visual) failList.getSelectedItems().get(0)).getItem();
                     List<Test> tests = selected.getTests();
-                    String testName = selected.getFailureDebugInfo().getTestName();
+                    String testName = selected.getDebugInfo().getTestName();
 
                     for (Test r : tests) {
                         if (r.getName().equals(testName)) {
                             testView.setModel(r);
-                            testView.addFailureData(selected.getFailureDebugInfo());
+                            testView.addFailureData(selected.getDebugInfo());
                             testData.setData(testViewScroll);
                             break;
                         }
@@ -108,12 +113,8 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements TestView
                 Experiment e = XMLConfigurator.read(f);
                 badExperiments.add(e);
                 efMap.put(e, f);
-            } catch (IOException ex) {
-                Logger.getLogger(DebugSelectionScreen.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InstantiationException ex) {
-                Logger.getLogger(DebugSelectionScreen.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(DebugSelectionScreen.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                System.out.println("There was an error reading the file " + f.getName() + ", ignoring it. (err: " + ex.getMessage() + ")");
             }
         }
     }
@@ -238,7 +239,7 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements TestView
     }// </editor-fold>//GEN-END:initComponents
 
     private void deleteSelectedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteSelectedActionPerformed
-        for (Visual i : failList.getSelectedItems()){
+        for (Visual i : failList.getSelectedItems()) {
             deleteItem(i);
         }
     }//GEN-LAST:event_deleteSelectedActionPerformed
@@ -246,7 +247,6 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements TestView
     private void jXHyperlink1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink1ActionPerformed
         debugListeners.fire().onFullExperimentDebugRequested();
     }//GEN-LAST:event_jXHyperlink1ActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel debugProblemButtonPan;
     private javax.swing.JButton deleteSelected;
@@ -263,16 +263,17 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements TestView
 
     @Override
     public void onDebugRequested() {
-        debugListeners.fire().onSpecificExperimentDebugRequested((Experiment)((Visual)failList.getSelectedItems().get(0)).getItem());
+        debugListeners.fire().onSpecificExperimentDebugRequested((Experiment) ((Visual) failList.getSelectedItems().get(0)).getItem());
     }
 
     public Listeners<DebugSelectionListener> getDebugListeners() {
         return debugListeners;
     }
-    
-    
-    public static interface DebugSelectionListener{
+
+    public static interface DebugSelectionListener {
+
         void onFullExperimentDebugRequested();
+
         void onSpecificExperimentDebugRequested(Experiment exp);
     }
 }

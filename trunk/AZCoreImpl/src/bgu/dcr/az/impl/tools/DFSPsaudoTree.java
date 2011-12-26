@@ -7,6 +7,7 @@ package bgu.dcr.az.impl.tools;
 import java.util.Set;
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.agt.SimpleAgent;
+import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.ano.WhenReceived;
 import bgu.dcr.az.api.tools.NestableTool;
 import bgu.dcr.az.api.tools.PsaudoTree;
@@ -109,7 +110,7 @@ public class DFSPsaudoTree extends NestableTool implements PsaudoTree {
     protected SimpleAgent createNestedAgent() {
         return new DFSTreeComputingAgent();
     }
-
+    @Algorithm(name="DDFS")
     public class DFSTreeComputingAgent extends SimpleAgent {
 
         private int color = COLOR_WHITE;

@@ -149,6 +149,7 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
     public void idleCannotBeResolved() {
         System.out.println("Idle Detected - Agent " + currentExecutedAgent.getId() + " Being Notified.");
         currentExecutedAgent.onIdleDetected();
+        idleDetectionLock.release();
     }
 
     @Override

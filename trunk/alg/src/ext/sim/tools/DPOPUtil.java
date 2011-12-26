@@ -1,11 +1,14 @@
 package ext.sim.tools;
 
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import bgu.dcr.az.api.DeepCopyable;
-import bgu.dcr.az.api.ImuteableProblem;
+import bgu.dcr.az.api.ImmutableProblem;
 import bgu.dcr.az.api.tools.Assignment;
 import ext.sim.agents.DPOPAgent;
 
@@ -48,7 +51,7 @@ public class DPOPUtil implements DeepCopyable{
 	}
 	public class AgentUtil implements Comparable<AgentUtil>, DeepCopyable{
 		protected int agentID;
-		protected LinkedList<AgentValue> agentValues;
+		protected HashMap<Integer, AgentValue> agentValues;
 		protected int util;
 		protected int value;
 
@@ -56,8 +59,8 @@ public class DPOPUtil implements DeepCopyable{
 			this(u.agentID);
 			this.value = u.value;
 			this.util = u.util;
-			for (AgentValue a : u.agentValues) {
-				this.agentValues.add((AgentValue) a.deepCopy());
+			for (Entry<Integer, AgentValue> a : u.agentValues.entrySet()) {
+				this.agentValues.put(a.getKey(), (AgentValue) a.getValue().deepCopy());
 			}
 		}
 
@@ -65,12 +68,12 @@ public class DPOPUtil implements DeepCopyable{
 			this.agentID = agent;
 			this.value = -1;
 			this.util = -1;
-			agentValues = new LinkedList<AgentValue>();
+			agentValues = new HashMap<Integer, AgentValue>();
 		}
 
 		public void add(int agent, int value) {
 			AgentValue a = new AgentValue(agent, value);
-			agentValues.add(a);
+			agentValues.put(agent, a);
 		}
 
 		@Override
@@ -79,12 +82,8 @@ public class DPOPUtil implements DeepCopyable{
 		}
 
 		private boolean containsAgentValue(AgentValue ao) {
-			for (AgentValue a : agentValues) {
-				if (a.equalAgentValue(ao)) {
-					return true;
-				}
-			}
-			return false;
+			return agentValues.containsKey(ao.agent) && 
+					agentValues.get(ao.agent).value == ao.value;
 		}
 
 		public int dim() {
@@ -92,19 +91,14 @@ public class DPOPUtil implements DeepCopyable{
 		}
 
 		public int get_Value(int id) {
-			for (AgentValue a : agentValues) {
-				if (a.getAgent() == id) {
-					return a.getValue();
-				}
-			}
-			return -1;
+			return agentValues.get(id).value;
 		}
 
 		protected int getAgentID() {
 			return this.agentID;
 		}
 
-		public LinkedList<AgentValue> getAgentValues() {
+		public HashMap<Integer, AgentValue> getAgentValues() {
 			return this.agentValues;
 		}
 
@@ -117,8 +111,9 @@ public class DPOPUtil implements DeepCopyable{
 		}
 
 		public boolean isConsistent(Assignment cpa) {
-			for (AgentValue a : agentValues) {
-				if (cpa.isAssigned(a.getAgent()) && cpa.getAssignment(a.getAgent()) != a.getValue()) {
+			for (Entry<Integer, AgentValue> a : agentValues.entrySet()) {
+				if (cpa.isAssigned(a.getKey()) && 
+						cpa.getAssignment(a.getKey()) != a.getValue().value) {
 					return false;
 				}
 			}
@@ -126,8 +121,8 @@ public class DPOPUtil implements DeepCopyable{
 		}
 
 		public boolean isConsistent(AgentUtil u) {
-			for (AgentValue a : u.agentValues) {
-				if (!containsAgentValue(a)) {
+			for (Entry<Integer, AgentValue> a : u.agentValues.entrySet()) {
+				if (!containsAgentValue(a.getValue())) {
 					return false;
 				}
 			}
@@ -151,29 +146,29 @@ public class DPOPUtil implements DeepCopyable{
 		@Override
 		public Object deepCopy() {
 			AgentUtil ans = new AgentUtil(this.agentID);
-			ans.agentValues = new LinkedList<DPOPUtil.AgentValue>();
+			ans.agentValues = new HashMap<Integer, AgentValue>();
 			ans.util = this.util;
-			for (AgentValue av : this.agentValues){
-				ans.agentValues.add((AgentValue) av.deepCopy());
+			for (Entry<Integer, AgentValue> av : this.agentValues.entrySet()){
+				ans.agentValues.put(av.getKey(), (AgentValue) av.getValue().deepCopy());
 			}
 			ans.value=this.value;
 			return ans;
 		}
 	}
 	protected int agent;
-	protected LinkedList<AgentUtil> agentUtils;
+	private TreeMap<Integer, AgentUtil> agentUtils;
 	protected LinkedList<DPOPUtil> childrenUtils;
 	protected int domainSize;
 
-	protected ImuteableProblem problem;
+	protected ImmutableProblem problem;
 
 	protected LinkedList<Integer> relevantAncestors;
 
-	public DPOPUtil(ImuteableProblem problem, int agentId, int domain) {
+	public DPOPUtil(ImmutableProblem problem, int agentId, int domain) {
 		this.problem = problem;
 		this.agent = agentId;
 		this.domainSize = domain;
-		agentUtils = new LinkedList<AgentUtil>();
+		agentUtils = new TreeMap<Integer, DPOPUtil.AgentUtil>();
 		childrenUtils = new LinkedList<DPOPUtil>();
 		relevantAncestors = new LinkedList<Integer>();
 	}
@@ -199,8 +194,8 @@ public class DPOPUtil implements DeepCopyable{
 				double u = da.getConstraintCost(agent, value);
 				if (u > min_cost)
 					continue;
-				for (AgentValue ass : au.getAgentValues()) {
-					u = (u + da.getConstraintCost(agent, value, ass.agent, ass.value));
+				for (Entry<Integer, AgentValue> ass : au.getAgentValues().entrySet()) {
+					u = (u + da.getConstraintCost(agent, value, ass.getKey(), ass.getValue().value));
 					if (u > min_cost)
 						continue;
 				}
@@ -208,6 +203,7 @@ public class DPOPUtil implements DeepCopyable{
 					continue;
 				for (DPOPUtil cu : childrenUtils) {
 					u = u + cu.getUtil(au, value);
+					da.getConstraintCost(agent, value); //To raise one NCC
 					if (u > min_cost)
 						break;
 				}
@@ -217,7 +213,7 @@ public class DPOPUtil implements DeepCopyable{
 				}
 			}
 			au.util = (int) min_cost;
-			agentUtils.add(au);
+			agentUtils.put(getKey(au), au);
 		}
 	}
 
@@ -230,8 +226,8 @@ public class DPOPUtil implements DeepCopyable{
 				double u =  da.getConstraintCost(agent, value);
 				if (u > min_cost)
 					continue;
-				for (AgentValue ass : au.getAgentValues()) {
-					u = u + da.getConstraintCost(agent, value, ass.agent, ass.value);
+				for (Entry<Integer, AgentValue> ass : au.getAgentValues().entrySet()) {
+					u = u + da.getConstraintCost(agent, value, ass.getKey(), ass.getValue().value);
 					if (u > min_cost)
 						continue;
 				}
@@ -241,7 +237,7 @@ public class DPOPUtil implements DeepCopyable{
 				}
 			}
 			au.util = (int) min_cost;
-			agentUtils.add(au);
+			agentUtils.put(getKey(au), au);
 		}
 	}
 
@@ -254,6 +250,7 @@ public class DPOPUtil implements DeepCopyable{
 			double u = da.getConstraintCost(agent, value);
 			for (DPOPUtil cu : childrenUtils) {
 				u = u + cu.getUtil(au, value);
+				da.getConstraintCost(agent, value); //To raise one NCC				
 				if (u > min_cost)
 					break;
 			}
@@ -263,7 +260,7 @@ public class DPOPUtil implements DeepCopyable{
 			}
 		}
 		au.util = (int) min_cost;
-		agentUtils.add(au);
+		agentUtils.put(getKey(au), au);
 	}
 
 	public void computeUtil(DPOPAgent a) {
@@ -280,27 +277,17 @@ public class DPOPUtil implements DeepCopyable{
 		}
 	}
 
-	private boolean containsAgentValue(LinkedList<AgentValue> v, AgentValue a1) {
-		for (AgentValue a2 : v) {
-			if (a1.equalAgentValue(a2)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean equalAgentValues(LinkedList<AgentValue> v1,LinkedList<AgentValue> v2) {
-		if (v1.size() != v2.size()) {
+	private boolean equalAgentValues(HashMap<Integer, AgentValue> a1, HashMap<Integer, AgentValue> a2) {	
+		if (a1.size() != a2.size()) {
 			return false;
 		}
-		for (AgentValue a1 : v1) {
-			if (!containsAgentValue(v2, a1)) {
+		for (int i : a1.keySet()) {
+			if (!a2.containsKey(i) || a1.get(i).value != a2.get(i).value) {
 				return false;
 			}
 		}
 		return true;
 	}
-
 	protected LinkedList<AgentUtil> getAgentValuesCombinations(LinkedList<Integer> list) {
 		LinkedList<Integer> agents = new LinkedList<Integer>();
 		agents.addAll(list);
@@ -331,29 +318,25 @@ public class DPOPUtil implements DeepCopyable{
 	}
 
 	public AgentUtil getBestUtil(Assignment cpa) {
-		LinkedList<AgentValue> ancestorsValues = new LinkedList<AgentValue>();
+		HashMap<Integer, AgentValue> ancestorsValues = new HashMap<Integer, AgentValue>();
 		for (int a = 0; a < problem.getNumberOfVariables(); a++) {
 			if (cpa.isAssigned(a)) {
-				ancestorsValues.add(new AgentValue(a, cpa.getAssignment(a)));
+				ancestorsValues.put(a, new AgentValue(a, cpa.getAssignment(a)));
 			}
 		}
 		return getAgentUtil(ancestorsValues);
 	}
 
-	private AgentUtil getAgentUtil(LinkedList<AgentValue> ancestorsValues) {
-		LinkedList<AgentValue> relevantAgentValues = new LinkedList<AgentValue>();
-		for (AgentValue a1 : ancestorsValues) {
-			for (AgentValue a2 : agentUtils.get(0).agentValues) {
-				if (a1.agent == a2.agent) {
-					relevantAgentValues.add(a1);
-					break;
-				}
+	private AgentUtil getAgentUtil(HashMap<Integer, AgentValue> ancestorsValues) {
+		HashMap<Integer, AgentValue> relevantAssignments = new HashMap<Integer, AgentValue>();
+		for (int i: ancestorsValues.keySet()) {
+			if (relevantAncestors.contains(i)) {
+				relevantAssignments.put(i, ancestorsValues.get(i));
 			}
-		}
-		for (AgentUtil u : agentUtils) {
-			if (equalAgentValues(u.agentValues, relevantAgentValues)) {
-				return u;
-			}
+		}	
+		int i = getKey(relevantAssignments);
+		if (agentUtils.containsKey(i)) {
+			return agentUtils.get(i);
 		}
 		return null;
 	}
@@ -375,26 +358,40 @@ public class DPOPUtil implements DeepCopyable{
 	}
 
 	public int getUtil(AgentUtil other, int i) {
-		LinkedList<AgentValue> v = new LinkedList<AgentValue>();
-		v.add(new AgentValue(other.getAgentID(), i));
-		v.addAll(other.agentValues);
+		HashMap<Integer, AgentValue> v = new HashMap<Integer, AgentValue>();
+		v.put(other.getAgentID(), new AgentValue(other.getAgentID(), i));
+		v.putAll(other.agentValues);
 		return getUtil(v);
 	}
 
-	public int getUtil(LinkedList<AgentValue> ancestorsValues) {
-		AgentUtil a = getAgentUtil(ancestorsValues);
+	public int getUtil(HashMap<Integer, AgentValue> v) {
+		AgentUtil a = getAgentUtil(v);
 		assert a != null;
 		return a.util;
 	}
 
-	public int getValue(LinkedList<AgentValue> ancestorsValues) {
+	public int getValue(HashMap<Integer, AgentValue> ancestorsValues) {
 		AgentUtil a = getAgentUtil(ancestorsValues);
 		if (a == null) {
 			return -1;
 		}
 		return a.value;
 	}
-
+	
+	private int getKey(HashMap<Integer, AgentValue> h) {
+		int sum = 0;
+		for (int i=0; i<problem.getNumberOfVariables(); i++) {
+			if (h.containsKey(i)) {
+				sum = sum + (int)Math.pow(problem.getDomainSize(0), i)*h.get(i).value;
+			}
+		}
+		return sum;	
+	}
+	
+	private int getKey(AgentUtil au) {
+		return getKey(au.agentValues);
+	}
+	
 	public String toString() {
 		return "Agent " + this.agent + " Utils:\n" + this.agentUtils + "\n";
 	}
@@ -405,12 +402,12 @@ public class DPOPUtil implements DeepCopyable{
 		
 		DPOPUtil ans = new DPOPUtil(this.problem, this.agent, this.domainSize);
 		
-		ans.agentUtils = new LinkedList<AgentUtil>();
+		ans.agentUtils = new TreeMap<Integer, AgentUtil>();
 		ans.childrenUtils = new LinkedList<DPOPUtil>();
 		ans.relevantAncestors = new LinkedList<Integer>();
 		
-		for (AgentUtil au : this.agentUtils){
-			ans.agentUtils.add((AgentUtil) au.deepCopy());
+		for (Entry<Integer, AgentUtil> au : this.agentUtils.entrySet()){
+			ans.agentUtils.put(au.getKey(), au.getValue());
 		}
 		for (DPOPUtil u : this.childrenUtils){
 			ans.childrenUtils.add((DPOPUtil) u.deepCopy());

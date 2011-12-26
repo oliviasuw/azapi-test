@@ -24,9 +24,9 @@ public class NewJFrame extends javax.swing.JFrame {
     /** Creates new form NewJFrame */
     public NewJFrame() {
         initComponents();
-        vars.add(new VariableMetadata("test1", "this is test 1", 5, Integer.class));
-        vars.add(new VariableMetadata("test2", "this is test 2", 5, Integer.class));
-        vars.add(new VariableMetadata("test3", "this is test 3", 5, Integer.class));
+//        vars.add(new VariableMetadata("test1", "this is test 1", 5, Integer.class));
+//        vars.add(new VariableMetadata("test2", "this is test 2", 5, Integer.class));
+//        vars.add(new VariableMetadata("test3", "this is test 3", 5, Integer.class));
     }
 
     /** This method is called from within the constructor to

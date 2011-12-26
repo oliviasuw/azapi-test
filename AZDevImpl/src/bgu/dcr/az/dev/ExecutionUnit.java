@@ -43,9 +43,11 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
     LogListener logListener = null;
     boolean running;
     File badProblemStorage = new File("fail-problems");
-
+    boolean inDebugMode = false;
+    
     void run(File xml, boolean withGui, boolean debug) throws InterruptedException {
         try {
+            this.inDebugMode = debug;
             worker.start();
             runningExperiment = XMLConfigurator.read(xml);
             SwingDSL.configureUI();
@@ -142,7 +144,7 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
             }
         });
 
-        if (!source.getResult().succeded) {
+        if (!source.getResult().succeded && !inDebugMode) {
             PrintWriter pw;
             try {
                 String fname = newFileName();
@@ -226,7 +228,7 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
 
         @Override
         public void run() {
-            while (!Thread.interrupted()) {
+            while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Runnable job = jobs.take();
                     try {

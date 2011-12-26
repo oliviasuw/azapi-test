@@ -289,7 +289,7 @@ public enum DatabaseUnit {
             SimpleEntry<DBRecord, Test> stat;
             while (true) {
                 try {
-                    if (dbQueue.isEmpty() && Thread.interrupted()) {
+                    if (dbQueue.isEmpty() && Thread.currentThread().isInterrupted()) {
                         return;
                     }
                     List<SimpleEntry<DBRecord, Test>> multi = new LinkedList<SimpleEntry<DBRecord, Test>>();

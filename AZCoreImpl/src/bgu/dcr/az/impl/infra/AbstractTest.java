@@ -5,6 +5,8 @@
  */
 package bgu.dcr.az.impl.infra;
 
+import bgu.dcr.az.api.Agent;
+import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.ano.Configuration;
 import bgu.dcr.az.api.infra.CorrectnessTester;
 import bgu.dcr.az.impl.AlgorithmMetadata;
@@ -14,6 +16,7 @@ import bgu.dcr.az.api.infra.CorrectnessTester.TestedResult;
 import bgu.dcr.az.impl.DebugInfo;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.ExecutionResult;
+import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.Test.TestResult;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
@@ -41,20 +44,20 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
     /**
      * V A R I A B L E S
      */
-    @Variable(name = "name", description = "the test name", defaultValue="")
+    @Variable(name = "name", description = "the test name", defaultValue = "")
     private String name = "";
-    @Variable(name = "seed", description = "seed for creating randoms for the problem generator", defaultValue="-1")
+    @Variable(name = "seed", description = "seed for creating randoms for the problem generator", defaultValue = "-1")
     private long seed = -1;
     //TODO: FOR NOW THIS PARAMETERS ARE GOOD BUT NEED TO TALK WITH ALON AND SEE WHAT TYPE OF EXPIREMENT MORE EXISTS
-    @Variable(name = "repeat-count", description = "the number of executions in each tick", defaultValue="100")
+    @Variable(name = "repeat-count", description = "the number of executions in each tick", defaultValue = "100")
     private int repeatCount = 100;
-    @Variable(name = "run-var", description = "the variable to run", defaultValue="")
+    @Variable(name = "run-var", description = "the variable to run", defaultValue = "")
     private String runVar = "";
-    @Variable(name = "start", description = "starting value of the running variable", defaultValue="0.1")
+    @Variable(name = "start", description = "starting value of the running variable", defaultValue = "0.1")
     private float start = 0.1f;
-    @Variable(name = "end", description = "ending value of the running variable (explicit)", defaultValue="0.9")
+    @Variable(name = "end", description = "ending value of the running variable (explicit)", defaultValue = "0.9")
     private float end = 0.9f;
-    @Variable(name = "tick-size", description = "the runinig variable value increasment", defaultValue="0.1")
+    @Variable(name = "tick-size", description = "the runinig variable value increasment", defaultValue = "0.1")
     private float tickSize = 0.1f;
     /**
      * F I E L D S
@@ -63,7 +66,6 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
     private ProblemGenerator pgen = null;
     private List<StatisticCollector> collectors = new LinkedList<StatisticCollector>();
     private TestResult res = null;
-    private ExecutorService pool;
     private Random rand;
     private int current = 0;
     private CorrectnessTester ctester = null;
@@ -72,7 +74,8 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
     private DebugInfo di = null;
     private List<Long> problemSeeds;
     private boolean initialized = false;
-
+    private Experiment experiment; // the executing experiment
+    
     public AbstractTest() {
     }
 
@@ -90,20 +93,12 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
         return (int) (((end - start) / tickSize) + 1.0) * repeatCount;//(int) Math.floor((((end - start) / tickSize ) + 1.0) * (double)repeatCount);
     }
 
-    /**
-     * set the thread pool to use by this test
-     * @param pool 
-     */
-    public void setPool(ExecutorService pool) {
-        this.pool = pool;
+    public void setExperiment(Experiment exp) {
+        this.experiment = exp;
     }
 
-    /**
-     * get the thread pool that is used by this test
-     * @return 
-     */
-    public ExecutorService getPool() {
-        return pool;
+    public Experiment getExperiment() {
+        return experiment;
     }
 
     /**
@@ -154,25 +149,26 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
     }
 
     public Problem generateProblem(int number) {
-            if (number > getLength() || number <= 0) {
-                throw new InvalidValueException("there is no such problem");
-            }
-            
-            int ticksPerformed = (number - 1) / repeatCount;
-            float vvar = start + tickSize * (float) ticksPerformed;
-            ProblemGenerator tpgen = DeepCopyUtil.deepCopy(pgen);
-            
-            Configuration.ConfigurationMetadata.bubbleDownVariable(tpgen, runVar, vvar);
-            Problem p = new MapProblem();
+        if (number > getLength() || number <= 0) {
+            throw new InvalidValueException("there is no such problem");
+        }
 
-            tpgen.generate(p, new Random(problemSeeds.get(number - 1)));
-            return p;
+        int ticksPerformed = (number - 1) / repeatCount;
+        float vvar = start + tickSize * (float) ticksPerformed;
+        ProblemGenerator tpgen = DeepCopyUtil.deepCopy(pgen);
+
+        Configuration.ConfigurationMetadata.bubbleDownVariable(tpgen, runVar, vvar);
+        Problem p = new MapProblem();
+
+        tpgen.generate(p, new Random(problemSeeds.get(number - 1)));
+        return p;
     }
 
     public void debug(DebugInfo di) {
         initialize();
         fireTestStarted();
         try {
+            
             Problem p = generateProblem(di.getFailedProblemNumber());
 
             AlgorithmMetadata alg = null;
@@ -218,17 +214,38 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
             int pnum = 0;
             current = 0;
 
+            boolean failed = false;
+            Class failedClass = null;
             for (currentVarValue = start; currentVarValue <= end; currentVarValue = inc(currentVarValue, tickSize, 1000)) {
                 Configuration.ConfigurationMetadata.bubbleDownVariable(this, runVar, (float) currentVarValue);
                 for (int i = 0; i < repeatCount; i++) {
+
+
                     Problem p = nextProblem(++pnum);
-                    for (AlgorithmMetadata alg : getAlgorithms()) {
-                        if (!execute(p, alg)) {
-                            di = new DebugInfo(this.getName(), alg.getName(), pnum);
-                            return;
+                    if (p == null) {
+                        failed = true;
+                        failedClass = getProblemGenerator().getClass();
+                    } else {
+                        for (AlgorithmMetadata alg : getAlgorithms()) {
+                            if (!execute(p, alg)) {
+                                failed = true;
+                                failedClass = alg.getAgentClass();
+                                break;
+                            }
                         }
+                        current++;
                     }
-                    current++;
+
+                    if (failed || Thread.currentThread().isInterrupted()) {
+                        String algName;
+                        if (Agent.class.isAssignableFrom(failedClass)) {
+                            algName = ((Algorithm) failedClass.getAnnotation(Algorithm.class)).name();
+                        } else {
+                            algName = algorithms.get(0).getName();
+                        }
+                        di = new DebugInfo(this.getName(), algName, pnum);
+                        return;
+                    }
                 }
             }
             res = new TestResult();
@@ -286,8 +303,17 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
         return res;
     }
 
+    public DebugInfo getDebugInfo() {
+        return di;
+    }
+    
+    
+
     private void initialize() {
-        if (this.initialized ) return;
+        Thread.currentThread().setName("Test Runner Thread");
+        if (this.initialized) {
+            return;
+        }
         this.initialized = true;
         rand = new Random(seed);
         //creating problem seeds 
@@ -313,16 +339,24 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
      * @return 
      */
     protected Problem nextProblem(int num) {
-        long pseed = problemSeeds.get(num - 1);
-        Random nrand = new Random(pseed);
-        MapProblem p = new MapProblem();
-        HashMap<String, Object> metadata = p.getMetadata();
+        try {
+            long pseed = problemSeeds.get(num - 1);
+            Random nrand = new Random(pseed);
+            MapProblem p = new MapProblem();
+            HashMap<String, Object> metadata = p.getMetadata();
 
-        metadata.put(SEED_PROBLEM_METADATA, pseed);
-        metadata.put(PROBLEM_GENERATOR_PROBLEM_METADATA, pgen.getClass().getName());
+            metadata.put(SEED_PROBLEM_METADATA, pseed);
+            metadata.put(PROBLEM_GENERATOR_PROBLEM_METADATA, pgen.getClass().getName());
 
-        pgen.generate(p, nrand);
-        return p;
+            pgen.generate(p, nrand);
+            return p;
+        } catch (Exception ex) {
+            if (ex instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            ex.printStackTrace();
+            return null;
+        }
     }
 
     @Override
@@ -393,6 +427,4 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
     public void afterExternalConfiguration() {
         initialize();
     }
-    
-    
 }

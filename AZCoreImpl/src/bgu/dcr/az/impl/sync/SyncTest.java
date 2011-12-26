@@ -20,6 +20,6 @@ public class SyncTest extends AbstractTest {
 
     @Override
     protected Execution provideExecution(Problem p, AlgorithmMetadata alg) {
-        return new SyncExecution(getPool(), p, alg, this);
+        return new SyncExecution(p, alg, this, getExperiment());
     }
 }

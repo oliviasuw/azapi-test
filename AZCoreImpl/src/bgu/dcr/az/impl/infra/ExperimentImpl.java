@@ -6,7 +6,6 @@ package bgu.dcr.az.impl.infra;
 
 import bgu.dcr.az.api.ano.Configuration;
 import bgu.dcr.az.api.ano.Register;
-import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.impl.DebugInfo;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.Test.TestResult;
@@ -18,27 +17,45 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author bennyl
  */
-@Register(name = "experiment", display="Experiment")
+@Register(name = "experiment", display = "Experiment")
 public class ExperimentImpl extends AbstractProcess implements Experiment, Test.TestListener {
 
+    private List<Thread> allThreads = new Vector<Thread>();
     private static final VariableMetadata[] EMPTY_VARIABLE_ARRAY = new VariableMetadata[0];
     private List<Test> tests = new ArrayList<Test>();
     private ExperimentResult result;
     private LinkedList<Experiment.ExperimentListener> listeners = new LinkedList<ExperimentListener>();
     private DebugInfo di;
+    private ExecutorService pool;
 
     @Override
     public void _run() {
 
-        ExecutorService pool = Executors.newCachedThreadPool();
+        pool = Executors.newCachedThreadPool(new ThreadFactory() {
+
+            AtomicInteger ai = new AtomicInteger(0);
+
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r);
+                t.setName("pool-thread-" + ai.getAndIncrement());
+                allThreads.add(t);
+                return t;
+            }
+        });
         try {
 
             fireExperimentStarted();
@@ -55,36 +72,38 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
                 }
             }
 
-            for (Test current : testsToRun) {
-                if (Thread.interrupted()) {
+            for (Test currentTest : testsToRun) {
+                if (Thread.currentThread().isInterrupted()) {
                     result = new ExperimentResult(true);
                 }
 
-                current.addListener(this);
+                currentTest.addListener(this);
 
-                if (current instanceof AbstractTest) {
-                    ((AbstractTest) current).setPool(pool);
+                if (currentTest instanceof AbstractTest) {
+                    ((AbstractTest) currentTest).setExperiment(this);
                 }
+
 
                 if (di == null) {
-                    current.run();
+                    currentTest.run();
                 } else {
-                    ((AbstractTest) current).debug(di);
+                    ((AbstractTest) currentTest).debug(di);
                 }
 
-                DatabaseUnit.UNIT.signal(current); // SIGNALING - TELLING THAT STATISTICS COLLECTION TO THE CURRENT TEST IS OVER
-                current.removeListener(this);
-                TestResult res = current.getResult();
+                DatabaseUnit.UNIT.signal(currentTest); // SIGNALING - TELLING THAT STATISTICS COLLECTION TO THE CURRENT TEST IS OVER
+                currentTest.removeListener(this);
+                TestResult res = currentTest.getResult();
                 switch (res.finishStatus) {
                     case CRUSH:
                     case WRONG_RESULT:
-                        result = new ExperimentResult(current, res);
+                        result = new ExperimentResult(currentTest, res);
+                        setDebugInfo(((AbstractTest) currentTest).getDebugInfo());
                         return;
                 }
             }
 
             result = new ExperimentResult(false);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
             fireExperimentEnded();
@@ -92,11 +111,7 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
         }
     }
 
-    public DebugInfo getFailureDebugInfo() {
-        return di;
-    }
-
-    @Configuration(name="Test", description="Add new test for the experiment")
+    @Configuration(name = "Test", description = "Add new test for the experiment")
     @Override
     public void addTest(Test test) {
         tests.add(test);
@@ -106,15 +121,15 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
     public List<Test> getTests() {
         if (di == null) {
             return Collections.unmodifiableList(tests);
-        }else {
+        } else {
             List<Test> ret = new LinkedList<Test>();
-            for (Test r : tests){
-                if (r.getName().equals(di.getTestName())){
+            for (Test r : tests) {
+                if (r.getName().equals(di.getTestName())) {
                     ret.add(r);
                     return ret;
                 }
             }
-            
+
             return ret;
         }
     }
@@ -124,16 +139,15 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
         return result;
     }
 
-    @Configuration(name="Debug Information", description="Required if the test is to be run in debug mode")
-    public void setDebugInfo(DebugInfo di){
+    @Configuration(name = "Debug Information", description = "Required if the test is to be run in debug mode")
+    public void setDebugInfo(DebugInfo di) {
         this.di = di;
     }
-    
-    public DebugInfo getDebugInfo(){
+
+    public DebugInfo getDebugInfo() {
         return this.di;
     }
-    
-    
+
     @Override
     public void addListener(ExperimentListener l) {
         listeners.add(l);
@@ -192,4 +206,13 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
 
     }
 
+    @Override
+    public void stop() {
+        pool.shutdownNow();
+    }
+
+    @Override
+    public ExecutorService getThreadPool() {
+        return pool;
+    }
 }

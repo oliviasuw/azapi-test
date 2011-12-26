@@ -1,6 +1,5 @@
 package bgu.dcr.az.impl.infra;
 
-import bgu.dcr.az.api.infra.stat.StatisticRoot;
 import bgu.dcr.az.impl.async.AsyncExecution;
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Agent.PlatformOps;
@@ -12,6 +11,7 @@ import bgu.dcr.az.api.pgen.Problem;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.ExecutionResult;
 import bgu.dcr.az.api.SystemClock;
+import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
 import bgu.dcr.az.api.tools.Assignment;
@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,7 +36,8 @@ import java.util.logging.Logger;
  * @author bennyl
  */
 public abstract class AbstractExecution extends AbstractProcess implements Execution {
-    
+
+    private Experiment experiment; //the executing experiment
     private Problem problem;//the *global* problem
     private Mailer mailer; //the mailer object used by this execution
     private boolean shuttingdown; //this variable is used to check that the execution is doing the process of shuting down only once.
@@ -52,30 +54,32 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private final Test test; //the test that this execution is running in
     private Map<String, ReportHook> reportHooks = new HashMap<String, ReportHook>();//list of report hook listeners
     private boolean idleDetectorNeeded = false;//hard set for the execution to use idle detection
+
     /**
      * 
      */
-    public AbstractExecution(ExecutorService exec, Problem p, Mailer m, AlgorithmMetadata a, Test test) {
+    public AbstractExecution(Problem p, Mailer m, AlgorithmMetadata a, Test test, Experiment exp) {
         this.shuttingdown = false;
-        this.executorService = exec;
+        this.executorService = exp.getThreadPool();
         this.mailer = m;
         this.problem = p;
         this.algorithmMetadata = a;
         this.test = test;
+        this.experiment = exp;
     }
 
     @Override
-    public void hookIn(String name, ReportHook hook){
+    public void hookIn(String name, ReportHook hook) {
         reportHooks.put(name, hook);
     }
 
     @Override
     public void report(String to, Agent a, Object[] args) {
-        if (reportHooks.containsKey(to)){
+        if (reportHooks.containsKey(to)) {
             reportHooks.get(to).hook(a, args);
         }
     }
-    
+
     /**
      * will stop the current execution and set the result to no solution
      * TODO: maybe keep track of the execution status via enum (working, done, crushed, etc.)
@@ -92,8 +96,12 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
             System.out.println("PANIC! " + ex.getMessage() + ", [USER TEXT]: " + error);
         }
     }
-    
-    public void setIdleDetectionNeeded(boolean needed){
+
+    /**
+     * force the execution to use idle detector (even if not stated so in the algorithm metadata)
+     * @param needed 
+     */
+    public void setIdleDetectionNeeded(boolean needed) {
         this.idleDetectorNeeded = needed;
     }
 
@@ -111,7 +119,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     public int getNumberOfAgentRunners() {
         return agentRunners.length;
     }
-    
+
     public void setSystemClock(SystemClock clock) {
         this.clock = clock;
     }
@@ -153,7 +161,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
 
     @Override
     public void stop() {
-        executorService.shutdownNow();
+        experiment.stop();
     }
 
     protected ExecutorService getExecutorService() {
@@ -181,6 +189,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         return idleDetector;
     }
 
+    @Override
     public void setStatisticCollectors(List<StatisticCollector> statisticCollectors) {
         this.statisticCollectors = statisticCollectors;
     }
@@ -258,7 +267,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         try {
             doStaticConfigurations();
             configure();
-            for (StatisticCollector sc : statisticCollectors){
+            for (StatisticCollector sc : statisticCollectors) {
                 sc.hookIn(agents, this);
             }
             startExecution();
@@ -274,17 +283,17 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         if (isIdleDetectionIsNeeded()) {
             this.idleDetector = new IdleDetector(getGlobalProblem().getNumberOfVariables(), getMailer(), getAlgorithm().getAgentClass().getName());
         }
-        
+
     }
 
     /**
      * this function return true if idle detection is needed
      * overrite this function to change the idle detection activation setup
      */
-    protected boolean isIdleDetectionIsNeeded(){
+    protected boolean isIdleDetectionIsNeeded() {
         return getAlgorithm().isUseIdleDetector() || this.idleDetectorNeeded;
     }
-    
+
     protected void startExecution() {
         System.out.println("Starting new execution");
         while (true) {

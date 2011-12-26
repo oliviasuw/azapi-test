@@ -7,6 +7,8 @@ package bgu.dcr.az.impl;
 import bgu.dcr.az.api.ano.Configuration;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
+import bgu.dcr.az.api.infra.VariableMetadata;
+import bgu.dcr.az.api.pgen.ProblemGenerator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,8 +27,6 @@ public class DebugInfo {
     @Variable(name="number", description="number of the failing problem", defaultValue="-1")
     int number = -1;
     
-    List<VarAssign> pgenVars = new LinkedList<VarAssign>();
-
     public DebugInfo(String testName, String algName, int number) {
         this.testName = testName;
         this.algName = algName;
@@ -45,19 +45,6 @@ public class DebugInfo {
     
     public int getFailedProblemNumber(){
         return number;
-    }
-    
-    public List<VarAssign> getProblemGeneratorConfiguration(){
-        return pgenVars;
-    }
-
-    @Configuration(name="Problem Generator Variables", description="the problem generator variables that was captured during the failore")
-    public void addProblemGeneratorVariable(VarAssign var){
-        pgenVars.add(var);
-    }
-
-    public List<VarAssign> getProblemGeneratorVariables() {
-        return pgenVars;
     }
     
     public String getName() {

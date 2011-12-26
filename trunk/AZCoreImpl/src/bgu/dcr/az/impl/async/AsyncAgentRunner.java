@@ -54,6 +54,7 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
     @Override
     public void run() {
         ContinuationMediator cmed;
+        Thread.currentThread().setName("Agent Runner For Agents With ID " + currentExecutedAgent.getId());
 
         if (nestedAgents.isEmpty()) {
             cthread = Thread.currentThread();

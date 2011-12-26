@@ -21,6 +21,7 @@ import java.util.concurrent.Semaphore;
  */
 public abstract class AbstractMailer implements Mailer {
 
+    private final static boolean DEBUG = true;
     public static final String RECEPIENT_MESSAGE_METADATA = "AbstractMailer.RECEPIENT_MESSAGE_METADATA";
     private Execution exec;
     private Map<String, MessageQueue[]> mailBoxes = new HashMap<String, MessageQueue[]>();
@@ -51,6 +52,12 @@ public abstract class AbstractMailer implements Mailer {
         }
     }
 
+    private void dp(Object what){
+        if (DEBUG){
+            System.out.println("" + what);
+        }
+    }
+    
     public AbstractMailer() {
     }
 
@@ -91,7 +98,7 @@ public abstract class AbstractMailer implements Mailer {
         MessageQueue q = takeQueues(groupKey)[to];
         Message mcopy = msg.copy();
         mcopy.getMetadata().put(AsyncMailer.RECEPIENT_MESSAGE_METADATA, to);
-        //System.out.println("Mailer got message to send to agent " + to + " in group " + groupKey);
+        //dp("Mailer got message " + msg + " to send to agent " + to + " in group " + groupKey);
         q.add(mcopy);
     }
 

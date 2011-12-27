@@ -12,7 +12,7 @@ import bgu.dcr.az.api.ano.Variable;
  *
  * @author bennyl
  */
-@Algorithm(name="MSR")
+@Algorithm(name="__MSR")
 public class MisrableAgent extends SimpleAgent{
 
     @Variable(name="b", description="test1", defaultValue="false")

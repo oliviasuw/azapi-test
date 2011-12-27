@@ -121,7 +121,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
                     showProblem(p);
                     problemViewingDescription.setText("Showing problem " + pnum + " of test " + c.getName());
                 } catch (Exception ex) {
-                    MessageDialog.showValidationFaild("" + ex.getMessage());
+                    MessageDialog.showFail("cannot load problem (did you defined a problem generator?): " , ex.getMessage());
                 }
                 return null;
             }

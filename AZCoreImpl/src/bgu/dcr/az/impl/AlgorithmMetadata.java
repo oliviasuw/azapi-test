@@ -19,7 +19,7 @@ import java.util.Map.Entry;
  * creation it configurs with its given configuration.
  * @author bennyl
  */
-@Register(name = "algorithm", display = "Algorithm")
+@Register(name = "algorithm")
 public class AlgorithmMetadata implements Configuration.ExternalConfigurationAware {
 
     @Variable(name = "name", description = "the name of the algorithm", defaultValue = "unnamed")

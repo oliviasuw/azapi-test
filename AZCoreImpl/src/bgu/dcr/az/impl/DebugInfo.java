@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author bennyl
  */
-@Register(name = "debug-info", display="Debugging Information", visible=false)
+@Register(name = "debug-info", visible=false)
 public class DebugInfo {
     @Variable(name="test-name", description="failing test name", defaultValue="unnamed")
     String testName = "";

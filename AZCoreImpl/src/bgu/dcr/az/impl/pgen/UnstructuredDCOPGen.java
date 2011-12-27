@@ -16,7 +16,7 @@ import java.util.Random;
  *
  * @author bennyl
  */
-@Register(name = "dcop-unstructured", display="Unstructured DCOP Problem Generator")
+@Register(name = "dcop-unstructured")
 public class UnstructuredDCOPGen extends AbstractProblemGenerator {
 
     @Variable(name = "n", description = "number of variables", defaultValue="2")

@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  *
  * @author bennyl
  */
-@Register(name="cc-sc", display="Avarage Number Of Constraint Checks")
+@Register(name="cc-sc")
 public class CCStatisticCollector extends AbstractStatisticCollector<CCStatisticCollector.CCRecord> {
 
     @Override

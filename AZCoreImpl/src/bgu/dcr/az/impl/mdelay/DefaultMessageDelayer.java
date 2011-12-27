@@ -15,16 +15,24 @@ import java.util.Random;
  *
  * @author bennyl
  */
-@Register(name = "default-message-delayer", display = "Default Message Delayer")
+@Register(name = "default-message-delayer")
 public class DefaultMessageDelayer implements MessageDelayer {
 
-    @Variable(name = "type", description = "the type of the delay: NCCC/NCSC, each depends on the corresponding statistic collectors", defaultValue = "NCCC")
+    @Variable(name = "type",
+              description = "the type of the delay: NCCC/NCSC, each depends on the corresponding statistic collectors",
+              defaultValue = "NCCC")
     String type = "NCCC";
-    @Variable(name = "seed", description = "seed for the randomization of the delay", defaultValue = "42")
+    @Variable(name = "seed",
+              description = "seed for the randomization of the delay",
+              defaultValue = "42")
     int seed = 42;
-    @Variable(name = "maximum-delay", description = "the maximum delay that the delayer can produce for a message", defaultValue = "100")
+    @Variable(name = "maximum-delay",
+              description = "the maximum delay that the delayer can produce for a message",
+              defaultValue = "100")
     int maximumDelay = 100;
-    @Variable(name = "minimum-delay", description = "the minimum delay that the delayer can produce for a message", defaultValue = "0")
+    @Variable(name = "minimum-delay",
+              description = "the minimum delay that the delayer can produce for a message",
+              defaultValue = "0")
     int minimumDelay = 0;
     
     int[][] previousTime;

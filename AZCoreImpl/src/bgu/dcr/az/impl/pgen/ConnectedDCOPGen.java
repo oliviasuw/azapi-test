@@ -12,7 +12,7 @@ import java.util.Random;
  *
  * @author bennyl
  */
-@Register(name="dcop-connected", display="Connected DCOP Problem Generator")
+@Register(name="dcop-connected")
 public class ConnectedDCOPGen extends UnstructuredDCOPGen {
 
     @Override

@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  *
  * @author bennyl
  */
-@Register(name = "experiment", display = "Experiment")
+@Register(name = "experiment")
 public class ExperimentImpl extends AbstractProcess implements Experiment, Test.TestListener {
 
     private List<Thread> allThreads = new Vector<Thread>();

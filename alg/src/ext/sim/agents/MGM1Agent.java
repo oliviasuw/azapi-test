@@ -7,7 +7,7 @@ import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.ano.WhenReceived;
 import bgu.dcr.az.api.tools.Assignment;
 
-@Algorithm(name = "MGM", problemType = ProblemType.COP, searchType = SearchType.SYNCHRONIZED)
+@Algorithm(name = "MGM", problemType = ProblemType.DCOP, searchType = SearchType.SYNCHRONOUS)
 public class MGM1Agent extends SimpleAgent {
 
 	private Assignment values;
@@ -39,7 +39,7 @@ public class MGM1Agent extends SimpleAgent {
 
 	@Override
 	public void onMailBoxEmpty() {
-		final long systemTime = getSystemTime();
+		final long systemTime = getSystemTimeInTicks();
 		if (systemTime + 1 == 20000 && isFirstAgent()) {
 			finishWithAccumulationOfSubmitedPartialAssignments();
 		}

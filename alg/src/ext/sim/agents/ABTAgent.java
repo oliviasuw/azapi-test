@@ -11,7 +11,7 @@ import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.ano.WhenReceived;
 import bgu.dcr.az.api.tools.Assignment;
 
-@Algorithm(problemType=ProblemType.CSP, name="ABT" , useIdleDetector=true)
+@Algorithm(problemType=ProblemType.DCSP, name="ABT" , useIdleDetector=true)
 public class ABTAgent extends SimpleAgent {
 	private Assignment agentView;
 	private Explanations nogoods;

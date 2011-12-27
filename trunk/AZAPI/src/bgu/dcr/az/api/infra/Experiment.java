@@ -5,6 +5,7 @@
 package bgu.dcr.az.api.infra;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * expirement is executeable collection of predefined tests 
@@ -29,6 +30,11 @@ public interface Experiment extends Process {
 
     void removeListener(ExperimentListener l);
 
+    /**
+     * return the global thread pool used by this experiment
+     */
+    ExecutorService getThreadPool();
+    
     public static class ExperimentResult {
 
         public final boolean succeded;

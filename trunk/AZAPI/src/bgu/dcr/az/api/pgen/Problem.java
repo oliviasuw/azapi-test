@@ -9,6 +9,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An abstract class for problems that should let you build any type of problem 
@@ -21,7 +24,8 @@ public abstract class Problem implements Serializable, ImmutableProblem {
     protected ImmutableSet<Integer> domain;
     protected HashMap<Integer, Set<Integer>> neighbores = new HashMap<Integer, Set<Integer>>();
     protected HashMap<Integer, Set<Integer>> immutableNeighbores = new HashMap<Integer, Set<Integer>>();
-//    protected HashMap<Integer, Boolean> constraints = new HashMap<Integer, Boolean>();
+    private Semaphore immutableNeighborsWriteLock = new Semaphore(1);
+    //    protected HashMap<Integer, Boolean> constraints = new HashMap<Integer, Boolean>();
     protected ProblemType type;
     protected int maxCost = 0;
 
@@ -224,7 +228,17 @@ public abstract class Problem implements Serializable, ImmutableProblem {
         if (immutableNeighbores.get(var) == null) {
             Set<Integer> l = this.neighbores.get(var);
             Set<Integer> tmp = Collections.unmodifiableSet(l);
-            immutableNeighbores.put(var, tmp);
+            try {
+                immutableNeighborsWriteLock.acquire();
+            } catch (InterruptedException ex) {
+                System.out.println("Interrupted while reading neighbores");
+                Thread.currentThread().interrupt();
+            }
+            try {
+                immutableNeighbores.put(var, tmp);
+            } finally {
+                immutableNeighborsWriteLock.release();
+            }
         }
         return immutableNeighbores.get(var);
     }

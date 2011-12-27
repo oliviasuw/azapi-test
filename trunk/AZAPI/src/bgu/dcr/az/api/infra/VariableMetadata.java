@@ -22,18 +22,30 @@ public class VariableMetadata {
 
     private String name;
     private String description;
-    private Object defaultValue;
+    private Object currentValue;
     private Class type;
+    private Field field;
 
-    public VariableMetadata(String name, String description, Object defaultValue, Class type) {
+    public VariableMetadata(String name, String description, Object defaultValue, Class type, Field field) {
         this.name = name;
         this.description = description;
-        this.defaultValue = defaultValue;
+        this.currentValue = defaultValue;
         this.type = type;
+        this.field = field;
     }
 
     public Object getCurrentValue() {
-        return defaultValue;
+        return currentValue;
+    }
+    
+    public void updateValue(Object obj){
+        try {
+            currentValue = field.get(obj);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(VariableMetadata.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(VariableMetadata.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public String getDescription() {
@@ -48,7 +60,6 @@ public class VariableMetadata {
         return type;
     }
 
-    
     /**
      * if there is a field in the given object that annotated with Variable annotation
      * and the annotation name function is the same as 'var' then this function will try to assign 
@@ -59,12 +70,12 @@ public class VariableMetadata {
      * @param var
      * @param value 
      */
-    public static void tryAssign(Object obj, String var, Object value){
+    public static void tryAssign(Object obj, String var, Object value) {
         Variable ano;
         try {
             for (Field field : ReflectionUtil.getRecursivelyFieldsWithAnnotation(obj.getClass(), Variable.class)) {
                 ano = field.getAnnotation(Variable.class);
-                if (ano.name().equals(var)){
+                if (ano.name().equals(var)) {
                     field.set(obj, value);
                 }
             }
@@ -77,7 +88,7 @@ public class VariableMetadata {
         }
 
     }
-    
+
     public static void assign(Object obj, Map<String, Object> variables) {
         try {
             for (Field field : ReflectionUtil.getRecursivelyFieldsWithAnnotation(obj.getClass(), Variable.class)) {
@@ -106,30 +117,34 @@ public class VariableMetadata {
         return ret;
     }
 
-    public static VariableMetadata[] scan(Object from) {
-        List<Field> fields = ReflectionUtil.getRecursivelyFieldsWithAnnotation(from.getClass(), Variable.class);
+    public static VariableMetadata[] scan(Class c) {
+        List<Field> fields = ReflectionUtil.getRecursivelyFieldsWithAnnotation(c, Variable.class);
         VariableMetadata[] ret = new VariableMetadata[fields.size()];
         int i = 0;
 
         try {
             for (Field field : fields) {
-                Object defaultValue = field.get(from);
                 Variable v = field.getAnnotation(Variable.class);
+                Object defaultValue = ReflectionUtil.valueOf(v.defaultValue(), field.getType());
                 Class type = field.getType();
 
-                VariableMetadata metadata = new VariableMetadata(v.name(), v.description(), defaultValue, type);
+                VariableMetadata metadata = new VariableMetadata(v.name(), v.description(), defaultValue, type, field);
                 ret[i++] = metadata;
             }
 
             return ret;
         } catch (IllegalArgumentException ex) {
             Logger.getLogger(VariableMetadata.class.getName()).log(Level.SEVERE, null, ex);
-            throw new InternalErrorException("problem reading variables of class: " + from.getClass().getSimpleName(), ex);
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(VariableMetadata.class.getName()).log(Level.SEVERE, null, ex);
-            throw new InternalErrorException("problem reading variables of class: " + from.getClass().getSimpleName(), ex);
-
+            throw new InternalErrorException("problem reading variables of class: " + c.getSimpleName(), ex);
         }
     }
-    
+
+    public static VariableMetadata[] scan(Object from) {
+        VariableMetadata[] temp = scan(from.getClass());
+        for (VariableMetadata t : temp){
+            t.updateValue(from);
+        }
+        
+        return temp;
+    }
 }

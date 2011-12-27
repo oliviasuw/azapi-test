@@ -10,7 +10,7 @@ import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.ano.WhenReceived;
 import bgu.dcr.az.api.tools.Assignment;
 
-@Algorithm(name = "SBB", useIdleDetector = true)
+@Algorithm(name = "__SBB", useIdleDetector = true)
 public class SBBAgent extends SimpleAgent {
 
     @Variable(name = "test", description = "test variable", defaultValue = "50")

@@ -15,7 +15,7 @@ import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.ano.WhenReceived;
 import bgu.dcr.az.api.tools.Assignment;
 
-@Algorithm(problemType = ProblemType.DCOP, name = "ADOPT", useIdleDetector = true)
+@Algorithm(problemType = ProblemType.DCOP, name = "__ADOPT", useIdleDetector = true)
 public class ADOPTAgent extends SimpleAgent {
 
     private Set<Integer> neighbors;

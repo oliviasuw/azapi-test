@@ -11,7 +11,7 @@ import bgu.dcr.az.api.ano.Variable;
  *
  * @author bennyl
  */
-@Register(name = "assign", display="Variable Assignment")
+@Register(name = "assign")
 public class VarAssign {
 
     @Variable(name = "var", description = "the variable name", defaultValue="")

@@ -16,7 +16,7 @@ import bgu.dcr.az.impl.infra.AbstractTest;
  *
  * @author bennyl
  */
-@Register(name = "async-test", display = "Asynchronus Test")
+@Register(name = "async-test")
 public class AsyncTest extends AbstractTest {
 
     MessageDelayer dman = null;

@@ -14,7 +14,7 @@ import bgu.dcr.az.impl.infra.AbstractTest;
  *
  * @author bennyl
  */
-@Register(name="sync-test", display="Synchronus Test")
+@Register(name="sync-test")
 public class SyncTest extends AbstractTest {
 
 

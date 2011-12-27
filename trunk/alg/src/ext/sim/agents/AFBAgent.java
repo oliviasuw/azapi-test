@@ -9,7 +9,7 @@ import bgu.dcr.az.api.ano.WhenReceived;
 import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.api.tools.TimeStamp;
 
-@Algorithm(name = "AFB", searchType=SearchType.ASYNCHRONIZED, problemType=ProblemType.COP)
+@Algorithm(name = "AFB", searchType=SearchType.ASYNCHRONOUS, problemType=ProblemType.DCOP)
 public class AFBAgent extends SimpleAgent {
 	private int b;
 	private Assignment cpa, bestCpa;
@@ -25,7 +25,6 @@ public class AFBAgent extends SimpleAgent {
 		h = new int[this.getProblem().getDomainSize(this.getId())];
 		fillH();
 		if (isFirstAgent()) {
-			System.out.println(getProblem().toString());
 			generateCPA();
 			assignCPA();
 		}

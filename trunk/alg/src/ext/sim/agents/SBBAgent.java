@@ -9,7 +9,7 @@ import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.ano.WhenReceived;
 import bgu.dcr.az.api.tools.Assignment;
 
-@Algorithm(name="SBB", problemType=ProblemType.COP, useIdleDetector=true)
+@Algorithm(name="SBB", problemType=ProblemType.DCOP, useIdleDetector=true)
 public class SBBAgent extends SimpleAgent {
 
 	Assignment cpa, best;

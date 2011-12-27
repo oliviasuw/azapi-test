@@ -12,7 +12,7 @@ import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.api.ano.WhenReceived;
 
-@Algorithm(problemType=ProblemType.CSP, name="AFC-NG")
+@Algorithm(problemType=ProblemType.DCSP, name="AFC-NG")
 public class AFCNGAgent extends SimpleAgent {
 		
 	private Assignment myAgentViewAssignment;

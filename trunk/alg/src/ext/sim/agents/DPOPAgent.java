@@ -9,7 +9,7 @@ import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.impl.tools.DFSPsaudoTree;
 import ext.sim.tools.DPOPUtil;
 
-@Algorithm(name="DPOP", useIdleDetector=true, problemType=ProblemType.CONNECTED_COP)
+@Algorithm(name="DPOP", useIdleDetector=true, problemType=ProblemType.DCOP)
 public class DPOPAgent extends SimpleAgent {
 
 	protected DFSPsaudoTree tree;

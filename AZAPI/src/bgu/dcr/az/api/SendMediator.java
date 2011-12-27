@@ -2,6 +2,7 @@ package bgu.dcr.az.api;
 
 import bgu.dcr.az.api.exp.UnRegisteredAgentException;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * a middle way object used to send a message
@@ -68,9 +69,23 @@ public class SendMediator {
      * @param p
      */
     public void toNeighbores(ImmutableProblem p) {
-        for (int n : p.getNeighbors(msg.getSender())) {
-            to(n);
+        int last = 0;
+        int step = 0;
+        Set<Integer> neighbors;
+        try {
+            neighbors = p.getNeighbors(msg.getSender());
+            step = 1;
+            for (int n : neighbors) {
+                step = 2;
+                last = n;
+                step = 3;
+                to(n);
+                step = 4;
+            }
+        } catch (Exception ex) {
+            System.out.println("HERE");
         }
+
     }
 
     /**

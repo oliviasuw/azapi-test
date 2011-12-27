@@ -53,6 +53,38 @@ public class Agt0DSL {
         }
         
     }
+    
+    /**
+     * create new map from the given key-value pairs
+     * @param <K>
+     * @param <V>
+     * @param k
+     * @param v
+     * @param kvs
+     * @return 
+     */
+    public static <K, V> Map<K, V> cassoc(K k, V v, Object... kvs){
+        Map<K,V> ret = new HashMap<K, V>();
+        ret.put(k, v);
+        assoc(ret, kvs);
+        return ret;
+    }
+    
+    /**
+     * append key and values to a map
+     * @param <K>
+     * @param <V>
+     * @param map
+     * @param kvs
+     * @return 
+     */
+    public static <K, V> Map<K, V> assoc(Map<K, V> map, Object... kvs) {
+        for (int i = 0; i < kvs.length; i += 2) {
+            map.put((K) kvs[i], (V) kvs[i + 1]);
+        }
+
+        return map;
+    }
 
     /**
      * perform equals on obj1 and obj2 but take null into consideration

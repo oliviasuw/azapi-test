@@ -7,6 +7,7 @@ package bgu.dcr.az.api.infra;
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.AgentRunner;
 import bgu.dcr.az.api.Hooks.ReportHook;
+import bgu.dcr.az.api.Hooks.TerminationHook;
 import bgu.dcr.az.api.Mailer;
 import bgu.dcr.az.api.pgen.Problem;
 import bgu.dcr.az.api.SystemClock;
@@ -26,6 +27,8 @@ public interface Execution extends Process {
     
     void hookIn(String name, ReportHook hook);
     
+    void hookIn(TerminationHook hook);
+    
     /**
      * @return the global problem -
      * each agent have its own "version" of problem that is based on the global problem
@@ -41,7 +44,7 @@ public interface Execution extends Process {
 
     ExecutionResult getResult();
     
-    ExecutionResult getPartialResult();
+//    ExecutionResult getPartialResult();
     
     AgentRunner getAgentRunnerFor(Agent a);
 
@@ -71,7 +74,7 @@ public interface Execution extends Process {
 
     void reportFinalAssignment(Assignment answer);
     
-    void swapPartialAssignmentWithFullAssignment();
+//    void swapPartialAssignmentWithFullAssignment();
     
     /**
      * will stop the execution - interupting all the agent runners!

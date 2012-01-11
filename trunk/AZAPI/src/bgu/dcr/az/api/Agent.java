@@ -295,7 +295,7 @@ public abstract class Agent extends Agt0DSL {
      * then will act as if you called finish(a) :- see finish(Assignment) for more details.
      */
     protected void finishWithAccumulationOfSubmitedPartialAssignments() {
-        finish(pops.getExecution().getPartialResult().getAssignment());
+        finish(pops.getExecution().getResult().getAssignment());
     }
 
     /**
@@ -332,7 +332,7 @@ public abstract class Agent extends Agt0DSL {
      * remove the submitted current assignment
      */
     protected void unSubmitCurrentAssignment() {
-        final Assignment partialAssignment = exec.getPartialResult().getAssignment();
+        final Assignment partialAssignment = exec.getResult().getAssignment();
         if (partialAssignment != null) {
             partialAssignment.unassign(this);
         }
@@ -343,7 +343,7 @@ public abstract class Agent extends Agt0DSL {
      * will throw InvalideValueException if no assignment was submitted
      */
     protected Integer getSubmitedCurrentAssignment() {
-        final Assignment finalAssignment = exec.getPartialResult().getAssignment();
+        final Assignment finalAssignment = exec.getResult().getAssignment();
         if (finalAssignment != null) {
             return finalAssignment.getAssignment(getId());
         }

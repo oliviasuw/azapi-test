@@ -37,8 +37,8 @@ public class VariableMetadata {
     public Object getCurrentValue() {
         return currentValue;
     }
-    
-    public void updateValue(Object obj){
+
+    public void updateValue(Object obj) {
         try {
             currentValue = field.get(obj);
         } catch (IllegalArgumentException ex) {
@@ -92,10 +92,15 @@ public class VariableMetadata {
     public static void assign(Object obj, Map<String, Object> variables) {
         try {
             for (Field field : ReflectionUtil.getRecursivelyFieldsWithAnnotation(obj.getClass(), Variable.class)) {
-                final Object val = variables.get(field.getAnnotation(Variable.class).name());
-                if (val != null) {
-                    field.set(obj, val);
+                Object val = variables.get(field.getAnnotation(Variable.class).name());
+                
+                if (val != null && !field.getType().isAssignableFrom(val.getClass())){
+                    val = ReflectionUtil.valueOf(val.toString(), field.getType());
                 }
+                
+                if (val != null ) {
+                    field.set(obj, val);
+                } 
             }
         } catch (IllegalArgumentException ex) {
             Logger.getLogger(VariableMetadata.class.getName()).log(Level.SEVERE, null, ex);
@@ -141,10 +146,10 @@ public class VariableMetadata {
 
     public static VariableMetadata[] scan(Object from) {
         VariableMetadata[] temp = scan(from.getClass());
-        for (VariableMetadata t : temp){
+        for (VariableMetadata t : temp) {
             t.updateValue(from);
         }
-        
+
         return temp;
     }
 }

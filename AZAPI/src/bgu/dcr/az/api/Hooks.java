@@ -46,4 +46,9 @@ public class Hooks {
     public static interface TickHook{
         void hook(SystemClock clock);
     }
+    
+    
+    public static interface TerminationHook{
+        void hook();
+    }
 }

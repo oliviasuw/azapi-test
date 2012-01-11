@@ -77,6 +77,8 @@ public interface Test extends Process {
     
     CorrectnessTester getCorrectnessTester();
     
+    int getCurrentProblemNumber();
+    
     void setCorrectnessTester(CorrectnessTester ctester);
     
     public static enum FinishStatus{

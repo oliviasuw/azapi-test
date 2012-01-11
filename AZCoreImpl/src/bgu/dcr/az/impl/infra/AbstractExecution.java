@@ -5,6 +5,7 @@ import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Agent.PlatformOps;
 import bgu.dcr.az.api.AgentRunner;
 import bgu.dcr.az.api.Hooks.ReportHook;
+import bgu.dcr.az.api.Hooks.TerminationHook;
 import bgu.dcr.az.impl.AlgorithmMetadata;
 import bgu.dcr.az.api.Mailer;
 import bgu.dcr.az.api.pgen.Problem;
@@ -42,7 +43,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private Mailer mailer; //the mailer object used by this execution
     private boolean shuttingdown; //this variable is used to check that the execution is doing the process of shuting down only once.
     private ExecutionResult result = new ExecutionResult(); //the final execution result
-    private ExecutionResult partialResult = new ExecutionResult(); // result object that is collected during the execution time
+    //private ExecutionResult partialResult = new ExecutionResult(); // result object that is collected during the execution time
     private AlgorithmMetadata algorithmMetadata; //the executed algorithm metadata
     private IdleDetector idleDetector; //if this execution need an idle detector then this field will hold it
     private ExecutorService executorService; // this is the thread pool that this execution use
@@ -53,6 +54,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private List<StatisticCollector> statisticCollectors = new LinkedList<StatisticCollector>(); //list of activated statistic collectors
     private final Test test; //the test that this execution is running in
     private Map<String, ReportHook> reportHooks = new HashMap<String, ReportHook>();//list of report hook listeners
+    private List<TerminationHook> terminationHooks = new LinkedList<TerminationHook>();
     private boolean idleDetectorNeeded = false;//hard set for the execution to use idle detection
 
     /**
@@ -66,6 +68,11 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         this.algorithmMetadata = a;
         this.test = test;
         this.experiment = exp;
+    }
+
+    @Override
+    public void hookIn(TerminationHook hook) {
+        terminationHooks.add(hook);
     }
 
     @Override
@@ -162,6 +169,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     @Override
     public void stop() {
         experiment.stop();
+
     }
 
     protected ExecutorService getExecutorService() {
@@ -246,21 +254,26 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
      */
     @Override
     public synchronized void reportPartialAssignment(int var, int val) {
-        if (partialResult.getAssignment() == null) {
+/*        if (partialResult.getAssignment() == null) {
             partialResult = new ExecutionResult(new Assignment());
         }
-        partialResult.getAssignment().assign(var, val);
+        partialResult.getAssignment().assign(var, val);*/
+        if (result.getAssignment() == null){
+            result.setFinalAssignment(new Assignment());
+        }
+        
+        result.getAssignment().assign(var, val);
     }
 
-    @Override
-    public ExecutionResult getPartialResult() {
-        return partialResult;
-    }
+//    @Override
+//    public ExecutionResult getPartialResult() {
+//        return partialResult;
+//    }
 
-    @Override
-    public void swapPartialAssignmentWithFullAssignment() {
-        result = partialResult.deepCopy();
-    }
+//    @Override
+//    public void swapPartialAssignmentWithFullAssignment() {
+//        result = partialResult.deepCopy();
+//    }
 
     @Override
     protected void _run() {
@@ -273,6 +286,13 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
             startExecution();
             finish();
         } finally {
+            try {
+                for (TerminationHook hook : terminationHooks) {
+                    hook.hook();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             System.out.println("Execution Ended.");
         }
     }

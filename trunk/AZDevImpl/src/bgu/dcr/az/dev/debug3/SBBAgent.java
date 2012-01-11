@@ -14,7 +14,8 @@ import bgu.dcr.az.api.tools.Assignment;
 public class SBBAgent extends SimpleAgent {
 
     @Variable(name = "test", description = "test variable", defaultValue = "50")
-    int test;
+    public double test = 0.75;
+    
     Assignment cpa, best;
     List<Integer> currentDomain;
 

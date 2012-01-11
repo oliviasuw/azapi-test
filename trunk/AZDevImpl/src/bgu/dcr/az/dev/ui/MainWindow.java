@@ -14,6 +14,8 @@ import bc.dsl.SwingDSL;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Test;
+import bgu.dcr.az.api.pgen.Problem;
+import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.dev.ExecutionUnit;
 import java.io.File;
 import java.util.concurrent.Semaphore;
@@ -60,7 +62,7 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
 
         //Problems Screen
         tabs.addTab("Problem", SwingDSL.resIcon("problem"), problemScreen);
-        
+
         ExecutionUnit.UNIT.addExperimentListener(this);
 
         start();
@@ -342,6 +344,7 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
                     + "If you've defined correctness testers they didn't find any wrong solutions.");
         } else {
             errorPanel.setVisible(true);
+
             switch (source.getResult().badTestResult.finishStatus) {
                 case CRUSH:
                     ExceptionDialog.showRecoverable("The execution crushed", "You should take a look at the logs,\n"
@@ -349,7 +352,15 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
                             + "or start a debug session", source.getResult().badTestResult.crushReason);
                     break;
                 case WRONG_RESULT:
-                    MessageDialog.showFail("The execution completed with errors", "The correctness tester found wrong results provided by the algorithm");
+                    Problem globalProblem = source.getResult().badTestResult.badExecution.getGlobalProblem();
+                    Assignment goodAssignment = source.getResult().badTestResult.goodAssignment;
+                    Assignment badAssignment = source.getResult().badTestResult.badExecution.getResult().getAssignment();
+
+                    MessageDialog.showFail("The execution completed with errors", "The correctness tester found wrong results provided by the algorithm\n"
+                            + "An example to a correct assignment is " + goodAssignment + "with the cost of " + goodAssignment.calcCost(globalProblem) + "\n"
+                            + "The Test result is " + badAssignment + "with the cost of " + badAssignment.calcCost(globalProblem) );
+                   
+
                     break;
             }
         }

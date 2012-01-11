@@ -75,6 +75,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
     private List<Long> problemSeeds;
     private boolean initialized = false;
     private Experiment experiment; // the executing experiment
+    private int currentProblemNumber = 0;
     
     public AbstractTest() {
     }
@@ -328,6 +329,11 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
         return pgen;
     }
 
+    @Override
+    public int getCurrentProblemNumber() {
+        return this.currentProblemNumber;
+    }
+
     @Configuration(name = "Problem Generator", description = "Set problem generator")
     public void setProblemGenerator(ProblemGenerator pgen) {
         this.pgen = pgen;
@@ -340,6 +346,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
      */
     protected Problem nextProblem(int num) {
         try {
+            currentProblemNumber = num;
             long pseed = problemSeeds.get(num - 1);
             Random nrand = new Random(pseed);
             MapProblem p = new MapProblem();

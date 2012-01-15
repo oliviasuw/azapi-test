@@ -35,7 +35,7 @@ public class GenericTableModel<T> extends AbstractTableModel {
     public Class<?> getColumnClass(int columnIndex) {
         Class cls = columnClasses.get(columnIndex);
         if (cls == null && !model.isEmpty()) {
-            columnClasses.put(columnIndex, extractor.getData(extractor.getSupportedDataNames()[columnIndex], model.get(0)).getClass());
+            columnClasses.put(columnIndex, extractor.getData(columnIndex, extractor.getSupportedDataNames()[columnIndex], model.get(0)).getClass());
         }
 
         return columnClasses.containsKey(columnIndex) ? columnClasses.get(columnIndex) : Object.class;
@@ -78,7 +78,7 @@ public class GenericTableModel<T> extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        return extractor.getData(extractor.getSupportedDataNames()[columnIndex], model.get(rowIndex));
+        return extractor.getData(columnIndex, extractor.getSupportedDataNames()[columnIndex], model.get(rowIndex));
     }
 
     public void setInnerList(List<T> list) {

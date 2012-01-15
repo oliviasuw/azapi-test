@@ -169,7 +169,7 @@ public class ExceptionDialog extends javax.swing.JDialog {
         jPanel12.setOpaque(false);
         jPanel12.setLayout(new java.awt.GridBagLayout());
 
-        jLabel5.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Consolas", 1, 14));
         jLabel5.setForeground(new java.awt.Color(210, 233, 255));
         jLabel5.setText("What can you do ?");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -238,14 +238,14 @@ public class ExceptionDialog extends javax.swing.JDialog {
 
         advancedPanel.setBackground(new java.awt.Color(120, 120, 120));
         advancedPanel.setOpaque(false);
-        advancedPanel.setLayout(new javax.swing.BoxLayout(advancedPanel, javax.swing.BoxLayout.LINE_AXIS));
+        advancedPanel.setLayout(new java.awt.BorderLayout());
 
         advancedLabel.setColumns(20);
-        advancedLabel.setFont(new java.awt.Font("Consolas", 0, 12));
+        advancedLabel.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
         advancedLabel.setRows(5);
         advancedScrollPanel.setViewportView(advancedLabel);
 
-        advancedPanel.add(advancedScrollPanel);
+        advancedPanel.add(advancedScrollPanel, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

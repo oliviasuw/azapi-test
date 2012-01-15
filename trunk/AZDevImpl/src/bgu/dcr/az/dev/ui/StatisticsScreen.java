@@ -27,6 +27,7 @@ import bgu.dcr.az.api.infra.stat.vmod.BarVisualModel;
 import bgu.dcr.az.api.infra.stat.vmod.LineVisualModel;
 import bgu.dcr.az.impl.db.DatabaseUnit;
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,9 +61,20 @@ public class StatisticsScreen extends javax.swing.JPanel {
         statScroll.getViewport().setOpaque(false);
         varscrolls.getViewport().setOpaque(false);
         testScroll.getViewport().setOpaque(false);
+        
+        //ADVANCED
+        queryScr.addListener(new StatisticsQueryScreen.Listener() {
+
+            @Override
+            public void onSwitchClicked() {
+                getCards().show(StatisticsScreen.this, "SimpleMode");
+            }
+        });
     }
 
-    public void setModel(Experiment exp) {
+    public void setModel(Experiment exp, DatabaseUnit.H2Database database) {
+        queryScr.setModel(database);
+        
         availableStatisticsList.getSelectionListeners().addListener(new SelectionListener() {
 
             @Override
@@ -141,8 +153,11 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jXHyperlink2 = new org.jdesktop.swingx.JXHyperlink();
         varscrolls = new javax.swing.JScrollPane();
         vars = new bc.ui.swing.configurable.VariablesEditor();
+        jPanel13 = new javax.swing.JPanel();
         jPanel12 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
+        jXHyperlink3 = new org.jdesktop.swingx.JXHyperlink();
+        jLabel10 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
@@ -166,6 +181,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jPanel11 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         resultDataPan = new bc.ui.swing.useful.DataPanel();
+        queryScr = new bgu.dcr.az.dev.ui.StatisticsQueryScreen();
 
         resultsPan.setBorder(null);
         resultsPan.setResizeWeight(0.6);
@@ -217,19 +233,37 @@ public class StatisticsScreen extends javax.swing.JPanel {
         varscrolls.setViewportView(vars);
 
         setBackground(new java.awt.Color(255, 255, 255));
-        setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.CardLayout());
+
+        jPanel13.setLayout(new java.awt.GridBagLayout());
 
         jPanel12.setBackground(new java.awt.Color(120, 120, 120));
         jPanel12.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 3, 3));
 
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("Configuration");
+        jLabel9.setText("Simple Configuration Mode:  (");
         jPanel12.add(jLabel9);
+
+        jXHyperlink3.setForeground(new java.awt.Color(212, 227, 255));
+        jXHyperlink3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/arrow-switch.png"))); // NOI18N
+        jXHyperlink3.setText("Switch to advanced mode");
+        jXHyperlink3.setClickedColor(new java.awt.Color(212, 227, 255));
+        jXHyperlink3.setUnclickedColor(new java.awt.Color(212, 227, 255));
+        jXHyperlink3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jXHyperlink3ActionPerformed(evt);
+            }
+        });
+        jPanel12.add(jXHyperlink3);
+
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel10.setText(")");
+        jPanel12.add(jLabel10);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        add(jPanel12, gridBagConstraints);
+        jPanel13.add(jPanel12, gridBagConstraints);
 
         jPanel1.setBackground(new java.awt.Color(245, 245, 245));
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(120, 120, 120), 3));
@@ -240,7 +274,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         jPanel2.setMinimumSize(new java.awt.Dimension(180, 10));
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
-        jLabel6.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Consolas", 1, 12));
         jLabel6.setText("Select Test To Analayze");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
@@ -370,7 +404,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        add(jPanel1, gridBagConstraints);
+        jPanel13.add(jPanel1, gridBagConstraints);
 
         jPanel10.setBackground(new java.awt.Color(245, 245, 245));
         jPanel10.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 3, 3, 3, new java.awt.Color(120, 120, 120)));
@@ -390,7 +424,10 @@ public class StatisticsScreen extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 1.0;
-        add(jPanel10, gridBagConstraints);
+        jPanel13.add(jPanel10, gridBagConstraints);
+
+        add(jPanel13, "SimpleMode");
+        add(queryScr, "AdvancedMode");
     }// </editor-fold>//GEN-END:initComponents
 
     private void jXHyperlink1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink1ActionPerformed
@@ -426,7 +463,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
         GenericTableModel tableModel = new GenericTableModel(new DataExtractor("Algorithm", vismodel.getDomainAxisLabel(), vismodel.getRangeAxisLabel()) {
 
             @Override
-            public Object getData(String dataName, Object from) {
+            public Object getData(int idx, String dataName, Object from) {
                 Object[] e = (Object[]) from;
 //                Entry<Double, Double> e = (Entry<Double, Double>) from;
                 if (dataName.equals("Algorithm")) {
@@ -461,10 +498,20 @@ public class StatisticsScreen extends javax.swing.JPanel {
             SwingDSL.dopen(file);
         }
 }//GEN-LAST:event_jXHyperlink2ActionPerformed
+
+    private CardLayout getCards(){
+        return (CardLayout) getLayout();
+    }
+    
+    private void jXHyperlink3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink3ActionPerformed
+        getCards().show(this, "AdvancedMode");
+    }//GEN-LAST:event_jXHyperlink3ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel chartResultPan;
     private javax.swing.JPanel exportToCSVButton;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -476,6 +523,7 @@ public class StatisticsScreen extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -487,6 +535,8 @@ public class StatisticsScreen extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel9;
     private org.jdesktop.swingx.JXHyperlink jXHyperlink1;
     private org.jdesktop.swingx.JXHyperlink jXHyperlink2;
+    private org.jdesktop.swingx.JXHyperlink jXHyperlink3;
+    private bgu.dcr.az.dev.ui.StatisticsQueryScreen queryScr;
     private bc.ui.swing.useful.DataPanel resultDataPan;
     private bc.ui.swing.tables.ScrollableStripeTable resultList;
     private javax.swing.JSplitPane resultsPan;

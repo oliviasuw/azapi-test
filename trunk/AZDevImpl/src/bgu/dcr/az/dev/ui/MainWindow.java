@@ -17,6 +17,7 @@ import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.pgen.Problem;
 import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.dev.ExecutionUnit;
+import bgu.dcr.az.impl.db.DatabaseUnit;
 import java.io.File;
 import java.util.concurrent.Semaphore;
 import javax.swing.JFrame;
@@ -45,7 +46,7 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
         statusScreen = new StatusScreen();
         statusScreen.setModel(experiment);
         statisticsScreen = new StatisticsScreen();
-        statisticsScreen.setModel(experiment);
+        statisticsScreen.setModel(experiment, (DatabaseUnit.H2Database) DatabaseUnit.UNIT.getDatabase());
         problemScreen = new ProblemViewScreen();
         problemScreen.setModel(experiment);
         logsScreen = new LogScreen();
@@ -63,6 +64,11 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
         //Problems Screen
         tabs.addTab("Problem", SwingDSL.resIcon("problem"), problemScreen);
 
+        //TESTING
+//        StatisticsQueryScreen sqs = new StatisticsQueryScreen();
+//        sqs.setModel((DatabaseUnit.H2Database) DatabaseUnit.UNIT.getDatabase());
+//        tabs.addTab("StatisticsQuery", SwingDSL.resIcon("problem"), sqs);
+        
         ExecutionUnit.UNIT.addExperimentListener(this);
 
         start();
@@ -338,6 +344,10 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
     public void onExpirementEnded(Experiment source) {
         executingPanel.setVisible(false);
 
+        if (source.getResult() == null){ //can happen in the case of interruption...
+            return;
+        }
+        
         if (source.getResult().succeded) {
             donePanel.setVisible(true);
             MessageDialog.showSuccess("The execution completed successfully", "There were no errors\n"

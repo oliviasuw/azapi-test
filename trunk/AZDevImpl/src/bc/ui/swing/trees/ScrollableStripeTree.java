@@ -289,6 +289,10 @@ public class ScrollableStripeTree extends javax.swing.JPanel {
         return tree.getVisibleRowCount();
     }
 
+    public StripeTree getInnerTree() {
+        return tree;
+    }
+
     public TreeWillExpandListener[] getTreeWillExpandListeners() {
         return tree.getTreeWillExpandListeners();
     }

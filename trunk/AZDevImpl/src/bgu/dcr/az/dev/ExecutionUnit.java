@@ -44,7 +44,7 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
     boolean running;
     File badProblemStorage = new File("fail-problems");
     boolean inDebugMode = false;
-    
+
     void run(File xml, boolean withGui, boolean debug) throws InterruptedException {
         try {
             this.inDebugMode = debug;
@@ -60,7 +60,7 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
             if (debug) {
                 runningExperiment = mainW.startDebugging(runningExperiment, badProblemStorage);
             }
-            
+
             runningExperiment.addListener(this);
 
             mainW.startRunning(runningExperiment);
@@ -80,19 +80,26 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
     }
 
     public void setFailProblemStorage(File path) {
-        System.out.println("Failed Problem Dir Set To: " + (path == null? "none!!":  path.getAbsolutePath()));
+        System.out.println("Failed Problem Dir Set To: " + (path == null ? "none!!" : path.getAbsolutePath()));
         badProblemStorage = path;
         badProblemStorage.mkdirs();
     }
 
     public void stop() {
-        if (running) {
-            runningExperiment.stop();
+        if (!running) {
+            return;
         }
+        System.out.println("Execution unit stop was invoked!");
+        
+        running = false;
+        System.out.println("attempting to close experiment");
+        runningExperiment.stop();
 
 //        runningExperiment.removeListener(this);
-        DatabaseUnit.UNIT.stopCollectorThread();
-        DatabaseUnit.UNIT.disconnect();
+        //System.out.println("attempting to close statistic collector thread");
+        //DatabaseUnit.UNIT.stopCollectorThread();
+        //System.out.println("attempting to diconnect from database");
+        //DatabaseUnit.UNIT.disconnect();
     }
 
     public Experiment getRunningExperiment() {
@@ -144,7 +151,7 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
             }
         });
 
-        if (!source.getResult().succeded && !inDebugMode) {
+        if (source.getResult()!=null && !source.getResult().succeded && !inDebugMode) {
             PrintWriter pw;
             try {
                 String fname = newFileName();

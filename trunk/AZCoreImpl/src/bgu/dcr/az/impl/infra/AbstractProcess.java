@@ -65,14 +65,23 @@ public abstract class AbstractProcess implements Process {
     }
 
     @Override
-    public void stop() {
-        if (executingThread != null) {
-            executingThread.interrupt();
+    public final void stop() {
+        if (!finished && executingThread != null) {
+            finished = true;
+            _stop();
         }
     }
 
+    /**
+     * this stop will cause the executing thread to be interrupted - you can change it 
+     * if it is not your sutable logic
+     */
+    protected void _stop(){
+        executingThread.interrupt();
+    }
+    
     @Override
-    public void run() {
+    public final void run() {
         finished = false;
         executingThread = Thread.currentThread();
         _run();

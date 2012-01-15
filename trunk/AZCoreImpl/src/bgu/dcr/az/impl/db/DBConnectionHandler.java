@@ -11,7 +11,7 @@ import java.sql.Statement;
 
 public class DBConnectionHandler {
 
-    private Connection conn;
+    public Connection conn;
     private String username;
     private String password;
     private String driver;

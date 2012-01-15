@@ -5,9 +5,11 @@
 package bgu.dcr.az.impl.stat;
 
 import bgu.dcr.az.api.Agent;
+import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.Hooks.BeforeCallingFinishHook;
 import bgu.dcr.az.api.Hooks.BeforeMessageProcessingHook;
 import bgu.dcr.az.api.Hooks.BeforeMessageSentHook;
+import bgu.dcr.az.api.Hooks.TerminationHook;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
@@ -51,7 +53,7 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
     }
 
     @Override
-    public void hookIn(Agent[] agents, final Execution ex) {
+    public void hookIn(final Agent[] agents, final Execution ex) {
 
         System.out.println("NCCC Statistic Collector registered");
 
@@ -80,11 +82,11 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
             });
         }
 
-        agents[0].hookIn(new BeforeCallingFinishHook() {
+        ex.hookIn(new TerminationHook() {
 
             @Override
-            public void hook(Agent a) {
-                submit(new NCCCRecord(ex.getTest().getCurrentVarValue(), nccc[0], a.getAlgorithmName()));
+            public void hook() {
+                submit(new NCCCRecord(ex.getTest().getCurrentVarValue(), Agt0DSL.max(nccc), agents[0].getAlgorithmName()));
             }
         });
     }
@@ -102,11 +104,11 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
 
     public static class NCCCRecord extends DBRecord {
 
-        float rVar;
-        float value;
+        double rVar;
+        double value;
         String algorithm;
 
-        public NCCCRecord(float rVar, float value, String algorithm) {
+        public NCCCRecord(double rVar, double value, String algorithm) {
             this.rVar = rVar;
             this.value = value;
             this.algorithm = algorithm;

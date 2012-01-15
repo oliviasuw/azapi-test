@@ -33,8 +33,6 @@ import java.util.logging.Logger;
 @Register(name = "experiment")
 public class ExperimentImpl extends AbstractProcess implements Experiment, Test.TestListener {
 
-    private List<Thread> allThreads = new Vector<Thread>();
-    private static final VariableMetadata[] EMPTY_VARIABLE_ARRAY = new VariableMetadata[0];
     private List<Test> tests = new ArrayList<Test>();
     private ExperimentResult result;
     private LinkedList<Experiment.ExperimentListener> listeners = new LinkedList<ExperimentListener>();
@@ -44,18 +42,7 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
     @Override
     public void _run() {
 
-        pool = Executors.newCachedThreadPool(new ThreadFactory() {
-
-            AtomicInteger ai = new AtomicInteger(0);
-
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r);
-                t.setName("pool-thread-" + ai.getAndIncrement());
-                allThreads.add(t);
-                return t;
-            }
-        });
+        pool = Executors.newCachedThreadPool();
         try {
 
             fireExperimentStarted();
@@ -89,6 +76,8 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
                 } else {
                     ((AbstractTest) currentTest).debug(di);
                 }
+                
+                if (Thread.currentThread().isInterrupted()) return;
 
                 DatabaseUnit.UNIT.signal(currentTest); // SIGNALING - TELLING THAT STATISTICS COLLECTION TO THE CURRENT TEST IS OVER
                 currentTest.removeListener(this);
@@ -104,9 +93,15 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
 
             result = new ExperimentResult(false);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if (ex instanceof InterruptedException) {
+                System.out.println("Experiment Interrupted... closing...");
+            } else {
+                ex.printStackTrace();
+            }
         } finally {
             fireExperimentEnded();
+            System.out.println("shutting down experiment threadpool");
+            pool.shutdown();
             pool.shutdownNow();
         }
     }
@@ -205,11 +200,11 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
         }
 
     }
-
-    @Override
-    public void stop() {
-        pool.shutdownNow();
-    }
+//
+//    @Override
+//    public void stop() {
+//        pool.shutdownNow();
+//    }
 
     @Override
     public ExecutorService getThreadPool() {

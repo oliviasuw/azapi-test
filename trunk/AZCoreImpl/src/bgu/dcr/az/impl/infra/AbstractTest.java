@@ -70,18 +70,18 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
     private int current = 0;
     private CorrectnessTester ctester = null;
     private List<TestListener> listeners = new LinkedList<TestListener>();
-    private float currentVarValue;
+    private double currentVarValue;
     private DebugInfo di = null;
     private List<Long> problemSeeds;
     private boolean initialized = false;
     private Experiment experiment; // the executing experiment
     private int currentProblemNumber = 0;
-    
+
     public AbstractTest() {
     }
 
     @Override
-    public float getCurrentVarValue() {
+    public double getCurrentVarValue() {
         return this.currentVarValue;
     }
 
@@ -169,7 +169,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
         initialize();
         fireTestStarted();
         try {
-            
+
             Problem p = generateProblem(di.getFailedProblemNumber());
 
             AlgorithmMetadata alg = null;
@@ -202,6 +202,13 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
         return ((float) (iorg + iinc)) / (float) p;
     }
 
+    public static double round3(double num) {
+        double result = num * 1000;
+        result = Math.round(result);
+        result = result / 1000;
+        return result;
+    }
+
     @Override
     protected void _run() {
         initialize();
@@ -217,7 +224,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
 
             boolean failed = false;
             Class failedClass = null;
-            for (currentVarValue = start; currentVarValue <= end; currentVarValue = inc(currentVarValue, tickSize, 1000)) {
+            for (currentVarValue = start; currentVarValue <= end; currentVarValue = round3(currentVarValue + tickSize)) {
                 Configuration.ConfigurationMetadata.bubbleDownVariable(this, runVar, (float) currentVarValue);
                 for (int i = 0; i < repeatCount; i++) {
 
@@ -307,8 +314,6 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
     public DebugInfo getDebugInfo() {
         return di;
     }
-    
-    
 
     private void initialize() {
         Thread.currentThread().setName("Test Runner Thread");

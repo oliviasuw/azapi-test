@@ -6,6 +6,7 @@ package bgu.dcr.az.impl.stat;
 
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Hooks.BeforeCallingFinishHook;
+import bgu.dcr.az.api.Hooks.TerminationHook;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.Test;
@@ -22,7 +23,7 @@ import java.util.logging.Logger;
  *
  * @author bennyl
  */
-@Register(name="cc-sc")
+@Register(name = "cc-sc")
 public class CCStatisticCollector extends AbstractStatisticCollector<CCStatisticCollector.CCRecord> {
 
     @Override
@@ -44,16 +45,16 @@ public class CCStatisticCollector extends AbstractStatisticCollector<CCStatistic
 
     @Override
     public void hookIn(final Agent[] agents, final Execution ex) {
-        agents[0].hookIn(new BeforeCallingFinishHook() {
+        ex.hookIn(new TerminationHook() {
 
             @Override
-            public void hook(Agent a) {
+            public void hook() {
                 int sum = 0;
                 for (Agent ag : agents) {
                     sum += ag.getNumberOfConstraintChecks();
                 }
 
-                submit(new CCRecord(ex.getTest().getCurrentVarValue(), sum, a.getAlgorithmName()));
+                submit(new CCRecord(ex.getTest().getCurrentVarValue(), sum, agents[0].getAlgorithmName()));
             }
         });
     }
@@ -62,11 +63,11 @@ public class CCStatisticCollector extends AbstractStatisticCollector<CCStatistic
     public String getName() {
         return "Constraint Checks";
     }
-    
+
     public static class CCRecord extends DBRecord {
 
         double rVar;
-        int cc;
+        double cc;
         String algorithm;
 
         public CCRecord(double rVal, int cc, String algorithm) {

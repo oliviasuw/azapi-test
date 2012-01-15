@@ -5,9 +5,11 @@
 package bgu.dcr.az.impl.stat;
 
 import bgu.dcr.az.api.Agent;
+import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.Hooks.BeforeCallingFinishHook;
 import bgu.dcr.az.api.Hooks.BeforeMessageProcessingHook;
 import bgu.dcr.az.api.Hooks.BeforeMessageSentHook;
+import bgu.dcr.az.api.Hooks.TerminationHook;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.infra.Execution;
@@ -49,7 +51,7 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
     }
 
     @Override
-    public void hookIn(Agent[] agents, Execution ex) {
+    public void hookIn(final Agent[] agents, Execution ex) {
         System.out.println("NCSC Statistic Collector registered");
         
         ncsc = new long[agents.length];
@@ -75,13 +77,14 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
             });
         }
         
-        agents[0].hookIn(new BeforeCallingFinishHook() {
+        ex.hookIn(new TerminationHook() {
 
             @Override
-            public void hook(Agent a) {
-                submit(new NCSCRecord(ncsc[0], rvar, a.getAlgorithmName()));
+            public void hook() {
+                submit(new NCSCRecord(Agt0DSL.max(ncsc), rvar, agents[0].getAlgorithmName()));
             }
         });
+        
     }
 
     @Override

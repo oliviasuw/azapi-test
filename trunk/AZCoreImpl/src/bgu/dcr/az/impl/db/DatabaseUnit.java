@@ -11,6 +11,7 @@ import bgu.dcr.az.api.infra.stat.DBRecord;
 import bgu.dcr.az.api.infra.stat.Database;
 import java.io.File;
 import java.lang.reflect.Field;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,16 +35,17 @@ import java.util.logging.Logger;
 public enum DatabaseUnit {
 
     UNIT;
-    public static final int MAXIMUM_NUMBER_OF_INMEMORY_STATISTICS = 100;
+    public static final int MAXIMUM_NUMBER_OF_INMEMORY_STATISTICS = 5000;
     public static final String DATA_BASE_NAME = "agentzero";
     private DBConnectionHandler connection;
     private Thread collectorThread = null;
     private ArrayBlockingQueue<SimpleEntry<DBRecord, Test>> dbQueue = new ArrayBlockingQueue<SimpleEntry<DBRecord, Test>>(MAXIMUM_NUMBER_OF_INMEMORY_STATISTICS);
     private Set<Class<? extends DBRecord>> knownRecords = new HashSet<Class<? extends DBRecord>>();
     private Map<Class<? extends DBRecord>, PreparedStatement> insertStatments = new HashMap<Class<? extends DBRecord>, PreparedStatement>();
-    private Map<Signal, Signal> signals = Collections.synchronizedMap(new HashMap<Signal, Signal>());
+    private Map<Signal, Signal> signals = new HashMap<Signal, Signal>();
     private List<SignalListner> signalListeners = new LinkedList<SignalListner>();
-    
+    private List<DataBaseChangedListener> databaseChangeListeners = new LinkedList<DataBaseChangedListener>();
+
     public void connect() throws ConnectionFaildException {
         try {
             String options = "LOG=0;CACHE_SIZE=65536;LOCK_MODE=0;UNDO_LOG=0";
@@ -56,23 +58,23 @@ public enum DatabaseUnit {
         }
     }
 
-    public void addSignalListener(SignalListner sl){
+    public void addSignalListener(SignalListner sl) {
         signalListeners.add(sl);
     }
-    
-    public void removeSignalListener(SignalListner sl){
+
+    public void removeSignalListener(SignalListner sl) {
         signalListeners.remove(sl);
     }
-    
+
     /**
      * will wait until all the submited statistics to the time of the call was writen to the db
      */
-    public synchronized void awaitStatistics() throws InterruptedException{
+    public synchronized void awaitStatistics() throws InterruptedException {
         final String sig = "AWAIT_STATISTICS";
         signal(sig);
         awaitSignal(sig);
     }
-    
+
     /**
      * will return true if signal with that key exists in the system and 
      * the requesting thread waited untill this signal received
@@ -90,8 +92,8 @@ public enum DatabaseUnit {
             return false;
         }
     }
-    
-    public synchronized boolean isSignaled(Object signal){
+
+    public synchronized boolean isSignaled(Object signal) {
         Signal fake = new Signal(signal);
         return signals.containsKey(fake) && signals.get(fake).isSignaled();
     }
@@ -105,11 +107,11 @@ public enum DatabaseUnit {
     public void disconnect() {
         if (connection != null) {
             try {
-                signal("DONE");
-                awaitSignal("DONE");
+     //           signal("DONE");
+     //           awaitSignal("DONE");
                 connection.disconnect();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(DatabaseUnit.class.getName()).log(Level.SEVERE, null, ex);
+     //       } catch (InterruptedException ex) {
+     //           Logger.getLogger(DatabaseUnit.class.getName()).log(Level.SEVERE, null, ex);
             } catch (SQLException ex) {
                 Logger.getLogger(DatabaseUnit.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -168,7 +170,9 @@ public enum DatabaseUnit {
     }
 
     public void stopCollectorThread() {
-        collectorThread.interrupt();
+        if (collectorThread != null) {
+            collectorThread.interrupt();
+        }
         collectorThread = null;
     }
 
@@ -187,10 +191,10 @@ public enum DatabaseUnit {
         return connection.prepare(sb.toString());
     }
 
-    public PreparedStatement prepare(String statment) throws SQLException{
+    public PreparedStatement prepare(String statment) throws SQLException {
         return connection.prepare(statment);
     }
-    
+
     public void insertLater(DBRecord record, Test test) {
         try {
             dbQueue.put(new SimpleEntry<DBRecord, Test>(record, test));
@@ -222,6 +226,7 @@ public enum DatabaseUnit {
         }
         exe.append(", PRIMARY KEY (ID));");
         connection.runUpdate(exe.toString());
+        for (DataBaseChangedListener l : databaseChangeListeners) l.onTableAdded(record.provideTableName());
     }
 
     public class H2Database implements Database {
@@ -229,6 +234,14 @@ public enum DatabaseUnit {
         @Override
         public ResultSet query(String query) throws SQLException {
             return connection.runQuery(query);
+        }
+        
+        public DatabaseMetaData getMetadata() throws SQLException{
+            return connection.conn.getMetaData();
+        }
+        
+        public void addChangeListener(DataBaseChangedListener listener){
+            databaseChangeListeners.add(listener);
         }
     }
 
@@ -317,7 +330,7 @@ public enum DatabaseUnit {
                         }
                     }
 //                    System.out.println("Writing Statistics took " + (System.currentTimeMillis() - before) + " milis");
-                    
+
                     if (multi.size() > 1) {
                         try {
                             UNIT.endAndCommitBatch();
@@ -332,8 +345,13 @@ public enum DatabaseUnit {
             }
         }
     }
-    
-    public static interface SignalListner{
+
+    public static interface SignalListner {
+
         void onDataCollectedUpToSignal(DatabaseUnit source, Object signal);
+    }
+    
+    public static interface DataBaseChangedListener{
+        void onTableAdded(String name);
     }
 }

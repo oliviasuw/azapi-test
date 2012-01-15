@@ -32,7 +32,6 @@ public class ReflectionUtil {
             "long", Long.class,
             "double", Double.class);
 
-    
     public static Method methodWithAnnotation(Class c, Class<? extends Annotation> a) {
         for (Method m : c.getDeclaredMethods()) {
 
@@ -98,7 +97,7 @@ public class ReflectionUtil {
             }
         }
     }
-    
+
     public static List<Method> getRecursivelyMethodsWithAnnotation(Class aClass, Class<? extends Annotation> ano) {
         LinkedList<Method> ret = new LinkedList<Method>();
         while (true) {
@@ -146,6 +145,24 @@ public class ReflectionUtil {
         return null;
     }
 
+    public static Object tryAdapt(Object what, Class to) {
+        if (to.isAssignableFrom(what.getClass())) {
+            return what;
+        }
+
+        if (to.isPrimitive()) {
+            to = PRIMITIVE_MAP.get(to.getSimpleName());
+            if (to.isAssignableFrom(what.getClass())) {
+                return what;
+            }
+        }
+
+        if (what instanceof Number && Integer.class.isAssignableFrom(to)) {
+            return ((Number) what).intValue();
+        }
+        return valueOf("" + what, to);
+    }
+
     public static List<Method> methodsByName(Class aClass, String name) {
         LinkedList<Method> ret = new LinkedList<Method>();
         for (Method m : aClass.getDeclaredMethods()) {
@@ -157,8 +174,8 @@ public class ReflectionUtil {
 
         return ret;
     }
-    
-        public static <T> T valueOf(String s, Class<T> c) {
+
+    public static <T> T valueOf(String s, Class<T> c) {
         if (String.class.isAssignableFrom(c)) {
             return (T) s;
         }
@@ -180,7 +197,7 @@ public class ReflectionUtil {
         } catch (SecurityException ex) {
 //            Logger.getLogger(ReflectionUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         if (m == null) {
             System.err.println("cannot found value of " + c.getSimpleName());
             return null;
@@ -204,5 +221,4 @@ public class ReflectionUtil {
             return null;
         }
     }
-
 }

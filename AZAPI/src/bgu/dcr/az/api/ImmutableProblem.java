@@ -66,7 +66,6 @@ public interface ImmutableProblem {
     /**
      * @param var
      * @return all the variables that costrainted with the given var
-     * operation cost: o(n*d^2)cc
      */
     Set<Integer> getNeighbors(int var);
 

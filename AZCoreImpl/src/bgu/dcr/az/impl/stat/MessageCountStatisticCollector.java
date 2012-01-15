@@ -102,12 +102,12 @@ public class MessageCountStatisticCollector extends AbstractStatisticCollector<M
 
     public static class Record extends DBRecord {
 
-        float runVar;
+        double runVar;
         String algorithm;
         int agent;
         float messages;
 
-        public Record(String algorithm, int agent, long messages, float runVar) {
+        public Record(String algorithm, int agent, long messages, double runVar) {
             this.algorithm = algorithm;
             this.agent = agent;
             this.messages = messages;

@@ -32,6 +32,7 @@ import static bc.dsl.JavaDSL.*;
  */
 public class SwingDSL {
 
+    private static boolean uiConfigured = false;
     private static HashMap<String, ImageIcon> icons = new HashMap<String, ImageIcon>();
 
     public static ImageIcon resIcon(Class loc, String path) {
@@ -183,6 +184,8 @@ public class SwingDSL {
     }
 
     public static void configureUI() {
+        if (uiConfigured) return;
+        uiConfigured = true;
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException ex) {

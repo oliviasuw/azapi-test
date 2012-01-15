@@ -98,12 +98,12 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         if (!shuttingdown) {
             setResult(new ExecutionResult(ex));
             shuttingdown = true;
-            stop();
-
-            System.out.println("PANIC! " + ex.getMessage() + ", [USER TEXT]: " + error);
+            stop(); 
+//            System.out.println("PANIC! " + ex.getMessage() + ", [USER TEXT]: " + error);
         }
     }
 
+    
     /**
      * force the execution to use idle detector (even if not stated so in the algorithm metadata)
      * @param needed 
@@ -166,11 +166,11 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         }
     }
 
-    @Override
-    public void stop() {
-        experiment.stop();
-
-    }
+//    @Override
+//    public void stop() {
+//        experiment.stop();
+//
+//    }
 
     protected ExecutorService getExecutorService() {
         return executorService;
@@ -284,8 +284,8 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
                 sc.hookIn(agents, this);
             }
             startExecution();
-            finish();
         } finally {
+            finish();
             try {
                 for (TerminationHook hook : terminationHooks) {
                     hook.hook();
@@ -328,7 +328,8 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
             try {
                 runner.join();
             } catch (InterruptedException ex) {
-                Logger.getLogger(AsyncExecution.class.getName()).log(Level.SEVERE, null, ex);
+                Thread.currentThread().interrupt(); //reflag
+                //Logger.getLogger(AsyncExecution.class.getName()).log(Level.SEVERE, null, ex);
                 reportCrushAndStop(ex, "interupted while waiting for all agents to finish");
             }
         }

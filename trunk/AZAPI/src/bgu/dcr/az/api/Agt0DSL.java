@@ -18,7 +18,7 @@ public class Agt0DSL {
 
     private static final Pattern nummericPattern = Pattern.compile("[-+]?\\d+(\\.\\d*)?$");
     private static final Pattern integericPattern = Pattern.compile("[-+]?\\d+$");
-    
+    private static Random rnd = new Random(42);
     /**
      * returns a collection of numbers in the range of start to end (includes start and end)
      * @param start
@@ -34,6 +34,10 @@ public class Agt0DSL {
         ArrayList<Integer> ret = new ArrayList<Integer>(end - start);
         fillRange(ret, start, end);
         return ret;
+    }
+    
+    public static void randomize(long seed){
+        rnd = new Random(seed);
     }
     
     /**
@@ -289,6 +293,21 @@ public class Agt0DSL {
     }
     
     /**
+     * n-ary max function
+     * @param <T>
+     * @param args
+     * @return
+     */
+    public static long max(long... args) {
+        int min = 0;
+        for (int i = 1; i < args.length; i++) {
+            min = (args[min] < args[i] ? i : min);
+        }
+
+        return args[min];
+    }
+    
+    /**
      * trick to throw checked exception in uncheck context - do not use unless you know what you are doing
      * or you just dont care about this exception
      * @param e 
@@ -309,9 +328,8 @@ public class Agt0DSL {
      * @return 
      */
     public static <T> T random(List<T> c ){
-       Random r = new Random();
        if (c.isEmpty()) return null;
-       return c.get(r.nextInt(c.size()));
+       return c.get(rnd.nextInt(c.size()));
     }
     
     /**
@@ -321,7 +339,6 @@ public class Agt0DSL {
      * @return 
      */
     public static <T> T random(Set<T> c ){
-       Random r = new Random();
        return (T) random(c.toArray()); 
     }
     
@@ -333,8 +350,7 @@ public class Agt0DSL {
      * @return 
      */
     public static <T> T random(T[] c ){
-       Random r = new Random();
        if (c.length == 0) return null;
-       return c[r.nextInt(c.length)];
+       return c[rnd.nextInt(c.length)];
     }
 }

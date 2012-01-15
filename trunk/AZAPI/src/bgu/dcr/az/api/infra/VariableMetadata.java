@@ -76,7 +76,7 @@ public class VariableMetadata {
             for (Field field : ReflectionUtil.getRecursivelyFieldsWithAnnotation(obj.getClass(), Variable.class)) {
                 ano = field.getAnnotation(Variable.class);
                 if (ano.name().equals(var)) {
-                    field.set(obj, value);
+                    field.set(obj, ReflectionUtil.tryAdapt(value, field.getType()));
                 }
             }
         } catch (IllegalArgumentException ex) {

@@ -40,8 +40,9 @@ public interface Process extends Runnable {
     /**
      * each execution should supply a way to stop
      * stopping every child process or thread that "belongs" to this process.
-     * //TODO: maybe more sutable name will be "kill"
      */
     void stop();
+    
+    
     
 }

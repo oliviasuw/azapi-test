@@ -45,7 +45,7 @@ public interface Test extends Process {
     float getVarEnd();
     float getTickSize();
     int getRepeatCount();
-    float getCurrentVarValue();
+    double getCurrentVarValue();
 
     /**
      * @return the test progress - when the test is running this function 

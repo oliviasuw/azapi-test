@@ -18,7 +18,7 @@ public abstract class DataExtractor<T> {
         this.supported = supported;
     }
 
-    public abstract Object getData(String dataName, T from);
+    public abstract Object getData(int dataIdx, String dataName, T from);
 
     public String[] getSupportedDataNames() {
         return supported;
@@ -32,7 +32,7 @@ public abstract class DataExtractor<T> {
 
         
         @Override
-        public Object getData(String dataName, T from) {
+        public Object getData(int didx, String dataName, T from) {
             try {
                 return from.getClass().getMethod("get" + JavaDSL.camelCase(dataName)).invoke(from);
             } catch (Exception ex) {

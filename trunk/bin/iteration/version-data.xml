@@ -1,0 +1,22 @@
+<!-- THIS DATA INTENDED TO BE READED BY THE ECLIPSE PLUGIN - IT IS NOT FOR HUMAN USE -->
+<ver name="i4.2">
+	<files>
+		<file name="az.zip" url="http://azapi-test.googlecode.com/svn/trunk/bin/iteration/az.zip" 
+			cmd="unzip"/>
+		<file name="lib.zip" url="http://azapi-test.googlecode.com/svn/trunk/bin/iteration/lib.zip" 
+			cmd="unzip"/>
+	</files>
+	
+	<change-log>
+		amnon course version - contain many addons to the plugin
+		- autoupdate!!! - the most important feature in this release
+		- template for problem generation
+		- template for statistic collector
+		- template for message delayer
+		- template for correctness tester
+		- plugin size reduced drastically 
+		- shortcut to submit bugs (will only work from inside the university)
+		- all plugin related bugs were fixed
+	</change-log>
+	
+</ver> 

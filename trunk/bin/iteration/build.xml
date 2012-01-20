@@ -3,8 +3,8 @@
 	<property name="lib.dir" value="lib"/>
 	<property name="iter.url" value="http://azapi-test.googlecode.com/svn/trunk/bin/iteration" />
 
-	<property name="ext.file" value="test1.zip"/>
-	<property name="lib.file" value="test2.zip"/>
+	<property name="ext.file" value="ext.zip"/>
+	<property name="lib.file" value="lib.zip"/>
 
 	<target name="temp-dir-check">
 	    <condition property="temp.dir.exists">

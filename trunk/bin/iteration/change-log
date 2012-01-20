@@ -1,0 +1,9 @@
+amnon course version - contain many addons to the plugin
+- autoupdate!!! - the most important feature in this release
+- template for problem generation
+- template for statistic collector
+- template for message delayer
+- template for correctness tester
+- plugin size reduced drastically 
+- shortcut to submit bugs (will only work from inside the university)
+- all plugin related bugs were fixed

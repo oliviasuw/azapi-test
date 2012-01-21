@@ -1,4 +1,9 @@
 <project name="update agent zero" default="run">
+
+<!-- ADD ANT CONTRIB -->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+
+<!-- PROPERTIES -->
 	<property name="iter.url" value="http://azapi-test.googlecode.com/svn/trunk/bin/iteration" />
 	<property name="ext.version" value="i4.1" />
 
@@ -12,7 +17,7 @@
 	<property name="ext.version.file" value="ext.version" />
 	<property name="version.file" value="version" />
 
-
+<!-- MACROS -->
 	<macrodef name="clean-dir">
 		<attribute name="dir" />
 		<sequential>
@@ -31,6 +36,8 @@
 				
 		</sequential>
 	</macrodef>
+
+<!-- TARGETS:  -->
 
 <!-- PREPERE THE ENVIRONMENT BEFORE DOWNLOADING THE FILES -->
 	<target name="prepere-env">

@@ -19,7 +19,6 @@
 	<property name="version.file" value="version" />
 
 <!-- MACROS -->
-	<macrodef
 
 	<macrodef name="clean-dir">
 		<attribute name="dir" />

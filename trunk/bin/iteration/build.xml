@@ -2,7 +2,6 @@
 
 <!-- ADD ANT CONTRIB -->
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
-	<taskdef resource="net/sf/antcontrib/antlib.xml"/>
 
 <!-- PROPERTIES -->
 	<property name="iter.url" value="http://azapi-test.googlecode.com/svn/trunk/bin/iteration" />

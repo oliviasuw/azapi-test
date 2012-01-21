@@ -25,7 +25,7 @@
 			<echo message="clean directory ${dir}"/>
 			
 			<if>
-			 	<not> <available dir="@{dir}"/> </not>
+			 	<not> <available file="@{dir}" type="dir"/> </not>
 				<then>
 					<mkdir dir="@{dir}"/>	
 				</then>

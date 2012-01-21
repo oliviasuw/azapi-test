@@ -42,7 +42,8 @@
 
 <!-- PREPERE THE ENVIRONMENT BEFORE DOWNLOADING THE FILES -->
 	<target name="prepere-env">
-		<clean-dir dir="temp"/>
+		<clean-dir dir="${temp.dir}"/>
+		<clean-dir dir="${doc.dir}"/>
 	</target>
 
 <!-- TEST IF THE EXT FILE IS NEEDED AND IF SO DOWNLOAD IT -->

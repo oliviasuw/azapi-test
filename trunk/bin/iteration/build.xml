@@ -1,51 +1,70 @@
 <project name="update agent zero" default="run">
+	<property name="iter.url" value="http://azapi-test.googlecode.com/svn/trunk/bin/iteration" />
+	<property name="ext.version" value="i4.1" />
+
 	<property name="temp.dir" value="temp"/>
 	<property name="lib.dir" value="lib"/>
-	<property name="iter.url" value="http://azapi-test.googlecode.com/svn/trunk/bin/iteration" />
+	<property name="doc.dir" value="doc"/>
 
 	<property name="ext.file" value="ext.zip"/>
 	<property name="lib.file" value="lib.zip"/>
+	<property name="doc.file" value="javadoc.zip"/>
+	<property name="ext.version.file" value="ext.version" />
+	<property name="version.file" value="version" />
 
-	<target name="temp-dir-check">
-	    <condition property="temp.dir.exists">
-	      <available file="${temp.dir}" type="dir"/>
-	    </condition>
-  	</target>
 
-	<target name="create-temp-dir" depends="temp-dir-check" unless="temp.dir.exists">
-	    <mkdir dir="${temp.dir}"/>
-  	</target>  	
+	<macrodef name="clean-dir">
+		<attribute name="dir" />
+		<sequential>
+			<echo message="clean directory ${dir}"/>
+			
+			<if>
+			 	<not> <available dir="@{dir}"/> </not>
+				<then>
+					<mkdir dir="@{dir}"/>	
+				</then>
+			</if>
 
-  	<target name="lib-dir-check">
-	    <condition property="lib.dir.exists">
-	      <available file="${lib.dir}" type="dir"/>
-	    </condition>
-  	</target>
+			<delete verbose="true">
+	    		<fileset dir="@{dir}"/>
+	  		 </delete>			
+				
+		</sequential>
+	</macrodef>
 
-	<target name="create-lib-dir" depends="lib-dir-check" unless="lib.dir.exists">
-	    <mkdir dir="${lib.dir}"/>
-  	</target>  	
-
-	<target name="clean-temp" depends="create-temp-dir">
-		 <delete verbose="true">
-    		<fileset dir="${temp.dir}"/>
-  		 </delete>
+<!-- PREPERE THE ENVIRONMENT BEFORE DOWNLOADING THE FILES -->
+	<target name="prepere-env">
+		<clean-dir dir="temp"/>
 	</target>
 
-	<target name="download-files" depends="clean-temp">
-		<get src="${iter.url}/${ext.file}"
-			dest="${temp.dir}/${ext.file}" verbose="true"/>
+<!-- TEST IF THE EXT FILE IS NEEDED AND IF SO DOWNLOAD IT -->
+	<target name="download-ext" depends="prepere-env">
+		<property name="ext.current.version" value="unknown" />
+		<loadfile property="ext.current.version" srcFile="${ext.version.file}" failonerror="false"/>
+		<if>
+			<not> <equals arg1="${ext.current.version}" arg2="${ext.version}"/> </not>
+			<then>
+				<get src="${iter.url}/${ext.file}"
+					dest="${temp.dir}/${ext.file}" verbose="true"/>
+				<echo file="${ext.version.file}" message="${ext.version}"/>
+			</then>
+		</if>
+	</target>
+
+	<target name="download-lib" depends="prepere-env">
 		<get src="${iter.url}/${lib.file}"
 			dest="${temp.dir}/${lib.file}" verbose="true"/>	
 	</target>
 
-	<target name="clean-old" depends="create-lib-dir">
-		<delete verbose="true">
-    		<fileset dir="${lib.dir}"/>
-  		 </delete>
+	<target name="download-javadoc" depends="prepere-env">
+		<get src="${iter.url}/${doc.file}"
+			dest="${doc.dir}/${doc.file}" verbose="true"/>	
 	</target>
 
-	<target name="extract-data" depends="clean-old">
+	<target name="download-files" depends="download-lib,download-javadoc,download-ext"/>
+
+	<target name="extract-files" depends="download-files">
+		<clean-dir dir="${lib.dir}" />
 		<unzip dest="${lib.dir}" >
 			 <fileset dir="${temp.dir}">
         		<include name="**/*.zip"/>
@@ -57,6 +76,9 @@
 		<delete verbose="true" dir="${temp.dir}" />
 	</target>
 
-	<target name="run" depends="download-files,extract-data,delete-temp" />
+	<target name="run" depends="extract-files,delete-temp" >
+		<get src="${iter.url}/${version.file}"
+			dest="${version.file}" verbose="true"/>	
+	</target>
 
 </project>

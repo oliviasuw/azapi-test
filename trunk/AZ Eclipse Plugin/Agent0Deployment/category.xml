@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/Agent0Deployment_1.0.0.qualifier.jar" id="Agent0Deployment" version="1.0.0.qualifier">
+      <category name="AgentZero"/>
+   </feature>
+   <category-def name="AgentZero" label="AZ"/>
+</site>

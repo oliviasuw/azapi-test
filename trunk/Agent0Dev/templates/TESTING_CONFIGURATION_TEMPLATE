@@ -1,8 +1,0 @@
-<test name="test1">
-	<rounds>
-		<round length="500" n="10" d="2" p1="0.6" max-cost="100" type="dcop"/>
-		<round length="5000" n="3" d="2" p1="0.4" max-cost="100" type="dcop"/>
-		<round length="500" n="5" d="3" p1="0.9" max-cost="100" type="dcop"/>
-		<round length="500" n="10" d="5" p1="0.9" max-cost="80" type="connected-dcop"/>
-	</rounds>
-</test>

@@ -1,9 +1,15 @@
-amnon course version - contain many addons to the plugin
-- autoupdate!!! - the most important feature in this release
-- template for problem generation
+AgentZero i4.2
+Amnon course version - contain many addons to the plugin
+- framework update engine
+- framework autoupdate engine
+- template for problem generator
 - template for statistic collector
 - template for message delayer
 - template for correctness tester
 - plugin size reduced drastically 
-- shortcut to submit bugs (will only work from inside the university)
+- shortcut to submit bugs
+- work with java 7
+- tutorial is now fully updated and published on google docs
+- shortcut to open the tutorial in the plugin
+- new toolbar was added to the plugin for faster access to the features above
 - all plugin related bugs were fixed

@@ -90,8 +90,8 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
         if (tickSize == 0) {
             tickSize = 0.1f;
         }
-
-        return (int) (((end - start) / tickSize) + 1.0) * repeatCount;//(int) Math.floor((((end - start) / tickSize ) + 1.0) * (double)repeatCount);
+        int perAlgorithm = (int) (((end - start) / tickSize) + 1.0) * repeatCount; //(int) Math.floor((((end - start) / tickSize ) + 1.0) * (double)repeatCount);
+        return perAlgorithm * getAlgorithms().size();
     }
 
     public void setExperiment(Experiment exp) {

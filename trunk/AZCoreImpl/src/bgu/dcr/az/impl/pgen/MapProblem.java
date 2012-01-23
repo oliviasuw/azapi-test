@@ -19,12 +19,6 @@ import java.util.Set;
 public class MapProblem extends Problem {
 
     private Object[] map;
-    //private HashMap<Integer, int[][]> map;
-
-//    @Override
-//    public boolean isConstrained(int var1, int var2) {
-//        return super.constraints.containsKey(calcId(var1, var2));
-//    }
     @Override
     public void setConstraintCost(int var1, int val1, int var2, int val2, int cost) {
         if (maxCost < cost){
@@ -32,11 +26,7 @@ public class MapProblem extends Problem {
         }
         
         int id = calcId(var1, var2);
-//        if (cost != 0) {
-//            super.constraints.put(id, Boolean.TRUE);
         setNeighbor(var1, var2);
-//        setNeighbor(var2, var1);
-//        }
         createMap(id);
         ((int[][]) map[id])[val1][val2] = cost;
     }

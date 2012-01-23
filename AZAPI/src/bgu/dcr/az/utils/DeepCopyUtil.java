@@ -24,6 +24,7 @@ public class DeepCopyUtil {
         } catch (DeepCopyException ex) {
             Logger.getLogger(DeepCopyUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }
     
     /**
@@ -34,7 +35,7 @@ public class DeepCopyUtil {
     public static <T> T deepCopy(T orig){
         if (orig instanceof Enum || orig instanceof Throwable){
             return orig;
-        }
+        } 
         
         try {
             return dcu.deepCopy(orig);//cloner.deepClone(orig);

@@ -3,14 +3,13 @@ package bgu.dcr.az.dev.debug3;
 import java.util.LinkedList;
 import java.util.List;
 
-import bgu.dcr.az.api.ProblemType;
 import bgu.dcr.az.api.agt.SimpleAgent;
 import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.ano.WhenReceived;
 import bgu.dcr.az.api.tools.Assignment;
 
-@Algorithm(name = "__SBB", useIdleDetector = true)
+@Algorithm(name = "__SBB")
 public class SBBAgent extends SimpleAgent {
 
     @Variable(name = "test", description = "test variable", defaultValue = "50")

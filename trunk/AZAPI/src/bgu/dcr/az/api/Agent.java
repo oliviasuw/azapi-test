@@ -596,10 +596,10 @@ public abstract class Agent extends Agt0DSL {
         public String getMailGroupKey() {
             return mailGroupKey;
         }
-
-        public VariableMetadata[] provideExpectendVariabls() {
-            return VariableMetadata.scan(Agent.this);
-        }
+//
+//        public VariableMetadata[] provideExpectendVariabls() {
+//            return VariableMetadata.scan(Agent.this);
+//        }
 
         public void configure(Map<String, Object> vars) {
             VariableMetadata.assign(Agent.this, vars);

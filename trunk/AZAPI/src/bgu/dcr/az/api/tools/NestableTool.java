@@ -17,12 +17,13 @@ import bgu.dcr.az.api.infra.Execution;
  * @author bennyl
  */
 public abstract class NestableTool {
-    
+
     private int finalAssignment = Integer.MIN_VALUE;
+    private boolean hasAssignment = false;
     
-    public ContinuationMediator calculate(final Agent callingAgent){
+    public ContinuationMediator calculate(final Agent callingAgent) {
         final Execution exec = Agent.PlatformOperationsExtractor.extract(callingAgent).getExecution();
-        ContinuationMediator ret = new ContinuationMediator(){
+        ContinuationMediator ret = new ContinuationMediator() {
 
             @Override
             public void andWhenDoneDo(final Continuation c) {
@@ -30,12 +31,15 @@ public abstract class NestableTool {
 
                     @Override
                     public void doContinue() {
-                        finalAssignment = exec.getResult().getAssignment().getAssignment(callingAgent.getId());
+                        final Assignment assignment = exec.getResult().getAssignment();
+                        if (assignment != null) {
+                            finalAssignment = assignment.getAssignment(callingAgent.getId());
+                            hasAssignment = true;
+                        }
                         c.doContinue();
                     }
                 });
             }
-            
         };
         AgentRunner runner = exec.getAgentRunnerFor(callingAgent);
         SimpleAgent nested = createNestedAgent();
@@ -48,9 +52,14 @@ public abstract class NestableTool {
     }
 
     protected abstract SimpleAgent createNestedAgent();
-    
-    public int getFinalAssignment(){
+
+    public int getFinalAssignment() {
         return this.finalAssignment;
     }
+
+    public boolean isHasAssignment() {
+        return hasAssignment;
+    }
+    
     
 }

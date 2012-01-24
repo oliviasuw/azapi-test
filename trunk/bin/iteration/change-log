@@ -1,4 +1,4 @@
-AgentZero i4.2
+AgentZero i4.2 quick fix 1
 Amnon course version - contain many addons to the plugin
 - framework update engine
 - framework autoupdate engine
@@ -13,3 +13,6 @@ Amnon course version - contain many addons to the plugin
 - shortcut to open the tutorial in the plugin
 - new toolbar was added to the plugin for faster access to the features above
 - all plugin related bugs were fixed
+
+quick fix 1:
+- fix for Exception in thread "Test Runner Thread" java.lang.VerifyError when agent contain too many methods

@@ -19,3 +19,6 @@ quick fix 1:
 
 quick fix 2:
 - some libraries were missing 
+
+quick fix 3:
+- broken barrier exception on synchronus execution fixed

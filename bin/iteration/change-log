@@ -16,3 +16,6 @@ Amnon course version - contain many addons to the plugin
 
 quick fix 1:
 - fix for Exception in thread "Test Runner Thread" java.lang.VerifyError when agent contain too many methods
+
+quick fix 2:
+- some libraries were missing 

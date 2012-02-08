@@ -66,30 +66,36 @@ public class SendMediator {
 
     /**
      * send the message to the sending agent neighbores in the problem p
+     * while neighbores are all the agents that constrainted with the sending agent
+     * @param p
+     * @deprecated use {@link toNeighbores()} instaed 
+     * @supportUntil i6
+     */
+    @Deprecated
+    public void toNeighbores(ImmutableProblem p) {
+        Set<Integer> neighbors;
+        neighbors = p.getNeighbors(msg.getSender());
+        for (int n : neighbors) {
+            to(n);
+        }
+    }
+    
+    /**
+     * send the message to the sending agent neighbores in the problem p
+     * while neighbores are all the agents that constrainted with the sending agent
      * @param p
      */
-    public void toNeighbores(ImmutableProblem p) {
-        int last = 0;
-        int step = 0;
+    public void toNeighbores() {
         Set<Integer> neighbors;
-        try {
-            neighbors = p.getNeighbors(msg.getSender());
-            step = 1;
-            for (int n : neighbors) {
-                step = 2;
-                last = n;
-                step = 3;
-                to(n);
-                step = 4;
-            }
-        } catch (Exception ex) {
-            System.out.println("HERE");
+        neighbors = curp.getNeighbors(msg.getSender());
+        for (int n : neighbors) {
+            to(n);
         }
-
     }
 
     /**
      * attach metadata to the message pirior to sending it
+     * usage: send("MESSAGE",arg1,...,argn).withMeta("META",data).to*
      * @param name
      * @param val
      * @return

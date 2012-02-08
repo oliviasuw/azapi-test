@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +26,8 @@ public abstract class Problem implements Serializable, ImmutableProblem {
     protected ImmutableSet<Integer> domain;
     protected HashMap<Integer, Set<Integer>> neighbores = new HashMap<Integer, Set<Integer>>();
     protected HashMap<Integer, Set<Integer>> immutableNeighbores = new HashMap<Integer, Set<Integer>>();
-    private Semaphore immutableNeighborsWriteLock = new Semaphore(1);
+    //private Semaphore immutableNeighborsWriteLock = new Semaphore(1);
+    private ReentrantReadWriteLock immutableNeighborsLock = new ReentrantReadWriteLock();
     //    protected HashMap<Integer, Boolean> constraints = new HashMap<Integer, Boolean>();
     protected ProblemType type;
     protected int maxCost = 0;
@@ -221,26 +224,30 @@ public abstract class Problem implements Serializable, ImmutableProblem {
     /**
      * @param var
      * @return all the variables that costrainted with the given var 
-     * operation cost: o(n*d^2)cc
      */
     @Override
     public Set<Integer> getNeighbors(int var) {
-        if (immutableNeighbores.get(var) == null) {
-            Set<Integer> l = this.neighbores.get(var);
-            Set<Integer> tmp = Collections.unmodifiableSet(l);
+
+        Set<Integer> ng = null;
+        immutableNeighborsLock.readLock().lock();
+        try {
+            ng = immutableNeighbores.get(var);
+        } finally {
+            immutableNeighborsLock.readLock().unlock();
+        }
+
+        if (ng == null) {
+            immutableNeighborsLock.writeLock().lock();
             try {
-                immutableNeighborsWriteLock.acquire();
-            } catch (InterruptedException ex) {
-                System.out.println("Interrupted while reading neighbores");
-                Thread.currentThread().interrupt();
-            }
-            try {
-                immutableNeighbores.put(var, tmp);
+                Set<Integer> l = this.neighbores.get(var);
+                ng = Collections.unmodifiableSet(l);
+                immutableNeighbores.put(var, ng);
             } finally {
-                immutableNeighborsWriteLock.release();
+                immutableNeighborsLock.writeLock().unlock();
             }
         }
-        return immutableNeighbores.get(var);
+        
+        return ng;
     }
 
     @Override

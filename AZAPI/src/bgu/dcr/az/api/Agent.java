@@ -86,12 +86,11 @@ public abstract class Agent extends Agt0DSL {
      * collection of hooks that will be called before the agent calls finish
      */
     protected List<Hooks.BeforeCallingFinishHook> beforeCallingFinishHooks;
-
     /**
      * METADATA
      */
     private String algorithmName;
-    
+
     /**
      * create a default agent - this agent will have id = -1 so you must reassign it 
      */
@@ -195,6 +194,13 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
+     * @return set of variables that are constrainted with this agent variable
+     */
+    public Set<Integer> getNeighbors() {
+        return prob.getNeighbors(getId());
+    }
+
+    /**
      * @return the id of this agent. In simple algorithms this ID is the variable that the agent is "handling"
      */
     public int getId() {
@@ -238,6 +244,15 @@ public abstract class Agent extends Agt0DSL {
      */
     protected void panic(String why) {
         panic(why, null);
+    }
+
+    /**
+     * will cause the execution to stop with an error if the given predicate is true
+     */
+    protected void panicIf(boolean predicate, String why) {
+        if (predicate) {
+            panic(why, null);
+        }
     }
 
     /**
@@ -513,7 +528,17 @@ public abstract class Agent extends Agt0DSL {
 
     /**
      * this function is called when a SYS_TERMINATION Message Arrived -> it just calls finish on the agent, 
-     * you can override it to make your own termination handling.
+     * you can override it to make your own termination handling but dont forgot to reassign it to the termination message.
+     * you should override it as follows:
+     * <pre>
+     * {@code
+     * @WhenReceived(Agent.SYS_TERMINATION_MESSAGE)
+     *  protected void handleTermination() {
+     *    //your code here... 
+     *  }
+     * }
+     * </pre>
+     * 
      */
     @WhenReceived(Agent.SYS_TERMINATION_MESSAGE)
     public void handleTermination() {

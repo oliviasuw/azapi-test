@@ -4,6 +4,8 @@
  */
 package bgu.dcr.az.impl.sync;
 
+import bgu.dcr.az.api.Agent;
+import bgu.dcr.az.api.AgentRunner;
 import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.impl.AlgorithmMetadata;
@@ -17,10 +19,13 @@ import java.util.concurrent.ExecutorService;
  */
 public class SyncExecution extends AbstractExecution {
 
+    AgentRunner[] handlingAgentRunners;
+    
     public SyncExecution(Problem p, AlgorithmMetadata a, Test r, Experiment exp) {
         super(p, new SyncMailer(), a, r, exp);
+        handlingAgentRunners = new AgentRunner[p.getNumberOfVariables()];
     }
-
+    
     @Override
     protected void configure() {
         DefaultSystemClock clock = new DefaultSystemClock();
@@ -39,6 +44,16 @@ public class SyncExecution extends AbstractExecution {
 
         setAgentRunners(SyncAgentRunner.createAgentRunners(numberOfAgentRunners, getSystemClock(), this, getAgents()));
         clock.setExcution(this); //MUST BE CALLED AFTER THE AGENT RUNNERS HAVE BEEN ASSIGNED...
+    }
+
+    @Override
+    public void setAgentRunnerFor(int id, AgentRunner aThis) {
+        handlingAgentRunners[id] = aThis;
+    }
+
+    @Override
+    public AgentRunner getAgentRunnerFor(Agent a) {
+        return handlingAgentRunners[a.getId()];
     }
 
     @Override

@@ -17,6 +17,7 @@ import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
 import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.api.tools.IdleDetector;
+import bgu.dcr.az.impl.sync.SyncAgentRunner;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,7 +57,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private Map<String, ReportHook> reportHooks = new HashMap<String, ReportHook>();//list of report hook listeners
     private List<TerminationHook> terminationHooks = new LinkedList<TerminationHook>();
     private boolean idleDetectorNeeded = false;//hard set for the execution to use idle detection
-
+    
     /**
      * 
      */
@@ -338,4 +339,8 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     protected abstract void configure();
 
     protected abstract void finish();
+
+    public void setAgentRunnerFor(int id, AgentRunner aThis) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 }

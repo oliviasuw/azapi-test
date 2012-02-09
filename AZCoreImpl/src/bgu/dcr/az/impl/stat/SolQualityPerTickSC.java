@@ -81,7 +81,7 @@ public class SolQualityPerTickSC extends AbstractStatisticCollector<SolQualityPe
             public synchronized void hook(SystemClock clock) {
                 if (clock.time() % samplingRate == 0) {
                     float cost = (float) e.getResult().getAssignment().calcCost(e.getGlobalProblem());
-//                    System.out.println("in tick " + clock.time() + " the cost was " + cost);
+                    //System.out.println("in tick " + clock.time() + " the cost was " + cost);
                     submit(new Record(cost, clock.time(), ticksPerCycle, e.getTest().getCurrentExecutionNumber(), (float)lastCost, a[0].getAlgorithmName()));
                     lastCost = cost;
                 }

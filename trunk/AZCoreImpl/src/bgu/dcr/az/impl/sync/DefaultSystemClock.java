@@ -44,9 +44,7 @@ public class DefaultSystemClock implements SystemClock {
 
             barrier.await();
 
-//            System.out.println(Thread.currentThread().getName() + " out of berrier");
             if (closed == nextTime - 1) {
-//                System.out.println(Thread.currentThread().getName() + " found closed clock - out!");
                 return;
             }
             /**
@@ -59,8 +57,6 @@ public class DefaultSystemClock implements SystemClock {
             try {
                 if (notified < time) {
                     notified = time;
-//                    System.out.println(Thread.currentThread().getName() + " notifing tick " + time);
-
                     for (TickHook t : tickHooks) {
                         t.hook(this);
                     }

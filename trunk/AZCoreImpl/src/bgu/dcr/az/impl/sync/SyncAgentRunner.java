@@ -84,10 +84,14 @@ public class SyncAgentRunner implements AgentRunner {
 
                         long got = s.time.getAndSet(currentTime);
                         if (got == -1) {
+                            exec.setAgentRunnerFor(s.current.getId(), this);
                             s.current.start();
                         } else if (got < currentTime) {
                             if (!s.current.isFinished()) {
                                 try {
+                                    // notify the execution that i handling this agent
+                                    exec.setAgentRunnerFor(s.current.getId(), this);
+                                    
                                     while (s.current.hasPendingMessages()) {
                                         s.current.processNextMessage();
                                     }

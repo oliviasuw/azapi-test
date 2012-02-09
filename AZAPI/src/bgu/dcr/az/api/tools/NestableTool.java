@@ -41,6 +41,7 @@ public abstract class NestableTool {
                 });
             }
         };
+
         AgentRunner runner = exec.getAgentRunnerFor(callingAgent);
         SimpleAgent nested = createNestedAgent();
         System.out.println("Calculating - transforming from " + callingAgent.getClass().getSimpleName() + " to " + nested.getClass().getSimpleName());

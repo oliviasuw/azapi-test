@@ -101,7 +101,14 @@ public abstract class Agent extends Agt0DSL {
         beforeMessageProcessingHooks = new LinkedList<Hooks.BeforeMessageProcessingHook>();
         beforeCallingFinishHooks = new LinkedList<Hooks.BeforeCallingFinishHook>();
         this.pops = new PlatformOps();
-        this.algorithmName = getClass().getAnnotation(Algorithm.class).name();
+        final Algorithm algAnnotation = getClass().getAnnotation(Algorithm.class);
+        if (algAnnotation != null) {
+            this.algorithmName = algAnnotation.name();
+        }else {
+            String name = getClass().getSimpleName();
+            if (name.endsWith("Agent")) name = name.substring(0, name.length() - "Agent".length());
+            this.algorithmName = name;
+        }
     }
 
     /**
@@ -201,7 +208,9 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * @return the id of this agent. In simple algorithms this ID is the variable that the agent is "handling"
+     * @return the id of this agent.
+     * In simple algorithms this ID is the variable that the agent is "handling"
+     * starting from 0 to number of variables - 1
      */
     public int getId() {
         return id;

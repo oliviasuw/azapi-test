@@ -53,6 +53,14 @@ public class Message implements Serializable {
 
     /**
      * @return the arguments of this message
+     * the args are ordered at the same way that the sender sent them / the receiver got them
+     * which means that if you sent the mesasge using:
+     * send("message", a, b, c).to(x) 
+     * message.getArgs[0] = a
+     * message.getArgs[0] = b
+     * message.getArgs[0] = c
+     * 
+     * aside from arguments message can also contain metadata accesible via {@link getMetadata()}
      */
     public Object[] getArgs() {
         return args;

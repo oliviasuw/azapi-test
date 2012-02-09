@@ -38,7 +38,8 @@ public class Assignment implements Serializable, DeepCopyable{
     }
 
     /**
-     * assign val to var
+     * assign val to var 
+     * if var already been assign then its value will be overwriten
      * @param var
      * @param val
      */
@@ -150,7 +151,8 @@ public class Assignment implements Serializable, DeepCopyable{
      * @param val
      * @param p 
      * @return the cost that will be added to this assignment by assigning 
-     * 		   var <- val in the problem p
+     * 		   {@code var <- val} in the problem p 
+     *             this includes binary and unary costs
      */
     public int calcAddedCost(int var, int val, ImmutableProblem p) {
         int c = 0;

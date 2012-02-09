@@ -1,3 +1,6 @@
+quick fix 5:
+getAgents added to the execution (usefull for module creators)
+
 quick fix 4:
 extending DSL:
 getNeighbores() in agent class

@@ -1,3 +1,7 @@
+quick fix 7:
+Agent.getProblem() reverted to protected - guard from statistic correctness faults that may accure by improper use.
+fix - possible null-pointer-exception on SQPT
+
 quick fix 6:
 Agent.getProblem() is now public (good for tool makers)
 

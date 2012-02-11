@@ -1,3 +1,6 @@
+quick fix 6:
+Agent.getProblem() is now public (good for tool makers)
+
 quick fix 5:
 getAgents added to the execution (usefull for module creators)
 

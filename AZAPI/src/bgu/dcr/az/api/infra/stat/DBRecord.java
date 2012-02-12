@@ -13,7 +13,9 @@ import java.lang.reflect.Field;
  */
 public abstract class DBRecord {
     public abstract String provideTableName();
-
+    private String algorithmInstanceName;
+    private String roundName;
+    
     private Field[] fields;
     public DBRecord() {
         fields = getClass().getDeclaredFields();
@@ -24,6 +26,38 @@ public abstract class DBRecord {
 
     public Field[] getFields() {
         return fields;
+    }
+
+    /**
+     * do not use directly - only get filled upon submition 
+     * @return 
+     */
+    public String getAlgorithmInstanceName() {
+        return algorithmInstanceName;
+    }
+    
+    /**
+     * do not use directly - only get filled upon submition
+     * @param AlgorithmInstanceName 
+     */
+    public void setAlgorithmInstanceName(String AlgorithmInstanceName) {
+        this.algorithmInstanceName = AlgorithmInstanceName;
+    }
+
+    /**
+     * do not use directly - only get filled upon submition
+     * @return 
+     */
+    public String getTestName() {
+        return roundName;
+    }
+
+    /**
+     * do not use directly - only get filled upon submition
+     * @param roundName 
+     */
+    public void setTestName(String roundName) {
+        this.roundName = roundName;
     }
     
 }

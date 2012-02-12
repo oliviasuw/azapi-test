@@ -1,20 +1,25 @@
+quick fix 8:
+fix bug #42 [Statistics fields in hook-in conflict]
+fix bug #36 [Uncaught exception]
+added support for running the same Algorithm with different parameters in the same test.
+
 quick fix 7:
-Agent.getProblem() reverted to protected - guard from statistic correctness faults that may accure by improper use.
-fix - possible null-pointer-exception on SQPT
+- Agent.getProblem() reverted to protected - guard from statistic correctness faults that may accure by improper use.
+- fix - possible null-pointer-exception on SQPT
 
 quick fix 6:
-Agent.getProblem() is now public (good for tool makers)
+- Agent.getProblem() is now public (good for tool makers)
 
 quick fix 5:
-getAgents added to the execution (usefull for module creators)
+- getAgents added to the execution (usefull for module creators)
 
 quick fix 4:
-extending DSL:
-getNeighbores() in agent class
-send(...).toNeighbores(Problem) got deprecated use send(...).toNeighbores() instaed
-panicIf(predicate, message) in agent class
-adding some javadoc
-fixing nested agents on synchronus run error
+- extending DSL:
+  + getNeighbores() in agent class
+  + send(...).toNeighbores(Problem) got deprecated use send(...).toNeighbores() instaed
+  + panicIf(predicate, message) in agent class
+- adding some javadoc
+- fixing nested agents on synchronus run error
 
 quick fix 3:
 - broken barrier exception on synchronus execution fixed

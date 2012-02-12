@@ -16,7 +16,7 @@ import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.pgen.Problem;
 import bgu.dcr.az.api.tools.Assignment;
-import bgu.dcr.az.dev.ExecutionUnit;
+import bgu.dcr.az.dev.ExecutionEnvironmentUnit;
 import bgu.dcr.az.impl.db.DatabaseUnit;
 import java.io.File;
 import java.util.concurrent.Semaphore;
@@ -69,7 +69,7 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
 //        sqs.setModel((DatabaseUnit.H2Database) DatabaseUnit.UNIT.getDatabase());
 //        tabs.addTab("StatisticsQuery", SwingDSL.resIcon("problem"), sqs);
         
-        ExecutionUnit.UNIT.addExperimentListener(this);
+        ExecutionEnvironmentUnit.UNIT.addExperimentListener(this);
 
         start();
 
@@ -300,7 +300,7 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
     }// </editor-fold>//GEN-END:initComponents
 
     private void jXHyperlink2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink2ActionPerformed
-        ExecutionUnit.UNIT.stop();
+        ExecutionEnvironmentUnit.UNIT.stop();
     }//GEN-LAST:event_jXHyperlink2ActionPerformed
 
     /**

@@ -15,7 +15,7 @@ import bc.ui.swing.visuals.Visual;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Test;
-import bgu.dcr.az.dev.ExecutionUnit;
+import bgu.dcr.az.dev.ExecutionEnvironmentUnit;
 import com.sun.java.swing.plaf.motif.MotifProgressBarUI;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,7 +75,7 @@ public class StatusScreen extends javax.swing.JPanel {
 
         mod.setMaximum(expLength);
         progressLabel.setText("Execution 1 " + " of " + expLength);
-        ExecutionUnit.UNIT.addExperimentListener(new Experiment.ExperimentListener() {
+        ExecutionEnvironmentUnit.UNIT.addExperimentListener(new Experiment.ExperimentListener() {
 
             @Override
             public void onExpirementStarted(Experiment source) {

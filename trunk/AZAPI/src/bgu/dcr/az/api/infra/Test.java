@@ -52,8 +52,7 @@ public interface Test extends Process {
      * will return the current execution number between 0 and Test.getLength()
      */
     int getCurrentExecutionNumber();
-    
-    
+        
     /**
      * @return this test problem generator
      */
@@ -80,6 +79,8 @@ public interface Test extends Process {
     int getCurrentProblemNumber();
     
     void setCorrectnessTester(CorrectnessTester ctester);
+
+    public String getCurrentExecutedAlgorithmInstanceName();
     
     public static enum FinishStatus{
         SUCCESS,

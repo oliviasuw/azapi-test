@@ -81,4 +81,8 @@ public interface Execution extends Process {
      */
     void stop();
     
+    /**
+     * @return the agents that executed
+     */
+    Agent[] getAgents();
 }

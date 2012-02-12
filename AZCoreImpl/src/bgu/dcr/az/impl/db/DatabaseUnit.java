@@ -135,8 +135,11 @@ public enum DatabaseUnit {
             knownRecords.add(record.getClass());
         }
         PreparedStatement insertStatement = insertStatments.get(record.getClass());
-        insertStatement.setObject(1, test.getName());
-        int i = 2;
+        //AUTO FIELDS
+        insertStatement.setObject(1, record.getTestName());
+        insertStatement.setObject(2, record.getAlgorithmInstanceName());
+        
+        int i = 3;
         for (Field f : record.getFields()) {
             try {
                 insertStatement.setObject(i++, f.get(record));
@@ -178,11 +181,11 @@ public enum DatabaseUnit {
 
     private PreparedStatement generatePreparedStatement(DBRecord record) throws SQLException {
         StringBuilder sb = new StringBuilder("INSERT INTO ").append(record.provideTableName());
-        sb.append("(TEST");
+        sb.append("(TEST,ALGORITHM_INSTANCE");
         for (Field f : record.getFields()) {
             sb.append(", ").append(f.getName());
         }
-        sb.append(") VALUES (?");
+        sb.append(") VALUES (?,?");
         for (Field f : record.getFields()) {
             sb.append(",?");
         }
@@ -205,7 +208,7 @@ public enum DatabaseUnit {
 
     private void generateTable(DBRecord record) throws SQLException {
         StringBuilder exe = new StringBuilder("CREATE TABLE ").append(record.provideTableName()).append(" (");
-        exe.append("ID INTEGER NOT NULL AUTO_INCREMENT, TEST VARCHAR(50) NOT NULL ");
+        exe.append("ID INTEGER NOT NULL AUTO_INCREMENT, TEST VARCHAR(50) NOT NULL, ALGORITHM_INSTANCE VARCHAR(50) NOT NULL ");
         for (Field f : record.getFields()) {
             exe.append(", ").append(f.getName());
             if (Boolean.class == f.getType() || boolean.class == f.getType()) {

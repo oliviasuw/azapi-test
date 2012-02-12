@@ -11,6 +11,7 @@ import bgu.dcr.az.api.ano.Configuration;
 import bgu.dcr.az.api.infra.CorrectnessTester;
 import bgu.dcr.az.impl.AlgorithmMetadata;
 import bgu.dcr.az.api.ano.Variable;
+import bgu.dcr.az.api.exp.BadConfigurationException;
 import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.infra.CorrectnessTester.TestedResult;
 import bgu.dcr.az.impl.DebugInfo;
@@ -26,12 +27,14 @@ import bgu.dcr.az.impl.db.DatabaseUnit;
 import bgu.dcr.az.impl.pgen.MapProblem;
 import bgu.dcr.az.impl.stat.AbstractStatisticCollector;
 import bgu.dcr.az.utils.DeepCopyUtil;
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
+import java.util.Set;
 
 /**
  *
@@ -76,6 +79,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
     private boolean initialized = false;
     private Experiment experiment; // the executing experiment
     private int currentProblemNumber = 0;
+    private AlgorithmMetadata currentAlgorithm;
 
     public AbstractTest() {
     }
@@ -211,8 +215,10 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
 
     @Override
     protected void _run() {
-        initialize();
         try {
+            initialize();
+            validateConfiguration();
+            
             fireTestStarted();
 
             if (tickSize == 0) {
@@ -235,6 +241,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
                         failedClass = getProblemGenerator().getClass();
                     } else {
                         for (AlgorithmMetadata alg : getAlgorithms()) {
+                            currentAlgorithm = alg;
                             if (!execute(p, alg)) {
                                 failed = true;
                                 failedClass = alg.getAgentClass();
@@ -259,6 +266,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
             res = new TestResult();
 
         } catch (Exception ex) {
+            ex.printStackTrace();
             res = new TestResult(ex, null);
         } finally {
             DatabaseUnit.UNIT.signal(this);
@@ -290,6 +298,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
             fireExecutionEnded(e);
             return true;
         } catch (Exception ex) {
+            ex.printStackTrace();
             res = new TestResult(ex, e);
             return false;
         }
@@ -313,6 +322,11 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
 
     public DebugInfo getDebugInfo() {
         return di;
+    }
+
+    @Override
+    public String getCurrentExecutedAlgorithmInstanceName() {
+        return currentAlgorithm.getInstanceName();
     }
 
     private void initialize() {
@@ -438,5 +452,26 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
     @Override
     public void afterExternalConfiguration() {
         initialize();
+    }
+
+    /**
+     * validating the experiment setup
+     * @throws BadConfigurationException upon bad configuration
+     */
+    private void validateConfiguration() {
+        validate(this.pgen != null, "no problem generator defined - please define one, see the tutorial for more details.");
+
+        Set<String> aInstances = new HashSet<String>();
+        for (AlgorithmMetadata a : this.getAlgorithms()) {
+            validate(!aInstances.contains(a.getInstanceName()), "two or more algorithms with the same instance name '" + a.getInstanceName() + "' are defined (if no instance name defined then it is equals to the algorithm name) "
+                    + " please define different algorithm 'instance-name'");
+            aInstances.add(a.getInstanceName());
+        }
+    }
+
+    private void validate(boolean predicate, String message) {
+        if (!predicate) {
+            throw new BadConfigurationException("[Test " + getName() + "] bad configuration discovered: " + message);
+        }
     }
 }

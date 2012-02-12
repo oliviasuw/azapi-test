@@ -41,26 +41,26 @@ public class MessageCountStatisticCollector extends AbstractStatisticCollector<M
                 case BY_AGENT:
                     bv = new BarVisualModel("Message Count", "Agent", "Avg(Message Sent)");
                     res = db.query(""
-                            + "select algorithm, avg(messages) as m, agent "
+                            + "select ALGORITHM_INSTANCE, avg(messages) as m, agent "
                             + "from Message_count "
                             + "where test = '" + r.getName() + "' "
-                            + "group by algorithm, agent "
+                            + "group by ALGORITHM_INSTANCE, agent "
                             + "order by agent");
 
-                    bv.load("algorithm", "agent", "m", res);
+                    bv.load("ALGORITHM_INSTANCE", "agent", "m", res);
                     return bv;
 
                 case BY_RUNVAR:
                     String runVar = r.getRunningVarName();
                     bv = new BarVisualModel("Message Count", runVar, "Avg(Message Sent)");
                     res = db.query(""
-                            + "select algorithm, avg(messages) as m, runvar "
+                            + "select ALGORITHM_INSTANCE, avg(messages) as m, runvar "
                             + "from Message_count "
                             + "where test = '" + r.getName() + "' "
-                            + "group by algorithm, runvar "
+                            + "group by ALGORITHM_INSTANCE, runvar "
                             + "order by runvar");
 
-                    bv.load("algorithm", "runvar", "m", res);
+                    bv.load("ALGORITHM_INSTANCE", "runvar", "m", res);
                     return bv;
             }
         } catch (SQLException ex) {

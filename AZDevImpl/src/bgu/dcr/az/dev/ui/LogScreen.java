@@ -13,7 +13,7 @@ package bgu.dcr.az.dev.ui;
 //import bc.dsl.PageDSL;
 import bc.utils.PokedWorker;
 import bgu.dcr.az.api.infra.Experiment;
-import bgu.dcr.az.dev.ExecutionUnit;
+import bgu.dcr.az.dev.ExecutionEnvironmentUnit;
 import bgu.dcr.az.impl.infra.LogListener;
 import java.awt.Color;
 import java.util.AbstractMap.SimpleEntry;
@@ -227,7 +227,7 @@ private void nextMatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
 //            }
 //        });
         output.setDocument(doc);
-        ExecutionUnit.UNIT.setLogListener(this);
+        ExecutionEnvironmentUnit.UNIT.setLogListener(this);
         pw = new PokedWorker(250) {
 
             @Override

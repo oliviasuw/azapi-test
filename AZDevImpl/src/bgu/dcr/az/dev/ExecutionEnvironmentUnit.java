@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  *
  * @author bennyl
  */
-public enum ExecutionUnit implements Experiment.ExperimentListener {
+public enum ExecutionEnvironmentUnit implements Experiment.ExperimentListener {
 
     UNIT;
     List<ExperimentListener> experimentListeners = new LinkedList<ExperimentListener>();
@@ -69,13 +69,13 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
             running = false;
             stop();
         } catch (ConnectionFaildException ex) {
-            Logger.getLogger(ExecutionUnit.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ExecutionEnvironmentUnit.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(ExecutionUnit.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ExecutionEnvironmentUnit.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            Logger.getLogger(ExecutionUnit.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ExecutionEnvironmentUnit.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(ExecutionUnit.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ExecutionEnvironmentUnit.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -160,7 +160,7 @@ public enum ExecutionUnit implements Experiment.ExperimentListener {
                 XMLConfigurator.write(source, pw);
                 pw.close();
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(ExecutionUnit.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ExecutionEnvironmentUnit.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

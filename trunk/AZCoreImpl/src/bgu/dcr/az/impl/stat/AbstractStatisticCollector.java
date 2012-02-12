@@ -24,6 +24,9 @@ public abstract class AbstractStatisticCollector<T extends DBRecord> implements 
 
     @Override
     public void submit(T record) {
+        String ains = test.getCurrentExecutedAlgorithmInstanceName();
+        record.setAlgorithmInstanceName(ains);
+        record.setTestName(test.getName());
         DatabaseUnit.UNIT.insertLater(record, test);
     }
 }

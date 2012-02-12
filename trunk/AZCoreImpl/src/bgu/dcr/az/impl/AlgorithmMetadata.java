@@ -24,6 +24,8 @@ public class AlgorithmMetadata implements Configuration.ExternalConfigurationAwa
 
     @Variable(name = "name", description = "the name of the algorithm", defaultValue = "unnamed")
     private String name; //the algorithm name
+    @Variable(name = "instance-name", description = "the name of the algorithm instance", defaultValue = "default")
+    private String instanceName = "default";
     private Class<? extends Agent> agentClass; //the class of the agent that implements this algorithm
     private ProblemType problemType;
     private boolean useIdleDetector;
@@ -53,6 +55,15 @@ public class AlgorithmMetadata implements Configuration.ExternalConfigurationAwa
         this.problemType = a.problemType();
         this.useIdleDetector = a.useIdleDetector();
         this.searchType = a.searchType();
+    }
+
+    public String getInstanceName() {
+        if (instanceName.equals("default")) return getName();
+        return instanceName;
+    }
+
+    public void setInstanceName(String instanceName) {
+        this.instanceName = instanceName;
     }
 
     /**

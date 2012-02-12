@@ -18,6 +18,8 @@ import bgu.dcr.az.api.infra.stat.StatisticCollector;
 import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.api.tools.IdleDetector;
 import bgu.dcr.az.impl.sync.SyncAgentRunner;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,10 +56,10 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private SystemClock clock; //if this execution uses a system clock - this field will hold it
     private List<StatisticCollector> statisticCollectors = new LinkedList<StatisticCollector>(); //list of activated statistic collectors
     private final Test test; //the test that this execution is running in
-    private Map<String, ReportHook> reportHooks = new HashMap<String, ReportHook>();//list of report hook listeners
+    private Multimap<String, ReportHook> reportHooks = HashMultimap.create();//list of report hook listeners
     private List<TerminationHook> terminationHooks = new LinkedList<TerminationHook>();
     private boolean idleDetectorNeeded = false;//hard set for the execution to use idle detection
-    
+
     /**
      * 
      */
@@ -84,7 +86,9 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     @Override
     public void report(String to, Agent a, Object[] args) {
         if (reportHooks.containsKey(to)) {
-            reportHooks.get(to).hook(a, args);
+            for (ReportHook t : reportHooks.get(to)) {
+                t.hook(a, args);
+            }
         }
     }
 
@@ -99,12 +103,11 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         if (!shuttingdown) {
             setResult(new ExecutionResult(ex));
             shuttingdown = true;
-            stop(); 
+            stop();
 //            System.out.println("PANIC! " + ex.getMessage() + ", [USER TEXT]: " + error);
         }
     }
 
-    
     /**
      * force the execution to use idle detector (even if not stated so in the algorithm metadata)
      * @param needed 
@@ -172,7 +175,6 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
 //        experiment.stop();
 //
 //    }
-
     protected ExecutorService getExecutorService() {
         return executorService;
     }
@@ -181,7 +183,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         this.agentRunners = runners;
     }
 
-    protected Agent[] getAgents() {
+    public Agent[] getAgents() {
         return agents;
     }
 
@@ -255,14 +257,14 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
      */
     @Override
     public synchronized void reportPartialAssignment(int var, int val) {
-/*        if (partialResult.getAssignment() == null) {
-            partialResult = new ExecutionResult(new Assignment());
+        /*        if (partialResult.getAssignment() == null) {
+        partialResult = new ExecutionResult(new Assignment());
         }
         partialResult.getAssignment().assign(var, val);*/
-        if (result.getAssignment() == null){
+        if (result.getAssignment() == null) {
             result.setFinalAssignment(new Assignment());
         }
-        
+
         result.getAssignment().assign(var, val);
     }
 
@@ -270,12 +272,10 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
 //    public ExecutionResult getPartialResult() {
 //        return partialResult;
 //    }
-
 //    @Override
 //    public void swapPartialAssignmentWithFullAssignment() {
 //        result = partialResult.deepCopy();
 //    }
-
     @Override
     protected void _run() {
         try {

@@ -6,10 +6,10 @@ package bgu.dcr.az.impl.infra;
 
 import bgu.dcr.az.api.ano.Configuration;
 import bgu.dcr.az.api.ano.Register;
+import bgu.dcr.az.api.exp.BadConfigurationException;
 import bgu.dcr.az.impl.DebugInfo;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.Test.TestResult;
-import bgu.dcr.az.api.infra.VariableMetadata;
 import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.impl.db.DatabaseUnit;
@@ -17,14 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -41,7 +35,6 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
 
     @Override
     public void _run() {
-
         pool = Executors.newCachedThreadPool();
         try {
 
@@ -98,6 +91,7 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
             } else {
                 ex.printStackTrace();
             }
+            
         } finally {
             fireExperimentEnded();
             System.out.println("shutting down experiment threadpool");
@@ -210,4 +204,5 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
     public ExecutorService getThreadPool() {
         return pool;
     }
+
 }

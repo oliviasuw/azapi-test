@@ -27,7 +27,6 @@ import bgu.dcr.az.impl.db.DatabaseUnit;
 import bgu.dcr.az.impl.pgen.MapProblem;
 import bgu.dcr.az.impl.stat.AbstractStatisticCollector;
 import bgu.dcr.az.utils.DeepCopyUtil;
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

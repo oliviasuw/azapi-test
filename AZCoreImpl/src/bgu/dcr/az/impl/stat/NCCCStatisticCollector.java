@@ -6,6 +6,7 @@ package bgu.dcr.az.impl.stat;
 
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Agt0DSL;
+import bgu.dcr.az.api.Hooks;
 import bgu.dcr.az.api.Hooks.BeforeCallingFinishHook;
 import bgu.dcr.az.api.Hooks.BeforeMessageProcessingHook;
 import bgu.dcr.az.api.Hooks.BeforeMessageSentHook;
@@ -61,34 +62,33 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
         lastKnownCC = new long[agents.length];
         runningVar = ex.getTest().getRunningVarName();
 
-        for (Agent a : agents) {
-            a.hookIn(new BeforeMessageSentHook() {
+        new Hooks.BeforeMessageProcessingHook() {
 
-                @Override
-                public void hook(Agent a, Message msg) {
-                    updateCurrentNccc(a);
-                    msg.getMetadata().put("nccc", nccc[a.getId()]);
-                }
-            });
+            @Override
+            public void hook(Agent a, Message msg) {
+                long newNccc = (Long) msg.getMetadata().get("nccc");
+                updateCurrentNccc(a);
+                nccc[a.getId()] = Math.max(newNccc, nccc[a.getId()]);
+            }
+        }.hookInto(ex);
 
-            a.hookIn(new BeforeMessageProcessingHook() {
+        new Hooks.BeforeMessageSentHook() {
 
-                @Override
-                public void hook(Agent a, Message msg) {
-                    long newNccc = (Long) msg.getMetadata().get("nccc");
-                    updateCurrentNccc(a);
-                    nccc[a.getId()] = Math.max(newNccc, nccc[a.getId()]);
-                }
-            });
-        }
+            @Override
+            public void hook(Agent a, Message msg) {
+                updateCurrentNccc(a);
+                msg.getMetadata().put("nccc", nccc[a.getId()]);
+            }
+        }.hookInto(ex);
 
-        ex.hookIn(new TerminationHook() {
+        new Hooks.TerminationHook() {
 
             @Override
             public void hook() {
                 submit(new NCCCRecord(ex.getTest().getCurrentVarValue(), Agt0DSL.max(nccc), agents[0].getAlgorithmName()));
             }
-        });
+        }.hookInto(ex);
+        
     }
 
     @Override

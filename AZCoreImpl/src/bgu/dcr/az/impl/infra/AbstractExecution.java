@@ -79,8 +79,8 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     }
 
     @Override
-    public void hookIn(String name, ReportHook hook) {
-        reportHooks.put(name, hook);
+    public void hookIn(ReportHook hook) {
+        reportHooks.put(hook.getReportName(), hook);
     }
 
     @Override

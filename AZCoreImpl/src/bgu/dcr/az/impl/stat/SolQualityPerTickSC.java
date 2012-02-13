@@ -7,9 +7,8 @@ import bgu.dcr.az.api.tools.Assignment;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import bgu.dcr.az.api.Hooks.ReportHook;
 import bgu.dcr.az.api.Agent;
-import bgu.dcr.az.api.Hooks.TickHook;
+import bgu.dcr.az.api.Hooks;
 import bgu.dcr.az.api.SystemClock;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
@@ -27,10 +26,11 @@ import bgu.dcr.az.api.infra.stat.vmod.LineVisualModel;
 @Register(name = "sqpt-sc")
 public class SolQualityPerTickSC extends AbstractStatisticCollector<SolQualityPerTickSC.Record> {
 
-    private int ticksPerCycle = 1;
     @Variable(name = "sample-rate", description = "The sampling rate for solution quality", defaultValue = "1")
     private int samplingRate = 1;
+    
     private double lastCost = -1;
+    private int ticksPerCycle = 1;
 
     public static class Record extends DBRecord {
 
@@ -76,10 +76,10 @@ public class SolQualityPerTickSC extends AbstractStatisticCollector<SolQualityPe
 
         lastCost = -1;
 
-        e.getSystemClock().hookIn(new TickHook() {
+        new Hooks.TickHook() {
 
             @Override
-            public synchronized void hook(SystemClock clock) {
+            public void hook(SystemClock clock) {
                 if (clock.time() % samplingRate == 0) {
                     final Assignment assignment = e.getResult().getAssignment();
 
@@ -92,15 +92,15 @@ public class SolQualityPerTickSC extends AbstractStatisticCollector<SolQualityPe
                     lastCost = cost;
                 }
             }
-        });
+        }.hookInto(e);
 
-        e.hookIn("ticksPerCycle", new ReportHook() {
+        new Hooks.ReportHook("ticksPerCycle") {
 
             @Override
-            public void hook(Agent ai, Object[] report) {
-                ticksPerCycle = (Integer) report[0];
+            public void hook(Agent a, Object[] args) {
+                ticksPerCycle = (Integer) args[0];
             }
-        });
+        }.hookInto(e);
     }
 
     @Override

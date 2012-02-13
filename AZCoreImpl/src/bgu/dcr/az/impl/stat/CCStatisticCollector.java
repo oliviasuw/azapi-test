@@ -5,6 +5,7 @@
 package bgu.dcr.az.impl.stat;
 
 import bgu.dcr.az.api.Agent;
+import bgu.dcr.az.api.Hooks;
 import bgu.dcr.az.api.Hooks.BeforeCallingFinishHook;
 import bgu.dcr.az.api.Hooks.TerminationHook;
 import bgu.dcr.az.api.ano.Register;
@@ -45,7 +46,8 @@ public class CCStatisticCollector extends AbstractStatisticCollector<CCStatistic
 
     @Override
     public void hookIn(final Agent[] agents, final Execution ex) {
-        ex.hookIn(new TerminationHook() {
+
+        new TerminationHook() {
 
             @Override
             public void hook() {
@@ -56,7 +58,7 @@ public class CCStatisticCollector extends AbstractStatisticCollector<CCStatistic
 
                 submit(new CCRecord(ex.getTest().getCurrentVarValue(), sum, agents[0].getAlgorithmName()));
             }
-        });
+        }.hookInto(ex);
     }
 
     @Override

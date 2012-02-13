@@ -16,7 +16,7 @@ public interface StatisticCollector<T extends DBRecord>{
     
     VisualModel analyze(Database db, Test r);
     
-    void hookIn(Agent[] a, Execution ex); //TODO - REPLACE WITH EXECUTION VIEW
+    void hookIn(Agent[] a, final Execution ex); //TODO - REPLACE WITH EXECUTION VIEW
     
     void submit(T record);
     

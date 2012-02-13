@@ -21,11 +21,14 @@ import java.util.List;
  */
 public interface Execution extends Process {
 
+    /**
+     * @return the test that this execution is running in
+     */
     Test getTest();
     
     void report(String to, Agent a, Object[] args);
     
-    void hookIn(String name, ReportHook hook);
+    void hookIn(ReportHook hook);
     
     void hookIn(TerminationHook hook);
     
@@ -48,6 +51,10 @@ public interface Execution extends Process {
     
     AgentRunner getAgentRunnerFor(Agent a);
 
+    /**
+     * @return the system clock, 
+     * if this execution is an asynchronus execution then it will return null.
+     */
     SystemClock getSystemClock();
     
     int getNumberOfAgentRunners();

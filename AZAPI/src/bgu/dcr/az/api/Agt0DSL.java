@@ -4,6 +4,7 @@
  */
 package bgu.dcr.az.api;
 
+import bgu.dcr.az.api.exp.PanicedAgentException;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -352,5 +353,43 @@ public class Agt0DSL {
     public static <T> T random(T[] c ){
        if (c.length == 0) return null;
        return c[rnd.nextInt(c.length)];
+    }
+    
+
+    /**
+     * stop execution with severe error
+     * @param why
+     */
+    public static void panic(String why) {
+        panic(why, null);
+    }
+
+    /**
+     * will cause the execution to stop with an error if the given predicate is true
+     */
+    public static void panicIf(boolean predicate, String why) {
+        if (predicate) {
+            panic(why, null);
+        }
+    }
+
+    /**
+     * stop execution with severe error
+     * @param why
+     * @param cause
+     */
+    public static void panic(String why, Exception cause) {
+        if (cause == null) {
+            throw new PanicedAgentException(why);
+        }
+        throw new PanicedAgentException(why, cause);
+    }
+
+    /**
+     * stop execution with severe error
+     * @param cause
+     */
+    public static void panic(Exception cause) {
+        panic(null, cause);
     }
 }

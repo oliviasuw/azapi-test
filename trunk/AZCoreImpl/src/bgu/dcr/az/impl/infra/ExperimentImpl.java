@@ -69,29 +69,30 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
                 } else {
                     ((AbstractTest) currentTest).debug(di);
                 }
-                
-                if (Thread.currentThread().isInterrupted()) return;
 
                 DatabaseUnit.UNIT.signal(currentTest); // SIGNALING - TELLING THAT STATISTICS COLLECTION TO THE CURRENT TEST IS OVER
                 currentTest.removeListener(this);
-                TestResult res = currentTest.getResult();
-                switch (res.finishStatus) {
-                    case CRUSH:
-                    case WRONG_RESULT:
-                        result = new ExperimentResult(currentTest, res);
-                        setDebugInfo(((AbstractTest) currentTest).getDebugInfo());
-                        return;
+
+                if (currentTest != null && currentTest.getResult() != null) {
+                    TestResult res = currentTest.getResult();
+                    switch (res.finishStatus) {
+                        case CRUSH:
+                        case WRONG_RESULT:
+                            result = new ExperimentResult(currentTest, res);
+                            setDebugInfo(((AbstractTest) currentTest).getDebugInfo());
+                            return;
+                    }
                 }
             }
 
-            result = new ExperimentResult(false);
+            result = new ExperimentResult(Thread.currentThread().isInterrupted());
         } catch (Exception ex) {
             if (ex instanceof InterruptedException) {
                 System.out.println("Experiment Interrupted... closing...");
             } else {
                 ex.printStackTrace();
             }
-            
+
         } finally {
             fireExperimentEnded();
             System.out.println("shutting down experiment threadpool");
@@ -204,5 +205,4 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
     public ExecutorService getThreadPool() {
         return pool;
     }
-
 }

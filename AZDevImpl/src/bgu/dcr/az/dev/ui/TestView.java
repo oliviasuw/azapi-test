@@ -63,7 +63,7 @@ public class TestView extends javax.swing.JPanel {
             @Override
             public Visual gen(Object it) {
                 AlgorithmMetadata alg = (AlgorithmMetadata) it;
-                return new Visual(alg, "+ " + alg.getName(), "", null);
+                return new Visual(alg, "<html>+ " + alg.getName() + " <b><span color='#d2e9ff'>as </span></b>" + alg.getInstanceName() + "</html>", "", null);
             }
         }));
         

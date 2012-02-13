@@ -4,51 +4,121 @@
  */
 package bgu.dcr.az.api;
 
+import bgu.dcr.az.api.infra.Execution;
+import bgu.dcr.az.utils.ReflectionUtil;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * this collection of interfaces that the simple agent supports hooking via
  * @author bennyl
  */
 public class Hooks {
-    
+
+    /**
+     * describe hook definition with automatically hooking functinality
+     */
+    public static interface HookDefinition {
+
+        void hookInto(Execution ex);
+    }
     
     /**
      * callback that will get called before message sent - can be attached to simple agent.
      */
-    public static interface BeforeMessageSentHook{
+    public static abstract class BeforeMessageSentHook implements HookDefinition {
+
         /**
          * callback implementation
          * @param msg
          */
-        void hook(Agent a, Message msg);
+        public abstract void hook(Agent a, Message msg);
+
+        @Override
+        public void hookInto(Execution ex) {
+            for (Agent a : ex.getAgents()) {
+                a.hookIn(this);
+            }
+        }
     }
-    
+
     /**
      * callback that will get called before message processed by the attached agent - can be attachd to simple agent.
      */
-    public static interface BeforeMessageProcessingHook{
+    public static abstract class BeforeMessageProcessingHook implements HookDefinition {
+
         /**
          * callback implementation
          * @param msg
          */
-        void hook(Agent a, Message msg);
+        public abstract void hook(Agent a, Message msg);
+
+        @Override
+        public void hookInto(Execution ex) {
+            for (Agent a : ex.getAgents()) {
+                a.hookIn(this);
+            }
+        }
     }
-    
-    public static interface BeforeCallingFinishHook{
-        void hook(Agent a);
+
+    public static abstract class BeforeCallingFinishHook implements HookDefinition {
+
+        public abstract void hook(Agent a);
+
+        @Override
+        public void hookInto(Execution ex) {
+            for (Agent a : ex.getAgents()) {
+                a.hookIn(this);
+            }
+        }
     }
-    
-    
-    public static interface ReportHook{
-        void hook(Agent a, Object[] args);
+
+    public static abstract class ReportHook implements HookDefinition {
+
+        String reportName;
+
+        public ReportHook(String reportName) {
+            this.reportName = reportName;
+        }
+
+        public String getReportName() {
+            return reportName;
+        }
+
+        public abstract void hook(Agent a, Object[] args);
+
+        @Override
+        public void hookInto(Execution ex) {
+            ex.hookIn(this);
+        }
     }
-    
-    public static interface TickHook{
-        void hook(SystemClock clock);
+
+    public static abstract class TickHook implements HookDefinition {
+
+        public abstract void hook(SystemClock clock);
+
+        @Override
+        public void hookInto(Execution ex) {
+            if (ex.getSystemClock() != null) {
+                ex.getSystemClock().hookIn(this);
+            } else {
+                Agt0DSL.panic("cannot hook into the system clock, are you running synchronus execution?");
+            }
+        }
     }
-    
-    
-    public static interface TerminationHook{
-        void hook();
+
+    public static abstract class TerminationHook implements HookDefinition {
+
+        public abstract void hook();
+
+        @Override
+        public void hookInto(Execution ex) {
+            ex.hookIn(this);
+        }
     }
 }

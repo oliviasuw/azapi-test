@@ -248,43 +248,6 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * stop execution with severe error
-     * @param why
-     */
-    protected void panic(String why) {
-        panic(why, null);
-    }
-
-    /**
-     * will cause the execution to stop with an error if the given predicate is true
-     */
-    protected void panicIf(boolean predicate, String why) {
-        if (predicate) {
-            panic(why, null);
-        }
-    }
-
-    /**
-     * stop execution with severe error
-     * @param why
-     * @param cause
-     */
-    public void panic(String why, Exception cause) {
-        if (cause == null) {
-            cause = new PanicedAgentException(why);
-        }
-        exec.reportCrushAndStop(cause, why); //should cause all the inner agent runners to stop too.
-    }
-
-    /**
-     * stop execution with severe error
-     * @param cause
-     */
-    public void panic(Exception cause) {
-        panic(null, cause);
-    }
-
-    /**
      * log something inside this agent log
      * @param what 
      */

@@ -1,0 +1,41 @@
+HOWTO: Publish Javadoc on Google Code
+
+This entry shows how to publish Javadoc to your Google Code project site. The general idea is to add the Javadoc to Subversion, ensure the files have the correct svn:mime-type, and provide a link to the Google Code Subversion repository browser.
+
+Step 1: Configure Subversion
+
+When I first published Javadoc for my ClassBus project, I noticed the pages rendered OK in Internet Explorer but appeared as plain text in Firefox. This is a red flag that the MIME type is text/plain instead of text/html. To solve this problem, you must ensure that every .html file has svn:mime-type=text/html, and every .css file has svn:mime-type=text/css.
+
+The svn:mime-type is a Subversion property. You can follow this link: http://svnbook.red-bean.com/en/1.4/svn.advanced.props.html to learn all about Subversion properties. If you use TortoiseSVN on Windows, you can see these properties by right-clicking a file, selecting Properties, the Subversion tab, and then clicking the Properties… button:
+
+
+Setting these properties one at a time is a pain, plus you will eventually forget to do it. Instead, configure automatic property setting. You can either edit files as explained in the Subversion manual, or with TortoiseSVN you can use the TortoiseSVN->Settings->General page, click the “Edit” button, and make sure the file contains something like this:
+
+enable-auto-props = yes
+[auto-props]
+*.txt = svn:mime-type=text/plain
+*.html = svn:mime-type=text/html
+*.css = svn:mime-type=text/css
+*.png = svn:mime-type=image/png
+*.jpg = svn:mime-type=image/jpeg
+Now, all newly added files with these extensions will have the correct mime types.
+
+Step 2: Add Javadoc to Subversion
+
+Google code projects have a Subversion repository with a trunk directory. I simply created a new directory under trunk called (cleverly) “javadoc”, and put the Javadoc there. Commit using normal Subversion commands.
+
+Step 3: Find the Javadoc
+
+From your Google Code project home page, click the Source tab. This contains a link to browse your Subversion repository. Just browse through the trunk/javadoc directories, and click your index.html file. Now you know the URL you’ll need to link to. For my project, the URL is:
+
+http://classbus.googlecode.com/svn/trunk/javadoc/index.html
+
+If you see plain text instead of HTML, you probably screwed up the svn:mime-type. Go back and fix that.
+
+Step 4: Make the Link
+
+Back on your Google Code project page, click the Administer tab. On the Project Summary editing page, scroll way down to the Links section. Add a link name “Javadoc”, and paste the URL from the previous step into the URL field.
+
+Hit Save Changes, then go back to your project home page. You should see the link to your Javadoc on the right side of the page:
+
+I hope someone finds this useful. Figuring out the MIME type was…fun. 

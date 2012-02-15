@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
+import javax.swing.plaf.basic.BasicComboBoxUI.KeyHandler;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.tree.TreePath;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -72,6 +73,14 @@ public class StatisticsQueryScreen extends javax.swing.JPanel implements Databas
         listeners.add(lis);
     }
 
+    private void clearQuery() {
+        sqlTextArea.setText("");
+    }
+
+    private void executeQuery() {
+        query(sqlTextArea.getText());
+    }
+
     private void initializeEditor() {
         sqlTextArea = new RSyntaxTextArea();
         setFont(sqlTextArea, new java.awt.Font("Consolas", 0, 14));
@@ -101,6 +110,22 @@ public class StatisticsQueryScreen extends javax.swing.JPanel implements Databas
         sqlTextArea.setCurrentLineHighlightColor(new Color(71, 71, 71));
         sqlTextArea.setBackground(new Color(51, 51, 51));
         sqlEditorPanel.add(sp, BorderLayout.CENTER);
+        
+        sqlTextArea.addKeyListener(new KeyAdapter() {
+        
+            @Override
+            public void keyPressed(KeyEvent e) {
+                switch(e.getKeyCode()){
+                    case KeyEvent.VK_F5:
+                        executeQuery();
+                        break;
+                    case KeyEvent.VK_F9:
+                        clearQuery();
+                        break;
+                }
+            }
+            
+        });
     }
 
     /**
@@ -174,7 +199,7 @@ public class StatisticsQueryScreen extends javax.swing.JPanel implements Databas
         errorView.setBackground(new java.awt.Color(255, 204, 204));
         errorView.setColumns(20);
         errorView.setEditable(false);
-        errorView.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        errorView.setFont(new java.awt.Font("Consolas", 0, 14));
         errorView.setForeground(new java.awt.Color(51, 51, 51));
         errorView.setRows(5);
         errorView.setText("you have an error in your query: \n\n");
@@ -280,7 +305,7 @@ public class StatisticsQueryScreen extends javax.swing.JPanel implements Databas
 
         jXHyperlink1.setForeground(new java.awt.Color(255, 255, 255));
         jXHyperlink1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/delete-all.png"))); // NOI18N
-        jXHyperlink1.setText("Clear Query");
+        jXHyperlink1.setText("Clear Query (F9)");
         jXHyperlink1.setClickedColor(new java.awt.Color(255, 255, 255));
         jXHyperlink1.setUnclickedColor(new java.awt.Color(255, 255, 255));
         jXHyperlink1.addActionListener(new java.awt.event.ActionListener() {
@@ -298,7 +323,7 @@ public class StatisticsQueryScreen extends javax.swing.JPanel implements Databas
 
         jXHyperlink3.setForeground(new java.awt.Color(255, 255, 255));
         jXHyperlink3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/PLAY.png"))); // NOI18N
-        jXHyperlink3.setText("Execute Query");
+        jXHyperlink3.setText("Execute Query (F5)");
         jXHyperlink3.setClickedColor(new java.awt.Color(255, 255, 255));
         jXHyperlink3.setIconTextGap(1);
         jXHyperlink3.setUnclickedColor(new java.awt.Color(255, 255, 255));
@@ -353,7 +378,7 @@ public class StatisticsQueryScreen extends javax.swing.JPanel implements Databas
     }//GEN-LAST:event_jXHyperlink6ActionPerformed
 
     private void jXHyperlink3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink3ActionPerformed
-        query(sqlTextArea.getText());
+        executeQuery();
     }//GEN-LAST:event_jXHyperlink3ActionPerformed
 
     private void jXHyperlink5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink5ActionPerformed
@@ -363,7 +388,7 @@ public class StatisticsQueryScreen extends javax.swing.JPanel implements Databas
     }//GEN-LAST:event_jXHyperlink5ActionPerformed
 
     private void jXHyperlink1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink1ActionPerformed
-        sqlTextArea.setText("");
+        clearQuery();
     }//GEN-LAST:event_jXHyperlink1ActionPerformed
 
     private void jXHyperlink4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink4ActionPerformed

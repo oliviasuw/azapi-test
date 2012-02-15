@@ -44,6 +44,7 @@ public class DataPanel extends javax.swing.JPanel {
     }
     
     public void setData(JComponent data) {
+        unSetData();
         this.data.removeAll();
         this.data.add(data, BorderLayout.CENTER);
         ((CardLayout) getLayout()).show(this, "DATA");

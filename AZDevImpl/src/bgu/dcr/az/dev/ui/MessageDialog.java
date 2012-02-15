@@ -12,6 +12,8 @@ package bgu.dcr.az.dev.ui;
 
 import bc.dsl.SwingDSL;
 import java.awt.BorderLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.JPanel;
 
 /**
@@ -68,6 +70,7 @@ public class MessageDialog extends javax.swing.JDialog {
         this.messageDataLabel.setText(data);
         chooseIconAndType(type);
         setLocationRelativeTo(null);
+        initializeKeyBinding();
     }
     public MessageDialog(java.awt.Frame parent, boolean modal,MessageType type, String data, JPanel content) {
         super(parent, modal);
@@ -77,6 +80,26 @@ public class MessageDialog extends javax.swing.JDialog {
         this.messageDataLabel.setText(data);
         chooseIconAndType(type);
         setLocationRelativeTo(null);
+        initializeKeyBinding();
+    }
+    
+    public void initializeKeyBinding(){
+        addKeyListener(new KeyAdapter() {
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                switch(e.getKeyCode()){
+                    case KeyEvent.VK_ESCAPE:
+                        setVisible(false);
+                        break;
+                }
+            }
+            
+        });
+        
+        //jPanel1.setFocusTraversalKeysEnabled(true);
+        //jPanel1.setFocusable(true);
+        
     }
     
     public static void showSuccess(String title, String content){
@@ -122,6 +145,7 @@ public class MessageDialog extends javax.swing.JDialog {
         messageContentLabel = new org.jdesktop.swingx.JXLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("AgentZero Message (Esc to close)");
         setMinimumSize(new java.awt.Dimension(560, 300));
         setResizable(false);
 
@@ -192,7 +216,7 @@ public class MessageDialog extends javax.swing.JDialog {
         messageContentPanel.setOpaque(false);
         messageContentPanel.setLayout(new java.awt.BorderLayout());
 
-        jLabel5.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Consolas", 1, 14));
         jLabel5.setForeground(new java.awt.Color(210, 233, 255));
         jLabel5.setText("Details:");
         messageContentPanel.add(jLabel5, java.awt.BorderLayout.PAGE_START);

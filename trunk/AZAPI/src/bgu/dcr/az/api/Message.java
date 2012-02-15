@@ -89,7 +89,7 @@ public class Message implements Serializable {
 
 
         Message ret = new Message(getName(), getSender(), cargs);
-        ret.metadata = new HashMap<String, Object>(metadata);
+        ret.metadata = metadata; //metadata is not deep-copyed as it should be immutable
         return ret;
     }
 
@@ -125,6 +125,10 @@ public class Message implements Serializable {
     }
 
     /**
+     * messages can have metadata attached to them - metadata is collection of key to immutable value pairs
+     * metadata values assume to be immutable and are not getting deep copied upon sending along with the normal message fields
+     * instaed it will get copied by reference to the new message object.
+     * please take that into consideration if you going to use it
      * @return the metadata attached to this object (as a key value map)
      */
     public Map<String, Object> getMetadata() {

@@ -15,6 +15,7 @@ public abstract class DBRecord {
     public abstract String provideTableName();
     private String algorithmInstanceName;
     private String roundName;
+    private int executionNumber;
     
     private Field[] fields;
     public DBRecord() {
@@ -58,6 +59,22 @@ public abstract class DBRecord {
      */
     public void setTestName(String roundName) {
         this.roundName = roundName;
+    }
+
+    /**
+     * do not use directly - only get filled upon submition
+     * @param executionNumber 
+     */
+    public void setExecutionNumber(int executionNumber) {
+        this.executionNumber = executionNumber;
+    }
+
+    /**
+     * do not use directly - only get filled upon submition
+     * @return 
+     */
+    public int getExecutionNumber() {
+        return executionNumber;
     }
     
 }

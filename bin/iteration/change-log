@@ -1,3 +1,10 @@
+quick fix 9:
+simpler hooks 
+fixed a bug in the statistic collector on dcsp
+nccc, cc statistics variables increased from int to long
+fixed a bug in unstructured dcsp statistic collector
+some javadoc added.
+
 quick fix 8:
 fix bug #42 [Statistics fields in hook-in conflict]
 fix bug #36 [Uncaught exception]

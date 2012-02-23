@@ -5,8 +5,6 @@
 package bgu.dcr.az.impl.stat;
 
 import bgu.dcr.az.api.Agent;
-import bgu.dcr.az.api.Hooks;
-import bgu.dcr.az.api.Hooks.BeforeCallingFinishHook;
 import bgu.dcr.az.api.Hooks.TerminationHook;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.infra.Execution;
@@ -51,7 +49,7 @@ public class CCStatisticCollector extends AbstractStatisticCollector<CCStatistic
 
             @Override
             public void hook() {
-                int sum = 0;
+                long sum = 0;
                 for (Agent ag : agents) {
                     sum += ag.getNumberOfConstraintChecks();
                 }
@@ -72,7 +70,7 @@ public class CCStatisticCollector extends AbstractStatisticCollector<CCStatistic
         double cc;
         String algorithm;
 
-        public CCRecord(double rVal, int cc, String algorithm) {
+        public CCRecord(double rVal, double cc, String algorithm) {
             this.rVar = rVal;
             this.cc = cc;
             this.algorithm = algorithm;

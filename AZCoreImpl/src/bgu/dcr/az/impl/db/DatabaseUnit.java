@@ -16,7 +16,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -136,10 +135,12 @@ public enum DatabaseUnit {
         }
         PreparedStatement insertStatement = insertStatments.get(record.getClass());
         //AUTO FIELDS
-        insertStatement.setObject(1, record.getTestName());
-        insertStatement.setObject(2, record.getAlgorithmInstanceName());
+        int i = 1;
+        insertStatement.setObject(i++, record.getTestName());
+        insertStatement.setObject(i++, record.getAlgorithmInstanceName());
+        insertStatement.setObject(i++, record.getExecutionNumber());
         
-        int i = 3;
+        //DEFINED FIELDS
         for (Field f : record.getFields()) {
             try {
                 insertStatement.setObject(i++, f.get(record));
@@ -181,11 +182,11 @@ public enum DatabaseUnit {
 
     private PreparedStatement generatePreparedStatement(DBRecord record) throws SQLException {
         StringBuilder sb = new StringBuilder("INSERT INTO ").append(record.provideTableName());
-        sb.append("(TEST,ALGORITHM_INSTANCE");
+        sb.append("(TEST,ALGORITHM_INSTANCE,EXECUTION_NUMBER");
         for (Field f : record.getFields()) {
             sb.append(", ").append(f.getName());
         }
-        sb.append(") VALUES (?,?");
+        sb.append(") VALUES (?,?,?");
         for (Field f : record.getFields()) {
             sb.append(",?");
         }
@@ -208,7 +209,7 @@ public enum DatabaseUnit {
 
     private void generateTable(DBRecord record) throws SQLException {
         StringBuilder exe = new StringBuilder("CREATE TABLE ").append(record.provideTableName()).append(" (");
-        exe.append("ID INTEGER NOT NULL AUTO_INCREMENT, TEST VARCHAR(50) NOT NULL, ALGORITHM_INSTANCE VARCHAR(50) NOT NULL ");
+        exe.append("ID INTEGER NOT NULL AUTO_INCREMENT, TEST VARCHAR(50) NOT NULL, ALGORITHM_INSTANCE VARCHAR(50) NOT NULL, EXECUTION_NUMBER INTEGER NOT NULL ");
         for (Field f : record.getFields()) {
             exe.append(", ").append(f.getName());
             if (Boolean.class == f.getType() || boolean.class == f.getType()) {

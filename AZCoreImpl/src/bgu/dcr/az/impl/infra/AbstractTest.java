@@ -157,6 +157,8 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
             throw new InvalidValueException("there is no such problem");
         }
 
+        
+        
         int ticksPerformed = (number - 1) / repeatCount;
         float vvar = start + tickSize * (float) ticksPerformed;
         ProblemGenerator tpgen = DeepCopyUtil.deepCopy(pgen);
@@ -373,7 +375,9 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
             metadata.put(SEED_PROBLEM_METADATA, pseed);
             metadata.put(PROBLEM_GENERATOR_PROBLEM_METADATA, pgen.getClass().getName());
 
+            System.out.println("Generating Problem: " + num);
             pgen.generate(p, nrand);
+            System.out.println("Problem Generation Done.");
             return p;
         } catch (Exception ex) {
             if (ex instanceof InterruptedException) {

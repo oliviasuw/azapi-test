@@ -19,12 +19,14 @@ import java.util.Set;
 public class MapProblem extends Problem {
 
     private Object[] map;
+    private int biggestDomainSize = 0;
+
     @Override
     public void setConstraintCost(int var1, int val1, int var2, int val2, int cost) {
-        if (maxCost < cost){
+        if (maxCost < cost) {
             maxCost = cost;
         }
-        
+
         int id = calcId(var1, var2);
         setNeighbor(var1, var2);
         createMap(id);
@@ -57,7 +59,7 @@ public class MapProblem extends Problem {
     private void createMap(int id) {
         int[][] mapId = (int[][]) map[id];
         if (mapId == null) {
-            mapId = new int[domain.size()][domain.size()];
+            mapId = new int[biggestDomainSize][biggestDomainSize];
             map[id] = mapId;
         }
     }
@@ -65,14 +67,11 @@ public class MapProblem extends Problem {
     @Override
     protected void _initialize() {
         int n = getNumberOfVariables();
-//        int d = getDomain().size();
-
+        for (int i = 0; i < domain.length; i++) {
+            if (biggestDomainSize < domain[i].size()) {
+                biggestDomainSize = domain[i].size();
+            }
+        }
         this.map = new Object[n * n];
-//        this.numvars = n;
-//        ArrayList<Integer> temp = new ArrayList<Integer>(d);
-//        for (int i = 0; i < d; i++) {
-//            temp.add(i);
-//        }
-//        this.domain = new ImmutableSet<Integer>(temp);
     }
 }

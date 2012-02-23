@@ -368,9 +368,8 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
 
                     MessageDialog.showFail("The execution completed with errors", "The correctness tester found wrong results provided by the algorithm\n"
                             + "An example to a correct assignment is " + goodAssignment + "with the cost of " + goodAssignment.calcCost(globalProblem) + "\n"
-                            + "The Test result is " + badAssignment + "with the cost of " + badAssignment.calcCost(globalProblem) );
+                            + "The Test result is " + badAssignment + (badAssignment != null?  "with the cost of " + badAssignment.calcCost(globalProblem) : "") );
                    
-
                     break;
             }
         }

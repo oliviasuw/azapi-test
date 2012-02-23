@@ -5,15 +5,14 @@ import bgu.dcr.az.api.ProblemType;
 import bgu.dcr.az.api.ds.ImmutableSet;
 import bgu.dcr.az.api.tools.Assignment;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An abstract class for problems that should let you build any type of problem 
@@ -23,14 +22,13 @@ public abstract class Problem implements Serializable, ImmutableProblem {
 
     private HashMap<String, Object> metadata = new HashMap<String, Object>();
     protected int numvars;
-    protected ImmutableSet<Integer> domain;
+    protected ImmutableSetOfIntegers[] domain;
     protected HashMap<Integer, Set<Integer>> neighbores = new HashMap<Integer, Set<Integer>>();
     protected HashMap<Integer, Set<Integer>> immutableNeighbores = new HashMap<Integer, Set<Integer>>();
-    //private Semaphore immutableNeighborsWriteLock = new Semaphore(1);
     private ReentrantReadWriteLock immutableNeighborsLock = new ReentrantReadWriteLock();
-    //    protected HashMap<Integer, Boolean> constraints = new HashMap<Integer, Boolean>();
     protected ProblemType type;
     protected int maxCost = 0;
+    protected boolean singleDomain = true;
 
     @Override
     public String toString() {
@@ -246,7 +244,7 @@ public abstract class Problem implements Serializable, ImmutableProblem {
                 immutableNeighborsLock.writeLock().unlock();
             }
         }
-        
+
         return ng;
     }
 
@@ -263,7 +261,10 @@ public abstract class Problem implements Serializable, ImmutableProblem {
     abstract public void setConstraintCost(int var1, int val1, int var2, int val2, int cost);
 
     public ImmutableSet<Integer> getDomain() {
-        return domain;
+        if (!singleDomain) {
+            throw new UnsupportedOperationException("calling get domain on a problem with domain that is unique to each variable is unsupported - call  getDomainOf(int) instaed.");
+        }
+        return domain[0];
     }
 
     @Override
@@ -271,15 +272,37 @@ public abstract class Problem implements Serializable, ImmutableProblem {
         return numvars;
     }
 
-    public void initialize(ProblemType type, int numberOfVariables, Set<Integer> domain) {
-        this.domain = new ImmutableSet<Integer>(domain);
-        this.numvars = numberOfVariables;
+    protected void initialize(ProblemType type, List<? extends Set<Integer>> domain, boolean singleDomain) {
+        this.singleDomain = singleDomain;
+        this.domain = ImmutableSetOfIntegers.arrayOf(domain);
+        this.numvars = domain.size();
         this.neighbores = new HashMap<Integer, Set<Integer>>();
         for (int i = 0; i < numvars; i++) {
             neighbores.put(i, new HashSet<Integer>());
         }
         this.type = type;
         _initialize();
+    }
+
+    /**
+     * initialize the problem with multiple domains
+     * the number of variables is the domain.size() 
+     * @param type the type of the problem
+     * @param domains list of domains for each agent - this list also determines the number of variables
+     * that will be domains.size
+     */
+    public void initialize(ProblemType type, List<? extends Set<Integer>> domains) {
+        initialize(type, domains, false);
+    }
+
+    /**
+     * initialize the problem with a single domain
+     * @param type the problem type
+     * @param numberOfVariables number of variables in this problem
+     * @param domain the domain for all the variables.
+     */
+    public void initialize(ProblemType type, int numberOfVariables, Set<Integer> domain) {
+        initialize(type, ImmutableSetOfIntegers.repeat(domain, numberOfVariables), true);
     }
 
     @Override
@@ -290,10 +313,42 @@ public abstract class Problem implements Serializable, ImmutableProblem {
     protected abstract void _initialize();
 
     /**
-     * we are not yet supports seperated domains but when we do - this function should be useful
+     * return the domain that belongs to variable var
      */
     @Override
     public ImmutableSet<Integer> getDomainOf(int var) {
-        return domain;
+        return domain[var];
+    }
+
+    /**
+     * this class is required to allow array of this type as java cannot create an array of generic types
+     * and we want to avoid uneccecery casting 
+     */
+    protected static class ImmutableSetOfIntegers extends ImmutableSet<Integer> {
+
+        public ImmutableSetOfIntegers(Collection<Integer> data) {
+            super(data);
+        }
+
+        public static ImmutableSetOfIntegers[] arrayOf(List<? extends Set<Integer>> of) {
+            ImmutableSetOfIntegers[] a = new ImmutableSetOfIntegers[of.size()];
+
+            int i = 0;
+            for (Set<Integer> o : of) {
+                a[i++] = new ImmutableSetOfIntegers(o);
+            }
+
+            return a;
+        }
+
+        public static List<ImmutableSetOfIntegers> repeat(Set<Integer> set, int times) {
+            ImmutableSetOfIntegers[] ret = new ImmutableSetOfIntegers[times];
+            ImmutableSetOfIntegers is = new ImmutableSetOfIntegers(set);
+            for (int i = 0; i < ret.length; i++) {
+                ret[i] = is;
+            }
+
+            return Arrays.asList(ret);
+        }
     }
 }

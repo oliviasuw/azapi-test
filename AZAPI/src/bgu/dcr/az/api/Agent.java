@@ -73,7 +73,7 @@ public abstract class Agent extends Agt0DSL {
     /*
      * S T A T I S T I C S
      */
-    private int cc = 0;
+    private long cc = 0;
     /**
      * H O O K S
      */
@@ -418,7 +418,7 @@ public abstract class Agent extends Agt0DSL {
      * @return 
      */
     public int getDomainSize() {
-        return getDomain().size();
+        return getDomainOf(getId()).size();
     }
 
     /**

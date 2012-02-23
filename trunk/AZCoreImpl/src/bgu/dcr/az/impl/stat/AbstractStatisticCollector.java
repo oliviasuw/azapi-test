@@ -27,6 +27,7 @@ public abstract class AbstractStatisticCollector<T extends DBRecord> implements 
         String ains = test.getCurrentExecutedAlgorithmInstanceName();
         record.setAlgorithmInstanceName(ains);
         record.setTestName(test.getName());
+        record.setExecutionNumber(test.getCurrentExecutionNumber());
         DatabaseUnit.UNIT.insertLater(record, test);
     }
 }

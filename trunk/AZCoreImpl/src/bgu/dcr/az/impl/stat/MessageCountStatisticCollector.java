@@ -6,8 +6,6 @@ package bgu.dcr.az.impl.stat;
 
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Hooks;
-import bgu.dcr.az.api.Hooks.BeforeCallingFinishHook;
-import bgu.dcr.az.api.Hooks.BeforeMessageSentHook;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;

@@ -45,7 +45,7 @@ public class DefaultCorrectnessTester extends AbstractCorrectnessTester {
                         }
                     case solution:
                         ass = solver.getAssignment();
-                        if (ass.calcCost(globalProblem) == result.getAssignment().calcCost(globalProblem)) {
+                        if (result.getAssignment() != null && ass.calcCost(globalProblem) == result.getAssignment().calcCost(globalProblem)) {
                             return new TestedResult(ass, true);
                         } else {
                             return new TestedResult(ass, false);

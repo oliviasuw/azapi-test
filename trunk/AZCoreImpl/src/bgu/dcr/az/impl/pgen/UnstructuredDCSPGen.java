@@ -54,7 +54,7 @@ public class UnstructuredDCSPGen extends AbstractProblemGenerator {
                     continue;
                 }
                 if (rand.nextDouble() < p2) {
-                    final int cost = rand.nextInt(2);
+                    final int cost = 1;
                     p.setConstraintCost(i, vi, j, vj, cost);
                     if (sym) {
                         p.setConstraintCost(j, vj, i, vi, cost);

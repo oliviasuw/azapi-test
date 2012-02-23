@@ -39,11 +39,9 @@ public class SolQualityPerTickSC extends AbstractStatisticCollector<SolQualityPe
         public long cycles;
         public int execution;
         public float prevSolutionQuality;
-        private final String algorithm;
 
-        public Record(float solQuality, long tickNum, int tpc, int execution, float prevSolutionQuality, String algo) {
+        public Record(float solQuality, long tickNum, int tpc, int execution, float prevSolutionQuality) {
             super();
-            this.algorithm = algo;
             this.solQuality = solQuality;
             this.prevSolutionQuality = prevSolutionQuality;
             this.tickNum = tickNum;
@@ -88,7 +86,7 @@ public class SolQualityPerTickSC extends AbstractStatisticCollector<SolQualityPe
                         cost = (float) assignment.calcCost(e.getGlobalProblem());
                     }
                     //System.out.println("in tick " + clock.time() + " the cost was " + cost);
-                    submit(new Record(cost, clock.time(), ticksPerCycle, e.getTest().getCurrentExecutionNumber(), (float) lastCost, a[0].getAlgorithmName()));
+                    submit(new Record(cost, clock.time(), ticksPerCycle, e.getTest().getCurrentExecutionNumber(), (float) lastCost));
                     lastCost = cost;
                 }
             }

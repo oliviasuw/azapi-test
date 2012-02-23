@@ -1,14 +1,18 @@
+quick fix 10:
+- fixed null pointer exception in correctness tester
+- added support to multiple domains in problem generators
+
 quick fix 9:
-simpler hooks 
-fixed a bug in the statistic collector on dcsp
-nccc, cc statistics variables increased from int to long
-fixed a bug in unstructured dcsp statistic collector
-some javadoc added.
+- simpler hooks 
+- fixed a bug in the statistic collector on dcsp
+- nccc, cc statistics variables increased from int to long
+- fixed a bug in unstructured dcsp statistic collector
+- some javadoc added.
 
 quick fix 8:
-fix bug #42 [Statistics fields in hook-in conflict]
-fix bug #36 [Uncaught exception]
-added support for running the same Algorithm with different parameters in the same test.
+- fix bug #42 [Statistics fields in hook-in conflict]
+- fix bug #36 [Uncaught exception]
+- added support for running the same Algorithm with different parameters in the same test.
 
 quick fix 7:
 - Agent.getProblem() reverted to protected - guard from statistic correctness faults that may accure by improper use.
@@ -18,7 +22,7 @@ quick fix 6:
 - Agent.getProblem() is now public (good for tool makers)
 
 quick fix 5:
-- getAgents added to the execution (usefull for module creators)
+- getAgents added to the execution (useful for module creators)
 
 quick fix 4:
 - extending DSL:

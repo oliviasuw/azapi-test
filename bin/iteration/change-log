@@ -1,3 +1,7 @@
+quick fix 11
+- nested agents inhencement
+- fixed null pointer exception in GUI
+
 quick fix 10:
 - fixed null pointer exception in correctness tester
 - added support to multiple domains in problem generators

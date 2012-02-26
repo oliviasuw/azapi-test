@@ -19,39 +19,39 @@ import bgu.dcr.az.impl.correctness.IterativeCSPSolver.Status;
 public class DefaultCorrectnessTester extends AbstractCorrectnessTester {
 
     @Override
-    public TestedResult test(Execution exec, ExecutionResult result) {
+    public CorrectnessTestResult test(Execution exec, ExecutionResult result) {
         Assignment ass;
         final Problem globalProblem = exec.getGlobalProblem();
         Status stat;
         final MACSolver solver = new MACSolver();
         switch (exec.getGlobalProblem().type()) {
             case ADCOP:
-                return new TestedResult(null, true);
+                return new CorrectnessTestResult(null, true);
             case DCOP:
                 ass = BranchAndBound.solve(globalProblem);
                 if (ass.calcCost(globalProblem) == result.getAssignment().calcCost(globalProblem)) {
-                    return new TestedResult(ass, true);
+                    return new CorrectnessTestResult(ass, true);
                 } else {
-                    return new TestedResult(ass, false);
+                    return new CorrectnessTestResult(ass, false);
                 }
             case DCSP:
                 stat = solver.solve(globalProblem);
                 switch (stat) {
                     case imposible:
                         if (result.hasSolution()) {
-                            return new TestedResult(null, false);
+                            return new CorrectnessTestResult(null, false);
                         } else {
-                            return new TestedResult(null, true);
+                            return new CorrectnessTestResult(null, true);
                         }
                     case solution:
                         ass = solver.getAssignment();
                         if (result.getAssignment() != null && ass.calcCost(globalProblem) == result.getAssignment().calcCost(globalProblem)) {
-                            return new TestedResult(ass, true);
+                            return new CorrectnessTestResult(ass, true);
                         } else {
-                            return new TestedResult(ass, false);
+                            return new CorrectnessTestResult(ass, false);
                         }
                     default:
-                        return new TestedResult(null, true);
+                        return new CorrectnessTestResult(null, true);
                 }
             default:
                 return null;

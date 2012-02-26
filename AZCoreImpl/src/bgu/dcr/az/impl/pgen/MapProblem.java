@@ -28,7 +28,9 @@ public class MapProblem extends Problem {
         }
 
         int id = calcId(var1, var2);
-        setNeighbor(var1, var2);
+        if (var1 != var2) {
+            setNeighbor(var1, var2);
+        }
         createMap(id);
         ((int[][]) map[id])[val1][val2] = cost;
     }

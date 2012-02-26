@@ -4,20 +4,17 @@
  */
 package bc.dsl;
 
+import bc.dsl.JavaDSL.Fn;
+import static bc.dsl.JavaDSL.eq;
+import static bc.dsl.JavaDSL.filter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
-import static bc.dsl.JavaDSL.*;
 import java.util.List;
 import java.util.Map;
-import nu.xom.Attribute;
-import nu.xom.Builder;
-import nu.xom.Document;
-import nu.xom.Element;
-import nu.xom.Elements;
-import nu.xom.ParsingException;
+import nu.xom.*;
 
 /**
  *

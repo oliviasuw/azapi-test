@@ -73,12 +73,8 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
                 //PROCESS MESSAGE LOOP
                 try {
                     while (!currentExecutedAgent.isFinished() && !Thread.currentThread().isInterrupted()) {
-
                         performIdleDetection();
-
                         currentExecutedAgent.processNextMessage();
-
-
                     }
                 } catch (InterruptedException ex) {
                     cthread.interrupt(); //REFLAGING THE CURRENT THREAD.

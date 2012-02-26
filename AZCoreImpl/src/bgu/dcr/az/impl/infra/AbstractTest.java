@@ -13,7 +13,7 @@ import bgu.dcr.az.impl.AlgorithmMetadata;
 import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.exp.BadConfigurationException;
 import bgu.dcr.az.api.exp.InvalidValueException;
-import bgu.dcr.az.api.infra.CorrectnessTester.TestedResult;
+import bgu.dcr.az.api.infra.CorrectnessTester.CorrectnessTestResult;
 import bgu.dcr.az.impl.DebugInfo;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.ExecutionResult;
@@ -115,7 +115,8 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
 
     /**
      * set the test name
-     * @param name 
+     *
+     * @param name
      */
     public void setName(String name) {
         this.name = name;
@@ -157,8 +158,8 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
             throw new InvalidValueException("there is no such problem");
         }
 
-        
-        
+
+
         int ticksPerformed = (number - 1) / repeatCount;
         float vvar = start + tickSize * (float) ticksPerformed;
         ProblemGenerator tpgen = DeepCopyUtil.deepCopy(pgen);
@@ -219,7 +220,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
         try {
             initialize();
             validateConfiguration();
-            
+
             fireTestStarted();
 
             if (tickSize == 0) {
@@ -290,18 +291,20 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
                 res = new TestResult(r.getCrushReason(), e);
                 return false;
             } else if (getCorrectnessTester() != null) {
-                TestedResult testRes = getCorrectnessTester().test(e, r);
+                CorrectnessTestResult testRes = getCorrectnessTester().test(e, r);
                 if (!testRes.passed) {
                     res = new TestResult(testRes.rightAnswer, e);
                     return false;
                 }
             }
-            fireExecutionEnded(e);
+            
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
             res = new TestResult(ex, e);
             return false;
+        } finally {
+            fireExecutionEnded(e);
         }
     }
 
@@ -361,8 +364,9 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
 
     /**
      * 1 is the first problem
+     *
      * @param num
-     * @return 
+     * @return
      */
     protected Problem nextProblem(int num) {
         try {
@@ -459,6 +463,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
 
     /**
      * validating the experiment setup
+     *
      * @throws BadConfigurationException upon bad configuration
      */
     private void validateConfiguration() {

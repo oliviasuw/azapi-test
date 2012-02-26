@@ -29,7 +29,7 @@ public class HillClimbingCorrectnessTester extends AbstractCorrectnessTester {
     private PreparedStatement minPstat = null;
 
     @Override
-    public TestedResult test(Execution exec, ExecutionResult result) {
+    public CorrectnessTestResult test(Execution exec, ExecutionResult result) {
         try {
 
             System.out.println("--- Testing Solution ---");
@@ -82,9 +82,9 @@ public class HillClimbingCorrectnessTester extends AbstractCorrectnessTester {
             
             System.out.println("quering complete - testing solution");
             if (res.next()) {
-                return new TestedResult(null, false);
+                return new CorrectnessTestResult(null, false);
             } else {
-                return new TestedResult(null, true);
+                return new CorrectnessTestResult(null, true);
             }
 
 

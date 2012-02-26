@@ -8,7 +8,10 @@ import bc.dsl.ReflectionDSL;
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.ano.Register;
+import java.io.File;
 import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,16 +38,21 @@ public enum Registery {
     Map<Class, Set<String>> entitiyInheritence = null;
 
     private Registery() {
-        //Reflections ref = new Reflections("bgu.csp.az", new TypeAnnotationsScanner());
+        Reflections ref;
+        Set<Class<?>> types;
+        scanClasses();
+    }
 
-        Reflections ref = null;
-        Set<Class<?>> types = Collections.emptySet();
-//        try {
+    private void scanClasses() {
+        Reflections ref;
+        Set<Class<?>> types;
+        //ref = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage("bgu.dcr.az"), ClasspathHelper.forPackage("ext.sim")).setScanners(new TypeAnnotationsScanner()));
+
         ref = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage("bgu.dcr.az"), ClasspathHelper.forPackage("ext.sim")).setScanners(new TypeAnnotationsScanner()));
+
         //SCANNING XML ENTITIES
         System.out.println("Scanning XML Entities");
         types = ref.getTypesAnnotatedWith(Register.class);
-
         for (Class<?> type : types) {
             if (type.isInterface() || type.isAnonymousClass() || Modifier.isAbstract(type.getModifiers())) {
                 System.out.println("Found Abstract Registered Item - ignoring it: " + type.getSimpleName());
@@ -54,7 +62,6 @@ public enum Registery {
                 registeredXMLEntities.put(name, type);
             }
         }
-
         //SCANNING AGENTS
         System.out.println("Scanning Agents");
         types = ref.getTypesAnnotatedWith(Algorithm.class);
@@ -66,18 +73,18 @@ public enum Registery {
                 System.out.println("Found Agent : " + type.getSimpleName() + " as " + name);
                 agents.put(name, type);
             }
-        }        
+        }
     }
-    
-    public void scanEntityInheritance(){
+
+    public void scanEntityInheritance() {
         Set<Class> graph;
-        if (entitiyInheritence == null){
+        if (entitiyInheritence == null) {
             entitiyInheritence = new HashMap<Class, Set<String>>();
-            for (Entry<String, Class> ent : registeredXMLEntities.entrySet()){
+            for (Entry<String, Class> ent : registeredXMLEntities.entrySet()) {
                 graph = ReflectionDSL.getClassGraph(ent.getValue());
-                for (Class v : graph){
+                for (Class v : graph) {
                     Set<String> inh = entitiyInheritence.get(v);
-                    if (inh == null){
+                    if (inh == null) {
                         inh = new HashSet<String>();
                         entitiyInheritence.put(v, inh);
                     }
@@ -87,15 +94,15 @@ public enum Registery {
         }
     }
 
-    public Set<String> getExtendingEntities(Class c){
+    public Set<String> getExtendingEntities(Class c) {
         Set<String> ret = entitiyInheritence.get(c);
-        if (ret == null){
+        if (ret == null) {
             return Collections.emptySet();
         }
-        
+
         return ret;
     }
-    
+
     public Class getXMLEntity(String type) {
         return registeredXMLEntities.get(type);
     }
@@ -103,8 +110,8 @@ public enum Registery {
     public List<Class> getAllAgentTypes() {
         return new LinkedList<Class>(agents.values());
     }
-    
-    public Set<String> getAllAlgorithmNames(){
+
+    public Set<String> getAllAlgorithmNames() {
         return new HashSet<String>(agents.keySet());
     }
 

@@ -1,42 +1,40 @@
 package bgu.dcr.az.impl.infra;
 
-import bgu.dcr.az.impl.async.AsyncExecution;
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Agent.PlatformOps;
 import bgu.dcr.az.api.AgentRunner;
 import bgu.dcr.az.api.Hooks.ReportHook;
 import bgu.dcr.az.api.Hooks.TerminationHook;
-import bgu.dcr.az.impl.AlgorithmMetadata;
 import bgu.dcr.az.api.Mailer;
-import bgu.dcr.az.api.pgen.Problem;
+import bgu.dcr.az.api.SystemClock;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.ExecutionResult;
-import bgu.dcr.az.api.SystemClock;
 import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
+import bgu.dcr.az.api.pgen.Problem;
 import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.api.tools.IdleDetector;
-import bgu.dcr.az.impl.sync.SyncAgentRunner;
+import bgu.dcr.az.impl.AlgorithmMetadata;
+import bgu.dcr.az.impl.async.AsyncExecution;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This is the object that represents the run time environment for a single algorithm execution, can be reused with the use of 
- * the reset function
- * There can be several of those for example: one especially designed for testing,
- * one for a distributed environment and one for using in UI’s etc.
- * this way the same algorithm can run without changes in every environment that we choose
- * – with this objects you control the running of the experiment / project / algorithm, 
- * get notifications about interesting thing that happened there, let you shut down an execution etc.
+ * This is the object that represents the run time environment for a single
+ * algorithm execution, can be reused with the use of the reset function There
+ * can be several of those for example: one especially designed for testing, one
+ * for a distributed environment and one for using in UI’s etc. this way the
+ * same algorithm can run without changes in every environment that we choose –
+ * with this objects you control the running of the experiment / project /
+ * algorithm, get notifications about interesting thing that happened there, let
+ * you shut down an execution etc.
+ *
  * @author bennyl
  */
 public abstract class AbstractExecution extends AbstractProcess implements Execution {
@@ -61,7 +59,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private boolean idleDetectorNeeded = false;//hard set for the execution to use idle detection
 
     /**
-     * 
+     *
      */
     public AbstractExecution(Problem p, Mailer m, AlgorithmMetadata a, Test test, Experiment exp) {
         this.shuttingdown = false;
@@ -93,8 +91,10 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     }
 
     /**
-     * will stop the current execution and set the result to no solution
-     * TODO: maybe keep track of the execution status via enum (working, done, crushed, etc.)
+     * will stop the current execution and set the result to no solution TODO:
+     * maybe keep track of the execution status via enum (working, done,
+     * crushed, etc.)
+     *
      * @param ex
      * @param error
      */
@@ -109,8 +109,10 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     }
 
     /**
-     * force the execution to use idle detector (even if not stated so in the algorithm metadata)
-     * @param needed 
+     * force the execution to use idle detector (even if not stated so in the
+     * algorithm metadata)
+     *
+     * @param needed
      */
     public void setIdleDetectionNeeded(boolean needed) {
         this.idleDetectorNeeded = needed;
@@ -170,11 +172,6 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         }
     }
 
-//    @Override
-//    public void stop() {
-//        experiment.stop();
-//
-//    }
     protected ExecutorService getExecutorService() {
         return executorService;
     }
@@ -183,6 +180,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         this.agentRunners = runners;
     }
 
+    @Override
     public Agent[] getAgents() {
         return agents;
     }
@@ -206,10 +204,10 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     }
 
     /**
-     * @return the global problem - 
-     * each agent have its own "version" of problem that is based on the global problem 
-     * using the global problem is reserved to the execution environment or to the execution tools - do not use it inside 
-     * your algorithms - use Agents getProblem() instead.
+     * @return the global problem - each agent have its own "version" of problem
+     * that is based on the global problem using the global problem is reserved
+     * to the execution environment or to the execution tools - do not use it
+     * inside your algorithms - use Agents getProblem() instead.
      */
     @Override
     public Problem getGlobalProblem() {
@@ -225,8 +223,9 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     }
 
     /**
-     * cause the executed environment to log the given data
-     * this implementation only print the data into the screen
+     * cause the executed environment to log the given data this implementation
+     * only print the data into the screen
+     *
      * @param agent
      * @param data
      */
@@ -252,15 +251,17 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
 
     /**
      * ugly synchronization - replace with semaphore..
+     *
      * @param var
-     * @param val 
+     * @param val
      */
     @Override
     public synchronized void reportPartialAssignment(int var, int val) {
-        /*        if (partialResult.getAssignment() == null) {
-        partialResult = new ExecutionResult(new Assignment());
-        }
-        partialResult.getAssignment().assign(var, val);*/
+        /*
+         * if (partialResult.getAssignment() == null) { partialResult = new
+         * ExecutionResult(new Assignment()); }
+         * partialResult.getAssignment().assign(var, val);
+         */
         if (result.getAssignment() == null) {
             result.setFinalAssignment(new Assignment());
         }
@@ -268,14 +269,6 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         result.getAssignment().assign(var, val);
     }
 
-//    @Override
-//    public ExecutionResult getPartialResult() {
-//        return partialResult;
-//    }
-//    @Override
-//    public void swapPartialAssignmentWithFullAssignment() {
-//        result = partialResult.deepCopy();
-//    }
     @Override
     protected void _run() {
         try {
@@ -294,6 +287,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+            log(-1, "SYSTEM", "Execution Ended With Result = " + getResult());
             System.out.println("Execution Ended.");
         }
     }
@@ -308,8 +302,8 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     }
 
     /**
-     * this function return true if idle detection is needed
-     * overrite this function to change the idle detection activation setup
+     * this function return true if idle detection is needed overrite this
+     * function to change the idle detection activation setup
      */
     protected boolean isIdleDetectionIsNeeded() {
         return getAlgorithm().isUseIdleDetector() || this.idleDetectorNeeded;

@@ -4,6 +4,7 @@
  */
 package bgu.dcr.az.dev;
 
+import bgu.dcr.az.impl.config.ExperimentReader;
 import bc.dsl.SwingDSL;
 import bgu.dcr.az.api.exp.ConnectionFaildException;
 import bgu.dcr.az.api.infra.Execution;
@@ -49,7 +50,7 @@ public enum ExecutionEnvironmentUnit implements Experiment.ExperimentListener {
         try {
             this.inDebugMode = debug;
             worker.start();
-            runningExperiment = XMLConfigurator.read(xml);
+            runningExperiment = ExperimentReader.read(xml);
             SwingDSL.configureUI();
             MainWindow mainW = new MainWindow();
 
@@ -157,12 +158,13 @@ public enum ExecutionEnvironmentUnit implements Experiment.ExperimentListener {
                 String fname = newFileName();
                 badProblemStorage.mkdirs();
                 pw = new PrintWriter(new File(badProblemStorage.getAbsolutePath() + "/" + fname));
-                XMLConfigurator.write(source, pw);
+                ExperimentReader.write(source, pw);
                 pw.close();
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(ExecutionEnvironmentUnit.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
     }
 
     public Test getCurrentTest() {

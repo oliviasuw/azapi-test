@@ -84,7 +84,7 @@ public class ConstraintCalcConsole extends javax.swing.JPanel {
         cons.setBackground(new java.awt.Color(0, 0, 0));
         cons.setColumns(20);
         cons.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
-        cons.setForeground(new java.awt.Color(51, 255, 0));
+        cons.setForeground(new java.awt.Color(153, 255, 153));
         cons.setRows(5);
         cons.setText("CONSTRAINTS QUERY CONSOLE\n\nuse \" i vs. j \" for watching the i vs. j constraint table (ex. \"1 vs. 2\")\nuse \" i=vi, j=vj, ...\" for watching the cost of the given assignment (ex. \"1=0,2=4,3=2\")\n\n");
         jScrollPane1.setViewportView(cons);
@@ -100,7 +100,7 @@ public class ConstraintCalcConsole extends javax.swing.JPanel {
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
         searchLabel1.setBackground(new java.awt.Color(226, 225, 225));
-        searchLabel1.setFont(new java.awt.Font("Consolas", 1, 12));
+        searchLabel1.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
         searchLabel1.setForeground(new java.awt.Color(102, 102, 102));
         searchLabel1.setText("?> ");
         searchLabel1.setOpaque(true);
@@ -110,7 +110,7 @@ public class ConstraintCalcConsole extends javax.swing.JPanel {
         jPanel4.add(searchLabel1, gridBagConstraints);
 
         text.setBackground(new java.awt.Color(226, 225, 225));
-        text.setFont(new java.awt.Font("Consolas", 1, 12));
+        text.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
         text.setForeground(new java.awt.Color(102, 102, 102));
         text.setBorder(null);
         text.addActionListener(new java.awt.event.ActionListener() {

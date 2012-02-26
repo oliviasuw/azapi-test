@@ -46,8 +46,12 @@ public abstract class NestableTool {
         SimpleAgent nested = createNestedAgent();
         System.out.println("Calculating - transforming from " + callingAgent.getClass().getSimpleName() + " to " + nested.getClass().getSimpleName());
         final PlatformOps nestedOps = Agent.PlatformOperationsExtractor.extract(nested);
+        final PlatformOps callingOps = Agent.PlatformOperationsExtractor.extract(callingAgent);
+        
         nestedOps.setExecution(exec);
         nestedOps.setId(callingAgent.getId());
+        nestedOps.setMailGroupKeySequance(callingOps.nextMailGroupKeySequance());
+        
         runner.nest(callingAgent.getId(), nested, ret);
         return ret;
     }

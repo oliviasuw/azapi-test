@@ -69,7 +69,6 @@ public abstract class Agent extends Agt0DSL {
     private boolean finished = false; //The Status of the current Agent - TODO: TRANSFORM INTO A STATUS ENUM SO WE CAN BE ABLE TO QUERY THE AGENT ABOUT IT CURRENT STATUS
     private Message currentMessage = null; //The Current Message (The Last Message That was taken from the mailbox)
     private PlatformOps pops; //Hidden Platform Operation 
-    private String mailGroupKey = getClass().getName(); // The Mail Group Key  - when sending mail it will be recieved only by the relevant group
     /*
      * S T A T I S T I C S
      */
@@ -252,7 +251,7 @@ public abstract class Agent extends Agt0DSL {
      * @param what 
      */
     public void log(String what) {
-        exec.log(id, this.mailGroupKey, what);
+        exec.log(id, pops.mailGroupKey, what);
         if (USE_DEBUG_LOGS) {
             System.out.println("[" + getClass().getSimpleName() + "] " + getId() + ": " + what);
         }
@@ -454,7 +453,7 @@ public abstract class Agent extends Agt0DSL {
      */
     public void broadcast(Message msg) {
         final Execution execution = PlatformOperationsExtractor.extract(this).getExecution();
-        execution.getMailer().broadcast(msg, mailGroupKey);
+        execution.getMailer().broadcast(msg, pops.mailGroupKey);
     }
 
     /**
@@ -481,7 +480,7 @@ public abstract class Agent extends Agt0DSL {
      */
     public SendMediator send(Message msg) {
         final Execution execution = pops.getExecution();
-        return new SendMediator(msg, execution.getMailer(), execution.getGlobalProblem(), mailGroupKey);
+        return new SendMediator(msg, execution.getMailer(), execution.getGlobalProblem(), pops.mailGroupKey);
     }
 
     /**
@@ -551,7 +550,10 @@ public abstract class Agent extends Agt0DSL {
     public class PlatformOps {
 
         private int numberOfSetIdCalls = 0;
-
+        private Map metadata = new HashMap();
+        private String mailGroupKey = Agent.this.getClass().getName(); // The Mail Group Key  - when sending mail it will be recieved only by the relevant group
+        private int mailGroupKeySequance = 0; //if an agent wants to nest on this agent its mail group will be affected by this mailgroup key sequance
+        
         /**
          * attach an execution to this agent - this execution needs to already contains global problem 
          * @param exec
@@ -561,6 +563,19 @@ public abstract class Agent extends Agt0DSL {
             prob = new AgentProblem();
         }
 
+        public void setMailGroupKeySequance(int mailGroupKeySeq) {
+            this.mailGroupKeySequance = mailGroupKeySeq;
+            this.mailGroupKey = Agent.this.getClass().getName() + "#" + mailGroupKeySeq;
+        }
+
+        public int nextMailGroupKeySequance() {
+            return ++mailGroupKeySequance;
+        }
+
+        public Map getMetadata() {
+            return metadata;
+        }
+        
         /**
          * set the agent id - this method is called by the execution environment 
          * to set the agent id and should not be called by hand / by an algorithm implementer

@@ -5,12 +5,7 @@
 package bgu.dcr.az.impl.stat;
 
 import bgu.dcr.az.api.Agent;
-import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.Hooks;
-import bgu.dcr.az.api.Hooks.BeforeCallingFinishHook;
-import bgu.dcr.az.api.Hooks.BeforeMessageProcessingHook;
-import bgu.dcr.az.api.Hooks.BeforeMessageSentHook;
-import bgu.dcr.az.api.Hooks.TerminationHook;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.infra.Execution;
@@ -63,7 +58,7 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
             @Override
             public void hook(Agent a, Message msg) {
                 long newNcsc = (Long) msg.getMetadata().get("ncsc");
-                ncsc[a.getId()] = Math.max(newNcsc, ncsc[a.getId()]);
+                ncsc[a.getId()] = max(newNcsc, ncsc[a.getId()]);
                 ncsc[a.getId()]++;
             }
         }.hookInto(ex);
@@ -80,7 +75,7 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
 
             @Override
             public void hook() {
-                submit(new NCSCRecord(Agt0DSL.max(ncsc), rvar, agents[0].getAlgorithmName()));
+                submit(new NCSCRecord(max(ncsc), rvar));
             }
         }.hookInto(ex);
 
@@ -95,12 +90,10 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
 
         float ncsc;
         double rVar;
-        String algorithm;
 
-        public NCSCRecord(float ncsc, double rVar, String algorithm) {
+        public NCSCRecord(float ncsc, double rVar) {
             this.ncsc = ncsc;
             this.rVar = rVar;
-            this.algorithm = algorithm;
         }
 
         @Override

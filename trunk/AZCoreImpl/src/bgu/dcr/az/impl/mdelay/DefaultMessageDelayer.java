@@ -36,16 +36,16 @@ public class DefaultMessageDelayer implements MessageDelayer {
               defaultValue = "0")
     int minimumDelay = 0;
     
-    int[][] previousTime;
+    long[][] previousTime;
     Random rnd = null;
 
     @Override
-    public int getInitialTime() {
+    public long getInitialTime() {
         return 0;
     }
 
     @Override
-    public int extractTime(Message m) {
+    public long extractTime(Message m) {
         if (type.equals("NCCC")) {
             return ((Long) m.getMetadata().get("nccc")).intValue();
         } else {
@@ -55,8 +55,10 @@ public class DefaultMessageDelayer implements MessageDelayer {
 
     @Override
     public void addDelay(Message m, int from, int to) {
+        if (maximumDelay <= minimumDelay) return; //nothinng to add..
         int delay = rnd.nextInt(maximumDelay - minimumDelay) + minimumDelay;
-        int ntime = Math.max(delay + previousTime[from][to], extractTime(m) + delay);
+        long otime = extractTime(m);
+        long ntime = Math.max(delay + previousTime[from][to], otime + delay);
         previousTime[from][to] = ntime;
         if (type.equals("NCCC")) {
             m.getMetadata().put("nccc", (long)ntime);
@@ -67,8 +69,9 @@ public class DefaultMessageDelayer implements MessageDelayer {
 
     @Override
     public void initialize(Execution ex) {
+        System.out.println("initializing message delayer... delaying on " + type );
         int n = ex.getGlobalProblem().getNumberOfVariables();
-        previousTime = new int[n][n];
+        previousTime = new long[n][n];
         rnd = new Random(seed);
     }
 }

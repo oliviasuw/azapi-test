@@ -4,16 +4,13 @@
  */
 package bgu.dcr.az.impl.async;
 
-import bgu.dcr.az.impl.*;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.MessageQueue;
-import bgu.dcr.az.api.mdelay.MessageDelayer;
 import bgu.dcr.az.api.exp.InternalErrorException;
+import bgu.dcr.az.api.mdelay.MessageDelayer;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.PriorityQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.Semaphore;
 
@@ -37,27 +34,29 @@ public class DelayedMessageQueue implements MessageQueue {
     }
 
     /**
-     * release from the internal queue all the messages with the time lower or equal then the given time
-     * @param time 
+     * release from the internal queue all the messages with the time lower or
+     * equal then the given time
+     *
+     * @param time
      */
-    public void release(int time){
-        Message peeked = null;
-        while ((peeked = internalq.peek())!=null && dman.extractTime(peeked) <= time){
+    public void release(long time) {
+        Message peeked;
+        while ((peeked = internalq.peek()) != null && dman.extractTime(peeked) <= time) {
             Message msg = internalq.poll();
-            if (msg == null){
+            if (msg == null) {
                 return;
             }
-            
-            int mtime = dman.extractTime(msg);
-            if (mtime <= time){
+
+            long mtime = dman.extractTime(msg);
+            if (mtime <= time) {
                 add(msg);
-            }else {
+            } else {
                 internalq.offer(msg);
                 return;
             }
         }
     }
-    
+
     @Override
     public Message take() throws InterruptedException {
         Message ret = q.take();
@@ -66,20 +65,22 @@ public class DelayedMessageQueue implements MessageQueue {
     }
 
     /**
-     * will try to add the message if the time is right else will put it in the internal q
+     * will try to add the message if the time is right else will put it in the
+     * internal q
+     *
      * @param e
-     * @param time 
+     * @param time
      */
-    public void tryAdd(Message e, int time){
-        int mtime = dman.extractTime(e);
-        
-        if (mtime < time){
+    public void tryAdd(Message e, long time) {
+        long mtime = dman.extractTime(e);
+
+        if (mtime <= time) { //HERE!!!!
             add(e);
-        }else {
+        } else {
             internalq.offer(e);
         }
     }
-    
+
     @Override
     public void add(Message e) {
         if (!q.offer(e)) {
@@ -95,12 +96,11 @@ public class DelayedMessageQueue implements MessageQueue {
 
     @Override
     public void waitForNewMessages() throws InterruptedException {
-        //System.out.println("Waiting for messages: q is " + q.size());
         count.acquire();
         count.release();
-        //System.out.println("Done Waiting for messages");
     }
 
+    @Override
     public List<Message> retriveAll() {
         LinkedList<Message> all = new LinkedList<Message>();
 
@@ -120,26 +120,29 @@ public class DelayedMessageQueue implements MessageQueue {
     }
 
     /**
-     * @return from all the messages in the innerq the minimum message time - or null if the 
-     * innerq is empty.
+     * @return from all the messages in the innerq the minimum message time - or
+     * null if the innerq is empty.
      */
-    public Integer minimumMessageTime(){
+    public Long minimumMessageTime() {
         Message m = internalq.peek();
-        if (m == null ) return null;
-        
+        if (m == null) {
+            return null;
+        }
+
         return dman.extractTime(m);
     }
-    
+
     public static class MessageTimeComparator implements Comparator<Message> {
+
         MessageDelayer dman;
 
         public MessageTimeComparator(MessageDelayer dman) {
             this.dman = dman;
         }
-        
+
         @Override
         public int compare(Message o1, Message o2) {
-            Integer time1 = null, time2 = null;
+            Long time1 = null, time2 = null;
             try {
                 time1 = dman.extractTime(o1);
             } catch (Exception ex) {
@@ -160,7 +163,7 @@ public class DelayedMessageQueue implements MessageQueue {
                 }
             }
 
-            return time1 - time2;
+            return (int) (time1 - time2);
         }
     }
 }

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.dev;
+package bgu.dcr.az.impl.config;
 
 import bc.dsl.ReflectionDSL;
 import bgu.dcr.az.api.ano.Configuration;
@@ -32,7 +32,7 @@ import nu.xom.ParsingException;
  *
  * @author bennyl
  */
-public class XMLConfigurator {
+public class ExperimentReader {
 
     public static void write(Object conf, PrintWriter pw) {
         String confName = Registery.UNIT.getEntityName(conf);
@@ -80,7 +80,7 @@ public class XMLConfigurator {
             return exp;
 
         } catch (ParsingException ex) {
-            Logger.getLogger(XMLConfigurator.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ExperimentReader.class.getName()).log(Level.SEVERE, null, ex);
             throw new IOException("cannot parse file", ex);
         }
     }

@@ -5,7 +5,6 @@
 package bgu.dcr.az.impl.stat;
 
 import bgu.dcr.az.api.Agent;
-import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.Hooks;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.ano.Register;
@@ -62,8 +61,9 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
             @Override
             public void hook(Agent a, Message msg) {
                 long newNccc = (Long) msg.getMetadata().get("nccc");
+
                 updateCurrentNccc(a);
-                nccc[a.getId()] = Math.max(newNccc, nccc[a.getId()]);
+                nccc[a.getId()] = max(newNccc, nccc[a.getId()]);
             }
         }.hookInto(ex);
 
@@ -80,10 +80,10 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
 
             @Override
             public void hook() {
-                submit(new NCCCRecord(ex.getTest().getCurrentVarValue(), Agt0DSL.max(nccc), agents[0].getAlgorithmName()));
+                submit(new NCCCRecord(ex.getTest().getCurrentVarValue(), max(nccc)));
             }
         }.hookInto(ex);
-        
+
     }
 
     @Override
@@ -101,12 +101,10 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
 
         double rVar;
         double value;
-        String algorithm;
 
-        public NCCCRecord(double rVar, double value, String algorithm) {
+        public NCCCRecord(double rVar, double value) {
             this.rVar = rVar;
             this.value = value;
-            this.algorithm = algorithm;
         }
 
         @Override

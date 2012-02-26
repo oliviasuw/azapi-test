@@ -4,6 +4,7 @@
  */
 package bgu.dcr.az.impl.stat;
 
+import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.stat.DBRecord;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
@@ -13,7 +14,7 @@ import bgu.dcr.az.impl.db.DatabaseUnit;
  *
  * @author bennyl
  */
-public abstract class AbstractStatisticCollector<T extends DBRecord> implements StatisticCollector<T> {
+public abstract class AbstractStatisticCollector<T extends DBRecord> extends Agt0DSL implements StatisticCollector<T> {
 
     Test test;
 

@@ -1,5 +1,0 @@
-* AbstractAgent Should Support the auto statistics
-* Simple Message and Abstract Agent can be combined if we remove the dependancy on the recepient in the message data 
-* Abstract Agent should be consistent with the single unit of work paradigm by removing the 
-  get message from its interface and instaed passing the message in the process function.
-* i should consider merging the name conventions - abstract agent will change the init function to start message and simple agent should change processNextMessage to process(nextMessage)

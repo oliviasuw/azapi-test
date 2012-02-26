@@ -1,5 +1,0 @@
-* add the service design pattern to the Excecution and implement the following services:
-  *DONE* TimeStamp Service 
-  * Search Process Service - (if we adding this one we can add cpa to the simple agent)
-  * Idle detector should be implemented as service 
-* The Interface Of Service Should Be Well Defined 

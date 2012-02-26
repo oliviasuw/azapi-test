@@ -15,7 +15,7 @@ import bc.ui.swing.listeners.Listeners;
 import bc.ui.swing.visuals.Visual;
 import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Test;
-import bgu.dcr.az.dev.XMLConfigurator;
+import bgu.dcr.az.impl.config.ExperimentReader;
 import bgu.dcr.az.impl.infra.ExperimentImpl;
 import java.io.File;
 import java.io.IOException;
@@ -110,7 +110,7 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements TestView
     private void loadExperiments(File dir) {
         for (File f : dir.listFiles()) {
             try {
-                Experiment e = XMLConfigurator.read(f);
+                Experiment e = ExperimentReader.read(f);
                 badExperiments.add(e);
                 efMap.put(e, f);
             } catch (Exception ex) {

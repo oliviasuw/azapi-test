@@ -106,7 +106,7 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
         jPanel1.setBackground(new java.awt.Color(102, 102, 102));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        searchLabel.setFont(new java.awt.Font("Consolas", 1, 12));
+        searchLabel.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
         searchLabel.setForeground(new java.awt.Color(255, 255, 255));
         searchLabel.setText("Search");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -114,7 +114,7 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
         jPanel1.add(searchLabel, gridBagConstraints);
 
         searchLabel1.setBackground(new java.awt.Color(226, 225, 225));
-        searchLabel1.setFont(new java.awt.Font("Consolas", 1, 12));
+        searchLabel1.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
         searchLabel1.setForeground(new java.awt.Color(102, 102, 102));
         searchLabel1.setText("?> ");
         searchLabel1.setOpaque(true);
@@ -124,7 +124,7 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
         jPanel1.add(searchLabel1, gridBagConstraints);
 
         searchTextField.setBackground(new java.awt.Color(226, 225, 225));
-        searchTextField.setFont(new java.awt.Font("Consolas", 1, 12));
+        searchTextField.setFont(new java.awt.Font("Consolas", 1, 12)); // NOI18N
         searchTextField.setForeground(new java.awt.Color(102, 102, 102));
         searchTextField.setBorder(null);
         searchTextField.addActionListener(new java.awt.event.ActionListener() {
@@ -166,8 +166,8 @@ public class LogScreen extends javax.swing.JPanel implements LogListener {
         outScroll.setPreferredSize(new java.awt.Dimension(32, 50));
 
         output.setBackground(new java.awt.Color(0, 0, 0));
-        output.setFont(new java.awt.Font("Consolas", 0, 14));
-        output.setForeground(new java.awt.Color(51, 255, 0));
+        output.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        output.setForeground(new java.awt.Color(153, 255, 153));
         output.setText("bla");
         outScroll.setViewportView(output);
 

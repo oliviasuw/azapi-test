@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.3" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <AuxValues>
@@ -70,7 +70,7 @@
                   <Font name="Consolas" size="12" style="1"/>
                 </Property>
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="0" green="ff" red="33" type="rgb"/>
+                  <Color blue="99" green="ff" red="99" type="rgb"/>
                 </Property>
                 <Property name="rows" type="int" value="5"/>
                 <Property name="text" type="java.lang.String" value="CONSTRAINTS QUERY CONSOLE&#xa;&#xa;use &quot; i vs. j &quot; for watching the i vs. j constraint table (ex. &quot;1 vs. 2&quot;)&#xa;use &quot; i=vi, j=vj, ...&quot; for watching the cost of the given assignment (ex. &quot;1=0,2=4,3=2&quot;)&#xa;&#xa;"/>

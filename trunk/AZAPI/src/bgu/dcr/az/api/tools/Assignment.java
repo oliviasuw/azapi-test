@@ -11,13 +11,14 @@ import bgu.dcr.az.api.ds.ImmutableSet;
 import bgu.dcr.az.api.exp.UnassignedVariableException;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.LinkedHashMap;
 
 /**
- * 
+ *
  * @author bennyl
  */
-public class Assignment implements Serializable, DeepCopyable{
+public class Assignment implements Serializable, DeepCopyable {
 
     private LinkedHashMap<Integer, Integer> assignment;
     private transient int cachedCost = -1;
@@ -32,14 +33,15 @@ public class Assignment implements Serializable, DeepCopyable{
 
     private Assignment(Assignment a) {
         this.assignment = new LinkedHashMap<Integer, Integer>();
-        for (Entry<Integer, Integer> e : a.assignment.entrySet()){
+        for (Entry<Integer, Integer> e : a.assignment.entrySet()) {
             this.assignment.put(e.getKey(), e.getValue());
         }
     }
 
     /**
-     * assign val to var 
-     * if var already been assign then its value will be overwriten
+     * assign val to var if var already been assign then its value will be
+     * overwriten
+     *
      * @param var
      * @param val
      */
@@ -50,6 +52,7 @@ public class Assignment implements Serializable, DeepCopyable{
 
     /**
      * remove var's assignment
+     *
      * @param var
      */
     public void unassign(int var) {
@@ -57,15 +60,15 @@ public class Assignment implements Serializable, DeepCopyable{
         cachedCost = -1;
     }
 
-    
     /**
      * same as unassign(agt.getId());
-     * @param agt 
+     *
+     * @param agt
      */
-    public void unassign(Agent agt){
+    public void unassign(Agent agt) {
         unassign(agt.getId());
     }
-    
+
     /**
      * @param var
      * @return true if var is assigned
@@ -80,14 +83,14 @@ public class Assignment implements Serializable, DeepCopyable{
      */
     public Integer getAssignment(int var) {
         final Integer ass = assignment.get(var);
-        if (ass == null){
+        if (ass == null) {
             throw new UnassignedVariableException("calling getAssignment with variable " + var + " while its is not assigned");
         }
         return ass;
     }
 
     /**
-     * @param p 
+     * @param p
      * @return the cost of this assignment - (increase cc checks)
      */
     public int calcCost(ImmutableProblem p) {
@@ -125,8 +128,8 @@ public class Assignment implements Serializable, DeepCopyable{
                     past.add(e);
                 }
             }
-        }else{
-                for (Entry<Integer, Integer> e : assignment.entrySet()) {
+        } else {
+            for (Entry<Integer, Integer> e : assignment.entrySet()) {
                 int var = e.getKey();
                 int val = e.getValue();
                 c += p.getConstraintCost(var, val);
@@ -139,7 +142,7 @@ public class Assignment implements Serializable, DeepCopyable{
                 }
                 past.add(e);
             }
-            
+
         }
 
         cachedCost = c;
@@ -149,18 +152,18 @@ public class Assignment implements Serializable, DeepCopyable{
     /**
      * @param var
      * @param val
-     * @param p 
-     * @return the cost that will be added to this assignment by assigning 
-     * 		   {@code var <- val} in the problem p 
+     * @param p
+     * @return the cost that will be added to this assignment by assigning
+     * 		   {@code var <- val} in the problem p
      *             this includes binary and unary costs
      * * (increase cc checks)
      */
     public int calcAddedCost(int var, int val, ImmutableProblem p) {
         int c = 0;
         c += p.getConstraintCost(var, val);
-        
+
         int var2, val2;
-        for (Entry<Integer, Integer> e : assignment.entrySet()){
+        for (Entry<Integer, Integer> e : assignment.entrySet()) {
             var2 = e.getKey();
             val2 = e.getValue();
             c += p.getConstraintCost(var, val, var2, val2);
@@ -173,16 +176,18 @@ public class Assignment implements Serializable, DeepCopyable{
      * @param p
      * @return the cost of the assignment without the given variable assignment
      */
-    public int calcCostWithout(int var, ImmutableProblem p){
+    public int calcCostWithout(int var, ImmutableProblem p) {
         int c = 0;
         LinkedList<Entry<Integer, Integer>> past = new LinkedList<Entry<Integer, Integer>>();
 
         for (Entry<Integer, Integer> e : assignment.entrySet()) {
             int vr = e.getKey();
             int vl = e.getValue();
-            
-            if (vr == var) continue;
-            
+
+            if (vr == var) {
+                continue;
+            }
+
             c += p.getConstraintCost(vr, vl);
 
             for (Entry<Integer, Integer> pe : past) {
@@ -197,12 +202,13 @@ public class Assignment implements Serializable, DeepCopyable{
 
         return c;
     }
-    
+
     /**
      * @param var
      * @param domain
      * @param p
-     * @return from the given domain the value that assigning var to it will be add the least to the assignment
+     * @return from the given domain the value that assigning var to it will be
+     * add the least to the assignment
      */
     public int findMinimalCostValue(int var, Collection<Integer> domain, ImmutableProblem p) {
         boolean first = true;
@@ -226,58 +232,67 @@ public class Assignment implements Serializable, DeepCopyable{
         return minv;
     }
 
-    
     /**
-     * find the first assignment to variable - var that keeps the assignment under the given upperbound
-     * returns -1 if none found.. 
+     * find the first assignment to variable - var that keeps the assignment
+     * under the given upperbound returns -1 if none found..
+     *
      * @param var
      * @param upperbound
      * @param domain
      * @param p
-     * @return 
+     * @return
      */
-    public int findFirstAssignmentUnderUB(int upperbound, int var, Collection<Integer> domain, ImmutableProblem p){
+    public int findFirstAssignmentUnderUB(int upperbound, int var, Collection<Integer> domain, ImmutableProblem p) {
         int cost = calcCost(p);
-        if (cost >= upperbound) return -1;
-        for (Integer d : domain) if (cost + calcAddedCost(var, d, p) < upperbound) return d;
+        if (cost >= upperbound) {
+            return -1;
+        }
+        for (Integer d : domain) {
+            if (cost + calcAddedCost(var, d, p) < upperbound) {
+                return d;
+            }
+        }
         return -1;
     }
-    
+
     /**
-     * 
+     *
      * @return a deep copy of this assignment (same as calling deepCopy)
      */
     @Deprecated
     public Assignment copy() {
         return deepCopy();
     }
-    
+
     /**
      * @return the assignmed variables
      */
-    public ImmutableSet<Integer> assignedVariables(){
+    public ImmutableSet<Integer> assignedVariables() {
         return new ImmutableSet<Integer>(assignment.keySet());
     }
-    
+
     /**
      * @return the sum of the assigned variables
      */
-    public int getNumberOfAssignedVariables(){
+    public int getNumberOfAssignedVariables() {
         return assignment.keySet().size();
     }
-    
+
     /**
      * return true if the assignment is consistent with assigning var->val
+     *
      * @param var
      * @param val
      * @param p
-     * @return 
+     * @return
      */
-    public boolean isConsistentWith(int var, int val, ImmutableProblem p){
+    public boolean isConsistentWith(int var, int val, ImmutableProblem p) {
         for (Entry<Integer, Integer> e : assignment.entrySet()) {
             int var2 = e.getKey();
             int val2 = e.getValue();
-            if (p.getConstraintCost(var, val, var2, val2) != 0) return false;
+            if (p.getConstraintCost(var, val, var2, val2) != 0) {
+                return false;
+            }
         }
 
         return true;
@@ -285,14 +300,16 @@ public class Assignment implements Serializable, DeepCopyable{
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Assignment)){
+        if (obj == null || !(obj instanceof Assignment)) {
             return false;
-        }else {
+        } else {
             Assignment ass = (Assignment) obj;
-            for (Entry<Integer, Integer> e : assignment.entrySet()){
-                if (ass.getAssignment(e.getKey()) != e.getValue()) return false;
+            for (Entry<Integer, Integer> e : assignment.entrySet()) {
+                if (ass.getAssignment(e.getKey()) != e.getValue()) {
+                    return false;
+                }
             }
-            
+
             return true;
         }
     }
@@ -303,7 +320,7 @@ public class Assignment implements Serializable, DeepCopyable{
         hash = 29 * hash + (this.assignment != null ? this.assignment.hashCode() : 0);
         return hash;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("");

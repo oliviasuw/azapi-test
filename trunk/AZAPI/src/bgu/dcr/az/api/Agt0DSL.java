@@ -9,10 +9,11 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Simulator Domain Specific Language Object is a group of functions that simplify some programming tasks
- * designed for the lazy programmer :)
- * 
+ * Simulator Domain Specific Language Object is a group of functions that
+ * simplify some programming tasks designed for the lazy programmer :)
+ *
  * under constraction!
+ *
  * @author bennyl
  */
 public class Agt0DSL {
@@ -20,14 +21,17 @@ public class Agt0DSL {
     private static final Pattern nummericPattern = Pattern.compile("[-+]?\\d+(\\.\\d*)?$");
     private static final Pattern integericPattern = Pattern.compile("[-+]?\\d+$");
     private static Random rnd = new Random(42);
+
     /**
-     * returns a collection of numbers in the range of start to end (includes start and end)
+     * returns a collection of numbers in the range of start to end (includes
+     * start and end)
+     *
      * @param start
      * @param end
      * @return
      */
     public static List<Integer> range(int start, int end) {
-        
+
         if (end < start) {
             return new ArrayList<Integer>(0);
         }
@@ -36,18 +40,19 @@ public class Agt0DSL {
         fillRange(ret, start, end);
         return ret;
     }
-    
-    public static void randomize(long seed){
+
+    public static void randomize(long seed) {
         rnd = new Random(seed);
     }
-    
+
     /**
      * add [start, end] to c
+     *
      * @param c
      * @param start
      * @param end
      */
-    public static void fillRange(Collection c, int start, int end){
+    public static void fillRange(Collection c, int start, int end) {
         if (end < start) {
             return;
         }
@@ -56,32 +61,34 @@ public class Agt0DSL {
         for (int i = start; i <= end; i++) {
             c.add(i);
         }
-        
+
     }
-    
+
     /**
      * create new map from the given key-value pairs
+     *
      * @param <K>
      * @param <V>
      * @param k
      * @param v
      * @param kvs
-     * @return 
+     * @return
      */
-    public static <K, V> Map<K, V> cassoc(K k, V v, Object... kvs){
-        Map<K,V> ret = new HashMap<K, V>();
+    public static <K, V> Map<K, V> cassoc(K k, V v, Object... kvs) {
+        Map<K, V> ret = new HashMap<K, V>();
         ret.put(k, v);
         assoc(ret, kvs);
         return ret;
     }
-    
+
     /**
      * append key and values to a map
+     *
      * @param <K>
      * @param <V>
      * @param map
      * @param kvs
-     * @return 
+     * @return
      */
     public static <K, V> Map<K, V> assoc(Map<K, V> map, Object... kvs) {
         for (int i = 0; i < kvs.length; i += 2) {
@@ -93,6 +100,7 @@ public class Agt0DSL {
 
     /**
      * perform equals on obj1 and obj2 but take null into consideration
+     *
      * @param obj1
      * @param obj2
      * @return
@@ -109,6 +117,7 @@ public class Agt0DSL {
 
     /**
      * perform non binary equales
+     *
      * @param all
      * @return
      */
@@ -129,7 +138,9 @@ public class Agt0DSL {
     /**
      * @param who
      * @param ors
-     * @return true if @param who is one of the @param ors
+     * @return true if
+     * @param who is one of the
+     * @param ors
      */
     public static boolean isOneOf(Object who, Object... ors) {
         for (Object o : ors) {
@@ -142,6 +153,7 @@ public class Agt0DSL {
 
     /**
      * return a string representation for the collection col.
+     *
      * @param col
      * @return
      */
@@ -163,8 +175,9 @@ public class Agt0DSL {
     }
 
     /**
-     * if sum is possitive - return from without the first 'sum' chars
-     * if is negative return only the last 'sum' chars of 'from'
+     * if sum is possitive - return from without the first 'sum' chars if is
+     * negative return only the last 'sum' chars of 'from'
+     *
      * @param from
      * @param sum
      * @return
@@ -178,8 +191,9 @@ public class Agt0DSL {
     }
 
     /**
-     * if sum is positive: return the first $sum letters from $from
-     * if sum is negative: return all chars from $from but the last $sum
+     * if sum is positive: return the first $sum letters from $from if sum is
+     * negative: return all chars from $from but the last $sum
+     *
      * @param from
      * @param sum
      * @return
@@ -194,8 +208,9 @@ public class Agt0DSL {
 
     /**
      * return true if the given char is nummeric
+     *
      * @param who
-     * @return 
+     * @return
      */
     public static boolean isNummeric(char who) {
         return who >= '0' && who <= '9';
@@ -203,8 +218,9 @@ public class Agt0DSL {
 
     /**
      * return true if the given string is nummeric
+     *
      * @param who
-     * @return 
+     * @return
      */
     public static boolean isNummeric(String who) {
         return nummericPattern.matcher(who).matches();
@@ -237,11 +253,12 @@ public class Agt0DSL {
     }
 
     /**
-     * transforming string to the corrosponding enum 
+     * transforming string to the corrosponding enum
+     *
      * @param <T>
      * @param what
      * @param cls
-     * @return 
+     * @return
      */
     public static <T extends Enum> T enumarate(String what, Class<T> cls) {
         EnumSet es = EnumSet.allOf(cls);
@@ -265,6 +282,7 @@ public class Agt0DSL {
 
     /**
      * n-ary min function
+     *
      * @param <T>
      * @param args
      * @return
@@ -278,23 +296,23 @@ public class Agt0DSL {
         return args[min];
     }
 
+//    /**
+//     * n-ary max function
+//     * @param <T>
+//     * @param args
+//     * @return
+//     */
+//    public static <T extends Number> T max(T... args) {
+//        int min = 0;
+//        for (int i = 1; i < args.length; i++) {
+//            min = (args[min].doubleValue() < args[i].doubleValue() ? i : min);
+//        }
+//
+//        return args[min];
+//    }
     /**
      * n-ary max function
-     * @param <T>
-     * @param args
-     * @return
-     */
-    public static <T extends Number> T max(T... args) {
-        int min = 0;
-        for (int i = 1; i < args.length; i++) {
-            min = (args[min].doubleValue() < args[i].doubleValue() ? i : min);
-        }
-
-        return args[min];
-    }
-    
-    /**
-     * n-ary max function
+     *
      * @param <T>
      * @param args
      * @return
@@ -307,57 +325,112 @@ public class Agt0DSL {
 
         return args[min];
     }
-    
+
     /**
-     * trick to throw checked exception in uncheck context - do not use unless you know what you are doing
-     * or you just dont care about this exception
-     * @param e 
+     * n-ary max function
+     *
+     * @param <T>
+     * @param args
+     * @return
+     */
+    public static int max(int... args) {
+        int min = 0;
+        for (int i = 1; i < args.length; i++) {
+            min = (args[min] < args[i] ? i : min);
+        }
+
+        return args[min];
+    }
+
+    /**
+     * n-ary max function
+     *
+     * @param <T>
+     * @param args
+     * @return
+     */
+    public static double max(double... args) {
+        int min = 0;
+        for (int i = 1; i < args.length; i++) {
+            min = (args[min] < args[i] ? i : min);
+        }
+
+        return args[min];
+    }
+
+    /**
+     * n-ary max function
+     *
+     * @param <T>
+     * @param args
+     * @return
+     */
+    public static float max(float... args) {
+        int min = 0;
+        for (int i = 1; i < args.length; i++) {
+            min = (args[min] < args[i] ? i : min);
+        }
+
+        return args[min];
+    }
+
+    /**
+     * trick to throw checked exception in uncheck context - do not use unless
+     * you know what you are doing or you just dont care about this exception
+     *
+     * @param e
      */
     public static void throwUncheked(Throwable e) {
         Agt0DSL.<RuntimeException>throwAny(e);
     }
-   
+
     @SuppressWarnings("unchecked")
     private static <E extends Throwable> void throwAny(Throwable e) throws E {
-        throw (E)e;
+        throw (E) e;
     }
-    
+
     /**
      * select a random item from the given list
+     *
      * @param <T>
      * @param c
-     * @return 
+     * @return
      */
-    public static <T> T random(List<T> c ){
-       if (c.isEmpty()) return null;
-       return c.get(rnd.nextInt(c.size()));
+    public static <T> T random(List<T> c) {
+        if (c.isEmpty()) {
+            return null;
+        }
+        return c.get(rnd.nextInt(c.size()));
     }
-    
+
     /**
      * select a random item from the given set
+     *
      * @param <T>
      * @param c
-     * @return 
+     * @return
      */
-    public static <T> T random(Set<T> c ){
-       return (T) random(c.toArray()); 
+    public static <T> T random(Set<T> c) {
+        return (T) random(c.toArray());
     }
-    
-    
+
     /**
      * select a random item from the given array
+     *
      * @param <T>
      * @param c
-     * @return 
+     * @return
      */
-    public static <T> T random(T[] c ){
-       if (c.length == 0) return null;
-       return c[rnd.nextInt(c.length)];
+    public static <T> T random(T[] c) {
+        if (c.length == 0) {
+            return null;
+        }
+        return c[rnd.nextInt(c.length)];
     }
-    
 
     /**
      * stop execution with severe error
+     *
      * @param why
      */
     public static void panic(String why) {
@@ -365,7 +438,8 @@ public class Agt0DSL {
     }
 
     /**
-     * will cause the execution to stop with an error if the given predicate is true
+     * will cause the execution to stop with an error if the given predicate is
+     * true
      */
     public static void panicIf(boolean predicate, String why) {
         if (predicate) {
@@ -375,6 +449,7 @@ public class Agt0DSL {
 
     /**
      * stop execution with severe error
+     *
      * @param why
      * @param cause
      */
@@ -387,6 +462,7 @@ public class Agt0DSL {
 
     /**
      * stop execution with severe error
+     *
      * @param cause
      */
     public static void panic(Exception cause) {

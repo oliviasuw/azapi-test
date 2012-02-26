@@ -16,12 +16,20 @@ public class ExecutionResult implements DeepCopyable{
     private Assignment finalAssignment = null;
     private Exception crush = null;
 
+    @Override
+    public String toString() {
+        if (crush == null){
+            return "Submitted Assignment: " + finalAssignment;
+        }else {
+            return "Crushed! (" + crush.getClass().getSimpleName() + ": " + crush.getMessage() + ")";
+        }
+    }
+
     
     /**
      * indicate no solution result
      */
-    public ExecutionResult(){
-        
+    public ExecutionResult(){        
     }
     
     /**

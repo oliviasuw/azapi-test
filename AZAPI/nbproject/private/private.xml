@@ -1,21 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
-    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
-        <file>file:/C:/Users/bennyl/workspace/SimulatorAPI/src/bgu/csp/az/api/Agt0DSL.java</file>
-        <file>file:/C:/Users/bennyl/workspace/SimulatorAPI/src/bgu/csp/az/api/agt/SendbleObject.java</file>
-        <file>file:/C:/Users/bennyl/workspace/SimulatorAPI/src/bgu/csp/az/api/agt/AbstractMessage.java</file>
-        <file>file:/C:/Users/bennyl/workspace/SimulatorAPI/src/bgu/csp/az/api/agt/AbstractAgent.java</file>
-        <file>file:/C:/Users/bennyl/workspace/SimulatorAPI/src/bgu/csp/az/api/agt/SimpleAgentHooks.java</file>
-        <file>file:/C:/Users/bennyl/workspace/SimulatorAPI/src/bgu/csp/az/api/agt/SimpleAgent.java</file>
-        <file>file:/C:/Users/bennyl/workspace/SimulatorAPI/src/bgu/csp/az/api/infra/EventPipe.java</file>
-        <file>file:/C:/Users/bennyl/workspace/SimulatorAPI/src/bgu/csp/az/api/Agent.java</file>
-        <file>file:/C:/Users/bennyl/workspace/SimulatorAPI/src/bgu/csp/az/api/infra/Execution.java</file>
-        <file>file:/C:/Users/bennyl/workspace/SimulatorAPI/src/bgu/csp/az/api/Problem.java</file>
-        <file>file:/C:/Users/bennyl/workspace/SimulatorAPI/src/bgu/csp/az/api/Message.java</file>
-        <file>file:/C:/Users/bennyl/workspace/SimulatorAPI/src/bgu/csp/az/api/infra/Process.java</file>
-        <file>file:/C:/Users/bennyl/workspace/SimulatorAPI/src/bgu/csp/az/api/0TODO</file>
-        <file>file:/C:/Users/bennyl/workspace/SimulatorAPI/src/bgu/csp/az/api/Algorithm.java</file>
-        <file>file:/C:/Users/bennyl/workspace/SimulatorAPI/src/bgu/csp/az/api/Mailer.java</file>
-    </open-files>
 </project-private>

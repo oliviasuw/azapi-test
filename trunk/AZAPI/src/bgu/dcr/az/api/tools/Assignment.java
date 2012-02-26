@@ -88,7 +88,7 @@ public class Assignment implements Serializable, DeepCopyable{
 
     /**
      * @param p 
-     * @return the cost of this assignment
+     * @return the cost of this assignment - (increase cc checks)
      */
     public int calcCost(ImmutableProblem p) {
         if (p instanceof Agent.AgentProblem) {
@@ -153,6 +153,7 @@ public class Assignment implements Serializable, DeepCopyable{
      * @return the cost that will be added to this assignment by assigning 
      * 		   {@code var <- val} in the problem p 
      *             this includes binary and unary costs
+     * * (increase cc checks)
      */
     public int calcAddedCost(int var, int val, ImmutableProblem p) {
         int c = 0;

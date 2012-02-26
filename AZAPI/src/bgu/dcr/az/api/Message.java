@@ -89,7 +89,7 @@ public class Message implements Serializable {
 
 
         Message ret = new Message(getName(), getSender(), cargs);
-        ret.metadata = metadata; //metadata is not deep-copyed as it should be immutable
+        ret.metadata = new HashMap<String, Object>(metadata); //metadata is not deep-copyed as it should be immutable
         return ret;
     }
 

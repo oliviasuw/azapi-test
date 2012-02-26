@@ -186,7 +186,7 @@ public abstract class Problem implements Serializable, ImmutableProblem {
      */
     @Override
     public boolean isConstrained(int var1, int var2) {
-        return neighbores.get(var1).contains(var2);
+        return getNeighbors(var1).contains(var2);
     }
 
     /**

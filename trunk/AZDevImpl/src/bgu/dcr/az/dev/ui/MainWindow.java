@@ -367,8 +367,8 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
                     Assignment badAssignment = source.getResult().badTestResult.badExecution.getResult().getAssignment();
 
                     MessageDialog.showFail("The execution completed with errors", "The correctness tester found wrong results provided by the algorithm\n"
-                            + "An example to a correct assignment is " + goodAssignment + "with the cost of " + goodAssignment.calcCost(globalProblem) + "\n"
-                            + "The Test result is " + badAssignment + (badAssignment != null?  "with the cost of " + badAssignment.calcCost(globalProblem) : "") );
+                            + "An example to a correct assignment is " + (goodAssignment != null? goodAssignment + "with the cost of " + goodAssignment.calcCost(globalProblem) : "'not exists'") + "\n"
+                            + "The Test result is " + (badAssignment != null? "" +  badAssignment +  " with the cost of " + badAssignment.calcCost(globalProblem) : "'not exists'") );
                    
                     break;
             }

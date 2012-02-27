@@ -147,6 +147,7 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
 
     @Override
     public void idleCannotBeResolved() {
+        if (currentExecutedAgent.isFinished()) return; //IDLE RESULVED AS AGENT LEAVE THE ALGORITHM...
         System.out.println("Idle Detected - Agent " + currentExecutedAgent.getId() + " Being Notified.");
         currentExecutedAgent.onIdleDetected();
         idleDetectionLock.release();

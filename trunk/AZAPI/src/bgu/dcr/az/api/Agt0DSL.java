@@ -317,7 +317,32 @@ public class Agt0DSL {
      * @param args
      * @return
      */
-    public static long max(long... args) {
+    public static long max(long first, long... args) {
+        long min = first;
+        for (int i = 1; i < args.length; i++) {
+            min = (min < args[i] ? args[i] : min);
+        }
+
+        return min;
+    }
+
+    /**
+     * n-ary max function
+     *
+     * @param <T>
+     * @param args
+     * @return
+     */
+    public static double max(Double first, Double... args) {
+        double min = first;
+        for (int i = 1; i < args.length; i++) {
+            min = (min < args[i] ? args[i] : min);
+        }
+
+        return min;
+    }
+
+    public static long max(long[] args) {
         int min = 0;
         for (int i = 1; i < args.length; i++) {
             min = (args[min] < args[i] ? i : min);
@@ -334,38 +359,6 @@ public class Agt0DSL {
      * @return
      */
     public static int max(int... args) {
-        int min = 0;
-        for (int i = 1; i < args.length; i++) {
-            min = (args[min] < args[i] ? i : min);
-        }
-
-        return args[min];
-    }
-
-    /**
-     * n-ary max function
-     *
-     * @param <T>
-     * @param args
-     * @return
-     */
-    public static double max(double... args) {
-        int min = 0;
-        for (int i = 1; i < args.length; i++) {
-            min = (args[min] < args[i] ? i : min);
-        }
-
-        return args[min];
-    }
-
-    /**
-     * n-ary max function
-     *
-     * @param <T>
-     * @param args
-     * @return
-     */
-    public static float max(float... args) {
         int min = 0;
         for (int i = 1; i < args.length; i++) {
             min = (args[min] < args[i] ? i : min);

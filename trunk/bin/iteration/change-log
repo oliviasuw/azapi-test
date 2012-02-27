@@ -1,3 +1,9 @@
+quick fix 12
+- many bugfixes in message delays feature
+- some documentation added 
+- trying to add self as neighbor in problem generator will now be ignored
+- some statistics made faster
+
 quick fix 11
 - nested agents inhencement
 - fixed null pointer exception in GUI

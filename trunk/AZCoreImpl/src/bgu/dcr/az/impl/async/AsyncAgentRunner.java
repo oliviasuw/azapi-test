@@ -93,6 +93,9 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
                 System.out.println("[" + Agent.PlatformOperationsExtractor.extract(currentExecutedAgent).getMailGroupKey() + "] " + currentExecutedAgent.getId() + " Terminated.");
 
                 if (nestedAgents.isEmpty()) {
+                    if (useIdleDetector) {
+                        exec.getIdleDetector().notifyAgentIdle(); //Im finished so i am idle...
+                    }
                     joinBlock.release();
                     return;
                 } else {
@@ -108,9 +111,9 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
     private void performIdleDetection() throws InterruptedException {
         if (useIdleDetector && nestedAgents.isEmpty()) {
             if (!currentExecutedAgent.hasPendingMessages()) {
-                exec.getIdleDetector().dec();
+                exec.getIdleDetector().notifyAgentIdle();
                 currentExecutedAgent.waitForNewMessages();
-                exec.getIdleDetector().inc();
+                exec.getIdleDetector().notifyAgentWorking();
             }
         }
     }
@@ -122,7 +125,7 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
 
     @Override
     public boolean tryResolveIdle() {
-        if (currentExecutedAgent.isFirstAgent() && exec.getMailer() instanceof AsyncDelayedMailer) {
+        if (exec.getMailer() instanceof AsyncDelayedMailer) {
 //            System.out.println("Idle Detected - trying to resolve it by increasing to delayed mailer internal clock (agent: " + currentExecutedAgent.getId() + ")");
             PlatformOps pop = Agent.PlatformOperationsExtractor.extract(currentExecutedAgent);
             if (((AsyncDelayedMailer) exec.getMailer()).resolveIdle(pop.getMailGroupKey())) {

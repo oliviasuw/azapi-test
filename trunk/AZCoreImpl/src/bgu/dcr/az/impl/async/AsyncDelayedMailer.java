@@ -32,6 +32,7 @@ public class AsyncDelayedMailer extends AbstractMailer {
 
     @Override
     public void send(Message msg, int to, String groupKey) {
+        msg = msg.copy(); //deep copying the message.
         long mtime = dman.extractTime(msg); //time before delay
         dman.addDelay(msg, msg.getSender(), to); //adding delay
         MessageQueue[] qus = takeQueues(groupKey); //all the queues from the current group

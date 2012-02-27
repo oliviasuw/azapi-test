@@ -18,20 +18,22 @@ import java.util.concurrent.Semaphore;
  */
 public class DefaultMessageQueue implements MessageQueue {
 
+    public static final Message SYSTEM_RELEASE_MESSAGE = new Message("__SYSTEM_RELEASE_MESSAGE__", -1, new Object[0]);
     LinkedBlockingQueue<Message> q = new LinkedBlockingQueue<Message>();
-    Semaphore count = new Semaphore(0);
+    Semaphore blocker = new Semaphore(0);
 
     @Override
     public Message take() throws InterruptedException {
         Message ret = q.take();
-        count.acquire();
+        blocker.acquire();
+        if (ret == SYSTEM_RELEASE_MESSAGE) return null;
         return ret;
     }
 
     @Override
     public void add(Message e) {
         if (! q.offer(e)) throw new InternalErrorException("cannot insert message " + e + " to agent queue");
-        count.release();
+        blocker.release();
     }
 
     @Override
@@ -42,17 +44,9 @@ public class DefaultMessageQueue implements MessageQueue {
     @Override
     public void waitForNewMessages() throws InterruptedException {
         //System.out.println("Waiting for messages: q is " + q.size());
-        count.acquire();
-        count.release();
+        blocker.acquire();
+        blocker.release();
         //System.out.println("Done Waiting for messages");
-    }
-    
-    public List<Message> retriveAll(){
-        LinkedList<Message> all = new LinkedList<Message>();
-        
-        q.drainTo(all);
-        
-        return all;
     }
     
     public boolean isEmpty(){
@@ -61,5 +55,10 @@ public class DefaultMessageQueue implements MessageQueue {
     
     public boolean isNotEmpty(){
         return !this.q.isEmpty();
+    }
+
+    @Override
+    public void releaseBlockedAgent() {
+        add(SYSTEM_RELEASE_MESSAGE);
     }
 }

@@ -15,8 +15,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * this class should receive an agent and just run it simply - no schedualing
- * what so ever..
+ * this class should receive an agent and it will execute it 
+ * this agent runner specialized in asynchronous execution
+ * it supports idle detection and message delays.
  *
  * @author bennyl
  *
@@ -93,9 +94,12 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
                 System.out.println("[" + Agent.PlatformOperationsExtractor.extract(currentExecutedAgent).getMailGroupKey() + "] " + currentExecutedAgent.getId() + " Terminated.");
 
                 if (nestedAgents.isEmpty()) {
+                   
+                    
                     if (useIdleDetector) {
                         exec.getIdleDetector().notifyAgentIdle(); //Im finished so i am idle...
                     }
+                    
                     joinBlock.release();
                     return;
                 } else {
@@ -121,6 +125,9 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
     @Override
     public void idleResolved() {
         idleDetectionLock.release();
+        if (currentExecutedAgent.isFirstAgent()) {
+            exec.getMailer().releaseAllBlockingAgents(Agent.PlatformOperationsExtractor.extract(currentExecutedAgent).getMailGroupKey());
+        }
     }
 
     @Override
@@ -151,6 +158,7 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
         System.out.println("Idle Detected - Agent " + currentExecutedAgent.getId() + " Being Notified.");
         currentExecutedAgent.onIdleDetected();
         idleDetectionLock.release();
+        exec.getMailer().releaseAllBlockingAgents(Agent.PlatformOperationsExtractor.extract(currentExecutedAgent).getMailGroupKey());
     }
 
     @Override

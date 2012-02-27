@@ -8,7 +8,6 @@ import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.MessageQueue;
 import bgu.dcr.az.api.mdelay.MessageDelayer;
 import bgu.dcr.az.impl.AbstractMailer;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -89,4 +88,5 @@ public class AsyncDelayedMailer extends AbstractMailer {
 
         return false;
     }
+
 }

@@ -4,10 +4,12 @@
  */
 package bgu.dcr.az.impl.async;
 
+import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.MessageQueue;
 import bgu.dcr.az.api.exp.InternalErrorException;
 import bgu.dcr.az.api.mdelay.MessageDelayer;
+import bgu.dcr.az.impl.DefaultMessageQueue;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,6 +63,7 @@ public class DelayedMessageQueue implements MessageQueue {
     public Message take() throws InterruptedException {
         Message ret = q.take();
         count.acquire();
+        if (ret == DefaultMessageQueue.SYSTEM_RELEASE_MESSAGE) return null;
         return ret;
     }
 
@@ -74,7 +77,7 @@ public class DelayedMessageQueue implements MessageQueue {
     public void tryAdd(Message e, long time) {
         long mtime = dman.extractTime(e);
 
-        if (mtime <= time) { //HERE!!!!
+        if (mtime <= time) { 
             add(e);
         } else {
             internalq.offer(e);
@@ -101,15 +104,6 @@ public class DelayedMessageQueue implements MessageQueue {
     }
 
     @Override
-    public List<Message> retriveAll() {
-        LinkedList<Message> all = new LinkedList<Message>();
-
-        q.drainTo(all);
-
-        return all;
-    }
-
-    @Override
     public boolean isEmpty() {
         return this.q.isEmpty();
     }
@@ -130,6 +124,11 @@ public class DelayedMessageQueue implements MessageQueue {
         }
 
         return dman.extractTime(m);
+    }
+
+    @Override
+    public void releaseBlockedAgent() {
+        add(DefaultMessageQueue.SYSTEM_RELEASE_MESSAGE);
     }
 
     public static class MessageTimeComparator implements Comparator<Message> {

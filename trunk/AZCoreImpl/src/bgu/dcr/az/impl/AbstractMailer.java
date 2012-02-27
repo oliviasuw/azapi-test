@@ -27,6 +27,13 @@ public abstract class AbstractMailer implements Mailer {
     private Map<String, MessageQueue[]> mailBoxes = new HashMap<String, MessageQueue[]>();
     Semaphore mailBoxModifierKey = new Semaphore(1);
 
+    @Override
+    public void releaseAllBlockingAgents(String mailGroup) {
+        for (MessageQueue q : takeQueues(mailGroup)){
+            q.releaseBlockedAgent();
+        }
+    }
+
     protected MessageQueue[] takeQueues(String groupKey) {
         try {
             MessageQueue[] qs = mailBoxes.get(groupKey);

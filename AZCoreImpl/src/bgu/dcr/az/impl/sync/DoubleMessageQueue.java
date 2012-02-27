@@ -52,13 +52,6 @@ public class DoubleMessageQueue implements MessageQueue {
     }
 
     @Override
-    public List<Message> retriveAll() {
-        LinkedList<Message> ret = new LinkedList<Message>(q[qToUse()]);
-        q[qToUse()].clear();
-        return ret;
-    }
-
-    @Override
     public boolean isEmpty() {
         return this.q[qToUse()].isEmpty();
     }
@@ -68,4 +61,8 @@ public class DoubleMessageQueue implements MessageQueue {
         return !this.q[qToUse()].isEmpty();
     }
 
+    @Override
+    public void releaseBlockedAgent() {
+        throw new UnsupportedOperationException("Multi Queue not support waiting!");
+    }
 }

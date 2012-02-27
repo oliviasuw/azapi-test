@@ -133,7 +133,6 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
     @Override
     public boolean tryResolveIdle() {
         if (exec.getMailer() instanceof AsyncDelayedMailer) {
-//            System.out.println("Idle Detected - trying to resolve it by increasing to delayed mailer internal clock (agent: " + currentExecutedAgent.getId() + ")");
             PlatformOps pop = Agent.PlatformOperationsExtractor.extract(currentExecutedAgent);
             if (((AsyncDelayedMailer) exec.getMailer()).resolveIdle(pop.getMailGroupKey())) {
 //                System.out.println("Idle resolved");

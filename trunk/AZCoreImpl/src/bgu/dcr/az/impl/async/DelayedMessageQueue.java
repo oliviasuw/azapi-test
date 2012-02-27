@@ -26,13 +26,19 @@ public class DelayedMessageQueue implements MessageQueue {
     PriorityBlockingQueue<Message> q;
     Semaphore count = new Semaphore(0);
     MessageDelayer dman;
-
+    boolean agentFinished = false;
+    
     public DelayedMessageQueue(final MessageDelayer dman) {
         this.dman = dman;
         MessageTimeComparator mtc = new MessageTimeComparator(dman);
 
         q = new PriorityBlockingQueue<Message>(1000, mtc);
         internalq = new PriorityBlockingQueue<Message>(1000, mtc);
+    }
+
+    @Override
+    public void onAgentFinish() {
+        agentFinished = true;
     }
 
     /**
@@ -92,8 +98,11 @@ public class DelayedMessageQueue implements MessageQueue {
         count.release();
     }
 
+    
+    
     @Override
     public int size() {
+        if (agentFinished) return 0;
         return q.size();
     }
 
@@ -118,6 +127,7 @@ public class DelayedMessageQueue implements MessageQueue {
      * null if the innerq is empty.
      */
     public Long minimumMessageTime() {
+        if (agentFinished) return null;
         Message m = internalq.peek();
         if (m == null) {
             return null;
@@ -141,6 +151,10 @@ public class DelayedMessageQueue implements MessageQueue {
 
         @Override
         public int compare(Message o1, Message o2) {
+            if (o1 == DefaultMessageQueue.SYSTEM_RELEASE_MESSAGE) return -1;
+            if (o2 == DefaultMessageQueue.SYSTEM_RELEASE_MESSAGE) return 1;
+            if ((o1 == o2) &&( o1 == DefaultMessageQueue.SYSTEM_RELEASE_MESSAGE)) return 0;
+            
             Long time1 = null, time2 = null;
             try {
                 time1 = dman.extractTime(o1);

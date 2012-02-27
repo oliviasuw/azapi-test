@@ -28,4 +28,9 @@ public interface MessageQueue {
      * will cause the agent that is waiting for new messages to awake and take the message 'null'
      */
     void releaseBlockedAgent();
+    
+    /**
+     * will get called when the agent finish
+     */
+    void onAgentFinish();
 }

@@ -33,7 +33,7 @@ public abstract class AbstractMailer implements Mailer {
             q.releaseBlockedAgent();
         }
     }
-
+    
     protected MessageQueue[] takeQueues(String groupKey) {
         try {
             MessageQueue[] qs = mailBoxes.get(groupKey);

@@ -52,6 +52,11 @@ public class DefaultMessageQueue implements MessageQueue {
     public boolean isEmpty(){
         return this.q.isEmpty();
     }
+
+    @Override
+    public void onAgentFinish() {
+        //dont care...
+    }
     
     public boolean isNotEmpty(){
         return !this.q.isEmpty();

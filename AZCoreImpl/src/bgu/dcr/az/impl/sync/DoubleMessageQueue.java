@@ -65,4 +65,11 @@ public class DoubleMessageQueue implements MessageQueue {
     public void releaseBlockedAgent() {
         throw new UnsupportedOperationException("Multi Queue not support waiting!");
     }
+
+    @Override
+    public void onAgentFinish() {
+        //dont care
+    }
+    
+    
 }

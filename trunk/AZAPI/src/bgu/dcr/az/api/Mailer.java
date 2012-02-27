@@ -49,4 +49,6 @@ public interface Mailer {
     public boolean isAllMailBoxesAreEmpty(String groupKey);
 
     public void setExecution(Execution aThis);
+    
+    public void releaseAllBlockingAgents(String mailGroup);
 }

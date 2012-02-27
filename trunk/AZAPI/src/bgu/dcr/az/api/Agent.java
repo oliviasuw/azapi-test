@@ -16,15 +16,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Agent is the main building block for a CP algorithms, it includes the
  * algorithms main logic. This is The base class of SimpleAgent.
  *
- * The agents have only one entry point and one exit point
- * Entry point: the function start() 
- * Exit point: the exit point is not accessed directly instead you can call one of
- * the finish*(*) functions or call panic
+ * The agents have only one entry point and one exit point Entry point: the
+ * function start() Exit point: the exit point is not accessed directly instead
+ * you can call one of the finish*(*) functions or call panic
  *
  */
 public abstract class Agent extends Agt0DSL {
@@ -323,6 +324,7 @@ public abstract class Agent extends Agt0DSL {
     protected void finish() {
         hookBeforeCallingFinish();
         finished = true;
+        mailbox.onAgentFinish();
     }
 
     /**
@@ -623,11 +625,21 @@ public abstract class Agent extends Agt0DSL {
         }
 
         public void setMailGroupKey(String mailGroupKey) {
-            if (numberOfSetIdCalls != 0){
+            if (numberOfSetIdCalls != 0) {
                 throw new InternalErrorException("cannot call to setMailGroupKey after calling setId - you must first change the mail group key and then the id");
             }
-            
+
             this.mailGroupKey = mailGroupKey;
+        }
+
+        public void clearQueue() {
+            while (mailbox.isNotEmpty()) {
+                try {
+                    mailbox.take();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Agent.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
 
         public Map getMetadata() {
@@ -639,9 +651,11 @@ public abstract class Agent extends Agt0DSL {
          * to set the agent id and should not be called by hand / by an
          * algorithm implementer this function should only be called once and
          * will throw Repeated Calling Exception upon repeated calls.
-         * 
+         *
          * ** if you need to change the mail group do it before setting the id
-         * as setting the id will register the agent to the mailer with it known mail group key
+         * as setting the id will register the agent to the mailer with it known
+         * mail group key
+         *
          * @param id
          */
         public void setId(int id) {

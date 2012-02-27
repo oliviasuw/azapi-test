@@ -27,7 +27,7 @@ public class IdleDetector {
         this.groupKey = groupKey;
     }
 
-    public void inc() {
+    public void notifyAgentWorking() {
         try {
             s.acquire();
             version++;
@@ -39,7 +39,7 @@ public class IdleDetector {
 
     }
 
-    public void dec() {
+    public void notifyAgentIdle() {
         int oversion;
         try {
             s.acquire();

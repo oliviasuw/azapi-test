@@ -1,6 +1,10 @@
+quick fix 15
+- idle detection bug fixed
+- more message delay mechanism bugs fixed (will it ever end?)
+
 quick fix 13, 14
-restoring back nested agents (need other solution) 
-finishWithAccumulationOfSubmitedPartialAssignments got deprecated - use finish(int) *in each agent* instaed
+- restored back nested agents (needs other solution) 
+- finishWithAccumulationOfSubmitedPartialAssignments got deprecated - use finish(int) *in each agent* instaed
 
 quick fix 12
 - many bugfixes in message delays feature

@@ -21,6 +21,16 @@ public abstract class NestableTool {
     private int finalAssignment = Integer.MIN_VALUE;
     private boolean hasAssignment = false;
     
+    /**
+     * flag the nested agent to be started
+     * it will only start after the current message hendling ends (or if you are using it from within the start function after it ends)
+     * 
+     * you should use continuations (by calling calculate(..).andWhenDoneDo(Continuation)
+     * to get notified when the nested agent terminated.
+     * 
+     * @param callingAgent
+     * @return 
+     */
     public ContinuationMediator calculate(final Agent callingAgent) {
         final Execution exec = Agent.PlatformOperationsExtractor.extract(callingAgent).getExecution();
         ContinuationMediator ret = new ContinuationMediator() {
@@ -50,7 +60,7 @@ public abstract class NestableTool {
         
         nestedOps.setExecution(exec);
         nestedOps.setId(callingAgent.getId());
-        nestedOps.setMailGroupKeySequance(callingOps.nextMailGroupKeySequance());
+//        nestedOps.setMailGroupKeySequance(callingOps.nextMailGroupKeySequance());
         
         runner.nest(callingAgent.getId(), nested, ret);
         return ret;

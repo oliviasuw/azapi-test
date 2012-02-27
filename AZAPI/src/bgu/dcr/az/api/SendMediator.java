@@ -38,7 +38,14 @@ public class SendMediator {
                 throw new UnRegisteredAgentException("the agent with the id " + a + " is not registered (" + agentGroupKey + ")", ex);
             }
         }
-
+    }
+    
+    public void toFirstAgent(){
+        to(0);
+    }
+    
+    public void toLastAgent(){
+        to(this.curp.getNumberOfVariables()-1);
     }
 
     /**

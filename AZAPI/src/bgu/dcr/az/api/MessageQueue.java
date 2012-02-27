@@ -24,6 +24,8 @@ public interface MessageQueue {
 
     boolean isNotEmpty();
 
-    List<Message> retriveAll();
-    
+    /**
+     * will cause the agent that is waiting for new messages to awake and take the message 'null'
+     */
+    void releaseBlockedAgent();
 }

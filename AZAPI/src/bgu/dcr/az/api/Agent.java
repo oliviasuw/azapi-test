@@ -5,6 +5,7 @@ import bgu.dcr.az.api.Hooks.BeforeMessageSentHook;
 import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.ano.WhenReceived;
 import bgu.dcr.az.api.ds.ImmutableSet;
+import bgu.dcr.az.api.exp.InternalErrorException;
 import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.exp.RepeatedCallingException;
 import bgu.dcr.az.api.infra.Execution;
@@ -495,8 +496,7 @@ public abstract class Agent extends Agt0DSL {
      * @param msg
      */
     public void broadcast(Message msg) {
-        final Execution execution = PlatformOperationsExtractor.extract(this).getExecution();
-        execution.getMailer().broadcast(msg, pops.mailGroupKey);
+        pops.getExecution().getMailer().broadcast(msg, pops.mailGroupKey);
     }
 
     /**
@@ -610,7 +610,6 @@ public abstract class Agent extends Agt0DSL {
         private int numberOfSetIdCalls = 0;
         private Map metadata = new HashMap();
         private String mailGroupKey = Agent.this.getClass().getName(); // The Mail Group Key  - when sending mail it will be recieved only by the relevant group
-//        private int mailGroupKeySequance = 0; //if an agent wants to nest on this agent its mail group will be affected by this mailgroup key sequance
 
         /**
          * attach an execution to this agent - this execution needs to already
@@ -623,15 +622,13 @@ public abstract class Agent extends Agt0DSL {
             prob = new AgentProblem();
         }
 
-//        public void setMailGroupKeySequance(int mailGroupKeySeq) {
-////            this.mailGroupKeySequance = mailGroupKeySeq;
-////            this.mailGroupKey = Agent.this.getClass().getName() + "#" + mailGroupKeySeq;
-//        }
-
-//        public int nextMailGroupKeySequance() {
-////            return ++mailGroupKeySequance;
-//            return 0;
-//        }
+        public void setMailGroupKey(String mailGroupKey) {
+            if (numberOfSetIdCalls != 0){
+                throw new InternalErrorException("cannot call to setMailGroupKey after calling setId - you must first change the mail group key and then the id");
+            }
+            
+            this.mailGroupKey = mailGroupKey;
+        }
 
         public Map getMetadata() {
             return metadata;
@@ -642,7 +639,9 @@ public abstract class Agent extends Agt0DSL {
          * to set the agent id and should not be called by hand / by an
          * algorithm implementer this function should only be called once and
          * will throw Repeated Calling Exception upon repeated calls.
-         *
+         * 
+         * ** if you need to change the mail group do it before setting the id
+         * as setting the id will register the agent to the mailer with it known mail group key
          * @param id
          */
         public void setId(int id) {

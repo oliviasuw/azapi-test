@@ -308,9 +308,9 @@ public abstract class Agent extends Agt0DSL {
      */
     @Deprecated
     protected void finishWithAccumulationOfSubmitedPartialAssignments() {
-        finish();
-        terminate();
-        //finish(pops.getExecution().getResult().getAssignment());
+        //finish();
+        //terminate();
+        finish(pops.getExecution().getResult().getAssignment());
     }
 
     /**
@@ -610,7 +610,7 @@ public abstract class Agent extends Agt0DSL {
         private int numberOfSetIdCalls = 0;
         private Map metadata = new HashMap();
         private String mailGroupKey = Agent.this.getClass().getName(); // The Mail Group Key  - when sending mail it will be recieved only by the relevant group
-        private int mailGroupKeySequance = 0; //if an agent wants to nest on this agent its mail group will be affected by this mailgroup key sequance
+//        private int mailGroupKeySequance = 0; //if an agent wants to nest on this agent its mail group will be affected by this mailgroup key sequance
 
         /**
          * attach an execution to this agent - this execution needs to already
@@ -623,14 +623,15 @@ public abstract class Agent extends Agt0DSL {
             prob = new AgentProblem();
         }
 
-        public void setMailGroupKeySequance(int mailGroupKeySeq) {
-            this.mailGroupKeySequance = mailGroupKeySeq;
-            this.mailGroupKey = Agent.this.getClass().getName() + "#" + mailGroupKeySeq;
-        }
+//        public void setMailGroupKeySequance(int mailGroupKeySeq) {
+////            this.mailGroupKeySequance = mailGroupKeySeq;
+////            this.mailGroupKey = Agent.this.getClass().getName() + "#" + mailGroupKeySeq;
+//        }
 
-        public int nextMailGroupKeySequance() {
-            return ++mailGroupKeySequance;
-        }
+//        public int nextMailGroupKeySequance() {
+////            return ++mailGroupKeySequance;
+//            return 0;
+//        }
 
         public Map getMetadata() {
             return metadata;
@@ -672,10 +673,6 @@ public abstract class Agent extends Agt0DSL {
         public String getMailGroupKey() {
             return mailGroupKey;
         }
-//
-//        public VariableMetadata[] provideExpectendVariabls() {
-//            return VariableMetadata.scan(Agent.this);
-//        }
 
         public void configure(Map<String, Object> vars) {
             VariableMetadata.assign(Agent.this, vars);

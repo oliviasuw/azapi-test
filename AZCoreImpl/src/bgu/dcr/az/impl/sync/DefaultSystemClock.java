@@ -60,6 +60,7 @@ public class DefaultSystemClock implements SystemClock {
                     for (TickHook t : tickHooks) {
                         t.hook(this);
                     }
+//                    System.out.println("Tick " + time);
                 }
             } finally {
                 tickHookLock.release();

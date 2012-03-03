@@ -17,6 +17,7 @@ public class TestAgent extends SimpleAgent{
     @Override
     public void start() {
         finish(1);
+        
     }
     
 }

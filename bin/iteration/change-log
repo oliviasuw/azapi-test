@@ -1,3 +1,9 @@
+quick fix 16
+- statistics are now considering nested agents too
+- javadoc added for some nestable tool methods
+- nccc,ncsc,msgc have now live getters (will be added to the tutorial)
+- test methods added - getNumberOfExecutions and getIncludedAlgorithmsInstanceNames
+
 quick fix 15
 - idle detection bug fixed
 - more message delay mechanism bugs fixed (will it ever end?)

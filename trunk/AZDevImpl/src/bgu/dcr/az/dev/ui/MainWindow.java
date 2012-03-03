@@ -357,7 +357,7 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
 
             switch (source.getResult().badTestResult.finishStatus) {
                 case CRUSH:
-                    ExceptionDialog.showRecoverable("The execution crushed", "You should take a look at the logs,\n"
+                    ExceptionDialog.showRecoverable("The execution crashed", "You should take a look at the logs,\n"
                             + "check the stack trace using the advance button\n"
                             + "or start a debug session", source.getResult().badTestResult.crushReason);
                     break;

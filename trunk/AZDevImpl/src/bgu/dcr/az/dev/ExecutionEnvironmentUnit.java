@@ -54,10 +54,8 @@ public enum ExecutionEnvironmentUnit implements Experiment.ExperimentListener {
             SwingDSL.configureUI();
             MainWindow mainW = new MainWindow();
 
-            DatabaseUnit.UNIT.delete();
-            DatabaseUnit.UNIT.connect();
-            DatabaseUnit.UNIT.startCollectorThread();
-
+            DatabaseUnit.UNIT.start();
+            
             if (debug) {
                 runningExperiment = mainW.startDebugging(runningExperiment, badProblemStorage);
             }

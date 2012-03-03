@@ -16,6 +16,7 @@ import bgu.dcr.az.api.infra.stat.VisualModel;
 import bgu.dcr.az.api.infra.stat.vmod.LineVisualModel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,7 +56,7 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
         nccc = new long[agents.length];
         lastKnownCC = new long[agents.length];
         runningVar = ex.getTest().getRunningVarName();
-
+        
         new Hooks.BeforeMessageProcessingHook() {
 
             @Override

@@ -1,5 +1,6 @@
 package bgu.dcr.az.impl;
 
+import bgu.dcr.az.impl.config.Registery;
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.ProblemType;
 import bgu.dcr.az.api.SearchType;

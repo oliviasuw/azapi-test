@@ -11,7 +11,6 @@ import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.VariableMetadata;
-import bgu.dcr.az.impl.Registery;
 import bgu.dcr.az.impl.infra.ExperimentImpl;
 import java.io.File;
 import static bc.dsl.XNavDSL.*;

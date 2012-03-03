@@ -2,16 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.impl;
+package bgu.dcr.az.impl.config;
 
 import bc.dsl.ReflectionDSL;
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.ano.Register;
-import java.io.File;
 import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +18,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
@@ -38,15 +34,19 @@ public enum Registery {
     Map<Class, Set<String>> entitiyInheritence = null;
 
     private Registery() {
-        Reflections ref;
-        Set<Class<?>> types;
         scanClasses();
     }
 
+    public void rescanRegistery(){
+        agents = new HashMap<String, Class>();
+        registeredXMLEntities = new HashMap<String, Class>();
+        entitiyInheritence = null;
+        scanClasses();
+    }
+    
     private void scanClasses() {
         Reflections ref;
         Set<Class<?>> types;
-        //ref = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage("bgu.dcr.az"), ClasspathHelper.forPackage("ext.sim")).setScanners(new TypeAnnotationsScanner()));
 
         ref = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage("bgu.dcr.az"), ClasspathHelper.forPackage("ext.sim")).setScanners(new TypeAnnotationsScanner()));
 

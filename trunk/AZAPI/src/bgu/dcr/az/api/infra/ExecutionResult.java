@@ -21,7 +21,7 @@ public class ExecutionResult implements DeepCopyable{
         if (crush == null){
             return "Submitted Assignment: " + finalAssignment;
         }else {
-            return "Crushed! (" + crush.getClass().getSimpleName() + ": " + crush.getMessage() + ")";
+            return "Crashed! (" + crush.getClass().getSimpleName() + ": " + crush.getMessage() + ")";
         }
     }
 

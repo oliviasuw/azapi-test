@@ -15,6 +15,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +27,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.h2.tools.Csv;
+import org.h2.tools.SimpleResultSet;
 
 /**
  *
@@ -37,7 +40,7 @@ public enum DatabaseUnit {
     public static final int MAXIMUM_NUMBER_OF_INMEMORY_STATISTICS = 5000;
     public static final String DATA_BASE_NAME = "agentzero";
     private DBConnectionHandler connection;
-    private Thread collectorThread = null;
+    private Thread writerThread = null;
     private ArrayBlockingQueue<SimpleEntry<DBRecord, Test>> dbQueue = new ArrayBlockingQueue<SimpleEntry<DBRecord, Test>>(MAXIMUM_NUMBER_OF_INMEMORY_STATISTICS);
     private Set<Class<? extends DBRecord>> knownRecords = new HashSet<Class<? extends DBRecord>>();
     private Map<Class<? extends DBRecord>, PreparedStatement> insertStatments = new HashMap<Class<? extends DBRecord>, PreparedStatement>();
@@ -45,7 +48,12 @@ public enum DatabaseUnit {
     private List<SignalListner> signalListeners = new LinkedList<SignalListner>();
     private List<DataBaseChangedListener> databaseChangeListeners = new LinkedList<DataBaseChangedListener>();
 
-    public void connect() throws ConnectionFaildException {
+    /**
+     * will attempt to connect to the database (creating it if needed)
+     *
+     * @throws ConnectionFaildException
+     */
+    private void connect() throws ConnectionFaildException {
         try {
             String options = "LOG=0;CACHE_SIZE=65536;LOCK_MODE=0;UNDO_LOG=0";
             connection = new DBConnectionHandler("org.h2.Driver", "jdbc:h2:" + DATA_BASE_NAME + ";" + options, "sa", "");
@@ -66,7 +74,8 @@ public enum DatabaseUnit {
     }
 
     /**
-     * will wait until all the submited statistics to the time of the call was writen to the db
+     * will wait until all the submited statistics to the time of the call was
+     * writen to the db
      */
     public synchronized void awaitStatistics() throws InterruptedException {
         final String sig = "AWAIT_STATISTICS";
@@ -75,11 +84,12 @@ public enum DatabaseUnit {
     }
 
     /**
-     * will return true if signal with that key exists in the system and 
-     * the requesting thread waited untill this signal received
+     * will return true if signal with that key exists in the system and the
+     * requesting thread waited untill this signal received
+     *
      * @param signal
      * @return
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
     public synchronized boolean awaitSignal(Object signal) throws InterruptedException {
         final Signal fake = new Signal(signal);
@@ -106,18 +116,17 @@ public enum DatabaseUnit {
     public void disconnect() {
         if (connection != null) {
             try {
-     //           signal("DONE");
-     //           awaitSignal("DONE");
                 connection.disconnect();
-     //       } catch (InterruptedException ex) {
-     //           Logger.getLogger(DatabaseUnit.class.getName()).log(Level.SEVERE, null, ex);
             } catch (SQLException ex) {
                 Logger.getLogger(DatabaseUnit.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
-    public void delete() {
+    /**
+     * will attempt to delete the previous database
+     */
+    private void delete() {
         FileUtils.delete(new File(DATA_BASE_NAME + ".h2.db"));
         FileUtils.delete(new File(DATA_BASE_NAME + ".lock.db"));
         FileUtils.delete(new File(DATA_BASE_NAME + ".trace.db"));
@@ -139,7 +148,7 @@ public enum DatabaseUnit {
         insertStatement.setObject(i++, record.getTestName());
         insertStatement.setObject(i++, record.getAlgorithmInstanceName());
         insertStatement.setObject(i++, record.getExecutionNumber());
-        
+
         //DEFINED FIELDS
         for (Field f : record.getFields()) {
             try {
@@ -154,7 +163,7 @@ public enum DatabaseUnit {
         insertStatement.executeUpdate();
     }
 
-    public void startBatch() {
+    private void startBatch() {
         try {
             connection.startBatch();
         } catch (SQLException ex) {
@@ -162,22 +171,48 @@ public enum DatabaseUnit {
         }
     }
 
+    public void dumpToCsv(File folder) {
+        try {
+            Database db = getDatabase();
+            String allTablesSQL = "SELECT TABLE_NAME  FROM INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = 'PUBLIC'";
+            ResultSet res = db.query(allTablesSQL);
+            
+            while (res.next()){
+                String tableName = res.getString("TABLE_NAME");
+                ResultSet rs = db.query("select * from " + tableName);
+                Csv.getInstance().write(folder.getAbsolutePath() + "/" + tableName + ".csv", rs, null);
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseUnit.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void start() throws ConnectionFaildException {
+        DatabaseUnit.UNIT.delete();
+        DatabaseUnit.UNIT.connect();
+        DatabaseUnit.UNIT.startStatisticWriterThread();
+    }
+
     public void endAndCommitBatch() throws SQLException {
         connection.endAndCommitBatch();
     }
 
-    public void startCollectorThread() {
-        if (collectorThread == null) {
-            collectorThread = new Thread(new DBCollector());
-            collectorThread.start();
+    /**
+     * will start the statistic writer thread
+     */
+    private void startStatisticWriterThread() {
+        if (writerThread == null) {
+            writerThread = new Thread(new StatisticWriter());
+            writerThread.start();
         }
     }
 
     public void stopCollectorThread() {
-        if (collectorThread != null) {
-            collectorThread.interrupt();
+        if (writerThread != null) {
+            writerThread.interrupt();
         }
-        collectorThread = null;
+        writerThread = null;
     }
 
     private PreparedStatement generatePreparedStatement(DBRecord record) throws SQLException {
@@ -230,7 +265,9 @@ public enum DatabaseUnit {
         }
         exe.append(", PRIMARY KEY (ID));");
         connection.runUpdate(exe.toString());
-        for (DataBaseChangedListener l : databaseChangeListeners) l.onTableAdded(record.provideTableName());
+        for (DataBaseChangedListener l : databaseChangeListeners) {
+            l.onTableAdded(record.provideTableName());
+        }
     }
 
     public class H2Database implements Database {
@@ -239,12 +276,12 @@ public enum DatabaseUnit {
         public ResultSet query(String query) throws SQLException {
             return connection.runQuery(query);
         }
-        
-        public DatabaseMetaData getMetadata() throws SQLException{
+
+        public DatabaseMetaData getMetadata() throws SQLException {
             return connection.conn.getMetaData();
         }
-        
-        public void addChangeListener(DataBaseChangedListener listener){
+
+        public void addChangeListener(DataBaseChangedListener listener) {
             databaseChangeListeners.add(listener);
         }
     }
@@ -268,7 +305,10 @@ public enum DatabaseUnit {
 
         void signal() {
             signaled = true;
-            lock.release(lock.getQueueLength() + 1 /* ADD ONE FOR THE POSIBILITY WHERE THERE ARE NO THREADS BUT 1 THAT JUST ENTERED */);
+            lock.release(lock.getQueueLength() + 1 /*
+                     * ADD ONE FOR THE POSIBILITY WHERE THERE ARE NO THREADS BUT
+                     * 1 THAT JUST ENTERED
+                     */);
             for (SignalListner sl : signalListeners) {
                 sl.onDataCollectedUpToSignal(UNIT, key);
             }
@@ -298,7 +338,7 @@ public enum DatabaseUnit {
         }
     }
 
-    private class DBCollector implements Runnable {
+    private class StatisticWriter implements Runnable {
 
         @Override
         public void run() {
@@ -354,8 +394,9 @@ public enum DatabaseUnit {
 
         void onDataCollectedUpToSignal(DatabaseUnit source, Object signal);
     }
-    
-    public static interface DataBaseChangedListener{
+
+    public static interface DataBaseChangedListener {
+
         void onTableAdded(String name);
     }
 }

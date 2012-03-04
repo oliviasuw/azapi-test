@@ -279,6 +279,10 @@ public abstract class Agent extends Agt0DSL {
             System.out.println("[" + getClass().getSimpleName() + "] " + getId() + ": " + what);
         }
     }
+    
+    public void logIf(boolean predicate, String what){
+        if (predicate) log(what);
+    }
 
     /**
      * stop execution - returning the given assignment, will cause a TERMINATION

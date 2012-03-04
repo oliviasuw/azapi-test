@@ -243,7 +243,6 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
                         failedClass = getProblemGenerator().getClass();
                     } else {
                         for (AlgorithmMetadata alg : getAlgorithms()) {
-                            currentAlgorithm = alg;
                             if (!execute(p, alg)) {
                                 failed = true;
                                 failedClass = alg.getAgentClass();
@@ -281,6 +280,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
     }
 
     private boolean execute(Problem p, AlgorithmMetadata alg) {
+        currentAlgorithm = alg;
         Execution e = provideExecution(p, alg);
         try {
             e.setStatisticCollectors(collectors);

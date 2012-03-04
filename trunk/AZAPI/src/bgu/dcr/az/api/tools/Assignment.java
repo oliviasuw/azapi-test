@@ -297,6 +297,10 @@ public class Assignment implements Serializable, DeepCopyable {
 
         return true;
     }
+    
+    public boolean isConsistent(ImmutableProblem p){
+        return calcCost(p) == 0;
+    }
 
     @Override
     public boolean equals(Object obj) {

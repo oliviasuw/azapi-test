@@ -44,11 +44,16 @@ public class DefaultCorrectnessTester extends AbstractCorrectnessTester {
                             return new CorrectnessTestResult(null, true);
                         }
                     case solution:
+                        try{
                         ass = solver.getAssignment();
+                        
                         if (result.getAssignment() != null && ass.calcCost(globalProblem) == result.getAssignment().calcCost(globalProblem)) {
                             return new CorrectnessTestResult(ass, true);
                         } else {
                             return new CorrectnessTestResult(ass, false);
+                        }
+                        }catch(Exception e){
+                            System.out.println("HERE!!!");
                         }
                     default:
                         return new CorrectnessTestResult(null, true);

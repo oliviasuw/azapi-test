@@ -5,6 +5,7 @@
 package bgu.dcr.az.api;
 
 import bgu.dcr.az.api.exp.PanicedAgentException;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -151,6 +152,114 @@ public class Agt0DSL {
         return false;
     }
 
+    public static <T> String str(T[] arr) {
+        return str(Arrays.asList(arr));
+    }
+
+    public static String str(int[] arr) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < arr.length; i++) {
+            sb.append(arr[i]).append(", ");
+        }
+
+        if (sb.length() > 1) {
+            sb.delete(sb.length() - 2, sb.length());
+        }
+
+        sb.append("]");
+        return sb.toString();
+        //return str(Arrays.asList(arr));
+    }
+
+    public static String str(double[] arr) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < arr.length; i++) {
+            sb.append(arr[i]).append(", ");
+        }
+
+        if (sb.length() > 1) {
+            sb.delete(sb.length() - 2, sb.length());
+        }
+
+        sb.append("]");
+        return sb.toString();
+    }
+
+    public static String str(long[] arr) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < arr.length; i++) {
+            sb.append(arr[i]).append(", ");
+        }
+
+        if (sb.length() > 1) {
+            sb.delete(sb.length() - 2, sb.length());
+        }
+
+        sb.append("]");
+        return sb.toString();
+    }
+
+    public static String str(float[] arr) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < arr.length; i++) {
+            sb.append(arr[i]).append(", ");
+        }
+
+        if (sb.length() > 1) {
+            sb.delete(sb.length() - 2, sb.length());
+        }
+
+        sb.append("]");
+        return sb.toString();
+    }
+
+    public static <T> T[] deepArrayCopy(T[] a) {
+        T[] copy = (T[]) Array.newInstance(a.getClass().getComponentType(), a.length);
+        System.arraycopy(a, 0, copy, 0, a.length);
+        return copy;
+    }
+
+    public static <T> T[] shuffle(T[] a) {
+        T[] copy = deepArrayCopy(a);
+        _shuffle(copy);
+        return copy;
+    }
+
+    public static int[] shuffle(int[] a) {
+        int[] copy = new int[a.length];
+        System.arraycopy(a, 0, copy, 0, a.length);
+
+        int n = a.length;
+        rnd.nextInt();
+        for (int i = 0; i < n; i++) {
+            int change = i + rnd.nextInt(n - i);
+            swap(copy, i, change);
+        }
+
+        return copy;
+    }
+
+    private static <T> void _shuffle(T[] a) {
+        int n = a.length;
+        rnd.nextInt();
+        for (int i = 0; i < n; i++) {
+            int change = i + rnd.nextInt(n - i);
+            swap(a, i, change);
+        }
+    }
+
+    private static <T> void swap(T[] a, int i, int change) {
+        T helper = a[i];
+        a[i] = a[change];
+        a[change] = helper;
+    }
+
+    private static void swap(int[] a, int i, int change) {
+        int helper = a[i];
+        a[i] = a[change];
+        a[change] = helper;
+    }
+
     /**
      * return a string representation for the collection col.
      *
@@ -164,7 +273,7 @@ public class Agt0DSL {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (Object c : col) {
-            sb.append(c.toString()).append(", ");
+            sb.append(str(c)).append(", ");
         }
         if (sb.length() > 1) {
             sb.delete(sb.length() - 2, sb.length());
@@ -172,6 +281,41 @@ public class Agt0DSL {
         sb.append("]");
 
         return sb.toString();
+    }
+
+    public static String str(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        if (o instanceof Collection) {
+            return str((Collection) o);
+        }
+        if (o.getClass().isArray()) {
+            final Class<?> ct = o.getClass().getComponentType();
+            if (!ct.isPrimitive()) {
+                return str((Object[]) o);
+            }
+
+            if (ct.getName().equals("int")) {
+                return str((int[]) o);
+            }
+
+            if (ct.getName().equals("long")) {
+                return str((long[]) o);
+            }
+
+            if (ct.getName().equals("double")) {
+                return str((double[]) o);
+            }
+
+            if (ct.getName().equals("float")) {
+                return str((float[]) o);
+            }
+
+            System.out.println("bug: cannot print array of " + ct.getName());
+        }
+
+        return o.toString();
     }
 
     /**
@@ -426,18 +570,20 @@ public class Agt0DSL {
      *
      * @param why
      */
-    public static void panic(String why) {
-        panic(why, null);
+    public static <T> T panic(String why) {
+        return panic(why, null);
     }
 
     /**
      * will cause the execution to stop with an error if the given predicate is
      * true
      */
-    public static void panicIf(boolean predicate, String why) {
+    public static <T> T panicIf(boolean predicate, String why) {
         if (predicate) {
-            panic(why, null);
+            return panic(why, null);
         }
+
+        return null;
     }
 
     /**
@@ -446,7 +592,7 @@ public class Agt0DSL {
      * @param why
      * @param cause
      */
-    public static void panic(String why, Exception cause) {
+    public static <T> T panic(String why, Exception cause) {
         if (cause == null) {
             throw new PanicedAgentException(why);
         }

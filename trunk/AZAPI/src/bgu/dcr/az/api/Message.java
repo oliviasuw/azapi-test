@@ -21,7 +21,7 @@ public class Message implements Serializable {
      * the message not contains the recepient in its fields this field is a metadata of the message 
      * and it is accessable via this key
      */
-    public static final String RECEPIENT_METADATA = "RECEPIENT";
+    public static final String RECEPIENT_METADATA = "RECEPIENTS";
     /**
      * TODO - > it will be faster if it is a field or an argument to the mailer.. 
      */
@@ -100,6 +100,7 @@ public class Message implements Serializable {
             sb.append(a.toString()).append(", ");
         }
         return "[" + getName() + (args.length > 0 ? ": " + sb.deleteCharAt(sb.length() - 2).toString() + "]" : "]");
+        
     }
 
     /**

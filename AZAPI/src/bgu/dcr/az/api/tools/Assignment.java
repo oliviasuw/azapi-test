@@ -1,12 +1,9 @@
 package bgu.dcr.az.api.tools;
 
-import bgu.dcr.az.api.Agent;
-import bgu.dcr.az.api.DeepCopyable;
+import bgu.dcr.az.api.*;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
-import bgu.dcr.az.api.ImmutableProblem;
-import bgu.dcr.az.api.ProblemType;
 import bgu.dcr.az.api.ds.ImmutableSet;
 import bgu.dcr.az.api.exp.UnassignedVariableException;
 import java.io.Serializable;
@@ -29,6 +26,14 @@ public class Assignment implements Serializable, DeepCopyable {
     public Assignment() {
         this.assignment = new LinkedHashMap<Integer, Integer>();
 
+    }
+    
+    public Assignment(int... of){
+        this();
+        Agt0DSL.panicIf(of.length % 2 !=0 , "for every variable you must supply a value which means that the number of parameters must be even while it: " + of.length); 
+        for (int i=0; i<of.length; i+=2){
+            assign(of[i], of[i+1]);
+        }
     }
 
     private Assignment(Assignment a) {
@@ -309,7 +314,7 @@ public class Assignment implements Serializable, DeepCopyable {
         } else {
             Assignment ass = (Assignment) obj;
             for (Entry<Integer, Integer> e : assignment.entrySet()) {
-                if (ass.getAssignment(e.getKey()) != e.getValue()) {
+                if (!ass.isAssigned(e.getKey()) || ass.getAssignment(e.getKey()) != e.getValue()) {
                     return false;
                 }
             }

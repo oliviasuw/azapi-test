@@ -31,6 +31,7 @@ public class SendMediator {
      * @param agents
      */
     public void to(int... agents) {
+        msg.getMetadata().put(Message.RECEPIENT_METADATA, agents);
         for (int a : agents) {
             try {
                 mailer.send(msg, a, agentGroupKey);

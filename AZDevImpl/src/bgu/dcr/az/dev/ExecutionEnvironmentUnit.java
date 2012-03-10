@@ -114,7 +114,7 @@ public enum ExecutionEnvironmentUnit implements Experiment.ExperimentListener {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        UNIT.run(new File("exp.xml"), true, true);
+        UNIT.run(new File("exp.xml"), true, false);
     }
 
     public AlgorithmMetadata getRunningAlgorithm() {

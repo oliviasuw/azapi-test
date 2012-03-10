@@ -69,6 +69,10 @@ public class MessageCountStatisticCollector extends AbstractStatisticCollector<M
         return null;
     }
 
+    public long currentMessageCountOf(int agent){
+        return counts[agent];
+    }
+    
     @Override
     public void hookIn(Agent[] a, final Execution ex) {
         counts = new long[a.length];

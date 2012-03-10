@@ -23,6 +23,7 @@ import bgu.dcr.az.api.infra.Test.TestResult;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
 import bgu.dcr.az.api.pgen.Problem;
 import bgu.dcr.az.api.pgen.ProblemGenerator;
+import bgu.dcr.az.api.tmr.Timer;
 import bgu.dcr.az.impl.db.DatabaseUnit;
 import bgu.dcr.az.impl.pgen.MapProblem;
 import bgu.dcr.az.impl.stat.AbstractStatisticCollector;
@@ -79,6 +80,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
     private Experiment experiment; // the executing experiment
     private int currentProblemNumber = 0;
     private AlgorithmMetadata currentAlgorithm;
+    private Timer timer;
 
     public AbstractTest() {
     }
@@ -89,12 +91,37 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
     }
 
     @Override
+    public <T extends StatisticCollector> T getStatisticCollector(Class<T> type) {
+        for (StatisticCollector s : this.collectors) {
+            if (type == s.getClass()) {
+                return (T) s;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public int getLength() {
+        return getNumberOfExecutions() * getAlgorithms().size();
+    }
+
+    @Override
+    public List<String> getIncludedAlgorithmsInstanceNames() {
+        LinkedList<String> ret = new LinkedList<String>();
+        for (AlgorithmMetadata a : algorithms) {
+            ret.add(a.getInstanceName());
+        }
+
+        return ret;
+    }
+
+    @Override
+    public int getNumberOfExecutions() {
         if (tickSize == 0) {
             tickSize = 0.1f;
         }
         int perAlgorithm = (int) (((end - start) / tickSize) + 1.0) * repeatCount; //(int) Math.floor((((end - start) / tickSize ) + 1.0) * (double)repeatCount);
-        return perAlgorithm * getAlgorithms().size();
+        return perAlgorithm;
     }
 
     public void setExperiment(Experiment exp) {
@@ -151,6 +178,15 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
     @Configuration(name = "Algorithm", description = "add algorithm to be tested")
     public void addAlgorithm(AlgorithmMetadata alg) {
         algorithms.add(alg);
+    }
+
+    @Configuration(name="Timer", description="add timer to kill executions that exsided a time limit")
+    public void setTimer(Timer timer) {
+        this.timer = timer;
+    }
+
+    public Timer getTimer() {
+        return timer;
     }
 
     public Problem generateProblem(int number) {
@@ -284,6 +320,8 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
         Execution e = provideExecution(p, alg);
         try {
             e.setStatisticCollectors(collectors);
+            e.setTimer(timer);
+            
             fireNewExecution(e);
             e.run();
             ExecutionResult r = e.getResult();
@@ -297,7 +335,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Conf
                     return false;
                 }
             }
-            
+
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();

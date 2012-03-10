@@ -4,19 +4,14 @@
  */
 package bgu.dcr.az.impl;
 
-import bgu.dcr.az.api.ano.Configuration;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
-import bgu.dcr.az.api.infra.VariableMetadata;
-import bgu.dcr.az.api.pgen.ProblemGenerator;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  *
  * @author bennyl
  */
-@Register(name = "debug-info", visible=false)
+@Register(name = "debug-info")
 public class DebugInfo {
     @Variable(name="test-name", description="failing test name", defaultValue="unnamed")
     String testName = "";

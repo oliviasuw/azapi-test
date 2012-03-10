@@ -33,6 +33,13 @@ public abstract class AbstractMailer implements Mailer {
             q.releaseBlockedAgent();
         }
     }
+
+    @Override
+    public void releaseAllBlockingAgents() {
+        for (String mailGroup : mailBoxes.keySet()){
+            releaseAllBlockingAgents(mailGroup);
+        }
+    }
     
     protected MessageQueue[] takeQueues(String groupKey) {
         try {

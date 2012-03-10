@@ -13,6 +13,7 @@ import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Test;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
 import bgu.dcr.az.api.pgen.Problem;
+import bgu.dcr.az.api.tmr.Timer;
 import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.api.tools.IdleDetector;
 import bgu.dcr.az.impl.AlgorithmMetadata;
@@ -44,7 +45,6 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private Mailer mailer; //the mailer object used by this execution
     private boolean shuttingdown; //this variable is used to check that the execution is doing the process of shuting down only once.
     private ExecutionResult result = new ExecutionResult(); //the final execution result
-    //private ExecutionResult partialResult = new ExecutionResult(); // result object that is collected during the execution time
     private AlgorithmMetadata algorithmMetadata; //the executed algorithm metadata
     private IdleDetector idleDetector; //if this execution need an idle detector then this field will hold it
     private ExecutorService executorService; // this is the thread pool that this execution use
@@ -57,7 +57,8 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private Multimap<String, ReportHook> reportHooks = HashMultimap.create();//list of report hook listeners
     private List<TerminationHook> terminationHooks = new LinkedList<TerminationHook>();
     private boolean idleDetectorNeeded = false;//hard set for the execution to use idle detection
-
+    private Timer timer = null;
+    
     /**
      *
      */
@@ -71,6 +72,24 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         this.experiment = exp;
     }
 
+    @Override
+    public void setTimer(Timer timer) {
+        this.timer = timer;
+    }
+
+    @Override
+    public boolean haveTimeLeft() {
+        if (timer == null) return true;
+        boolean haveTime = timer.haveTimeLeft();
+        if (! haveTime){
+            result.setEndedWithTimeout();
+            getMailer().releaseAllBlockingAgents();
+            return false;
+        }else {
+            return true;
+        }
+    }
+    
     @Override
     public void hookIn(TerminationHook hook) {
         terminationHooks.add(hook);
@@ -277,6 +296,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
             for (StatisticCollector sc : statisticCollectors) {
                 sc.hookIn(agents, this);
             }
+            if (timer != null) timer.start();
             startExecution();
         } finally {
             finish();

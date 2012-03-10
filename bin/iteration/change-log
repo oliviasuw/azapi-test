@@ -1,3 +1,6 @@
+quick fix 18
+- fix bug #55: error when using connected-dcop with max-cost = 1
+
 quick fix 17
 - several bugs solved
 - added new module: timer, using this module you can limit the time of an execution (the execution will get dropped if the time was reached)

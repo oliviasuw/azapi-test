@@ -15,9 +15,12 @@ public class ExecutionResult implements DeepCopyable{
 
     private Assignment finalAssignment = null;
     private Exception crush = null;
+    private boolean timeout = false;
 
     @Override
     public String toString() {
+        if (timeout) return "Timeout!";
+        
         if (crush == null){
             return "Submitted Assignment: " + finalAssignment;
         }else {
@@ -31,6 +34,22 @@ public class ExecutionResult implements DeepCopyable{
      */
     public ExecutionResult(){        
     }
+    
+    /**
+     * indicate that the execution was ended with timeout
+     */
+    public void setEndedWithTimeout(){
+        this.timeout = true;
+    }
+
+    /**
+     * @return true if the execution ended with timeout 
+     */
+    public boolean isExecutionTimedout() {
+        return timeout;
+    }
+    
+    
     
     /**
      * indicate solution result
@@ -74,6 +93,7 @@ public class ExecutionResult implements DeepCopyable{
         ExecutionResult ret = new ExecutionResult();
         ret.crush = this.crush;
         ret.finalAssignment = (this.finalAssignment == null? null: this.finalAssignment.copy());
+        ret.timeout = timeout;
         return ret;
     }
 

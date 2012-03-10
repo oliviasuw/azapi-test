@@ -26,7 +26,14 @@ public interface Test extends Process {
     
     void removeListener(TestListener l);
     
+    /**
+     * @return number of executions * number of algorithms in this test
+     */
     int getLength();
+
+    int getNumberOfExecutions();
+    
+    List<String> getIncludedAlgorithmsInstanceNames();
     
     /**
      * @return the name of this test
@@ -40,11 +47,30 @@ public interface Test extends Process {
      * @return the test seed 
      */
     long getSeed();
+    /**
+     * @return the variable name that this test is executing
+     */
     String getRunningVarName();
+    /**
+     * @return the starting value of var
+     */
     float getVarStart();
+    /**
+     * @return the ending value of var
+     */
     float getVarEnd();
+    /**
+     * @return the amount to add to the run var after the repeat count
+     */
     float getTickSize();
+    /**
+     * @return how many executions will be under each run var value
+     */
     int getRepeatCount();
+    
+    /**
+     * @return the current run var value
+     */
     double getCurrentVarValue();
 
     /**
@@ -68,6 +94,13 @@ public interface Test extends Process {
      * @return list of all the registered statistics analayzers
      */
     List<StatisticCollector> getStatisticCollectors();
+    
+    /**
+     * return statistic collector for the given type
+     * @param type the class of the statistic collector
+     * @return the statistic collector if it is loaded or null if it not.
+     */
+    <T extends StatisticCollector> T getStatisticCollector(Class<T> type);
     
     /**
      * return the test result after execution

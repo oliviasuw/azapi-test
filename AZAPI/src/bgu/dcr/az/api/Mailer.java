@@ -38,7 +38,6 @@ public interface Mailer {
 
     /**
      * remove agent with the given id from the registered list, 
-     * if the mailer callected statistics for this agent those statistics should not be removed
      * @param id 
      */
     public void unRegister(int id, String groupKey);
@@ -48,7 +47,22 @@ public interface Mailer {
      */
     public boolean isAllMailBoxesAreEmpty(String groupKey);
 
+    /**
+     * set the execution that this mailer is responsible for
+     * @param aThis 
+     */
     public void setExecution(Execution aThis);
     
+    /**
+     * release all blocking agents from a specific mail group
+     * @param mailGroup 
+     */
     public void releaseAllBlockingAgents(String mailGroup);
+
+    /**
+     * release all blocking agents from all mail groups 
+     * this method only make sense if you are trying to terminate the whole execution
+     * as it may harm the integrity of its results
+     */
+    public void releaseAllBlockingAgents();
 }

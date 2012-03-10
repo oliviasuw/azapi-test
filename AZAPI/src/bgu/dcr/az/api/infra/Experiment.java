@@ -27,7 +27,7 @@ public interface Experiment extends Process {
     ExperimentResult getResult();
 
     void addListener(ExperimentListener l);
-
+    
     void removeListener(ExperimentListener l);
 
     /**

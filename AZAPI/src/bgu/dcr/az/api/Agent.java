@@ -11,6 +11,7 @@ import bgu.dcr.az.api.exp.RepeatedCallingException;
 import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.VariableMetadata;
 import bgu.dcr.az.api.tools.Assignment;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -102,9 +103,9 @@ public abstract class Agent extends Agt0DSL {
     public Agent() {
         this.id = -1;
         this.exec = null;
-        beforeMessageSentHooks = new LinkedList<Hooks.BeforeMessageSentHook>();
-        beforeMessageProcessingHooks = new LinkedList<Hooks.BeforeMessageProcessingHook>();
-        beforeCallingFinishHooks = new LinkedList<Hooks.BeforeCallingFinishHook>();
+        beforeMessageSentHooks = new ArrayList<Hooks.BeforeMessageSentHook>();
+        beforeMessageProcessingHooks = new ArrayList<Hooks.BeforeMessageProcessingHook>();
+        beforeCallingFinishHooks = new ArrayList<Hooks.BeforeCallingFinishHook>();
         this.pops = new PlatformOps();
         final Algorithm algAnnotation = getClass().getAnnotation(Algorithm.class);
         if (algAnnotation != null) {
@@ -314,8 +315,6 @@ public abstract class Agent extends Agt0DSL {
      */
     @Deprecated
     protected void finishWithAccumulationOfSubmitedPartialAssignments() {
-        //finish();
-        //terminate();
         finish(pops.getExecution().getResult().getAssignment());
     }
 
@@ -617,6 +616,16 @@ public abstract class Agent extends Agt0DSL {
         private Map metadata = new HashMap();
         private String mailGroupKey = Agent.this.getClass().getName(); // The Mail Group Key  - when sending mail it will be recieved only by the relevant group
 
+        /**
+         * used especially in nested agents - where you want to copy all the hooks into the nested agent.
+         * @param b the agent to copy this agent hooks into
+         */
+        public void copyHooksTo(Agent b){
+            b.beforeCallingFinishHooks = beforeCallingFinishHooks;
+            b.beforeMessageProcessingHooks = beforeMessageProcessingHooks;
+            b.beforeMessageSentHooks = beforeMessageSentHooks;
+        }
+        
         /**
          * attach an execution to this agent - this execution needs to already
          * contains global problem

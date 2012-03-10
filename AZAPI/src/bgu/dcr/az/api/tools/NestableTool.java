@@ -21,7 +21,6 @@ public abstract class NestableTool {
     private int finalAssignment = Integer.MIN_VALUE;
     private boolean hasAssignment = false;
 
- 
     /**
      * flag the nested agent to be started - it will only start after the current
      * message handling ends (or if you are using it from within the start
@@ -103,8 +102,10 @@ public abstract class NestableTool {
                     public void doContinue() {
                         final Assignment assignment = exec.getResult().getAssignment();
                         if (assignment != null) {
-                            finalAssignment = assignment.getAssignment(callingAgent.getId());
-                            hasAssignment = true;
+                            if (assignment.isAssigned(callingAgent.getId())) {
+                                finalAssignment = assignment.getAssignment(callingAgent.getId());
+                                hasAssignment = true;
+                            }
                         }
                         c.doContinue();
                     }
@@ -116,12 +117,14 @@ public abstract class NestableTool {
         SimpleAgent nested = createNestedAgent();
         System.out.println("Calculating - transforming from " + callingAgent.getClass().getSimpleName() + " to " + nested.getClass().getSimpleName());
         final PlatformOps nestedOps = Agent.PlatformOperationsExtractor.extract(nested);
+        final PlatformOps originalOps = Agent.PlatformOperationsExtractor.extract(callingAgent);
 
         nestedOps.setExecution(exec);
         if (mailGroup != null) {
             nestedOps.setMailGroupKey(mailGroup);
         }
         nestedOps.setId(callingAgent.getId());
+        originalOps.copyHooksTo(nested);
 
         runner.nest(callingAgent.getId(), nested, ret);
         return ret;
@@ -129,11 +132,21 @@ public abstract class NestableTool {
 
     protected abstract SimpleAgent createNestedAgent();
 
+    /**
+     * @return the assignment that the nested agent exit with, before using the value of this method check that the 
+     * agent was actually exit with an assignment using the method {@link hasAssignment}
+     */
     public int getFinalAssignment() {
         return this.finalAssignment;
     }
 
-    public boolean isHasAssignment() {
+    /**
+     * @return true if the nested agent exit with an assignment by any of the following methods:
+     * * call finish(int)
+     * * call finish(cpa) and the agent has an assignment in that cpa
+     * * submit some assignment during its execution and then call finish() 
+     */
+    public boolean hasAssignment() {
         return hasAssignment;
     }
 }

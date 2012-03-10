@@ -12,6 +12,7 @@ import bgu.dcr.az.api.Mailer;
 import bgu.dcr.az.api.pgen.Problem;
 import bgu.dcr.az.api.SystemClock;
 import bgu.dcr.az.api.infra.stat.StatisticCollector;
+import bgu.dcr.az.api.tmr.Timer;
 import bgu.dcr.az.api.tools.Assignment;
 import java.util.List;
 
@@ -92,4 +93,14 @@ public interface Execution extends Process {
      * @return the agents that executed
      */
     Agent[] getAgents();
+
+    public void setTimer(Timer timer);
+    
+    /**
+     * should be called by the agent runners *after* each message handling
+     * in the case of a timeout this method will not only return true but also instruct the mailer to free all blocking 
+     * agents so that they will be able to check for timeout too, the method set the result of the execution to reflect that there was a timeout,
+     * if this method returnes true then the agent runner should return (no need to do anything special - just stop running)
+     */
+    public boolean haveTimeLeft();
 }

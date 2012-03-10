@@ -5,6 +5,7 @@
 package bgu.dcr.az.api;
 
 import bgu.dcr.az.api.agt.SimpleAgent;
+import bgu.dcr.az.api.tmr.Timer;
 
 /**
  *
@@ -38,4 +39,5 @@ public interface AgentRunner extends Runnable {
      * @throws InterruptedException 
      */
     public void join() throws InterruptedException;
+
 }

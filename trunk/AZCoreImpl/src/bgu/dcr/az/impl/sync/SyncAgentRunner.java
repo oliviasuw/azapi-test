@@ -68,6 +68,7 @@ public class SyncAgentRunner implements AgentRunner {
         try {
             long prevTime = -1;
             while (!Thread.currentThread().isInterrupted() && !allFinished) {
+                if (!exec.haveTimeLeft()) return;//handle timeout
                 long currentTime = clock.time();
                 if (prevTime != currentTime) { //if the clock stop working then it is closed
                     prevTime = currentTime;

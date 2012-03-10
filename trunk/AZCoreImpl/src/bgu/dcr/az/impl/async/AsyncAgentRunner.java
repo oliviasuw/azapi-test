@@ -7,6 +7,7 @@ import bgu.dcr.az.api.ContinuationMediator;
 import bgu.dcr.az.api.Hooks.BeforeMessageProcessingHook;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.agt.SimpleAgent;
+import bgu.dcr.az.api.tmr.Timer;
 import bgu.dcr.az.api.tools.IdleDetector;
 import bgu.dcr.az.impl.infra.AbstractExecution;
 import java.util.LinkedList;
@@ -31,6 +32,7 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
     private AbstractExecution exec;
     private Semaphore idleDetectionLock = new Semaphore(1);
     private boolean useIdleDetector; //see note about using idle detector within nested agents in AgentRunner.nest
+    
     /**
      * used for the join method -> using a semaphore means that we are only
      * allowing 1 joining thread, this is the case currently but if we will want
@@ -76,6 +78,10 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
                     while (!currentExecutedAgent.isFinished() && !Thread.currentThread().isInterrupted()) {
                         performIdleDetection();
                         currentExecutedAgent.processNextMessage();
+                        if (!exec.haveTimeLeft()) {
+                            System.out.println("[" + Agent.PlatformOperationsExtractor.extract(currentExecutedAgent).getMailGroupKey() + "] " + currentExecutedAgent.getId() + " Interupted due to timeout - Terminating.");
+                            return;
+                        };
                     }
                 } catch (InterruptedException ex) {
                     cthread.interrupt(); //REFLAGING THE CURRENT THREAD.
@@ -200,4 +206,5 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
             });
         }
     }
+
 }

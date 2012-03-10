@@ -16,7 +16,7 @@ import bgu.dcr.az.api.infra.stat.VisualModel;
 import bgu.dcr.az.api.infra.stat.vmod.LineVisualModel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -97,6 +97,10 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
         lastKnownCC[a.getId()] = a.getNumberOfConstraintChecks();
         nccc[a.getId()] = nccc[a.getId()] + lastKnownCC[a.getId()] - last;
     }
+    
+    public long currentNcccOf(int agent){
+        return nccc[agent];
+    }
 
     public static class NCCCRecord extends DBRecord {
 
@@ -113,4 +117,5 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
             return "NCCC";
         }
     }
+    
 }

@@ -46,6 +46,10 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
         return null;
     }
 
+    public long currentNcscOf(int agent){
+        return ncsc[agent];
+    }
+    
     @Override
     public void hookIn(final Agent[] agents, Execution ex) {
         System.out.println("NCSC Statistic Collector registered");

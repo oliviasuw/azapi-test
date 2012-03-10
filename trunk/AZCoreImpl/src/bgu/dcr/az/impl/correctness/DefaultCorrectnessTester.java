@@ -20,6 +20,10 @@ public class DefaultCorrectnessTester extends AbstractCorrectnessTester {
 
     @Override
     public CorrectnessTestResult test(Execution exec, ExecutionResult result) {
+        if (result.isExecutionTimedout()){
+            return new CorrectnessTestResult(null, true);
+        }
+        
         Assignment ass;
         final Problem globalProblem = exec.getGlobalProblem();
         Status stat;

@@ -12,6 +12,7 @@ import bgu.dcr.az.api.infra.Execution;
 import bgu.dcr.az.api.infra.Test.TestResult;
 import bgu.dcr.az.api.infra.Experiment;
 import bgu.dcr.az.api.infra.Test;
+import bgu.dcr.az.api.tmr.Timer;
 import bgu.dcr.az.impl.db.DatabaseUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +32,7 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
     private ExperimentResult result;
     private LinkedList<Experiment.ExperimentListener> listeners = new LinkedList<ExperimentListener>();
     private DebugInfo di;
-    private ExecutorService pool;
+    private ExecutorService pool; 
 
     @Override
     public void _run() {

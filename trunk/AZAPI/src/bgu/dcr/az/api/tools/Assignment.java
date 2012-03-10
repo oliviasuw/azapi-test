@@ -2,6 +2,7 @@ package bgu.dcr.az.api.tools;
 
 import bgu.dcr.az.api.*;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 
 import bgu.dcr.az.api.ds.ImmutableSet;
@@ -270,10 +271,19 @@ public class Assignment implements Serializable, DeepCopyable {
     }
 
     /**
-     * @return the assignmed variables
+     * @return the assigned variables in this assignment
      */
     public ImmutableSet<Integer> assignedVariables() {
         return new ImmutableSet<Integer>(assignment.keySet());
+    }
+    
+    /**
+     * @return the unassigned variables in this assignemt - same as calling 
+     */
+    public ImmutableSet<Integer> unassignedVariables(ImmutableProblem p) {
+        List<Integer> all = Agt0DSL.range(0, p.getNumberOfVariables()-1);
+        all.removeAll(assignment.keySet());
+        return new ImmutableSet<Integer>(all);
     }
 
     /**
@@ -292,6 +302,8 @@ public class Assignment implements Serializable, DeepCopyable {
      * @return
      */
     public boolean isConsistentWith(int var, int val, ImmutableProblem p) {
+        if (!isConsistent(p)) return false;
+        
         for (Entry<Integer, Integer> e : assignment.entrySet()) {
             int var2 = e.getKey();
             int val2 = e.getValue();

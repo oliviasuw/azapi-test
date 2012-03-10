@@ -21,12 +21,14 @@ public class Agt0DSL {
 
     private static final Pattern nummericPattern = Pattern.compile("[-+]?\\d+(\\.\\d*)?$");
     private static final Pattern integericPattern = Pattern.compile("[-+]?\\d+$");
-    private static Random rnd = new Random(42);
+    private Random rnd = new Random(42);
 
     /**
      * returns a collection of numbers in the range of start to end (includes
      * start and end)
      *
+     * Example: range(0,7) => [0,1,2,3,4,5,6,7]
+     * 
      * @param start
      * @param end
      * @return
@@ -41,8 +43,84 @@ public class Agt0DSL {
         fillRange(ret, start, end);
         return ret;
     }
+    
+    /**
+     * generates a random number that is bigger or equal to min and smaller or equal to max
+     * @param min
+     * @param max
+     * @return 
+     */
+    public int randomInteger(int min, int max){
+        if (max <= min) return min;
+        return rnd.nextInt(max-min) + min;
+    }
 
-    public static void randomize(long seed) {
+    /**
+     * generates a random number that is bigger or equal to min and smaller or equal to max
+     * @param min
+     * @param max
+     * @return 
+     */
+    public double randomDouble(double min, double max){
+        if (max <= min) return min;
+        return rnd.nextDouble() * (max-min) + min;
+    }
+        
+    /**
+     * generates a random number that is bigger or equal to min and smaller or equal to max
+     * @param min
+     * @param max
+     * @return 
+     */
+    public float randomFloat(float min, float max){
+        if (max <= min) return min;
+        return rnd.nextFloat() * (max-min) + min;
+    }
+    
+    /**
+     * generates a random number that is bigger or equal to min and smaller or equal to max
+     * @param min
+     * @param max
+     * @return 
+     */
+    public long randomLong(long min, long max){
+        if (max <= min) return min;
+        return abs(rnd.nextLong()) % (max-min) + min;
+    }
+    
+    /**
+     * @param num
+     * @return the absolute value of num
+     */
+    public long abs(long num){
+        return Math.abs(num);
+    }
+    
+    /**
+     * @param num
+     * @return the absolute value of num
+     */
+    public int abs(int num){
+        return Math.abs(num);
+    }
+    
+    /**
+     * @param num
+     * @return the absolute value of num
+     */
+    public float abs(float num){
+        return Math.abs(num);
+    }
+    
+    /**
+     * @param num
+     * @return the absolute value of num
+     */
+    public double abs(double num){
+        return Math.abs(num);
+    }
+    
+    public void randomize(long seed) {
         rnd = new Random(seed);
     }
 
@@ -100,6 +178,21 @@ public class Agt0DSL {
     }
 
     /**
+     * concatanate two arrays and return a new array that contain both their element 
+     * @param <T>
+     * @param left
+     * @param right
+     * @return 
+     */
+    public static <T> T[] concatanate(T[] left, T... right){
+        int nsize = left.length + right.length;
+        T[] a = (T[])java.lang.reflect.Array.newInstance(left.getClass().getComponentType(), nsize);
+        System.arraycopy(left, 0, a, 0, left.length);
+        System.arraycopy(right, 0, a, left.length, right.length);
+        return a;
+    }
+    
+    /**
      * perform equals on obj1 and obj2 but take null into consideration
      *
      * @param obj1
@@ -107,7 +200,7 @@ public class Agt0DSL {
      * @return
      */
     public static boolean eq(Object obj1, Object obj2) {
-        if (obj1 == null && obj2 == null) {
+        if (obj1 ==  obj2) {
             return true;
         }
         if (obj1 == null || obj2 == null) {
@@ -219,13 +312,13 @@ public class Agt0DSL {
         return copy;
     }
 
-    public static <T> T[] shuffle(T[] a) {
+    public <T> T[] shuffle(T[] a) {
         T[] copy = deepArrayCopy(a);
         _shuffle(copy);
         return copy;
     }
 
-    public static int[] shuffle(int[] a) {
+    public int[] shuffle(int[] a) {
         int[] copy = new int[a.length];
         System.arraycopy(a, 0, copy, 0, a.length);
 
@@ -239,7 +332,7 @@ public class Agt0DSL {
         return copy;
     }
 
-    private static <T> void _shuffle(T[] a) {
+    private <T> void _shuffle(T[] a) {
         int n = a.length;
         rnd.nextInt();
         for (int i = 0; i < n; i++) {
@@ -320,7 +413,7 @@ public class Agt0DSL {
 
     /**
      * if sum is possitive - return from without the first 'sum' chars if is
-     * negative return only the last 'sum' chars of 'from'
+     * negative return only the last 'sum' chars of 'from' - similar to the lisp method
      *
      * @param from
      * @param sum
@@ -336,7 +429,7 @@ public class Agt0DSL {
 
     /**
      * if sum is positive: return the first $sum letters from $from if sum is
-     * negative: return all chars from $from but the last $sum
+     * negative: return all chars from $from but the last $sum - similar to the lisp method.
      *
      * @param from
      * @param sum
@@ -382,7 +475,8 @@ public class Agt0DSL {
      * @param who
      * @param a
      * @param b
-     * @return true if $who is between $a and $b: $a <= $who <= $b.
+     * @return true if $who is between $a and $b.
+     * or in other words: $a <= $who <= $b.
      */
     public static boolean between(int who, int a, int b) {
         return who >= a && who <= b;
@@ -440,20 +534,6 @@ public class Agt0DSL {
         return args[min];
     }
 
-//    /**
-//     * n-ary max function
-//     * @param <T>
-//     * @param args
-//     * @return
-//     */
-//    public static <T extends Number> T max(T... args) {
-//        int min = 0;
-//        for (int i = 1; i < args.length; i++) {
-//            min = (args[min].doubleValue() < args[i].doubleValue() ? i : min);
-//        }
-//
-//        return args[min];
-//    }
     /**
      * n-ary max function
      *
@@ -515,8 +595,10 @@ public class Agt0DSL {
      * trick to throw checked exception in uncheck context - do not use unless
      * you know what you are doing or you just dont care about this exception
      *
+     * @deprecated too riskey to use!
      * @param e
      */
+    @Deprecated
     public static void throwUncheked(Throwable e) {
         Agt0DSL.<RuntimeException>throwAny(e);
     }
@@ -533,7 +615,7 @@ public class Agt0DSL {
      * @param c
      * @return
      */
-    public static <T> T random(List<T> c) {
+    public <T> T random(List<T> c) {
         if (c.isEmpty()) {
             return null;
         }
@@ -547,7 +629,7 @@ public class Agt0DSL {
      * @param c
      * @return
      */
-    public static <T> T random(Set<T> c) {
+    public <T> T random(Set<T> c) {
         return (T) random(c.toArray());
     }
 
@@ -558,7 +640,7 @@ public class Agt0DSL {
      * @param c
      * @return
      */
-    public static <T> T random(T[] c) {
+    public <T> T random(T[] c) {
         if (c.length == 0) {
             return null;
         }
@@ -571,19 +653,18 @@ public class Agt0DSL {
      * @param why
      */
     public static <T> T panic(String why) {
-        return panic(why, null);
+        panic(why, null);
+        return null; //no matter what will be returned here
     }
 
     /**
      * will cause the execution to stop with an error if the given predicate is
      * true
      */
-    public static <T> T panicIf(boolean predicate, String why) {
+    public static void panicIf(boolean predicate, String why) {
         if (predicate) {
-            return panic(why, null);
+            panic(why, null);
         }
-
-        return null;
     }
 
     /**

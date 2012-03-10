@@ -19,5 +19,5 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Register {
     String name();
-    boolean visible() default true;
+    String[] dependsOn() default {};
 }

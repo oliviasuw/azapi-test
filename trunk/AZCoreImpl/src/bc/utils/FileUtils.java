@@ -31,7 +31,18 @@ import java.util.zip.ZipFile;
  */
 public class FileUtils {
 
-     public static void copy(String source, String destination) throws FileNotFoundException, IOException {
+    public static void ensureDirectoryExists(String path) {
+        File dir = new File(path);
+        if (dir.exists() && !dir.isDirectory()) {
+            throw new UnsupportedOperationException("cannot make file into a directory - '" + path + "'");
+        }
+        
+        if (!dir.exists()){
+            dir.mkdirs();
+        }
+    }
+
+    public static void copy(String source, String destination) throws FileNotFoundException, IOException {
         File s = new File(source);
         File d = new File(destination);
 
@@ -165,56 +176,57 @@ public class FileUtils {
      * @param is
      * @param to 
      */
-    public static void dump(InputStream is, File to) throws IOException{
+    public static void dump(InputStream is, File to) throws IOException {
         FileOutputStream fos = new FileOutputStream(to);
         byte[] r = new byte[1024];
         int size;
-        while ((size = is.read(r)) > 0){
+        while ((size = is.read(r)) > 0) {
             fos.write(r, 0, size);
-        } 
-        
+        }
+
         fos.close();
     }
-    
+
     /**
      * copying a resource from within the jar to external file 
      * @param pathToResource - relative to the given class
      * @param relatedClass - a class to find start finding the resource from
      * @param dest - where to put the resource
      */
-    public static void copyResourceFile(String pathToResource, Class relatedClass, File dest) throws IOException{
+    public static void copyResourceFile(String pathToResource, Class relatedClass, File dest) throws IOException {
         InputStream s = relatedClass.getResourceAsStream(pathToResource);
         dump(s, dest);
     }
-    
-    public static void extractZipFile(File zip, File destFolder) throws ZipException, IOException{
-        if (!destFolder.exists()) destFolder.mkdirs();
-        
+
+    public static void extractZipFile(File zip, File destFolder) throws ZipException, IOException {
+        if (!destFolder.exists()) {
+            destFolder.mkdirs();
+        }
+
         ZipFile zf = new ZipFile(zip);
         Enumeration<? extends ZipEntry> ents = zf.entries();
-        
-        while (ents.hasMoreElements()){
+
+        while (ents.hasMoreElements()) {
             ZipEntry e = ents.nextElement();
             final String path = destFolder.getAbsolutePath();
-            
+
             //this will assume the folders in the zip is allways stored before the files stored in them 
             if (e.isDirectory()) {
                 new File(path + "/" + e.getName()).mkdirs();
-            }else {
+            } else {
                 dump(zf.getInputStream(e), new File(path + "/" + e.getName()));
             }
         }
     }
-   
-    
-    public static void copy(File from, File to) throws IOException{
-        if (from.exists()){
+
+    public static void copy(File from, File to) throws IOException {
+        if (from.exists()) {
             byte[] all = new byte[32768];
             int read = -1;
             InputStream is = new FileInputStream(from);
             OutputStream os = new FileOutputStream(to);
 
-            while ((read = is.read(all)) > 0){
+            while ((read = is.read(all)) > 0) {
                 os.write(all, 0, read);
             }
 
@@ -223,8 +235,8 @@ public class FileUtils {
         }
     }
 
-    public static String nameWithoutExtention(File f){
-        return f.getName().substring(0,f.getName().lastIndexOf("."));
+    public static String nameWithoutExtention(File f) {
+        return f.getName().substring(0, f.getName().lastIndexOf("."));
     }
 
     public static boolean contentCompare(File f1, File f2) {
@@ -235,7 +247,9 @@ public class FileUtils {
 
             if (f1.exists() && f2.exists() && f1.isFile() && f2.isFile()) {
 
-                if (f1.length() != f2.length()) return false;
+                if (f1.length() != f2.length()) {
+                    return false;
+                }
 
                 br1 = new BufferedReader(new FileReader(f1));
                 br2 = new BufferedReader(new FileReader(f2));

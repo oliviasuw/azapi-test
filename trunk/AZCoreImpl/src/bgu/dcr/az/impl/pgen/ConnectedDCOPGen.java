@@ -41,7 +41,7 @@ public class ConnectedDCOPGen extends UnstructuredDCOPGen {
     private void connect(int var1, int var2, Problem p, Random rnd) {
         int val2 = rnd.nextInt(p.getDomainSize(var2));
         int val1 = rnd.nextInt(p.getDomainSize(var1));
-        int cost = rnd.nextInt() % super.maxCost + 1;
+        int cost = abs(rnd.nextInt()) % super.maxCost + 1;
         p.setConstraintCost(var1, val1, var2, val2, cost);
         p.setConstraintCost(var2, val2, var1, val1, cost);
     }

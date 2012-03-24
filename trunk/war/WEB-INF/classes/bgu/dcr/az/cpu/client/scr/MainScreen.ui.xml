@@ -1,0 +1,63 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.body {
+			background-color: rgb(51, 51, 51);
+			margin: 0px;
+			padding: 0px;
+			background: url("images/bg/dark_stripes.png") repeat;
+			border: none;
+		}
+		
+		.body table {
+			margin: 0px;
+			border: none;
+			border-spacing: 0px;
+		}
+		
+		.noSpace {
+			margin: 0px;
+			padding: 0px;
+		}
+		
+		.logo {
+			padding: 5px;
+		}
+		
+		.content {
+			border: 3px rgb(120,120,120) double;
+		}
+		
+		.contentWrapper {
+			padding-bottom: 5px;
+			padding-left: 5px;
+			padding-right: 10px;
+			padding-top: 5px;
+		}
+	</ui:style>
+	<g:HTMLPanel styleName="{style.body}" height="100%" width="100%">
+		<table height="100%" width="100%" cellspacing="0px">
+			<tr>
+				<td>
+					<g:Image url="images/logo2.png" styleName="{style.logo}" />
+				</td>
+			</tr>
+
+			<tr height="100%" width="100%">
+				<td height="100%" width="100%">
+					<table height="100%" width="100%" class="{style.contentWrapper}">
+						<tr height="100%" width="100%">
+							<td height="100%" width="100%">
+								<g:SimplePanel width="100%" height="100%"
+									ui:field="content" styleName="{style.content}" />
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+
+
+	</g:HTMLPanel>
+</ui:UiBinder> 

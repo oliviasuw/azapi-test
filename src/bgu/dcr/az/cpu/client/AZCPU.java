@@ -1,0 +1,54 @@
+package bgu.dcr.az.cpu.client;
+
+import bgu.dcr.az.cpu.client.scr.ManagmentScreen;
+import bgu.dcr.az.cpu.client.scr.MainScreen;
+
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.SimpleEventBus;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
+
+/**
+ * Entry point classes define <code>onModuleLoad()</code>.
+ */
+public class AZCPU implements EntryPoint {
+
+	private static AZCPU instance;
+	private static final CPUServiceAsync service = GWT.create(CPUService.class);
+	
+	private SimpleEventBus eventBus;
+	
+	public static AZCPU get() {
+		return instance;
+	}
+	
+	@Override
+	public void onModuleLoad() {
+		instance = this;
+		eventBus = new SimpleEventBus();
+		
+		MainScreen screen = new MainScreen();
+		makeFullPage(screen);
+		RootPanel.get().add(screen);
+		screen.setContent(new ManagmentScreen());
+		
+	}
+	
+	private void makeFullPage(final Widget w) {
+		w.setWidth("100%");
+		w.setHeight(Window.getClientHeight() + "px");
+		Window.addResizeHandler(new ResizeHandler() {
+			
+			@Override
+			public void onResize(ResizeEvent event) {
+				int height = event.getHeight();
+			    w.setHeight(height + "px");
+			}
+		});
+	}
+
+}

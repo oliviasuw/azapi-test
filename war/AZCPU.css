@@ -1,0 +1,35 @@
+/** Add css rules here for your application. */
+body {
+	margin: 0px !important;
+	padding: 0px;
+	height: 100%;
+}
+
+* {
+	padding: 0px;
+	margin: 0px;
+}
+
+html {
+	margin: 0px;
+	padding: 0px;
+	height:100%;
+}
+
+.gwt-TabPanelBottom {
+	height: 100%;
+}
+
+.gwt-PopupPanelGlass {
+	background-color: rgb(0, 0, 0) !important;
+}
+
+.gwt-Button {
+	font-size: 10px !important;
+	min-height: 15px;
+}
+.portlet {
+	padding: 3px;
+	border: 1px solid;
+	background-color: deeppink;
+}

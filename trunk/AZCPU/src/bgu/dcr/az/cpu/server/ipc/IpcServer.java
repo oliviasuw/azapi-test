@@ -1,27 +1,55 @@
 package bgu.dcr.az.cpu.server.ipc;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import bgu.dcr.az.cpu.server.exp.UncheckedIOException;
 
 import com.google.gwt.thirdparty.guava.common.collect.ImmutableList;
 
 public class IpcServer implements Runnable {
 
 	private boolean running = false;
-	private Map<String, > clients = new LinkedList<>();
-	private ReentrantReadWriteLock clientsLock = new ReentrantReadWriteLock();
+	private Map<String, ClientData> clients = new ConcurrentHashMap<>();
+	private int port = 7000;
+	private List<ServerListener> listeners = new LinkedList<>();
 
-	private void validate(String clientId) {
-		try {
-			clientsLock.readLock().lock();
-			if (!clients.contains(clientId))
-				throw new ClientNotConnectedException();
-		} finally {
-			clientsLock.readLock().unlock();
-		}
+	private static IpcServer server = null;
+
+	/**
+	 * @return the default server - notice that you must call {@link start}
+	 *         first
+	 */
+	public static IpcServer get() {
+		return server;
+	}
+
+	/**
+	 * start the default server and attach it with the given listener.
+	 * 
+	 * @param listener
+	 */
+	public static void start(ServerListener listener) {
+		if (server != null)
+			return;
+		server = new IpcServer();
+		server.addServerListener(listener);
+		new Thread(server).start();
+	}
+
+	private ClientData retreiveClient(String clientId) {
+		ClientData c = clients.get(clientId);
+		if (c == null)
+			throw new ClientNotConnectedException("client " + clientId
+					+ " is not connected");
+		return c;
 	}
 
 	/**
@@ -32,58 +60,35 @@ public class IpcServer implements Runnable {
 	 * @param clientId
 	 * @throws ClientNotConnectedException
 	 */
-	public void send(IpcMessage msg, String clientId){
-		validate(clientId);
-
+	public void send(IpcMessage msg, String clientId)
+			throws ClientNotConnectedException {
+		ClientData c = retreiveClient(clientId);
+		try {
+			c.out.writeObject(msg);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	/**
 	 * @return true if the server is running
 	 */
 	public boolean isServerRunning() {
-		return false;
+		return running;
 	}
 
 	/**
 	 * @return the port that this server is listening upon
 	 */
 	public int getListeningPort() {
-		return -1;
+		return port;
 	}
 
 	/**
 	 * @return immutable view of the connected clients
 	 */
 	public ImmutableList<String> getClientList() {
-		return null;
-	}
-
-	/**
-	 * same as {@link send} but also waiting for the client to response, this
-	 * method will block until the response will be received - notice that if
-	 * there is a server listener activated he will also be notified about the
-	 * response
-	 * 
-	 * @param msg
-	 * @param clientId
-	 * @throws ClientNotConnectedException
-	 * @return
-	 */
-	public IpcMessage sendAndWait(IpcMessage msg, String clientId)
-			throws ClientNotConnectedException {
-		return null;
-	}
-
-	/**
-	 * block until the given client will send a message
-	 * 
-	 * @param clientId
-	 * @return
-	 * @throws ClientNotConnectedException
-	 */
-	public IpcMessage nextMessageFrom(String clientId)
-			throws ClientNotConnectedException {
-		return null;
+		return ImmutableList.copyOf(clients.keySet());
 	}
 
 	/**
@@ -94,7 +99,7 @@ public class IpcServer implements Runnable {
 	 */
 	public void terminateClient(String clientId)
 			throws ClientNotConnectedException {
-
+		send(new IpcMessage.TerminationMessage(), clientId);
 	}
 
 	/**
@@ -102,7 +107,7 @@ public class IpcServer implements Runnable {
 	 * @return true if there is a client connected with the given name
 	 */
 	public boolean isClientConnected(String clientId) {
-		return false;
+		return clients.containsKey(clientId);
 	}
 
 	/**
@@ -111,7 +116,7 @@ public class IpcServer implements Runnable {
 	 * @param listener
 	 */
 	public void addServerListener(ServerListener listener) {
-
+		listeners.add(listener);
 	}
 
 	/**
@@ -120,6 +125,80 @@ public class IpcServer implements Runnable {
 	 * @param listener
 	 */
 	public void removeServerListener(ServerListener listener) {
+		listeners.add(listener);
+	}
+
+	@Override
+	public void run() {
+		try {
+			running = true;
+			for (ServerListener s : listeners)
+				s.onServerStart(this);
+
+			ServerSocket ss = new ServerSocket(port);
+			while (!Thread.currentThread().isInterrupted()) {
+				Socket s = ss.accept();
+				handleNewClient(s);
+			}
+
+		} catch (IOException e) {
+			for (ServerListener s : listeners)
+				s.onServerDie(this);
+		} finally {
+			running = false;
+		}
+	}
+
+	private void handleNewClient(final Socket s) {
+		new Thread() {
+			@Override
+			public void run() {
+				ClientData cdata = null;
+				try {
+					// first wait for client hello
+					cdata = new ClientData(s, "???");
+					IpcMessage.HelloMessage message = (IpcMessage.HelloMessage) cdata.in
+							.readObject();
+					cdata.clientId = message.clientId;
+					clients.put(cdata.clientId, cdata);
+
+					// notify client entrance
+					for (ServerListener l : listeners)
+						l.onNewClient(IpcServer.this, cdata.clientId);
+
+					while (!Thread.currentThread().isInterrupted()) {
+						IpcMessage msg = (IpcMessage) cdata.in.readObject();
+						for (ServerListener l : listeners) {
+							IpcMessage reply = l.onClientResponse(
+									IpcServer.this, cdata.clientId, msg);
+							if (reply != null) {
+								cdata.out.writeObject(reply);
+							}
+						}
+					}
+
+				} catch (Exception e) {
+					System.out.println("killing client "
+							+ (cdata != null ? cdata.clientId : "???")
+							+ " because of an error : " + e.getMessage() + " ("
+							+ e.getClass().getSimpleName() + ")");
+
+					// notify client disconnected
+					if (cdata != null)
+						for (ServerListener l : listeners)
+							l.onClientDisconnected(IpcServer.this,
+									cdata.clientId);
+
+					// killing the actual connection
+					try {
+						s.close();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+		}.start();
 
 	}
 
@@ -128,7 +207,7 @@ public class IpcServer implements Runnable {
 
 		void onClientDisconnected(IpcServer server, String clientId);
 
-		void onClientResponse(IpcServer server, String clientId,
+		IpcMessage onClientResponse(IpcServer server, String clientId,
 				IpcMessage response);
 
 		void onServerDie(IpcServer server);
@@ -136,9 +215,37 @@ public class IpcServer implements Runnable {
 		void onServerStart(IpcServer server);
 	}
 
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
+	public static abstract class ServerHandler implements ServerListener {
+		@Override
+		public void onClientDisconnected(IpcServer server, String clientId) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public IpcMessage onClientResponse(IpcServer server, String clientId,
+				IpcMessage response) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void onNewClient(IpcServer server, String clientId) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onServerDie(IpcServer server) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onServerStart(IpcServer server) {
+			// TODO Auto-generated method stub
+
+		}
 	}
 
 	public static class ClientNotConnectedException extends RuntimeException {
@@ -169,17 +276,19 @@ public class IpcServer implements Runnable {
 			// TODO Auto-generated constructor stub
 		}
 	}
-	
-	private static class ClientData{
+
+	private static class ClientData {
 		Socket sock;
 		ObjectInputStream in;
 		ObjectOutputStream out;
-		
-		public ClientData(Socket sock) {
+		String clientId;
+
+		public ClientData(Socket sock, String id) throws IOException {
 			this.sock = sock;
 			this.out = new ObjectOutputStream(sock.getOutputStream());
 			this.in = new ObjectInputStream(sock.getInputStream());
+			this.clientId = id;
 		}
-		
 	}
+
 }

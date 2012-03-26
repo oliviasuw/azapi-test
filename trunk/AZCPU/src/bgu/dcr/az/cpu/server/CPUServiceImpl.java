@@ -14,18 +14,19 @@
  *******************************************************************************/
 package bgu.dcr.az.cpu.server;
 
-import bgu.dcr.az.cpu.client.CPUService;
-import bgu.dcr.az.cpu.server.impl.CPUImpl;
+import java.util.List;
 
-import com.google.gwt.user.client.ui.Widget;
+import bgu.dcr.az.cpu.client.CPUService;
+import bgu.dcr.az.cpu.server.impl.CPUServer;
+import bgu.dcr.az.cpu.shared.AlgorithmData;
+
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class CPUServiceImpl extends RemoteServiceServlet implements CPUService {
 
 
 	@Override
-	public String bla() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<AlgorithmData> listAlgorithms() {
+		return CPUServer.get().listAlgorithms();
 	}
 }

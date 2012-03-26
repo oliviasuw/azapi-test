@@ -1,8 +1,5 @@
 package bgu.dcr.az.cpu.shared;
 
-import java.util.List;
-
-import org.reflections.Reflections;
 
 public class AlgorithmData {
 	
@@ -28,11 +25,9 @@ public class AlgorithmData {
 		return this.path;
 	}
 	
-	/**
-	 * @return all the available algorithms in the loaded experiment pack.
-	 */
-	public static List<AlgorithmData> list(){
-		return null;
-		//Reflections ref = new Reflections(arg0)
+	
+	@Override
+	public String toString() {
+		return "AlgorithmData [name=" + name + ", path=" + path + "]";
 	}
 }

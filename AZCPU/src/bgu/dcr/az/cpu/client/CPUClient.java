@@ -1,7 +1,16 @@
 package bgu.dcr.az.cpu.client;
 
-import bgu.dcr.az.cpu.client.scr.ManagmentScreen;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import bgu.dcr.az.cpu.client.scr.MainScreen;
+import bgu.dcr.az.cpu.client.scr.ManagmentScreen;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -15,17 +24,18 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class AZCPU implements EntryPoint {
+public class CPUClient implements EntryPoint {
 
-	private static AZCPU instance;
+	private static CPUClient instance;
 	private static final CPUServiceAsync service = GWT.create(CPUService.class);
 	
 	private SimpleEventBus eventBus;
 	
-	public static AZCPU get() {
+	public static CPUClient get() {
 		return instance;
 	}
 	
+		
 	@Override
 	public void onModuleLoad() {
 		instance = this;

@@ -22,7 +22,7 @@
 		
 	</ui:style>
 	<g:HTMLPanel>
-		<button class="{style.button}" vertical-align="middle" ui:field="button">
+		<button class="{style.button}" vertical-align="middle" >
 			<img style="vertical-align: middle" src="images/algorithm.png"
 				ui:field="image">
 				<span class="{style.text}" ui:field="text"> BUTTON </span>

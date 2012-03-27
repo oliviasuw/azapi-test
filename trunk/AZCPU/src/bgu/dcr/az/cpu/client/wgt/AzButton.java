@@ -19,8 +19,8 @@ public class AzButton extends Composite implements HasText {
 	SpanElement text;
 	@UiField
 	ImageElement image;
-	@UiField
-	Button button;
+//	@UiField
+//	Button button;
 
 	private static AzButtonUiBinder uiBinder = GWT
 			.create(AzButtonUiBinder.class);

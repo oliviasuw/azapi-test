@@ -1,0 +1,67 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p1="urn:import:bgu.dcr.az.cpu.client.wgt">
+	<ui:style>
+		.important {
+			font-weight: bold;
+		}
+		
+		.xmlTable {
+			background-color: rgb(220, 220, 220) !important;
+			width: 100%;
+			height: 100%;
+			color: Black;
+			padding-left: 5px;
+		}
+		
+		.xmlTable .xmlTitle {
+			height: 50px;
+			font-weight: bold;
+			font-size: 15px;
+			font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+		}
+		
+		.xmlTable .xmlBody {
+			vertical-align: top;
+			color: rgb(220, 220, 220);
+			background-color: rgb(51, 51, 51);
+			border: black 2px solid;
+		}
+		
+		.xmlTable .xmlButton {
+			border-top: 1px solid white;
+			padding-top: 5px;
+			height: 32px;
+			padding-bottom: 3px;
+		}
+		
+		
+		
+		
+	</ui:style>
+	<g:HTMLPanel width="600" height="450">
+		<table class="{style.xmlTable}">
+			<tr>
+				<td class="{style.xmlTitle}">
+					<img style="vertical-align: middle" src="images/xml.png">
+					<!-- class="{style.text}" -->
+						<span ui:field="title"> TITLE </span>
+					</img>
+				</td>
+			</tr>
+			<tr>
+				<td class="{style.xmlBody}">
+					<div>  <!-- class="{style.xmlListScroll}"> -->
+						<span ui:field="body"> BODY </span>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="{style.xmlButton}">
+					<p1:AzButton text="Close" src="images/close.png" ui:field="azButton" />
+				</td>
+			</tr>
+		</table>
+
+	</g:HTMLPanel>
+</ui:UiBinder> 

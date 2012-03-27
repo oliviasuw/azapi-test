@@ -21,6 +21,7 @@ public class IpcServer implements Runnable {
 	private int port = 7000;
 	private List<ServerListener> listeners = new LinkedList<>();
 
+
 	private static IpcServer server = null;
 
 	/**
@@ -29,6 +30,7 @@ public class IpcServer implements Runnable {
 	 */
 	public static IpcServer get() {
 		return server;
+
 	}
 
 	/**
@@ -285,8 +287,8 @@ public class IpcServer implements Runnable {
 
 		public ClientData(Socket sock, String id) throws IOException {
 			this.sock = sock;
-			this.out = new ObjectOutputStream(sock.getOutputStream());
-			this.in = new ObjectInputStream(sock.getInputStream());
+//			this.out = new ObjectOutputStream(sock.getOutputStream());
+//			this.in = new ObjectInputStream(sock.getInputStream());
 			this.clientId = id;
 		}
 	}

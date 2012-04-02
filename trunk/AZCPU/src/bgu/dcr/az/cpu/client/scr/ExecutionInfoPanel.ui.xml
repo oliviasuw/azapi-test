@@ -47,7 +47,8 @@
 				
 			<tr>
 				<td >
-					<span class="{style.progressBar}"> Progress Bar</span>
+					<p2:ProgressBar value="23"/>
+<!-- 					<span class="{style.progressBar}"> Progress Bar</span> -->
 				</td>			
 			</tr>
 			<tr height="10px"></tr>

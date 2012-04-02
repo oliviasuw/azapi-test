@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import bgu.dcr.az.cpu.client.scr.MainScreen;
-import bgu.dcr.az.cpu.client.scr.ManagmentScreen;
+import bgu.dcr.az.cpu.client.scr.ManagementScreen;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -44,7 +44,6 @@ public class CPUClient implements EntryPoint {
 		MainScreen screen = new MainScreen();
 		makeFullPage(screen);
 		RootPanel.get().add(screen);
-		screen.setContent(new ManagmentScreen());
 		
 	}
 	

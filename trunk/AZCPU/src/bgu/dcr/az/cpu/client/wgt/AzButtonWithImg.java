@@ -8,65 +8,31 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
 
-public class AzButton extends Composite implements HasText, HasClickHandlers {
+public class AzButtonWithImg extends Composite implements HasText, HasClickHandlers {
 
 	@UiField
 	SpanElement text;
 	@UiField
-	ButtonElement button;
+	ImageElement image;
 	@UiField
-	Style style;
+	ButtonElement button;
 
-	boolean pushButton = false;
-
+	
 	private static AzButtonUiBinder uiBinder = GWT
 			.create(AzButtonUiBinder.class);
 
-	interface AzButtonUiBinder extends UiBinder<Widget, AzButton> {
+	interface AzButtonUiBinder extends UiBinder<Widget, AzButtonWithImg> {
 	}
 
-	interface Style extends CssResource {
-		String active();
-	}
-
-	public AzButton() {
+	public AzButtonWithImg() {		
 		initWidget(uiBinder.createAndBindUi(this));
-		addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				if (pushButton) {
-					setPushed(!isPushed());
-				}
-			}
-		});
-	}
-
-	public void setPushed(boolean pushed){
-		if (pushed) {
-			button.addClassName(style.active());
-		}else {
-			button.removeClassName(style.active());
-		}
-	}
-	
-	public boolean isPushed(){
-		return button.getClassName().contains(style.active());
-	}
-	
-	public void setPushButton(boolean pushButton) {
-		this.pushButton = pushButton;
-	}
-
-	public boolean isPushButton() {
-		return pushButton;
+		
 	}
 	
 	@Override
@@ -79,9 +45,18 @@ public class AzButton extends Composite implements HasText, HasClickHandlers {
 		text.setInnerText(t);
 	}
 
+	public void setSrc(String src) {
+		image.setSrc(src);
+	}
+
+	public String getSrc() {
+		return image.getSrc();
+	}
+
+
 	@Override
 	public HandlerRegistration addClickHandler(ClickHandler handler) {
 		return addDomHandler(handler, ClickEvent.getType());
 	}
-
+	
 }

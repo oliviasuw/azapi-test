@@ -1,0 +1,76 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p1="urn:import:bgu.dcr.az.cpu.client.scr">
+	<ui:style>
+		.portlet {
+			margin: 3px;
+			
+			height: 100%;
+			border: 2px rgb(245,245,245) solid;
+			background-color: rgb(21, 21, 21);
+		}
+		
+		.caption td span {
+			color: white;
+			font-weight: bold;
+			font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+			font-size: 16px;
+		}
+		
+		.caption td {
+			padding: 5px;
+		}
+		
+		.caption {
+			background-color: rgb(55, 55, 55);
+		}
+		
+		.body table {
+			background-color: rgb(55, 55, 55);
+		}
+		
+		.body {
+			 			
+		}
+	</ui:style>
+	<g:HTMLPanel height="100%" width="100%" styleName="{style.body}">
+		<table height="100%" width="100%">
+
+			<tr class="{style.caption}">
+				<td colspan="2">
+					<span> Managment</span>
+				</td>
+			</tr>
+
+			<tr height="5px" /> 
+
+			<tr height="60%">
+				<td width="50%">
+					<g:SimplePanel styleName="{style.portlet}" height="100%" width="" >
+						<p1:AlgorithmsPanel width="100%" height="100%"/>
+					</g:SimplePanel>
+				</td>
+
+				<td width="50%">
+					<g:SimplePanel styleName="{style.portlet}" height="100%" width="" >
+						<p1:ExperimentsPanel width="100%" height="100%"/>
+					</g:SimplePanel>
+				</td>
+			</tr>
+
+			<tr height="6px">
+
+			</tr>
+
+			<tr height="40%">
+				<td height="100%" colspan="2">
+					<g:SimplePanel styleName="{style.portlet}" height="100%" >
+						<p1:MachineInfoPanel width="100%" height="100%"/>
+					</g:SimplePanel>
+				</td>
+			</tr>
+			
+			<tr height="6px"/>
+		</table>
+	</g:HTMLPanel>
+</ui:UiBinder> 

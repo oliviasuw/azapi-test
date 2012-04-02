@@ -7,7 +7,7 @@
 			font-weight: bold;
 		}
 		
-		.algoTable {
+		.execTable {
 			background-color: rgb(220,220,220) !important;
 			width: 100%;
 			height: 100%;
@@ -15,28 +15,28 @@
 			padding-left: 5px;
 		}
 		
-		.algoTable .algoTitle {
+		.execTable .execTitle {
 			height: 50px;
 			font-weight: bold;
 			font-size: 15px;
 			font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 		}
 		
-		.algoTable .algoList {
+		.execTable .execList {
 			vertical-align: top;
 			color: rgb(220,220,220);
 			background-color: rgb(51,51,51);
 			border: black 1px solid;
 		}
 		
-		.algoTable .algoList .algoListScroll {
+		.execTable .execList .execListScroll {
 			overflow: auto;
 			height: 100%;
 			padding-left: 5px;
 			padding-bottom: 5px;
 		}
 		
-		.algoTable .algoButtons {
+		.execTable .execButtons {
 			border-top: 1px solid white;
 			padding-top: 5px;
 			height: 32px;
@@ -45,23 +45,23 @@
 	</ui:style>
 	<g:HTMLPanel>
 
-		<table class="{style.algoTable}">
+		<table class="{style.execTable}">
 			<tr>
-				<td class="{style.algoTitle}">
-					<img style="vertical-align: middle" src="images/algorithm.png">
-						Known Algorithms
+				<td class="{style.execTitle}">
+					<img style="vertical-align: middle" src="images/exp.png">
+						Executions
 					</img>
 				</td>
 			</tr>
 			<tr>
-				<td class="{style.algoList}">
-					<div class="{style.algoListScroll}">
+				<td class="{style.execList}">
+					<div class="{style.execListScroll}">
 						<p1:CellList ui:field="cellList" />
 					</div>
 				</td>
 			</tr>
 			<tr>
-				<td class="{style.algoButtons}">
+				<td class="{style.execButtons}">
 					<p2:AzButtonWithImg text="Add" src="images/plus.png" ui:field="addButton" />
 					<p2:AzButtonWithImg text="Clear All" src="images/clearAll.png" ui:field="clearAllButton"/>
 				</td>

@@ -33,7 +33,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
 
-public class ExperimentsPanel extends Composite implements HasText {
+public class ExecutionsPanel extends Composite implements HasText {
 
 	private Command deleteCmd;
 	private Command executeCmd;
@@ -96,7 +96,7 @@ public class ExperimentsPanel extends Composite implements HasText {
 			}/* , GWT.<MyCellListResources> create(MyCellListResources.class) */);
 
 	interface ExperimentsPanelUiBinder extends
-			UiBinder<Widget, ExperimentsPanel> {
+			UiBinder<Widget, ExecutionsPanel> {
 	}
 	
 	
@@ -120,7 +120,7 @@ public class ExperimentsPanel extends Composite implements HasText {
 		xmlPopup.center();
 	}
 
-	public ExperimentsPanel() {
+	public ExecutionsPanel() {
 		initWidget(uiBinder.createAndBindUi(this));
 		initSelectionModel();
 		this.contextMenu = new PopupPanel(true);
@@ -132,7 +132,7 @@ public class ExperimentsPanel extends Composite implements HasText {
 		addHandlers();
 	}
 
-	public ExperimentsPanel(String firstName) {
+	public ExecutionsPanel(String firstName) {
 		initWidget(uiBinder.createAndBindUi(this));
 		initSelectionModel();
 		initCellList();

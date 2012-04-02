@@ -26,7 +26,7 @@
 			vertical-align: top;
 			color: rgb(220,220,220);
 			background-color: rgb(51,51,51);
-			border: black 2px solid;
+			border: black 1px solid;
 		}
 		
 		.algoTable .algoList .algoListScroll {
@@ -62,8 +62,8 @@
 			</tr>
 			<tr>
 				<td class="{style.algoButtons}">
-					<p2:AzButton text="Add" src="images/plus.png" ui:field="azButton" />
-					<p2:AzButton text="Clear All" src="images/clearAll.png" />
+					<p2:AzButtonWithImg text="Add" src="images/plus.png" ui:field="addButton" />
+					<p2:AzButtonWithImg text="Clear All" src="images/clearAll.png" ui:field="clearAllButton"/>
 				</td>
 			</tr>
 		</table>

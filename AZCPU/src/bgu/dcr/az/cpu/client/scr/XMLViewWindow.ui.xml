@@ -8,6 +8,7 @@
 		
 		.xmlTable {
 			background-color: rgb(220, 220, 220) !important;
+			border: none;
 			width: 100%;
 			height: 100%;
 			color: Black;
@@ -58,7 +59,8 @@
 			</tr>
 			<tr>
 				<td class="{style.xmlButton}">
-					<p1:AzButton text="Close" src="images/close.png" ui:field="azButton" />
+					<p1:AzButtonWithImg text="Execute" src="images/execute.png" ui:field="executeButton" />
+					<p1:AzButtonWithImg text="Cancel" src="images/newCancel.png" ui:field="cancelButton" />
 				</td>
 			</tr>
 		</table>

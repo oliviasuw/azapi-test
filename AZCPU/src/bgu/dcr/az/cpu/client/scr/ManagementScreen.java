@@ -11,15 +11,15 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ManagmentScreen extends Composite {
+public class ManagementScreen extends Composite {
 
 	private static Home2ScreenUiBinder uiBinder = GWT
 			.create(Home2ScreenUiBinder.class);
 
-	interface Home2ScreenUiBinder extends UiBinder<Widget, ManagmentScreen> {
+	interface Home2ScreenUiBinder extends UiBinder<Widget, ManagementScreen> {
 	}
 
-	public ManagmentScreen() {
+	public ManagementScreen() {
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 

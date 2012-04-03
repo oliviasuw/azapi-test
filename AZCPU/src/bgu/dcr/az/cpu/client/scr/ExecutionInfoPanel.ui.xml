@@ -2,86 +2,166 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p2="urn:import:bgu.dcr.az.cpu.client.wgt">
 	<ui:style>
-		.infoTable{
-			background-color: rgb(102,102,102) !important;
+		.infoTable {
+			background-color: rgb(220, 220, 220) !important;
+			width: 100%;
+			margin-left: 20px;
+			padding-left:5px;
+			padding-right:5px;
+		}
+		
+		.infoTable1 {
+			background-color: rgb(51, 51, 51) !important;
 			width: 100%;
 			height: 100%;
-			padding-left: 10px;
 			padding-right: 10px;
-			margin-left: 20px;
+			padding-left: 10px;
+			border: 1px solid black !important;
 		}
 		
-		.progress{
+		.title {
 			padding: 10px;
-			padding-left: 0px;
 			font-weight: bold;
+			color: white;
+			margin-left: 10px;
 		}
 		
-		.progressBar{
+		.progressBar {
 			width: 50%;
-			height: 7px;
+			height: 20px;
+			margin-top: 3px;
 			background-color: blue;
 			border: 1px black solid;
 		}
 		
-		.genInfo{
-			border-bottom: 1px rgb(245,245,245) solid;
+		.genInfo {
+			border-bottom: 1px rgb(245, 245, 245) solid;
 			padding: 5px;
-			margin: 10px;
+			width: auto;
+			color: white;
+			padding-left: 10px;
+			padding-bottom: 10px;
 		}
 		
 		.execButtons {
+			margin-left: 10px;
 			padding-top: 5px;
 			height: 32px;
 			padding-bottom: 3px;
 		}
 		
+		.explanation {
+			width: 250px !important;
+			border-bottom: 1px rgb(245, 245, 245) solid;
+			padding: 5px;
+			vertical-align: top;
+			padding-left: 20px;
+			padding-bottom: 10px;
+			color: rgb(210, 233, 255);
+		}
+		
+		.progressTable {
+			background-color: rgb(220, 220, 220) !important;
+			width: 100%;
+			height: 100%;
+			color: Black;
+			padding-left: 5px;
+			padding-right: 5px;
+		}
+		
+		.titleTable {
+			background-color: rgb(220, 220, 220);
+			width: 100%;
+			height: 50px;
+			font-weight: bold;
+			font-size: 15px;
+			font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+		}
+		
+		.progressTitle {
+			width: 100%;
+			padding-left: 10px;
+		}
 	</ui:style>
-	<g:HTMLPanel >
-		<table class="{style.infoTable}">
+	<g:HTMLPanel><div style="height:100%">
+		<table height="100%" class="{style.infoTable}">
+			<tr class="{style.titleTable}">
+				<td colspan="2">
+					<table class="{style.progressTable}">
+						<tr>
+							<td>
+								<img style="vertical-align: middle" src="images/algorithm.png"></img>
+							</td>
+							<td class="{style.progressTitle}">
+								<span ui:field="executionsProgress"> Progress: 51/240 Executions </span>
+								<br />
+								<div class="{style.progressBar}"> Progress Bar</div>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			
+			
+			<tr height="100%" ><td colspan="2" height="100%" >
+			
+			<table class="{style.infoTable1}" >
 			<tr>
-				<td class="{style.progress}">
-					<span ui:field="executionsProgress"> Progress: 51/240 Executions </span>
+				<td colspan="2" class="{style.title}">
+					<span> Execution Info </span>
 				</td>
 			</tr >
-				
 			<tr>
-				<td >
-					<p2:ProgressBar value="23"/>
-<!-- 					<span class="{style.progressBar}"> Progress Bar</span> -->
-				</td>			
-			</tr>
-			<tr height="10px"></tr>
-			<tr>
+				<td class="{style.explanation}">
+					Here you can see all the information
+					<br />
+					regarding the current running execution
+				</td>
 				<td class="{style.genInfo}">
 					<span ui:field="runningExecution"> Execution x:</span>
-					<br/>
+					<br />
 					<span ui:field="problemData"> Problem: ....</span>
-					<br/>
+					<br />
 					<span ui:field="runnnigAlgorithm"> ALgorithm: ...</span>
-					<br/>
-					<span ui:field="timeWorking"> Time Running: ...</span>				
+					<br />
+					<span ui:field="timeWorking"> Time Running: ...</span>
 				</td>
 			</tr>
 			<tr>
-				<td class="{style.progress}">
+				<td colspan="2" class="{style.title}">
 					<span> Execution Statistics </span>
 				</td>
-			</tr >
+			</tr>
 			<tr>
+				<td class="{style.explanation}">
+					Here you can see all the statistics
+					<br />
+					regarding the current running test
+				</td>
 				<td class="{style.genInfo}">
 					<span ui:field="runningTime"> Total running time:</span>
-					<br/>
-					<span ui:field="avgTime"> Avarage time per execution : ....</span>				
+					<br />
+					<span ui:field="avgTime"> Avarage time per execution : ....</span>
 				</td>
 			</tr>
-			<tr height="100%"></tr>
-			<tr>
-				<td class="{style.execButtons}">
-					<p2:AzButtonWithImg text="Stop" src="images/plus.png" ui:field="stopButton" />
-					<p2:AzButtonWithImg text="Results" src="images/clearAll.png" ui:field="ResultsButton"/>
-				</td>
-			</tr>
+			<tr height="100%" ><td height="100%"  colspan="2">
+				&nbsp;
+			</td></tr>
+			
 		</table>
+		
+		</td></tr>
+		<tr>
+				<td colspan="2" class="{style.execButtons}">
+					<p2:AzButtonWithImg text="Stop" src="images/stop.png"
+						ui:field="stopButton" />
+					<p2:AzButtonWithImg text="Download Results" src="images/result.png"
+						ui:field="ResultsButton" />
+				</td>
+			</tr>
+		
+		</table>
+		
+		</div>
 	</g:HTMLPanel>
 </ui:UiBinder> 

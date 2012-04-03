@@ -13,6 +13,7 @@
 			height: 100%;
 			color: Black;
 			padding-left: 5px;
+			padding-right: 5px; 
 		}
 		
 		.execTable .execTitle {
@@ -32,7 +33,7 @@
 		.execTable .execList .execListScroll {
 			overflow: auto;
 			height: 100%;
-			padding-left: 5px;
+			padding-left: 5px; 
 			padding-bottom: 5px;
 		}
 		
@@ -48,7 +49,7 @@
 		<table class="{style.execTable}">
 			<tr>
 				<td class="{style.execTitle}">
-					<img style="vertical-align: middle" src="images/exp.png">
+					<img style="vertical-align: middle" src="images/exec.png">
 						Executions
 					</img>
 				</td>

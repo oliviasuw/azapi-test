@@ -13,6 +13,7 @@
 			height: 100%;
 			color: Black;
 			padding-left: 5px;
+			padding-right: 5px;
 		}
 		
 		.algoTable .algoTitle {

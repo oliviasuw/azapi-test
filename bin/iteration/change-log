@@ -1,3 +1,9 @@
+quick fix 20
+- fix no idle detection on nested agents bug 
+
+quick fix 19
+- fix bug #56: negative costs on connected-dcop generated problems 
+
 quick fix 18
 - fix bug #55: error when using connected-dcop with max-cost = 1
 

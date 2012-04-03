@@ -58,9 +58,7 @@
 			margin:0px;
 			margin-right: 1px;
 			border: solid 2px rgb(91,91,91);
-			background: -webkit-gradient(linear, left top, left bottom, from(#f47a20), to(#faa51a));
-			background: -moz-linear-gradient(top,  #f47a20,  #faa51a);
-			filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#f47a20', endColorstr='#faa51a');
+			
 		}
 		
 		.rightButton button {

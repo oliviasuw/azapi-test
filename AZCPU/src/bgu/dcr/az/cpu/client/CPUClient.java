@@ -1,5 +1,8 @@
 package bgu.dcr.az.cpu.client;
 
+import gwtupload.client.SingleUploader;
+import gwtupload.client.IFileInput.FileInputType;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +46,11 @@ public class CPUClient implements EntryPoint {
 		
 		MainScreen screen = new MainScreen();
 		makeFullPage(screen);
-		RootPanel.get().add(screen);
+//		RootPanel.get().add(screen);
+//		
+		SingleUploader su = new SingleUploader(FileInputType.LABEL);
+		su.setTitle("upload");
+		RootPanel.get().add(su);
 		
 	}
 	

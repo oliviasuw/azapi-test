@@ -1,6 +1,7 @@
 package bgu.dcr.az.cpu.client.scr;
 
 import bgu.dcr.az.cpu.client.wgt.AzButtonWithImg;
+import bgu.dcr.az.cpu.client.wgt.XMLViewer;
 
 import com.gargoylesoftware.htmlunit.javascript.host.Window;
 import com.google.gwt.core.client.GWT;
@@ -14,6 +15,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.ScrollPanel;
 
 public class XMLViewWindow extends Composite {
 
@@ -25,7 +27,9 @@ public class XMLViewWindow extends Composite {
 	@UiField
 	SpanElement title;
 	@UiField
-	SpanElement body;
+	XMLViewer xmlv;
+//	@UiField ScrollPanel scroller;
+	//SpanElement body;
 
 	private static XMLViewWindowUiBinder uiBinder = GWT
 			.create(XMLViewWindowUiBinder.class);
@@ -56,7 +60,13 @@ public class XMLViewWindow extends Composite {
 				com.google.gwt.user.client.Window.alert("Executing");
 			}
 		});
-
+	}
+	
+	@Override
+	protected void onLoad() {
+		super.onLoad();
+		xmlv.setHeight("" + (popup.getElement().getClientHeight() - 108) + "px");
+		xmlv.setWidth("" + (popup.getElement().getClientWidth() - 20) + "px");
 	}
 
 	public String getTitle() {
@@ -71,11 +81,12 @@ public class XMLViewWindow extends Composite {
 
 	public String getBody() {
 		// TODO Auto-generated method stub
-		return body.getInnerText();
+		return xmlv.getXML();//body.getInnerText();
 	}
 
 	public void setBody(String b) {
-		body.setInnerText(b);
+		//body.setInnerText(b);
+		xmlv.setXML(b);
 
 	}
 

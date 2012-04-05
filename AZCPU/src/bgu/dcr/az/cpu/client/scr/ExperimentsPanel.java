@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import bgu.dcr.az.cpu.client.CPUClient;
 import bgu.dcr.az.cpu.client.wgt.AzButtonWithImg;
 import bgu.dcr.az.cpu.shared.AlgorithmData;
 import bgu.dcr.az.cpu.shared.ExperimentData;
@@ -22,6 +23,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasText;
@@ -66,8 +68,8 @@ public class ExperimentsPanel extends Composite implements HasText {
 				public void render(Context context, ExperimentData value,
 						SafeHtmlBuilder sb) {
 					// TODO
-					// sb.appendEscaped(value.getName());
-					sb.appendEscaped("TEST " + value.hashCode());
+					sb.appendEscaped(value.getName());
+					//sb.appendEscaped("TEST " + value.hashCode());
 				}
 
 				public Set<String> getConsumedEvents() {
@@ -297,12 +299,19 @@ public class ExperimentsPanel extends Composite implements HasText {
 
 	public void initCellList() {
 
-		List<ExperimentData> temp = new LinkedList<ExperimentData>();
-		for (int i = 0; i < 100; i++) {
-			ExperimentData experimentData = new ExperimentData();
-			temp.add(experimentData);
-		}
-		cellList.setRowData(temp);
+		CPUClient.service.listExperiments(new AsyncCallback<List<ExperimentData>>() {
+			
+			@Override
+			public void onSuccess(List<ExperimentData> result) {
+				cellList.setRowData(result);
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("there was an error loading the experiment list - " + caught.getMessage());
+				
+			}
+		});
 	}
 
 	private void addRowToList(ExperimentData toAdd) {

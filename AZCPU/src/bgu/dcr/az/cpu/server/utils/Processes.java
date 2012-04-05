@@ -17,13 +17,18 @@ public class Processes {
 		try {
 			StringBuilder sb = new StringBuilder();
 			File libsFolder = new File(libPath);
-			for (File l : libsFolder.listFiles()) {
-				sb.append(l.getAbsolutePath()).append(";");
+
+			if (libsFolder.isDirectory()) {
+
+				for (File l : libsFolder.listFiles()) {
+					sb.append(l.getAbsolutePath()).append(";");
+				}
+				File jarFile = new File(CPUClient.class.getProtectionDomain()
+						.getCodeSource().getLocation().toURI());
+				sb.append(jarFile.getAbsolutePath()).append(";");
+				return sb.toString();
 			}
-			File jarFile = new File(CPUClient.class.getProtectionDomain()
-					.getCodeSource().getLocation().toURI());
-			sb.append(jarFile.getAbsolutePath()).append(";");
-			return sb.toString();
+			return "";
 		} catch (URISyntaxException ex) {
 			Logger.getLogger(CPUClient.class.getName()).log(Level.SEVERE, null,
 					ex);
@@ -34,10 +39,15 @@ public class Processes {
 
 	/**
 	 * exec other java process and wait for it to end
-	 * @param mainClass the class to start
-	 * @param libPath the path where all the librery jars are sit
-	 * @param classPath additional class path - list that is seperated by ';'
-	 * @param args the arguments to send to the new program
+	 * 
+	 * @param mainClass
+	 *            the class to start
+	 * @param libPath
+	 *            the path where all the librery jars are sit
+	 * @param classPath
+	 *            additional class path - list that is seperated by ';'
+	 * @param args
+	 *            the arguments to send to the new program
 	 * @return the exit code of the child process
 	 */
 	public static int execAndWait(String mainClass, String libPath,

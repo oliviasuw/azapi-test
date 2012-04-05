@@ -1,49 +1,46 @@
 package bgu.dcr.az.cpu.shared;
 
-import java.util.List;
+import java.io.Serializable;
 
-public class ExperimentData {
+public class ExperimentData implements Serializable{
+
+	private String name;
+	private String content;
 	
 	/**
 	 * @return this experiment name
 	 */
-	public String getName(){
-		return null;
+	public String getName() {
+		return this.name;
 	}
-	
+
 	/**
 	 * @return the xml content of the experiment as string
 	 */
-	public String getContent(){
-		return null;
+	public String getContent() {
+		return this.content;
 	}
-	
-	/**
-	 * @return true if this experiment was deleted
-	 */
-	public boolean isDeleted(){
-		return false;
+
+	public ExperimentData(String name, String content) {
+		this.name = name;
+		this.content = content;
 	}
-	
-	/**
-	 * delete this experiment from the file system
-	 */
-	public void delete(){
-		
+
+	public ExperimentData() {
+		//FOR SERIALIZATION - DO NOT DELETE!
 	}
-	
-	/**
-	 * @return the number of executions that this experiment will execute
-	 */
-	public int getNumberOfExecutions(){
-		return -1;
+
+	public void setName(String name) {
+		this.name = name;
 	}
-	
-	/**
-	 * @return all the available experiments
-	 */
-	public static List<ExperimentData> list(){
-		return null;
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	@Override
+	public String toString() {
+		return "ExperimentData [name=" + name + ", content=" + content.substring(0,  Math.min(10, content.length())) + "]";
 	}
 	
 }

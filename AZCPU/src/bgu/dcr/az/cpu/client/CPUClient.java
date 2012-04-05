@@ -30,7 +30,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class CPUClient implements EntryPoint {
 
 	private static CPUClient instance;
-	private static final CPUServiceAsync service = GWT.create(CPUService.class);
+	public static final CPUServiceAsync service = GWT.create(CPUService.class);
 	
 	private SimpleEventBus eventBus;
 	

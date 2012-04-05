@@ -17,13 +17,17 @@ package bgu.dcr.az.cpu.server;
 import java.util.List;
 
 import bgu.dcr.az.cpu.client.CPUService;
-import bgu.dcr.az.cpu.server.impl.CPUServer;
 import bgu.dcr.az.cpu.shared.AlgorithmData;
+import bgu.dcr.az.cpu.shared.ExperimentData;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class CPUServiceImpl extends RemoteServiceServlet implements CPUService {
+	private static final long serialVersionUID = 5790458993207309712L;
 
+	public List<ExperimentData> listExperiments(){
+		return CPUServer.get().listExperiments();
+	}
 
 	@Override
 	public List<AlgorithmData> listAlgorithms() {

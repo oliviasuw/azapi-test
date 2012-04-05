@@ -24,6 +24,25 @@ public class Files {
 		if (!f.exists()) f.mkdirs();
 	}
 	
+	public static String unPersistText(File f) throws FileNotFoundException, IOException {
+        return new String(unPersist(f));
+    }
+	
+    /**
+     * un persisting the given file means that this function will read this whole file to memory and
+     * return its byte array.
+     * @param f
+     * @return
+     */
+    public static byte[] unPersist(File f) throws FileNotFoundException, IOException {
+        byte[] ret = new byte[(int) f.length()];
+        FileInputStream fis = new FileInputStream(f);
+        fis.read(ret);
+        fis.close();
+        return ret;
+    }
+
+	
 	/**
 	 * the method unzips the chosen file to the dest folder
 	 * @param zipfile

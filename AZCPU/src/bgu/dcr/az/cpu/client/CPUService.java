@@ -17,6 +17,7 @@ package bgu.dcr.az.cpu.client;
 import java.util.List;
 
 import bgu.dcr.az.cpu.shared.AlgorithmData;
+import bgu.dcr.az.cpu.shared.ExperimentData;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -26,4 +27,5 @@ import com.google.gwt.user.client.ui.Widget;
 public interface CPUService extends RemoteService {
 
 	List<AlgorithmData> listAlgorithms();
+	List<ExperimentData> listExperiments();
 }

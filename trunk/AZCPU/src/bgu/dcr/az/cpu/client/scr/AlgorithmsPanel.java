@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import bgu.dcr.az.cpu.client.CPUClient;
+import bgu.dcr.az.cpu.client.CPUService;
+import bgu.dcr.az.cpu.client.CPUServiceAsync;
 import bgu.dcr.az.cpu.client.wgt.AzButtonWithImg;
+import bgu.dcr.az.cpu.server.CPUServer;
 import bgu.dcr.az.cpu.shared.AlgorithmData;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -17,6 +21,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.cellview.client.CellList.Resources;
 import com.google.gwt.user.cellview.client.CellList.Style;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
@@ -44,7 +50,7 @@ public class AlgorithmsPanel extends Composite implements HasText {
 				public void render(Context context, AlgorithmData value,
 						SafeHtmlBuilder sb) {
 					// TODO
-					sb.appendEscaped(value.getName() + " @ " + value.getPath());
+					sb.appendEscaped(value.getName() + "@" + value.getPath());
 				}
 			}/*
 			 * , GWT.<MyNoSelectionCellListResources>
@@ -84,11 +90,19 @@ public class AlgorithmsPanel extends Composite implements HasText {
 
 	public void initCellList() {
 
-		List<AlgorithmData> temp = new LinkedList<AlgorithmData>();
-		for (int i = 0; i < 100; i++) {
-			temp.add(new AlgorithmData("SBB" + i, "this is the path"));
-		}
-		cellList.setRowData(temp);
+		CPUClient.service.listAlgorithms(new AsyncCallback<List<AlgorithmData>>() {
+			
+			@Override
+			public void onSuccess(List<AlgorithmData> result) {
+				cellList.setRowData(result);
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("can't load algorithms :(");
+			}
+		});
+		
 	}
 
 	private void addRowToList(AlgorithmData toAdd) {

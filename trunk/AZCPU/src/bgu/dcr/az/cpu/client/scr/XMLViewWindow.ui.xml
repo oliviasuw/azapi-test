@@ -41,6 +41,7 @@
 		
 	</ui:style>
 	<g:HTMLPanel width="600" height="450">
+		
 		<table class="{style.xmlTable}">
 			<tr>
 				<td class="{style.xmlTitle}">
@@ -52,9 +53,13 @@
 			</tr>
 			<tr>
 				<td class="{style.xmlBody}">
-					<div>  <!-- class="{style.xmlListScroll}"> -->
-						<span ui:field="body"> BODY </span>
-					</div>
+<!-- 					<g:ScrollPanel height="100%" ui:field="scroller"> -->
+						<p1:XMLViewer ui:field="xmlv"/>
+<!-- 					</g:ScrollPanel> -->
+					
+<!-- 					<div>  class="{style.xmlListScroll}"> -->
+<!-- 						<span ui:field="body"> BODY </span> -->
+<!-- 					</div> -->
 				</td>
 			</tr>
 			<tr>

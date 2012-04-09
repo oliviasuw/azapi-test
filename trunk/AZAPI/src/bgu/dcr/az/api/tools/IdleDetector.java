@@ -5,6 +5,7 @@
 package bgu.dcr.az.api.tools;
 
 import bgu.dcr.az.api.Mailer;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
 
@@ -14,19 +15,39 @@ import java.util.concurrent.Semaphore;
  */
 public class IdleDetector {
 
+    private final int maxWaiting;
     private int version = 0;
     private volatile int waiting;
     private Semaphore s = new Semaphore(1);
     private Mailer m;
     private LinkedList<Listener> listeners = new LinkedList<Listener>();
     private String groupKey;
+    private HashMap<String, IdleDetector> children = new HashMap<String, IdleDetector>();
 
     public IdleDetector(int waiting, Mailer m, String groupKey) {
+        this.maxWaiting = waiting;
         this.waiting = waiting;
         this.m = m;
         this.groupKey = groupKey;
     }
 
+    /**
+     * get idle detector for the given group key with the exact same configuration as this one
+     * @param groupKey
+     * @return 
+     */
+    public synchronized IdleDetector getSubDetector(String groupKey){
+        children.put(this.groupKey, this);
+        IdleDetector child = children.get(groupKey);
+        if (child == null){
+            child = new IdleDetector(maxWaiting, m, groupKey);
+            children.put(groupKey, child);
+            child.listeners = this.listeners;
+        }
+        
+        return child;
+    }
+    
     public void notifyAgentWorking() {
         try {
             s.acquire();
@@ -70,26 +91,25 @@ public class IdleDetector {
     }
 
     private void fireIdleDetected() {
-//        System.out.println("IDLE DETECTED!");
         boolean resolved = false;
         for (Listener l : listeners) {
-            l.onIdleDetection();
+            l.onIdleDetection(); //before try handling the idle - tell all the listeners that you discover idle
         }
 
         for (Listener l : listeners) {
-            resolved |= l.tryResolveIdle();
+            resolved |= l.tryResolveIdle(); //the idle can be caused by different mechanisms - esspecially message delays - in this case the listeners should attempt to recover from the idle
             if (resolved) {
                 break;
             }
         }
 
-        if (!resolved) {
+        if (!resolved) { //if the idle was not caused by any framework mechanism then it was caused by the logic of the algorithm - in that case the algorithm itself should try to resolve it, we will notify the listeners about it
             for (Listener l : listeners) {
                 l.idleCannotBeResolved();
             }
         } else {
             for (Listener l : listeners) {
-                l.idleResolved();
+                l.idleResolved(); //if the idle was indeed created by the framework mechanisms - notify the listeners that it was resolved and they should resume working normally
             }
         }
     }

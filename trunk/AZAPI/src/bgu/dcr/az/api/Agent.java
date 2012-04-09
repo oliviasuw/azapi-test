@@ -95,6 +95,7 @@ public abstract class Agent extends Agt0DSL {
      * METADATA
      */
     private String algorithmName;
+    private boolean usingIdleDetection;
 
     /**
      * create a default agent - this agent will have id = -1 so you must
@@ -108,8 +109,10 @@ public abstract class Agent extends Agt0DSL {
         beforeCallingFinishHooks = new ArrayList<Hooks.BeforeCallingFinishHook>();
         this.pops = new PlatformOps();
         final Algorithm algAnnotation = getClass().getAnnotation(Algorithm.class);
+        this.usingIdleDetection = false;
         if (algAnnotation != null) {
             this.algorithmName = algAnnotation.name();
+            this.usingIdleDetection = algAnnotation.useIdleDetector();
         } else {
             String name = getClass().getSimpleName();
             if (name.endsWith("Agent")) {
@@ -117,6 +120,10 @@ public abstract class Agent extends Agt0DSL {
             }
             this.algorithmName = name;
         }
+    }
+
+    public boolean isUsingIdleDetection() {
+        return usingIdleDetection;
     }
 
     /**
@@ -615,7 +622,7 @@ public abstract class Agent extends Agt0DSL {
         private int numberOfSetIdCalls = 0;
         private Map metadata = new HashMap();
         private String mailGroupKey = Agent.this.getClass().getName(); // The Mail Group Key  - when sending mail it will be recieved only by the relevant group
-
+        
         /**
          * used especially in nested agents - where you want to copy all the hooks into the nested agent.
          * @param b the agent to copy this agent hooks into

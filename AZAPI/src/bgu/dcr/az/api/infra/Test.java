@@ -111,6 +111,10 @@ public interface Test extends Process {
     
     int getCurrentProblemNumber();
     
+    /**
+     * you can set the correctness tester to null in order to remove it.
+     * @param ctester 
+     */
     void setCorrectnessTester(CorrectnessTester ctester);
 
     public String getCurrentExecutedAlgorithmInstanceName();

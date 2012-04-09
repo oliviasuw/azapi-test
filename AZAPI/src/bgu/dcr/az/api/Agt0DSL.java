@@ -519,6 +519,15 @@ public class Agt0DSL {
     }
 
     /**
+     * @param <T>
+     * @param data
+     * @return the given data in an array - just a convenience method
+     */
+    public static <T> T[] array(T... data){
+        return data;
+    }
+    
+    /**
      * n-ary min function
      *
      * @param <T>

@@ -12,7 +12,7 @@ package bc.tests;
 
 import bc.dsl.SwingDSL;
 import bc.ui.swing.lists.StripeList;
-import bgu.dcr.az.api.infra.VariableMetadata;
+import bgu.dcr.az.api.exen.escan.VariableMetadata;
 import java.awt.BorderLayout;
 
 /**

@@ -5,7 +5,7 @@
 package bc.ui.swing.configurable;
 
 import bc.ui.swing.lists.ComponentList;
-import bgu.dcr.az.api.infra.VariableMetadata;
+import bgu.dcr.az.api.exen.escan.VariableMetadata;
 import bgu.dcr.az.dev.ui.MessageDialog;
 import java.util.HashMap;
 import java.util.Map;

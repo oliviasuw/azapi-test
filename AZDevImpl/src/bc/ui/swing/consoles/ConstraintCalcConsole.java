@@ -12,7 +12,7 @@ package bc.ui.swing.consoles;
 
 import bc.dsl.SwingDSL;
 import bgu.dcr.az.api.ImmutableProblem;
-import bgu.dcr.az.api.pgen.Problem;
+import bgu.dcr.az.api.Problem;
 import bgu.dcr.az.api.tools.Assignment;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;

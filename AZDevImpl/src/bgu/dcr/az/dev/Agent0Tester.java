@@ -31,12 +31,12 @@ public class Agent0Tester  {
 
     public void go() throws ParsingException, IOException, MalformedURLException, ClassNotFoundException, InterruptedException {
 
-        ExecutionEnvironmentUnit.UNIT.setFailProblemStorage(failedProblemsDir);
+        ExperimentExecutionController.UNIT.setFailProblemStorage(failedProblemsDir);
         
         if (executionMode.equals("run")){
-            ExecutionEnvironmentUnit.UNIT.run(test, true, false);
+            ExperimentExecutionController.UNIT.run(test, true, false);
         }else {
-            ExecutionEnvironmentUnit.UNIT.run(test, true, true);
+            ExperimentExecutionController.UNIT.run(test, true, true);
         }
     }
 

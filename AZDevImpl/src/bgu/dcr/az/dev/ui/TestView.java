@@ -14,11 +14,11 @@ package bgu.dcr.az.dev.ui;
 
 import bc.ui.swing.visuals.Visual;
 import bc.ui.swing.visuals.Visual.VisualGen;
-import bgu.dcr.az.api.infra.Test;
-import bgu.dcr.az.api.infra.VariableMetadata;
-import bgu.dcr.az.impl.AlgorithmMetadata;
-import bgu.dcr.az.impl.DebugInfo;
-import bgu.dcr.az.impl.infra.AbstractTest;
+import bgu.dcr.az.api.exen.Test;
+import bgu.dcr.az.api.exen.escan.VariableMetadata;
+import bgu.dcr.az.api.exen.escan.AlgorithmMetadata;
+import bgu.dcr.az.exen.DebugInfo;
+import bgu.dcr.az.exen.AbstractTest;
 import java.util.LinkedList;
 import java.util.List;
 

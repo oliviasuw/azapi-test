@@ -11,13 +11,13 @@
 package bgu.dcr.az.dev.ui;
 
 import bc.dsl.SwingDSL;
-import bgu.dcr.az.api.infra.Execution;
-import bgu.dcr.az.api.infra.Experiment;
-import bgu.dcr.az.api.infra.Test;
-import bgu.dcr.az.api.pgen.Problem;
+import bgu.dcr.az.api.exen.Execution;
+import bgu.dcr.az.api.exen.Experiment;
+import bgu.dcr.az.api.exen.Test;
+import bgu.dcr.az.api.Problem;
 import bgu.dcr.az.api.tools.Assignment;
-import bgu.dcr.az.dev.ExecutionEnvironmentUnit;
-import bgu.dcr.az.impl.db.DatabaseUnit;
+import bgu.dcr.az.dev.ExperimentExecutionController;
+import bgu.dcr.az.exen.stat.db.DatabaseUnit;
 import java.io.File;
 import java.util.concurrent.Semaphore;
 import javax.swing.JFrame;
@@ -69,7 +69,7 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
 //        sqs.setModel((DatabaseUnit.H2Database) DatabaseUnit.UNIT.getDatabase());
 //        tabs.addTab("StatisticsQuery", SwingDSL.resIcon("problem"), sqs);
         
-        ExecutionEnvironmentUnit.UNIT.addExperimentListener(this);
+        ExperimentExecutionController.UNIT.addExperimentListener(this);
 
         start();
 
@@ -300,7 +300,7 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
     }// </editor-fold>//GEN-END:initComponents
 
     private void jXHyperlink2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXHyperlink2ActionPerformed
-        ExecutionEnvironmentUnit.UNIT.stop();
+        ExperimentExecutionController.UNIT.stop();
     }//GEN-LAST:event_jXHyperlink2ActionPerformed
 
     /**

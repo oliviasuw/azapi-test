@@ -9,6 +9,10 @@ import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.ano.WhenReceived;
 import bgu.dcr.az.api.tools.Assignment;
 
+/**
+ * 
+ * @author bennyl
+ */
 @Algorithm(name = "__SBB")
 public class SBBAgent extends SimpleAgent {
 

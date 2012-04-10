@@ -4,19 +4,19 @@
  */
 package bgu.dcr.az.dev;
 
-import bgu.dcr.az.impl.config.ExperimentReader;
+import bgu.dcr.az.exen.escan.ExperimentReader;
 import bc.dsl.SwingDSL;
 import bgu.dcr.az.api.exp.ConnectionFaildException;
-import bgu.dcr.az.api.infra.Execution;
-import bgu.dcr.az.api.infra.Experiment;
-import bgu.dcr.az.api.infra.Experiment.ExperimentListener;
-import bgu.dcr.az.api.infra.Test;
+import bgu.dcr.az.api.exen.Execution;
+import bgu.dcr.az.api.exen.Experiment;
+import bgu.dcr.az.api.exen.Experiment.ExperimentListener;
+import bgu.dcr.az.api.exen.Test;
 import bgu.dcr.az.dev.ui.MainWindow;
-import bgu.dcr.az.impl.AlgorithmMetadata;
-import bgu.dcr.az.impl.db.DatabaseUnit;
-import bgu.dcr.az.impl.infra.AbstractExecution;
-import bgu.dcr.az.impl.infra.AbstractTest;
-import bgu.dcr.az.impl.infra.LogListener;
+import bgu.dcr.az.api.exen.escan.AlgorithmMetadata;
+import bgu.dcr.az.exen.stat.db.DatabaseUnit;
+import bgu.dcr.az.exen.AbstractExecution;
+import bgu.dcr.az.exen.AbstractTest;
+import bgu.dcr.az.exen.LogListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  *
  * @author bennyl
  */
-public enum ExecutionEnvironmentUnit implements Experiment.ExperimentListener {
+public enum ExperimentExecutionController implements Experiment.ExperimentListener {
 
     UNIT;
     List<ExperimentListener> experimentListeners = new LinkedList<ExperimentListener>();
@@ -68,13 +68,13 @@ public enum ExecutionEnvironmentUnit implements Experiment.ExperimentListener {
             running = false;
             stop();
         } catch (ConnectionFaildException ex) {
-            Logger.getLogger(ExecutionEnvironmentUnit.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ExperimentExecutionController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(ExecutionEnvironmentUnit.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ExperimentExecutionController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            Logger.getLogger(ExecutionEnvironmentUnit.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ExperimentExecutionController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(ExecutionEnvironmentUnit.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ExperimentExecutionController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -159,7 +159,7 @@ public enum ExecutionEnvironmentUnit implements Experiment.ExperimentListener {
                 ExperimentReader.write(source, pw);
                 pw.close();
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(ExecutionEnvironmentUnit.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ExperimentExecutionController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         

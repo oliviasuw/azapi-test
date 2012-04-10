@@ -16,7 +16,7 @@ import bc.ui.swing.models.GenericTableModel;
 import bc.ui.swing.models.GenericTreeModel;
 import bc.ui.swing.models.GenericTreeModel.Node;
 import bc.ui.swing.trees.IconProvider;
-import bgu.dcr.az.impl.db.DatabaseUnit;
+import bgu.dcr.az.exen.stat.db.DatabaseUnit;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;

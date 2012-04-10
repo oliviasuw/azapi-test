@@ -11,7 +11,7 @@
 package bc.ui.swing.configurable;
 
 import bc.dsl.ReflectionDSL;
-import bgu.dcr.az.api.infra.VariableMetadata;
+import bgu.dcr.az.api.exen.escan.VariableMetadata;
 
 /**
  *

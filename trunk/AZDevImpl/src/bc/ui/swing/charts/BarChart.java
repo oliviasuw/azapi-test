@@ -10,7 +10,7 @@
  */
 package bc.ui.swing.charts;
 
-import bgu.dcr.az.api.infra.stat.vmod.BarVisualModel;
+import bgu.dcr.az.api.exen.stat.vmod.BarVisualModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Paint;

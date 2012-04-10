@@ -12,10 +12,10 @@ package bgu.dcr.az.dev.ui;
 
 import bc.dsl.SwingDSL;
 import bc.ui.swing.visuals.Visual;
-import bgu.dcr.az.api.infra.Execution;
-import bgu.dcr.az.api.infra.Experiment;
-import bgu.dcr.az.api.infra.Test;
-import bgu.dcr.az.dev.ExecutionEnvironmentUnit;
+import bgu.dcr.az.api.exen.Execution;
+import bgu.dcr.az.api.exen.Experiment;
+import bgu.dcr.az.api.exen.Test;
+import bgu.dcr.az.dev.ExperimentExecutionController;
 import com.sun.java.swing.plaf.motif.MotifProgressBarUI;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,7 +75,7 @@ public class StatusScreen extends javax.swing.JPanel {
 
         mod.setMaximum(expLength);
         progressLabel.setText("Execution 1 " + " of " + expLength);
-        ExecutionEnvironmentUnit.UNIT.addExperimentListener(new Experiment.ExperimentListener() {
+        ExperimentExecutionController.UNIT.addExperimentListener(new Experiment.ExperimentListener() {
 
             @Override
             public void onExpirementStarted(Experiment source) {

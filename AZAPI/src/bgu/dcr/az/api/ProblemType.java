@@ -4,7 +4,7 @@
  */
 package bgu.dcr.az.api;
 
-import bgu.dcr.az.api.infra.CorrectnessTester;
+import bgu.dcr.az.api.exen.mdef.CorrectnessTester;
 
 /**
  *

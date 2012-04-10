@@ -5,7 +5,6 @@
 package bgu.dcr.az.api.ano;
 
 import bgu.dcr.az.api.ProblemType;
-import bgu.dcr.az.api.SearchType;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -34,7 +33,5 @@ public @interface Algorithm {
      * @See bgu.csp.az.api.tools.IdleDetector
      */
     boolean useIdleDetector() default false;
-    
-    SearchType searchType() default SearchType.ASYNCHRONOUS; 
 
 }

@@ -1,5 +1,8 @@
-package bgu.dcr.az.api;
+package bgu.dcr.az.api.agt;
 
+import bgu.dcr.az.api.ImmutableProblem;
+import bgu.dcr.az.api.Message;
+import bgu.dcr.az.api.exen.Mailer;
 import bgu.dcr.az.api.exp.UnRegisteredAgentException;
 import java.util.Collection;
 import java.util.Set;

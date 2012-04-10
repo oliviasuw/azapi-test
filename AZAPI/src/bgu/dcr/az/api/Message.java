@@ -14,10 +14,6 @@ import java.util.Map;
 public class Message implements Serializable {
 
     /**
-     * a temporary flag this flag will get deprecated after all the algorithms will be transformed to work with deep copy
-     */
-    public static boolean USE_DEEP_COPY = true;
-    /**
      * the message not contains the recepient in its fields this field is a metadata of the message 
      * and it is accessable via this key
      */
@@ -33,12 +29,12 @@ public class Message implements Serializable {
      * you can use it to send any kind of data that is not part of the message fields 
      * think about it at the content on the envelop of the message - you may want to write the timestamp there etc.
      */
-    protected Map<String, Object> metadata;
+    private Map<String, Object> metadata;
     /**
      * collection of the message arguments 
      * the arguments are unnamed -> TODO: FIGUREOUT A WAY TO NAME THEM FOR DEBUGGING PORPUSE -> MAYBE COMPILE TIME PROCESSING USING APT.. 
      */
-    protected Object[] args;
+    private Object[] args;
 
     /**
      * @param name the message name / type

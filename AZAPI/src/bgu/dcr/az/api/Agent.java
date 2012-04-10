@@ -1,5 +1,8 @@
 package bgu.dcr.az.api;
 
+import bgu.dcr.az.api.agt.ReportMediator;
+import bgu.dcr.az.api.agt.SendMediator;
+import bgu.dcr.az.api.exen.MessageQueue;
 import bgu.dcr.az.api.Hooks.BeforeCallingFinishHook;
 import bgu.dcr.az.api.Hooks.BeforeMessageSentHook;
 import bgu.dcr.az.api.ano.Algorithm;
@@ -8,8 +11,8 @@ import bgu.dcr.az.api.ds.ImmutableSet;
 import bgu.dcr.az.api.exp.InternalErrorException;
 import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.exp.RepeatedCallingException;
-import bgu.dcr.az.api.infra.Execution;
-import bgu.dcr.az.api.infra.VariableMetadata;
+import bgu.dcr.az.api.exen.Execution;
+import bgu.dcr.az.api.exen.escan.VariableMetadata;
 import bgu.dcr.az.api.tools.Assignment;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,30 +35,6 @@ import java.util.logging.Logger;
 public abstract class Agent extends Agt0DSL {
 
     /**
-     * will output the logs to stdout
-     */
-    private static final boolean USE_DEBUG_LOGS = false;
-    /**
-     * the name of the statistic which collects the number of non concurrent
-     * constraint checks
-     */
-    public static final String NCCC_STATISTIC = "Number Of Concurrent Constraint Checks";
-    /**
-     * the name of the statistic which collects the number of non concurrent
-     * steps of computation
-     */
-    public static final String NCSC_STATISTIC = "Number Of Concurrent Steps Of Computation";
-    /**
-     * the name of the statistic which collects the number of constraint checks
-     * made by agent
-     */
-    public static final String CC_PER_AGENT_STATISTIC = "Constraint Checks Per Agent";
-    /**
-     * the name of the statistics which collects number of messages that this
-     * agent have received during work
-     */
-    public static final String MESSAGES_RECEIVED_PER_AGENT_STATISTIC = "Messages Received Per Agent";
-    /**
      * the name for the system termination message the system termination
      * message is getting sent only by the abstract agent
      */
@@ -68,7 +47,6 @@ public abstract class Agent extends Agt0DSL {
      */
     public static final String SYS_TICK_MESSAGE = "__TICK__";
     private int id; //The Agent ID
-    private Execution exec; //The Execution That This Agent Is Currently Running Within
     private MessageQueue mailbox; //This Agent Mailbox
     private ImmutableProblem prob; // The Agent Local Problem
     private boolean finished = false; //The Status of the current Agent - TODO: TRANSFORM INTO A STATUS ENUM SO WE CAN BE ABLE TO QUERY THE AGENT ABOUT IT CURRENT STATUS
@@ -103,7 +81,6 @@ public abstract class Agent extends Agt0DSL {
      */
     public Agent() {
         this.id = -1;
-        this.exec = null;
         beforeMessageSentHooks = new ArrayList<Hooks.BeforeMessageSentHook>();
         beforeMessageProcessingHooks = new ArrayList<Hooks.BeforeMessageProcessingHook>();
         beforeCallingFinishHooks = new ArrayList<Hooks.BeforeCallingFinishHook>();
@@ -282,14 +259,16 @@ public abstract class Agent extends Agt0DSL {
      * @param what
      */
     public void log(String what) {
-        exec.log(id, pops.mailGroupKey, what);
-        if (USE_DEBUG_LOGS) {
-            System.out.println("[" + getClass().getSimpleName() + "] " + getId() + ": " + what);
-        }
+        pops.exec.log(id, pops.mailGroupKey, what);
+//        if (USE_DEBUG_LOGS) {
+//            System.out.println("[" + getClass().getSimpleName() + "] " + getId() + ": " + what);
+//        }
     }
-    
-    public void logIf(boolean predicate, String what){
-        if (predicate) log(what);
+
+    public void logIf(boolean predicate, String what) {
+        if (predicate) {
+            log(what);
+        }
     }
 
     /**
@@ -301,7 +280,7 @@ public abstract class Agent extends Agt0DSL {
      */
     protected void finish(Assignment ans) {
         //log("Calling Finish with assignment: " + ans + ", Starting shutdown sequence.");
-        exec.reportFinalAssignment(ans);
+        pops.exec.reportFinalAssignment(ans);
         terminate();
     }
 
@@ -358,14 +337,14 @@ public abstract class Agent extends Agt0DSL {
      * @param currentAssignment the assignment to submit
      */
     protected void submitCurrentAssignment(int currentAssignment) {
-        exec.reportPartialAssignment(getId(), currentAssignment);
+        pops.exec.reportPartialAssignment(getId(), currentAssignment);
     }
 
     /**
      * remove the submitted current assignment
      */
     protected void unSubmitCurrentAssignment() {
-        final Assignment partialAssignment = exec.getResult().getAssignment();
+        final Assignment partialAssignment = pops.exec.getResult().getAssignment();
         if (partialAssignment != null) {
             partialAssignment.unassign(this);
         }
@@ -376,7 +355,7 @@ public abstract class Agent extends Agt0DSL {
      * if no assignment was submitted
      */
     protected Integer getSubmitedCurrentAssignment() {
-        final Assignment finalAssignment = exec.getResult().getAssignment();
+        final Assignment finalAssignment = pops.exec.getResult().getAssignment();
         if (finalAssignment != null) {
             return finalAssignment.getAssignment(getId());
         }
@@ -622,17 +601,18 @@ public abstract class Agent extends Agt0DSL {
         private int numberOfSetIdCalls = 0;
         private Map metadata = new HashMap();
         private String mailGroupKey = Agent.this.getClass().getName(); // The Mail Group Key  - when sending mail it will be recieved only by the relevant group
-        
+        private Execution exec; //The Execution That This Agent Is Currently Running Within
+
         /**
          * used especially in nested agents - where you want to copy all the hooks into the nested agent.
          * @param b the agent to copy this agent hooks into
          */
-        public void copyHooksTo(Agent b){
+        public void copyHooksTo(Agent b) {
             b.beforeCallingFinishHooks = beforeCallingFinishHooks;
             b.beforeMessageProcessingHooks = beforeMessageProcessingHooks;
             b.beforeMessageSentHooks = beforeMessageSentHooks;
         }
-        
+
         /**
          * attach an execution to this agent - this execution needs to already
          * contains global problem
@@ -640,7 +620,7 @@ public abstract class Agent extends Agt0DSL {
          * @param exec
          */
         public void setExecution(Execution exec) {
-            Agent.this.exec = exec;
+            this.exec = exec;
             prob = new AgentProblem();
         }
 
@@ -741,60 +721,60 @@ public abstract class Agent extends Agt0DSL {
 
         @Override
         public int getNumberOfVariables() {
-            return exec.getGlobalProblem().getNumberOfVariables();
+            return pops.exec.getGlobalProblem().getNumberOfVariables();
         }
 
         @Override
         public ImmutableSet<Integer> getDomainOf(int var) {
-            return exec.getGlobalProblem().getDomainOf(var);
+            return pops.exec.getGlobalProblem().getDomainOf(var);
         }
 
         @Override
         public int getConstraintCost(int var1, int val1) {
             ++cc;
-            return exec.getGlobalProblem().getConstraintCost(var1, val1);
+            return pops.exec.getGlobalProblem().getConstraintCost(var1, val1);
         }
 
         @Override
         public int getConstraintCost(int var1, int val1, int var2, int val2) {
             ++cc;
-            return exec.getGlobalProblem().getConstraintCost(var1, val1, var2, val2);
+            return pops.exec.getGlobalProblem().getConstraintCost(var1, val1, var2, val2);
         }
 
         @Override
         public String toString() {
-            return exec.getGlobalProblem().toString();
+            return pops.exec.getGlobalProblem().toString();
         }
 
         @Override
         public int getConstraintCost(int var, int val, Assignment ass) {
             ++cc;
-            return exec.getGlobalProblem().getConstraintCost(var, val, ass);
+            return pops.exec.getGlobalProblem().getConstraintCost(var, val, ass);
         }
 
         @Override
         public int getDomainSize(int var) {
-            return exec.getGlobalProblem().getDomainSize(var);
+            return pops.exec.getGlobalProblem().getDomainSize(var);
         }
 
         @Override
         public HashMap<String, Object> getMetadata() {
-            return exec.getGlobalProblem().getMetadata();
+            return pops.exec.getGlobalProblem().getMetadata();
         }
 
         @Override
         public Set<Integer> getNeighbors(int var) {
-            return exec.getGlobalProblem().getNeighbors(var);
+            return pops.exec.getGlobalProblem().getNeighbors(var);
         }
 
         @Override
         public boolean isConsistent(int var1, int val1, int var2, int val2) {
-            return exec.getGlobalProblem().isConsistent(var1, val1, var2, val2);
+            return pops.exec.getGlobalProblem().isConsistent(var1, val1, var2, val2);
         }
 
         @Override
         public boolean isConstrained(int var1, int var2) {
-            return exec.getGlobalProblem().isConstrained(var1, var2);
+            return pops.exec.getGlobalProblem().isConstrained(var1, var2);
         }
 
         /**
@@ -802,7 +782,7 @@ public abstract class Agent extends Agt0DSL {
          */
         @Override
         public ProblemType type() {
-            return exec.getGlobalProblem().type();
+            return pops.exec.getGlobalProblem().type();
         }
     }
 }

@@ -1,7 +1,10 @@
-package bgu.dcr.az.api;
+package bgu.dcr.az.api.exen;
 
+import bgu.dcr.az.api.Agent;
+import bgu.dcr.az.api.Message;
+import bgu.dcr.az.api.exen.MessageQueue;
 import bgu.dcr.az.api.exp.UnRegisteredAgentException;
-import bgu.dcr.az.api.infra.Execution;
+import bgu.dcr.az.api.exen.Execution;
 
 /**
  * This is a familiar concept, an Interface for designing mailers – the mailer is attached to the Execution object – what means that you should be able to attach different mailers to test the algorithm with (some mailers can help with producing algorithm visualization and some can be used for debugging).
@@ -40,7 +43,7 @@ public interface Mailer {
      * remove agent with the given id from the registered list, 
      * @param id 
      */
-    public void unRegister(int id, String groupKey);
+    public void unregister(int id, String groupKey);
 
     /**
      * @return true if all the registered mailboxed are empty

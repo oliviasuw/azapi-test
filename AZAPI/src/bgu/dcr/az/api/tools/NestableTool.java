@@ -6,11 +6,11 @@ package bgu.dcr.az.api.tools;
 
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Agent.PlatformOps;
-import bgu.dcr.az.api.AgentRunner;
+import bgu.dcr.az.api.exen.AgentRunner;
 import bgu.dcr.az.api.Continuation;
 import bgu.dcr.az.api.ContinuationMediator;
 import bgu.dcr.az.api.agt.SimpleAgent;
-import bgu.dcr.az.api.infra.Execution;
+import bgu.dcr.az.api.exen.Execution;
 
 /**
  *

@@ -4,7 +4,7 @@
  */
 package bgu.dcr.az.api.tools;
 
-import bgu.dcr.az.api.Mailer;
+import bgu.dcr.az.api.exen.Mailer;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;

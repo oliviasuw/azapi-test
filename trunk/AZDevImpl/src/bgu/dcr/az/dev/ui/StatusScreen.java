@@ -108,7 +108,7 @@ public class StatusScreen extends javax.swing.JPanel {
 
             @Override
             public void onNewExecutionStarted(Experiment source, Test test, Execution exec) {
-                mod.setValue(mod.getValue() + 1);
+                mod.setValue(test.getCurrentExecutionNumber());
                 progressLabel.setText("Execution " + (mod.getValue()) + " of " + expLength);
             }
 

@@ -355,16 +355,16 @@ public class MainWindow extends javax.swing.JFrame implements Experiment.Experim
         } else {
             errorPanel.setVisible(true);
 
-            switch (source.getResult().badTestResult.finishStatus) {
+            switch (source.getResult().badTestResult.getState()) {
                 case CRUSH:
                     ExceptionDialog.showRecoverable("The execution crashed", "You should take a look at the logs,\n"
                             + "check the stack trace using the advance button\n"
-                            + "or start a debug session", source.getResult().badTestResult.crushReason);
+                            + "or start a debug session", source.getResult().badTestResult.getCrushReason());
                     break;
                 case WRONG_RESULT:
-                    Problem globalProblem = source.getResult().badTestResult.badExecution.getGlobalProblem();
-                    Assignment goodAssignment = source.getResult().badTestResult.goodAssignment;
-                    Assignment badAssignment = source.getResult().badTestResult.badExecution.getResult().getAssignment();
+                    Problem globalProblem = source.getResult().badTestResult.getBadExecution().getGlobalProblem();
+                    Assignment goodAssignment = source.getResult().badTestResult.getGoodAssignment();
+                    Assignment badAssignment = source.getResult().badTestResult.getBadExecution().getResult().getAssignment();
 
                     MessageDialog.showFail("The execution completed with errors", "The correctness tester found wrong results provided by the algorithm\n"
                             + "An example to a correct assignment is " + (goodAssignment != null? goodAssignment + "with the cost of " + goodAssignment.calcCost(globalProblem) : "'not exists'") + "\n"

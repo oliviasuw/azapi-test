@@ -14,7 +14,6 @@ import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.exp.BadConfigurationException;
 import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.exen.mdef.CorrectnessTester.CorrectnessTestResult;
-import bgu.dcr.az.exen.DebugInfo;
 import bgu.dcr.az.api.exen.Execution;
 import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.api.exen.Experiment;
@@ -25,7 +24,7 @@ import bgu.dcr.az.api.Problem;
 import bgu.dcr.az.api.exen.escan.ConfigurationMetadata;
 import bgu.dcr.az.api.exen.escan.ExternalConfigurationAware;
 import bgu.dcr.az.api.exen.mdef.ProblemGenerator;
-import bgu.dcr.az.api.exen.mdef.Timer;
+import bgu.dcr.az.api.exen.mdef.Limiter;
 import bgu.dcr.az.exen.stat.db.DatabaseUnit;
 import bgu.dcr.az.exen.pgen.MapProblem;
 import bgu.dcr.az.exenl.stat.AbstractStatisticCollector;
@@ -50,39 +49,39 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
      * V A R I A B L E S
      */
     @Variable(name = "name", description = "the test name", defaultValue = "")
-     String name = "";
+    String name = "";
     @Variable(name = "seed", description = "seed for creating randoms for the problem generator", defaultValue = "-1")
-     long seed = -1;
+    long seed = -1;
     //TODO: FOR NOW THIS PARAMETERS ARE GOOD BUT NEED TO TALK WITH ALON AND SEE WHAT TYPE OF EXPIREMENT MORE EXISTS
     @Variable(name = "repeat-count", description = "the number of executions in each tick", defaultValue = "100")
-     int repeatCount = 100;
+    int repeatCount = 100;
     @Variable(name = "run-var", description = "the variable to run", defaultValue = "")
     private String runVar = "";
     @Variable(name = "start", description = "starting value of the running variable", defaultValue = "0.1")
-     float start = 0.1f;
+    float start = 0.1f;
     @Variable(name = "end", description = "ending value of the running variable (explicit)", defaultValue = "0.9")
-     float end = 0.9f;
+    float end = 0.9f;
     @Variable(name = "tick-size", description = "the runinig variable value increasment", defaultValue = "0.1")
-     float tickSize = 0.1f;
+    float tickSize = 0.1f;
     /**
      * F I E L D S
      */
     private List<AlgorithmMetadata> algorithms = new LinkedList<AlgorithmMetadata>();
-    ProblemGenerator pgen = null;
-    List<StatisticCollector> collectors = new LinkedList<StatisticCollector>();
-    private TestResult res = null;
+    private ProblemGenerator pgen = null;
+    private List<StatisticCollector> collectors = new LinkedList<StatisticCollector>();
+    private TestResult res = new TestResult().toSuccessState();
     private Random rand;
     private int currentExecutionNumber = 0;
-    CorrectnessTester ctester = null;
+    private CorrectnessTester ctester = null;
     private List<TestListener> listeners = new LinkedList<TestListener>();
-    double currentVarValue;
+    private double currentVarValue;
     private DebugInfo di = null;
     private List<Long> problemSeeds;
     boolean initialized = false;
-    Experiment experiment; // the executing experiment
-    int currentProblemNumber = 0;
+    private Experiment experiment; // the executing experiment
+    private int currentProblemNumber = 0;
     private AlgorithmMetadata currentAlgorithm;
-    Timer timer;
+    private Limiter limiter = null;
 
     public AbstractTest() {
     }
@@ -182,21 +181,19 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
         algorithms.add(alg);
     }
 
-    @Configuration(name="Timer", description="add timer to kill executions that exsided a time limit")
-    public void setTimer(Timer timer) {
-        this.timer = timer;
+    @Configuration(name = "Limiter", description = "add limiter to kill executions that cause some limitation to reach")
+    public void setLimiter(Limiter timer) {
+        this.limiter = timer;
     }
 
-    public Timer getTimer() {
-        return timer;
+    public Limiter getLimiter() {
+        return limiter;
     }
 
     public Problem generateProblem(int number) {
         if (number > getLength() || number <= 0) {
             throw new InvalidValueException("there is no such problem");
         }
-
-
 
         int ticksPerformed = (number - 1) / repeatCount;
         float vvar = start + tickSize * (float) ticksPerformed;
@@ -212,6 +209,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
     public void debug(DebugInfo di) {
         initialize();
         fireTestStarted();
+        ExecutionResult exr;
         try {
 
             Problem p = generateProblem(di.getFailedProblemNumber());
@@ -226,25 +224,26 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
 
             if (alg != null) {
 
-                if (!execute(p, alg)) {
-                    return;
+                exr = execute(p, alg);
+                if (exr.getState() != ExecutionResult.State.SUCCESS) {
+                    return; //TODO - is it ok?
                 }
             }
 
-            res = new TestResult();
+            res.toSuccessState();
         } catch (Exception ex) {
-            res = new TestResult(ex, null);
+            res.toCrushState(ex, null);
         } finally {
             DatabaseUnit.UNIT.signal(this);
         }
     }
-
-    private float inc(float original, float inc, int precesion) {
-        long p = (int) Math.pow(10, precesion);
-        long iorg = (int) (original * p);
-        long iinc = (int) (inc * p);
-        return ((float) (iorg + iinc)) / (float) p;
-    }
+//
+//    private float inc(float original, float inc, int precesion) {
+//        long p = (int) Math.pow(10, precesion);
+//        long iorg = (int) (original * p);
+//        long iinc = (int) (inc * p);
+//        return ((float) (iorg + iinc)) / (float) p;
+//    }
 
     public static double round3(double num) {
         double result = num * 1000;
@@ -268,32 +267,47 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
             int pnum = 0;
             currentExecutionNumber = 0;
 
-            boolean failed = false;
-            Class failedClass = null;
             for (currentVarValue = start; currentVarValue <= end; currentVarValue = round3(currentVarValue + tickSize)) {
                 ConfigurationMetadata.bubbleDownVariable(this, runVar, (float) currentVarValue);
                 for (int i = 0; i < repeatCount; i++) {
 
 
                     Problem p = nextProblem(++pnum);
+                    boolean limited = false;
                     if (p == null) {
-                        failed = true;
-                        failedClass = getProblemGenerator().getClass();
+                        res.toCrushState(new NullPointerException("problem generator generated bad problem"), getProblemGenerator().getClass());
                     } else {
+                        limited = false;
                         for (AlgorithmMetadata alg : getAlgorithms()) {
-                            if (!execute(p, alg)) {
-                                failed = true;
-                                failedClass = alg.getAgentClass();
-                                break;
+                            if (!limited && res.getState() == State.SUCCESS) {
+                                final ExecutionResult exr = execute(p, alg);
+                                switch (exr.getState()) {
+                                    case CRUSHED:
+                                        res.toCrushState(exr.getCrushReason(), alg.getAgentClass());
+                                        break;
+                                    case LIMITED:
+                                        limited = true;
+                                        break;
+                                    case SUCCESS:
+                                        break;
+                                    case WRONG:
+                                        res.toWrongResultState(exr.getCorrectAssignment(), exr.getResultingExecution(), alg.getAgentClass());
+                                        break;
+                                }
                             }
+
+                            currentExecutionNumber++;
                         }
-                        currentExecutionNumber++;
                     }
 
-                    if (failed || Thread.currentThread().isInterrupted()) {
+                    if (limited) {
+                        System.out.println("Problem: " + getCurrentProblemNumber() + " was limited");
+                    }
+
+                    if (res.getState() != State.SUCCESS || Thread.currentThread().isInterrupted()) {
                         String algName;
-                        if (Agent.class.isAssignableFrom(failedClass)) {
-                            algName = ((Algorithm) failedClass.getAnnotation(Algorithm.class)).name();
+                        if (Agent.class.isAssignableFrom(res.getFailedClass())) {
+                            algName = ((Algorithm) res.getFailedClass().getAnnotation(Algorithm.class)).name();
                         } else {
                             algName = algorithms.get(0).getName();
                         }
@@ -305,8 +319,9 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
             res = new TestResult();
 
         } catch (Exception ex) {
+            res.toCrushState(ex, null);
             ex.printStackTrace();
-            res = new TestResult(ex, null);
+            //res = new TestResult(ex, null);
         } finally {
             DatabaseUnit.UNIT.signal(this);
         }
@@ -317,32 +332,44 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
         return di;
     }
 
-    private boolean execute(Problem p, AlgorithmMetadata alg) {
+    private ExecutionResult execute(Problem p, AlgorithmMetadata alg) {
         currentAlgorithm = alg;
         Execution e = provideExecution(p, alg);
         try {
             e.setStatisticCollectors(collectors);
-            e.setTimer(timer);
-            
+            e.setLimiter(limiter);
+
             fireNewExecution(e);
             e.run();
+
+            //test result
             ExecutionResult r = e.getResult();
-            if (r.isExecutionCrushed()) {
-                res = new TestResult(r.getCrushReason(), e);
-                return false;
-            } else if (getCorrectnessTester() != null) {
+            if (r.getState() == ExecutionResult.State.SUCCESS && getCorrectnessTester() != null) {
                 CorrectnessTestResult testRes = getCorrectnessTester().test(e, r);
                 if (!testRes.passed) {
-                    res = new TestResult(testRes.rightAnswer, e);
-                    return false;
+                    r.toWrongState(testRes.rightAnswer);
                 }
             }
 
-            return true;
+            return r;
+
+//            switch (r.getState()) {
+//                case CRUSHED:
+//                    res = new TestResult(r.getCrushReason(), e);
+//                    return false;
+//                case LIMITED:
+//                    -- -- -- -- -- --
+//                    
+//                    return false;
+//                default:
+//                    if (getCorrectnessTester() != null) {
+//                    } else {
+//                        return true;
+//                    }
+//            }
         } catch (Exception ex) {
             ex.printStackTrace();
-            res = new TestResult(ex, e);
-            return false;
+            return new ExecutionResult(e).toCrushState(ex);
         } finally {
             fireExecutionEnded(e);
         }

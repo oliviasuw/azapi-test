@@ -30,7 +30,7 @@ public abstract class AbstractProcess implements Process {
 
     /**
      * this stop will cause the executing thread to be interrupted - you can change it 
-     * if it is not your sutable logic
+     * if it is not your suitable logic
      */
     protected void _stop(){
         executingThread.interrupt();

@@ -7,9 +7,8 @@ import bgu.dcr.az.api.ContinuationMediator;
 import bgu.dcr.az.api.Hooks.BeforeMessageProcessingHook;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.agt.SimpleAgent;
-import bgu.dcr.az.api.exen.mdef.Timer;
+import bgu.dcr.az.api.exen.mdef.Limiter;
 import bgu.dcr.az.api.tools.IdleDetector;
-import bgu.dcr.az.api.exen.escan.AlgorithmMetadata;
 import bgu.dcr.az.exen.AbstractExecution;
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
@@ -34,6 +33,8 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
     private Semaphore idleDetectionLock = new Semaphore(1);
     private boolean useIdleDetector; //see note about using idle detector within nested agents in AgentRunner.nest
     private IdleDetector currentIdleDetector = null;
+    private Limiter limiter = null; 
+    
     /**
      * used for the join method -> using a semaphore means that we are only
      * allowing 1 joining thread, this is the case currently but if we will want
@@ -57,20 +58,27 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
     }
 
     @Override
+    public void setLimiter(Limiter limiter) {
+        this.limiter = limiter;
+    }
+
+    @Override
     public void run() {
         ContinuationMediator cmed;
-        Thread.currentThread().setName("Agent Runner For Agents With ID " + currentExecutedAgent.getId());
+        Thread.currentThread().setName("Agent Runner For Agent " + currentExecutedAgent.getId());
 
-        if (nestedAgents.isEmpty()) {
+        if (nestedAgents.isEmpty()) { // is the initial agent
             cthread = Thread.currentThread();
+            
+            //checking if idle detection is needed: TODO: make this code simpler
             useIdleDetector = false;
             if (exec.getIdleDetector() != null) {
                 exec.getIdleDetector().addListener(this);
                 currentIdleDetector = exec.getIdleDetector();
                 useIdleDetector = true;
             }
-
             registerIdleDetectionCallback(currentExecutedAgent);
+            
         }
         //START THE AGENT
         currentExecutedAgent.start();
@@ -81,8 +89,9 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
                     while (!currentExecutedAgent.isFinished() && !Thread.currentThread().isInterrupted()) {
                         performIdleDetection();
                         currentExecutedAgent.processNextMessage();
-                        if (!exec.haveTimeLeft()) {
+                        if (limiter != null && !limiter.canContinue(exec)) {
                             System.out.println("[" + Agent.PlatformOperationsExtractor.extract(currentExecutedAgent).getMailGroupKey() + "] " + currentExecutedAgent.getId() + " Interupted due to timeout - Terminating.");
+                            exec.terminateDueToLimiter();
                             return;
                         };
                     }
@@ -93,7 +102,7 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
 
             } catch (Exception ex) {
 
-                exec.reportCrushAndStop(ex, "Agent " + currentExecutedAgent.getId() + " Cause An Error!");
+                exec.terminateDueToCrush(ex, "Agent " + currentExecutedAgent.getId() + " Cause An Error!");
                 //BECAUSE THE AGENT RUNNER WILL RUN INSIDE EXECUTION SERVICE 
                 //THIS IS THE LAST POINT THAT EXCEPTION CAN BE PRINTED
                 //AFTER THIS POINT THE EXCEPTION WILL BE LOST (BUT CAN BE RETRIVED VIA THE RESULT OF THIS ALGORITHM)) 

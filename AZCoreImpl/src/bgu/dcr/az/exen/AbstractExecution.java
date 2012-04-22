@@ -13,7 +13,7 @@ import bgu.dcr.az.api.exen.Experiment;
 import bgu.dcr.az.api.exen.Test;
 import bgu.dcr.az.api.exen.mdef.StatisticCollector;
 import bgu.dcr.az.api.Problem;
-import bgu.dcr.az.api.exen.mdef.Timer;
+import bgu.dcr.az.api.exen.mdef.Limiter;
 import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.api.tools.IdleDetector;
 import bgu.dcr.az.api.exen.escan.AlgorithmMetadata;
@@ -44,7 +44,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private Problem problem;//the *global* problem
     private Mailer mailer; //the mailer object used by this execution
     private boolean shuttingdown; //this variable is used to check that the execution is doing the process of shuting down only once.
-    private ExecutionResult result = new ExecutionResult(); //the final execution result
+    private ExecutionResult result = new ExecutionResult(this); //the final execution result
     private AlgorithmMetadata algorithmMetadata; //the executed algorithm metadata
     private IdleDetector idleDetector; //if this execution need an idle detector then this field will hold it
     private ExecutorService executorService; // this is the thread pool that this execution use
@@ -57,8 +57,8 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private Multimap<String, ReportHook> reportHooks = HashMultimap.create();//list of report hook listeners
     private List<TerminationHook> terminationHooks = new LinkedList<TerminationHook>();
     private boolean idleDetectorNeeded = false;//hard set for the execution to use idle detection
-    private Timer timer = null;
-    
+    private Limiter limiter = null;
+
     /**
      *
      */
@@ -73,23 +73,18 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     }
 
     @Override
-    public void setTimer(Timer timer) {
-        this.timer = timer;
+    public void setLimiter(Limiter timer) {
+        this.limiter = timer;
     }
 
     @Override
-    public boolean haveTimeLeft() {
-        if (timer == null) return true;
-        boolean haveTime = timer.haveTimeLeft();
-        if (! haveTime){
-            result.setEndedWithTimeout();
-            getMailer().releaseAllBlockingAgents();
-            return false;
-        }else {
-            return true;
-        }
+    public void terminateDueToLimiter() {
+        shuttingdown = true;
+        result.toEndedByLimiterState();
+        getMailer().releaseAllBlockingAgents();
+        //stop();
     }
-    
+
     @Override
     public void hookIn(TerminationHook hook) {
         terminationHooks.add(hook);
@@ -118,12 +113,11 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
      * @param error
      */
     @Override
-    public void reportCrushAndStop(Exception ex, String error) {
+    public void terminateDueToCrush(Exception ex, String error) {
         if (!shuttingdown) {
-            setResult(new ExecutionResult(ex));
+            result.toCrushState(ex);
             shuttingdown = true;
             stop();
-//            System.out.println("PANIC! " + ex.getMessage() + ", [USER TEXT]: " + error);
         }
     }
 
@@ -182,11 +176,11 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
             return true;
         } catch (InstantiationException ex) {
             Logger.getLogger(AsyncExecution.class.getName()).log(Level.SEVERE, "every agent must have empty constractor", ex);
-            reportCrushAndStop(ex, "execution failed on initial state - every agent must have empty constractor");
+            terminateDueToCrush(ex, "execution failed on initial state - every agent must have empty constractor");
             return false;
         } catch (IllegalAccessException ex) {
             Logger.getLogger(AsyncExecution.class.getName()).log(Level.SEVERE, "agent cannot be abstract/ cannot have a private constractor", ex);
-            reportCrushAndStop(ex, "execution failed on initial state - agent cannot be abstract/ cannot have a private constractor");
+            terminateDueToCrush(ex, "execution failed on initial state - agent cannot be abstract/ cannot have a private constractor");
             return false;
         }
     }
@@ -210,7 +204,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
 
     @Override
     public void reportFinalAssignment(Assignment answer) {
-        result = new ExecutionResult(answer);
+        result.toSucceefulState(answer);
     }
 
     public IdleDetector getIdleDetector() {
@@ -255,10 +249,6 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         }
     }
 
-    protected void setResult(ExecutionResult result) {
-        this.result = result;
-    }
-
     @Override
     public ExecutionResult getResult() {
         return result;
@@ -275,14 +265,14 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
      * @param val
      */
     @Override
-    public synchronized void reportPartialAssignment(int var, int val) {
+    public synchronized void submitPartialAssignment(int var, int val) {
         /*
          * if (partialResult.getAssignment() == null) { partialResult = new
          * ExecutionResult(new Assignment()); }
          * partialResult.getAssignment().assign(var, val);
          */
         if (result.getAssignment() == null) {
-            result.setFinalAssignment(new Assignment());
+            result.toSucceefulState(new Assignment());
         }
 
         result.getAssignment().assign(var, val);
@@ -291,12 +281,31 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     @Override
     protected void _run() {
         try {
-            doStaticConfigurations();
+            //setup mailer
+            mailer.setExecution(this);
+
+            //setup idle detector
+            if (isIdleDetectionIsNeeded()) {
+                this.idleDetector = new IdleDetector(getGlobalProblem().getNumberOfVariables(), getMailer(), getAlgorithm().getAgentClass().getName());
+            }
+
+            // do any other configuration that maight be implemented on the deriving classes
+            //TODO: check if needed and if so check if can be splited into smaller functions with miningful names
             configure();
+
+            //setup statistic collectors
             for (StatisticCollector sc : statisticCollectors) {
                 sc.hookIn(agents, this);
             }
-            if (timer != null) timer.start();
+
+            //setup limiter
+            if (limiter != null) {
+                limiter.start(this);
+                for (AgentRunner ar : agentRunners) {
+                    ar.setLimiter(limiter);
+                }
+            }
+
             startExecution();
         } finally {
             finish();
@@ -312,21 +321,17 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         }
     }
 
-    private void doStaticConfigurations() {
-        mailer.setExecution(this);
-
-        if (isIdleDetectionIsNeeded()) {
-            this.idleDetector = new IdleDetector(getGlobalProblem().getNumberOfVariables(), getMailer(), getAlgorithm().getAgentClass().getName());
-        }
-
-    }
-
     /**
      * this function return true if idle detection is needed overrite this
      * function to change the idle detection activation setup
      */
     protected boolean isIdleDetectionIsNeeded() {
-        return getAlgorithm().isUseIdleDetector() || this.idleDetectorNeeded;
+        return getAlgorithm().isUseIdleDetector() || this.idleDetectorNeeded; //TODO: reduce for one variable
+    }
+
+    @Override
+    public Limiter getLimiter() {
+        return limiter;
     }
 
     protected void startExecution() {
@@ -345,7 +350,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt(); //reflag
                 //Logger.getLogger(AsyncExecution.class.getName()).log(Level.SEVERE, null, ex);
-                reportCrushAndStop(ex, "interupted while waiting for all agents to finish");
+                terminateDueToCrush(ex, "interupted while waiting for all agents to finish");
             }
         }
     }

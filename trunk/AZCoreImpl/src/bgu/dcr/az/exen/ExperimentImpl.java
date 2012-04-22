@@ -74,7 +74,7 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
 
                 if (currentTest != null && currentTest.getResult() != null) {
                     TestResult res = currentTest.getResult();
-                    switch (res.finishStatus) {
+                    switch (res.getState()) {
                         case CRUSH:
                         case WRONG_RESULT:
                             result = new ExperimentResult(currentTest, res);

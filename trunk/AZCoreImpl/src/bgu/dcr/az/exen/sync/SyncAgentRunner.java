@@ -9,6 +9,7 @@ import bgu.dcr.az.api.exen.AgentRunner;
 import bgu.dcr.az.api.ContinuationMediator;
 import bgu.dcr.az.api.agt.SimpleAgent;
 import bgu.dcr.az.api.exen.SystemClock;
+import bgu.dcr.az.api.exen.mdef.Limiter;
 import bgu.dcr.az.exen.AbstractExecution;
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
@@ -24,11 +25,17 @@ public class SyncAgentRunner implements AgentRunner {
     private SystemClock clock;
     private AbstractExecution exec;
     private Semaphore joinLock = new Semaphore(0);
+    private Limiter limiter = null;
 
     private SyncAgentRunner(State[] states, SystemClock clock, AbstractExecution exec) {
         this.states = states;
         this.clock = clock;
         this.exec = exec;
+    }
+
+    @Override
+    public void setLimiter(Limiter limiter) {
+        this.limiter = limiter;
     }
 
     public static SyncAgentRunner[] createAgentRunners(int amount, SystemClock clock, AbstractExecution exec, Agent[] agents) {
@@ -68,7 +75,7 @@ public class SyncAgentRunner implements AgentRunner {
         try {
             long prevTime = -1;
             while (!Thread.currentThread().isInterrupted() && !allFinished) {
-                if (!exec.haveTimeLeft()) return;//handle timeout
+
                 long currentTime = clock.time();
                 if (prevTime != currentTime) { //if the clock stop working then it is closed
                     prevTime = currentTime;
@@ -92,9 +99,15 @@ public class SyncAgentRunner implements AgentRunner {
                                 try {
                                     // notify the execution that i handling this agent
                                     exec.setAgentRunnerFor(s.current.getId(), this);
-                                    
+
                                     while (s.current.hasPendingMessages()) {
                                         s.current.processNextMessage();
+
+                                        //handle timeout
+                                        if (!limiter.canContinue(exec)) {
+                                            exec.terminateDueToLimiter();
+                                            return;
+                                        }
                                     }
                                     s.current.onMailBoxEmpty();
                                     if (s.current.isFinished() && !s.nested.isEmpty()) {
@@ -115,21 +128,14 @@ public class SyncAgentRunner implements AgentRunner {
                 }
 
                 if (allFinished) {
-//                    System.out.println("Agent Runner '" + Thread.currentThread().getName() + "' Requesting ShutDown");
                     clock.close();
-                    //System.out.println("Agent Find Idle, Joining The Rest");
-                    //clock.tick(); // joining the rest... 
-                    //System.out.println("Joind!");
-                    //return; //DONE..
                 }
                 if (!Thread.currentThread().isInterrupted()) {
                     try {
-//                        System.out.println("Agent Runner '" + Thread.currentThread().getName() + "' Ticking");
-                        
                         clock.tick();
-                        if (clock.isClosed()) return;
-                        
-//                        System.out.println("Agent Runner '" + Thread.currentThread().getName() + "' Done Ticking");
+                        if (clock.isClosed()) {
+                            return;
+                        }
                     } catch (InterruptedException ex) {
                         Thread.currentThread().interrupt(); //REFLAGING THE CURRENT THREAD.
                         System.out.println("Agent Runner Interrupted While Ticking!");
@@ -138,7 +144,7 @@ public class SyncAgentRunner implements AgentRunner {
 
             }
         } catch (Exception ex) {
-            exec.reportCrushAndStop(ex, "Agent Cause An Error!");
+            exec.terminateDueToCrush(ex, "Agent Cause An Error!");
             //BECAUSE THE AGENT RUNNER WILL RUN INSIDE EXECUTION SERVICE 
             //THIS IS THE LAST POINT THAT EXCEPTION CAN BE PRINTED
             //AFTER THIS POINT THE EXCEPTION WILL BE LOST (BUT CAN BE RETRIVED VIA THE RESULT OF THIS ALGORITHM)) 

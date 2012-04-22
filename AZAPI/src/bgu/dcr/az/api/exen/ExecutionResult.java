@@ -8,93 +8,124 @@ import bgu.dcr.az.api.DeepCopyable;
 import bgu.dcr.az.api.tools.Assignment;
 
 /**
- *
+ * TODO: hide all the to* so that correctness testers will not have the power to affect the result directly
  * @author bennyl
  */
-public class ExecutionResult implements DeepCopyable{
+public class ExecutionResult implements DeepCopyable {
 
     private Assignment finalAssignment = null;
-    private Exception crush = null;
-    private boolean timeout = false;
+    private Assignment correctAssignment = null;
+    private Exception crushReason = null;
+    private State state = State.UNKNOWN;
+    private Execution resultingExecution;
+
+    public ExecutionResult(Execution resultingExecution) {
+        this.resultingExecution = resultingExecution;
+    }
 
     @Override
     public String toString() {
-        if (timeout) return "Timeout!";
-        
-        if (crush == null){
-            return "Submitted Assignment: " + finalAssignment;
-        }else {
-            return "Crashed! (" + crush.getClass().getSimpleName() + ": " + crush.getMessage() + ")";
-        }
+        return state.toString(this);
     }
 
-    
-    /**
-     * indicate no solution result
-     */
-    public ExecutionResult(){        
+    public Execution getResultingExecution() {
+        return resultingExecution;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public Assignment getCorrectAssignment() {
+        return correctAssignment;
     }
     
+    public ExecutionResult toSucceefulState(Assignment finalAssignment) {
+        this.finalAssignment = finalAssignment;
+        this.state = State.SUCCESS;
+        return this;
+    }
+
     /**
      * indicate that the execution was ended with timeout
      */
-    public void setEndedWithTimeout(){
-        this.timeout = true;
-    }
-
-    /**
-     * @return true if the execution ended with timeout 
-     */
-    public boolean isExecutionTimedout() {
-        return timeout;
-    }
-    
-    
-    
-    /**
-     * indicate solution result
-     * @param finalAssignment 
-     */
-    public ExecutionResult(Assignment finalAssignment) {
-        this.finalAssignment = finalAssignment;
+    public ExecutionResult toEndedByLimiterState() {
+        this.state = State.LIMITED;
+        return this;
     }
 
     
-    /**
-     * indicate no solution because of a crush result
-     * @param crush 
-     */
-    public ExecutionResult(Exception crush) {
-        this.crush = crush;
+    public ExecutionResult toCrushState(Exception reason) {
+        crushReason = reason;
+        this.state = State.CRUSHED;
+        return this;
+    }
+    
+    public ExecutionResult toWrongState(Assignment currectAssignment){
+        this.correctAssignment = currectAssignment;
+        this.state = State.WRONG;
+        return this;
     }
 
-    public void setFinalAssignment(Assignment finalAssignment) {
-        this.finalAssignment = finalAssignment;
+    public boolean hasSolution() {
+        return this.finalAssignment != null;
     }
 
     public Assignment getAssignment() {
         return finalAssignment;
     }
 
-    public boolean hasSolution() {
-        return this.finalAssignment != null;
-    }
-    
-    public boolean isExecutionCrushed(){
-        return crush != null;
-    }
-    
-    public Exception getCrushReason(){
-        return crush;
+    public Exception getCrushReason() {
+        return crushReason;
     }
 
     @Override
     public ExecutionResult deepCopy() {
-        ExecutionResult ret = new ExecutionResult();
-        ret.crush = this.crush;
-        ret.finalAssignment = (this.finalAssignment == null? null: this.finalAssignment.copy());
-        ret.timeout = timeout;
+        ExecutionResult ret = new ExecutionResult(getResultingExecution());
+        ret.state = this.state;
+        ret.crushReason = this.crushReason;
+        ret.finalAssignment = (this.finalAssignment == null ? null : this.finalAssignment.copy());
         return ret;
     }
 
+    public static enum State {
+
+        UNKNOWN {
+
+            @Override
+            public String toString(ExecutionResult er) {
+                return "This Execution didnt ended yet so it result is unknown.";
+            }
+        },
+        WRONG {
+
+            @Override
+            public String toString(ExecutionResult er) {
+                return "This Execution ended with wrong results: it result was " + er.finalAssignment + " while example of a correct result is: " + er.correctAssignment;
+            }
+        },
+        CRUSHED {
+
+            @Override
+            public String toString(ExecutionResult er) {
+                return "The Execution crushed with the exception: " + (er.crushReason != null ? er.crushReason.getMessage() : "no-exception");
+            }
+        },
+        LIMITED {
+
+            @Override
+            public String toString(ExecutionResult er) {
+                return "The Execution was limited by the attached limiter " + (er.crushReason != null ? er.crushReason.getMessage() : "no-exception");
+            }
+        },
+        SUCCESS {
+
+            @Override
+            public String toString(ExecutionResult er) {
+                return "The Execution was ended successfully with the final assignment: " + er.finalAssignment;
+            }
+        };
+
+        public abstract String toString(ExecutionResult er);
+    }
 }

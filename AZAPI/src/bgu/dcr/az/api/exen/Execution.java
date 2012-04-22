@@ -9,7 +9,7 @@ import bgu.dcr.az.api.Hooks.ReportHook;
 import bgu.dcr.az.api.Hooks.TerminationHook;
 import bgu.dcr.az.api.Problem;
 import bgu.dcr.az.api.exen.mdef.StatisticCollector;
-import bgu.dcr.az.api.exen.mdef.Timer;
+import bgu.dcr.az.api.exen.mdef.Limiter;
 import bgu.dcr.az.api.tools.Assignment;
 import java.util.List;
 
@@ -67,19 +67,21 @@ public interface Execution extends Process {
     void log(int agent, String mailGroupKey, String data);
 
     /**
-     * will stop the current execution represented by this runtime object
-     * and raise execution done event, this particular method variant will add the error and the
-     * exception to the event
+     * will stop this execution
+     * and add the error and the exception to result
      * @param ex
      * @param error
      */
-    void reportCrushAndStop(Exception ex, String error);
+    void terminateDueToCrush(Exception ex, String error);
+    
+    /**
+     * will stop this execution and mark the result accordingly
+     */
+    void terminateDueToLimiter();
 
-    void reportPartialAssignment(int var, int val);
+    void submitPartialAssignment(int var, int val);
 
     void reportFinalAssignment(Assignment answer);
-    
-//    void swapPartialAssignmentWithFullAssignment();
     
     /**
      * will stop the execution - interupting all the agent runners!
@@ -91,13 +93,7 @@ public interface Execution extends Process {
      */
     Agent[] getAgents();
 
-    public void setTimer(Timer timer);
+    public void setLimiter(Limiter timer);
     
-    /**
-     * should be called by the agent runners *after* each message handling
-     * in the case of a timeout this method will not only return true but also instruct the mailer to free all blocking 
-     * agents so that they will be able to check for timeout too, the method set the result of the execution to reflect that there was a timeout,
-     * if this method returnes true then the agent runner should return (no need to do anything special - just stop running)
-     */
-    public boolean haveTimeLeft();
+    public Limiter getLimiter();
 }

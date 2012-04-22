@@ -337,7 +337,7 @@ public abstract class Agent extends Agt0DSL {
      * @param currentAssignment the assignment to submit
      */
     protected void submitCurrentAssignment(int currentAssignment) {
-        pops.exec.reportPartialAssignment(getId(), currentAssignment);
+        pops.exec.submitPartialAssignment(getId(), currentAssignment);
     }
 
     /**

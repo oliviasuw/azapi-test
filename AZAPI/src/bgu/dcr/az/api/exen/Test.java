@@ -24,18 +24,18 @@ import java.util.List;
 public interface Test extends Process {
 
     void addListener(TestListener l);
-    
+
     void removeListener(TestListener l);
-    
+
     /**
      * @return number of executions * number of algorithms in this test
      */
     int getLength();
 
     int getNumberOfExecutions();
-    
+
     List<String> getIncludedAlgorithmsInstanceNames();
-    
+
     /**
      * @return the name of this test
      */
@@ -48,27 +48,32 @@ public interface Test extends Process {
      * @return the test seed 
      */
     long getSeed();
+
     /**
      * @return the variable name that this test is executing
      */
     String getRunningVarName();
+
     /**
      * @return the starting value of var
      */
     float getVarStart();
+
     /**
      * @return the ending value of var
      */
     float getVarEnd();
+
     /**
      * @return the amount to add to the run var after the repeat count
      */
     float getTickSize();
+
     /**
      * @return how many executions will be under each run var value
      */
     int getRepeatCount();
-    
+
     /**
      * @return the current run var value
      */
@@ -79,12 +84,12 @@ public interface Test extends Process {
      * will return the current execution number between 0 and Test.getLength()
      */
     int getCurrentExecutionNumber();
-        
+
     /**
      * @return this test problem generator
      */
     ProblemGenerator getProblemGenerator();
-    
+
     /**
      * register statistic analayzer to this test
      * @param analyzer 
@@ -95,23 +100,23 @@ public interface Test extends Process {
      * @return list of all the registered statistics analayzers
      */
     List<StatisticCollector> getStatisticCollectors();
-    
+
     /**
      * return statistic collector for the given type
      * @param type the class of the statistic collector
      * @return the statistic collector if it is loaded or null if it not.
      */
-    <T extends StatisticCollector> T getStatisticCollector(Class<T> type);
-    
+     <T extends StatisticCollector> T getStatisticCollector(Class<T> type);
+
     /**
      * return the test result after execution
      */
     TestResult getResult();
-    
+
     CorrectnessTester getCorrectnessTester();
-    
+
     int getCurrentProblemNumber();
-    
+
     /**
      * you can set the correctness tester to null in order to remove it.
      * @param ctester 
@@ -119,58 +124,79 @@ public interface Test extends Process {
     void setCorrectnessTester(CorrectnessTester ctester);
 
     public String getCurrentExecutedAlgorithmInstanceName();
-    
-    public static enum FinishStatus{
+
+    public static enum State {
+
         SUCCESS,
         WRONG_RESULT,
         CRUSH;
     }
-    
-    public static class TestResult{
-        public final FinishStatus finishStatus;
-        public final Exception crushReason;
-        public final Assignment goodAssignment;
-        public final Execution badExecution;
+
+    public static class TestResult {
+
+        private State state;
+        private Exception crushReason;
+        private Assignment goodAssignment;
+        private Execution badExecution;
+        private Class failedClass;
 
         /**
          * constract successfull result
          */
         public TestResult() {
-            this.finishStatus = FinishStatus.SUCCESS;
+            this.state = State.SUCCESS;
             this.crushReason = null;
             this.goodAssignment = null;
             this.badExecution = null;
         }
-        
-        /**
-         * constract crushed result
-         * @param exception
-         * @param badExecution 
-         */
-        public TestResult(Exception exception, Execution badExecution) {
-            this.finishStatus = FinishStatus.CRUSH;
-            this.crushReason = exception;
-            this.goodAssignment = null;
-            this.badExecution = badExecution;
-        }
-        
-        /**
-         * constract wrong result
-         * @param goodAssignment
-         * @param badExecution 
-         */
-        public TestResult(Assignment goodAssignment, Execution badExecution) {
-            this.finishStatus = FinishStatus.WRONG_RESULT;
-            this.crushReason = null;
-            this.goodAssignment = goodAssignment;
-            this.badExecution = badExecution;
+
+        public State getState() {
+            return state;
         }
 
+        public TestResult toSuccessState(){
+            this.state = State.SUCCESS;
+            return this;
+        }
+        
+        public TestResult toCrushState(Exception ex, Class failedAlgorithmClass){
+            this.state = State.CRUSH;
+            this.crushReason = ex;
+            this.failedClass = failedAlgorithmClass;
+            return this;
+        }
+        
+        public TestResult toWrongResultState(Assignment good, Execution bad, Class failedAlgorithmClass){
+            this.state = State.WRONG_RESULT;
+            this.goodAssignment = good;
+            this.badExecution = bad;
+            this.failedClass = failedAlgorithmClass;
+            return this;
+        }
+
+        public Class getFailedClass() {
+            return failedClass;
+        }
+
+        public Exception getCrushReason() {
+            return crushReason;
+        }
+
+        public Execution getBadExecution() {
+            return badExecution;
+        }
+
+        public Assignment getGoodAssignment() {
+            return goodAssignment;
+        }
+        
+        
+        
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append("test result:\n").append("status= ").append(finishStatus);
-            switch (finishStatus){
+            sb.append("test result:\n").append("status= ").append(state);
+            switch (state) {
                 case CRUSH:
                     StringWriter sw = new StringWriter();
                     PrintWriter pw = new PrintWriter(sw);
@@ -178,21 +204,21 @@ public interface Test extends Process {
                     sb.append("crushReason: ").append(sw.toString());
                     break;
                 case WRONG_RESULT:
-                    sb.append("\nwrong assignment: ")
-                            .append("" + badExecution.getResult().getAssignment()).append(" with cost of = ").append(badExecution.getResult().getAssignment().calcCost(badExecution.getGlobalProblem()))
-                            .append(" while good assignment is: ").append(goodAssignment.toString()).append(" with cost of = ").append(goodAssignment.calcCost(badExecution.getGlobalProblem()));
+                    sb.append("\nwrong assignment: ").append("").append(badExecution.getResult().getAssignment()).append(" with cost of = ").append(badExecution.getResult().getAssignment().calcCost(badExecution.getGlobalProblem())).append(" while good assignment is: ").append(goodAssignment.toString()).append(" with cost of = ").append(goodAssignment.calcCost(badExecution.getGlobalProblem()));
                     break;
             }
             return sb.toString();
-            
-            
+
+
         }
-        
     }
-    
-    public static interface TestListener{
+
+    public static interface TestListener {
+
         void onTestStarted(Test source);
+
         void onExecutionStarted(Test source, Execution exec);
+
         void onExecutionEnded(Test source, Execution exec);
     }
 }

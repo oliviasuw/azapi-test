@@ -6,7 +6,7 @@ package bgu.dcr.az.api.exen;
 
 import bgu.dcr.az.api.ContinuationMediator;
 import bgu.dcr.az.api.agt.SimpleAgent;
-import bgu.dcr.az.api.exen.mdef.Timer;
+import bgu.dcr.az.api.exen.mdef.Limiter;
 
 /**
  *
@@ -41,4 +41,5 @@ public interface AgentRunner extends Runnable {
      */
     public void join() throws InterruptedException;
 
+    public void setLimiter(Limiter limiter);
 }

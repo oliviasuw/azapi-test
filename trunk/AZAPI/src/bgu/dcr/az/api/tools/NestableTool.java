@@ -119,7 +119,7 @@ public abstract class NestableTool {
         final PlatformOps nestedOps = Agent.PlatformOperationsExtractor.extract(nested);
         final PlatformOps originalOps = Agent.PlatformOperationsExtractor.extract(callingAgent);
 
-        nestedOps.setExecution(exec);
+        nestedOps.setExecution(exec, originalOps.getProblem());
         if (mailGroup != null) {
             nestedOps.setMailGroupKey(mailGroup);
         }

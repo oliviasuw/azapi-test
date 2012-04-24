@@ -55,7 +55,7 @@ public abstract class Agent extends Agt0DSL {
     /*
      * S T A T I S T I C S
      */
-    private long cc = 0;
+    //private long cc = 0;
     /**
      * H O O K S
      */
@@ -107,7 +107,7 @@ public abstract class Agent extends Agt0DSL {
      * @return the number of constraint checks this agent performed
      */
     public long getNumberOfConstraintChecks() {
-        return cc;
+        return ((AgentProblem)prob).cc;
     }
 
     /**
@@ -623,6 +623,20 @@ public abstract class Agent extends Agt0DSL {
             this.exec = exec;
             prob = new AgentProblem();
         }
+        
+        /**
+         * intended for calling from nested agent that actually sharing the same problem with the outer agent
+         * @param exec
+         * @param prob 
+         */
+        public void setExecution(Execution exec, ImmutableProblem prob){
+            this.exec = exec;
+            Agent.this.prob = prob;
+        }
+        
+        public ImmutableProblem getProblem(){
+            return prob;
+        }
 
         public void setMailGroupKey(String mailGroupKey) {
             if (numberOfSetIdCalls != 0) {
@@ -715,6 +729,8 @@ public abstract class Agent extends Agt0DSL {
      */
     public class AgentProblem implements ImmutableProblem {
 
+        long cc = 0;
+        
         public int getAgentId() {
             return Agent.this.getId();
         }

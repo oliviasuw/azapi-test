@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.exenl.stat;
+package bgu.dcr.az.exen.stat;
 
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Hooks;
@@ -16,7 +16,6 @@ import bgu.dcr.az.api.exen.stat.VisualModel;
 import bgu.dcr.az.api.exen.stat.vmod.LineVisualModel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

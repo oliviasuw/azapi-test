@@ -15,7 +15,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,7 +27,6 @@ import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.h2.tools.Csv;
-import org.h2.tools.SimpleResultSet;
 
 /**
  *
@@ -176,16 +174,52 @@ public enum DatabaseUnit {
             Database db = getDatabase();
             String allTablesSQL = "SELECT TABLE_NAME  FROM INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = 'PUBLIC'";
             ResultSet res = db.query(allTablesSQL);
-            
-            while (res.next()){
+
+            while (res.next()) {
                 String tableName = res.getString("TABLE_NAME");
                 ResultSet rs = db.query("select * from " + tableName);
                 Csv.getInstance().write(folder.getAbsolutePath() + "/" + tableName + ".csv", rs, null);
             }
-            
+
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseUnit.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    /**
+     * this method designed to be used by the experiment - if there were a limitation applied after the generation of 
+     * several statistics then the statistics that are belong to the problem that was limited 
+     * need to be cleaned - use this method to do so by providing all the problem numbers that was limited 
+     * this method will scan all the statistical data and delete all the data that relevant to the given problem numbers
+     * @param problemNumbers 
+     */
+    public void deleteAllStatisticsRelatedToProblems(List<Integer> problemNumbers, int numberOfAlgorithmsPerProblem) throws SQLException {
+        if (problemNumbers.isEmpty()) {
+            return;
+        }
+
+        Database db = getDatabase();
+        String allTablesSQL = "SELECT TABLE_NAME  FROM INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = 'PUBLIC'";
+        ResultSet res = db.query(allTablesSQL);
+        StringBuilder deleteSQL = new StringBuilder();
+
+        deleteSQL.append(" WHERE EXECUTION_NUMBER in (");
+        for (Integer pn : problemNumbers) {
+            final int pne = pn * numberOfAlgorithmsPerProblem;
+            for (int i = 0; i < numberOfAlgorithmsPerProblem; i++) {
+                deleteSQL.append(pne - i).append(",");
+            }
+        }
+        deleteSQL.deleteCharAt(deleteSQL.length() - 1);
+        deleteSQL.append(")");
+
+        while (res.next()) {
+            String tableName = res.getString("TABLE_NAME");
+            connection.runUpdate("DELETE FROM " + tableName + deleteSQL.toString());
+        }
+
+        System.out.println("DELETE ALL STATISTICS" + deleteSQL);
+        
     }
 
     public void start() throws ConnectionFaildException {

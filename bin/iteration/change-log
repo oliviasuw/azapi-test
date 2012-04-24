@@ -1,3 +1,7 @@
+quick fix 1
+- fixed: negative NCCC bug
+- removed: some algorithms that left inside the last build accidently
+
 AgentZero i5
 CPU version 
 this version contain many preperations to the CPU

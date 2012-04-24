@@ -87,6 +87,9 @@ public class StatusScreen extends javax.swing.JPanel {
                     v.setIcon(TEST_DONE_ICON);
                 }
 
+                mod.setValue(mod.getMaximum());
+                progressLabel.setText("Execution " + (mod.getValue()) + " of " + expLength);
+                
                 testList.revalidate();
                 testList.repaint();
             }

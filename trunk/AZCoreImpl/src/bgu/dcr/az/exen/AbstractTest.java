@@ -27,8 +27,9 @@ import bgu.dcr.az.api.exen.mdef.ProblemGenerator;
 import bgu.dcr.az.api.exen.mdef.Limiter;
 import bgu.dcr.az.exen.stat.db.DatabaseUnit;
 import bgu.dcr.az.exen.pgen.MapProblem;
-import bgu.dcr.az.exenl.stat.AbstractStatisticCollector;
+import bgu.dcr.az.exen.stat.AbstractStatisticCollector;
 import bgu.dcr.az.utils.DeepCopyUtil;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -254,6 +257,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
 
     @Override
     protected void _run() {
+        List<Integer> limitedProblems = new LinkedList<Integer>();
         try {
             initialize();
             validateConfiguration();
@@ -270,7 +274,6 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
             for (currentVarValue = start; currentVarValue <= end; currentVarValue = round3(currentVarValue + tickSize)) {
                 ConfigurationMetadata.bubbleDownVariable(this, runVar, (float) currentVarValue);
                 for (int i = 0; i < repeatCount; i++) {
-
 
                     Problem p = nextProblem(++pnum);
                     boolean limited = false;
@@ -302,6 +305,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
 
                     if (limited) {
                         System.out.println("Problem: " + getCurrentProblemNumber() + " was limited");
+                        limitedProblems.add(getCurrentProblemNumber());
                     }
 
                     if (res.getState() != State.SUCCESS || Thread.currentThread().isInterrupted()) {
@@ -324,6 +328,11 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
             //res = new TestResult(ex, null);
         } finally {
             DatabaseUnit.UNIT.signal(this);
+            try {
+                DatabaseUnit.UNIT.deleteAllStatisticsRelatedToProblems(limitedProblems, algorithms.size());
+            } catch (SQLException ex) {
+                Logger.getLogger(AbstractTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
     }
@@ -430,7 +439,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
     }
 
     /**
-     * 1 is the first problem
+     * 1 is the first problem while 0 is the first execution number - TODO - make 0 the first problem but then you have to change the statistics removal due to limitation code
      *
      * @param num
      * @return

@@ -18,7 +18,6 @@ import bgu.dcr.az.api.exen.stat.DBRecord;
 import bgu.dcr.az.api.exen.stat.Database;
 import bgu.dcr.az.api.exen.stat.VisualModel;
 import bgu.dcr.az.api.exen.stat.vmod.LineVisualModel;
-import bgu.dcr.az.exenl.stat.AbstractStatisticCollector;
 
 /**
  * @author alongrub

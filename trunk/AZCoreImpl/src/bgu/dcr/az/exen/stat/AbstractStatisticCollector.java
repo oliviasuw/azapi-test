@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.exenl.stat;
+package bgu.dcr.az.exen.stat;
 
 import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.exen.Test;

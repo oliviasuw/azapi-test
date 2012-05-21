@@ -2,10 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.exen.util;
+package bgu.dcr.az.utils;
 
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -15,9 +14,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Administrator
  */
 public class RoadBlock {
-   volatile boolean free = false;
-   Semaphore block = new Semaphore(0);
-   AtomicInteger waiting = new AtomicInteger(0);
+   private volatile boolean free = false;
+   private Semaphore block = new Semaphore(0);
+   private AtomicInteger waiting = new AtomicInteger(0);
    
    public void pass() throws InterruptedException{
        waiting.incrementAndGet();

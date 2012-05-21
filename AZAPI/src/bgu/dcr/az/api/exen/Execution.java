@@ -10,6 +10,7 @@ import bgu.dcr.az.api.Hooks.TerminationHook;
 import bgu.dcr.az.api.Problem;
 import bgu.dcr.az.api.exen.mdef.StatisticCollector;
 import bgu.dcr.az.api.exen.mdef.Limiter;
+import bgu.dcr.az.api.exen.vis.VisualizationFrameSynchronizer;
 import bgu.dcr.az.api.tools.Assignment;
 import java.util.List;
 
@@ -29,6 +30,8 @@ public interface Execution extends Process {
     void hookIn(ReportHook hook);
     
     void hookIn(TerminationHook hook);
+    
+    void setVisualizationFrameSynchronizer(VisualizationFrameSynchronizer vsync);
     
     /**
      * @return the global problem -

@@ -293,6 +293,10 @@ public class Assignment implements Serializable, DeepCopyable {
         return assignment.keySet().size();
     }
 
+    public boolean isFull(ImmutableProblem problem){
+        return getNumberOfAssignedVariables() == problem.getNumberOfVariables();
+    }
+    
     /**
      * return true if the assignment is consistent with assigning var->val
      *

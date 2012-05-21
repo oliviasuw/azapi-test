@@ -30,13 +30,11 @@ public class Hooks {
          * callback implementation
          * @param msg
          */
-        public abstract void hook(Agent a, Message msg);
+        public abstract void hook(int senderId, int recepientId, Message msg);
 
         @Override
         public void hookInto(Execution ex) {
-            for (Agent a : ex.getAgents()) {
-                a.hookIn(this);
-            }
+            ex.getMailer().hookIn(this);
         }
     }
 

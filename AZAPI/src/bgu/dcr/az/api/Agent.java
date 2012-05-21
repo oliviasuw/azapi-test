@@ -13,7 +13,10 @@ import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.exp.RepeatedCallingException;
 import bgu.dcr.az.api.exen.Execution;
 import bgu.dcr.az.api.exen.escan.VariableMetadata;
+import bgu.dcr.az.api.exp.UnsupportedMessageException;
 import bgu.dcr.az.api.tools.Assignment;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -52,14 +55,6 @@ public abstract class Agent extends Agt0DSL {
     private boolean finished = false; //The Status of the current Agent - TODO: TRANSFORM INTO A STATUS ENUM SO WE CAN BE ABLE TO QUERY THE AGENT ABOUT IT CURRENT STATUS
     private Message currentMessage = null; //The Current Message (The Last Message That was taken from the mailbox)
     private PlatformOps pops; //Hidden Platform Operation 
-    /*
-     * S T A T I S T I C S
-     */
-    //private long cc = 0;
-    /**
-     * H O O K S
-     */
-    protected List<Hooks.BeforeMessageSentHook> beforeMessageSentHooks;
     /**
      * collection of hooks that will get called before message processing on
      * this agent
@@ -74,6 +69,7 @@ public abstract class Agent extends Agt0DSL {
      */
     private String algorithmName;
     private boolean usingIdleDetection;
+    private HashMap<String, Method> msgToMethod;
 
     /**
      * create a default agent - this agent will have id = -1 so you must
@@ -81,7 +77,6 @@ public abstract class Agent extends Agt0DSL {
      */
     public Agent() {
         this.id = -1;
-        beforeMessageSentHooks = new ArrayList<Hooks.BeforeMessageSentHook>();
         beforeMessageProcessingHooks = new ArrayList<Hooks.BeforeMessageProcessingHook>();
         beforeCallingFinishHooks = new ArrayList<Hooks.BeforeCallingFinishHook>();
         this.pops = new PlatformOps();
@@ -97,7 +92,24 @@ public abstract class Agent extends Agt0DSL {
             }
             this.algorithmName = name;
         }
+        
+        msgToMethod = new HashMap<String, Method>();
+        scanMethods();
     }
+    
+    
+    /**
+     * will scan methods that should handle messages
+     */
+    private void scanMethods() {
+        for (Method m : getClass().getMethods()) {
+            if (m.isAnnotationPresent(WhenReceived.class)) {
+                m.setAccessible(true); // bypass the security manager rechecking - make reflected calls faster
+                msgToMethod.put(m.getAnnotation(WhenReceived.class).value(), m);
+            }
+        }
+    }
+
 
     public boolean isUsingIdleDetection() {
         return usingIdleDetection;
@@ -123,9 +135,6 @@ public abstract class Agent extends Agt0DSL {
      */
     protected Message createMessage(String name, Object[] args) {
         Message ret = new Message(name, getId(), args);
-        for (BeforeMessageSentHook hook : beforeMessageSentHooks) {
-            hook.hook(this, ret);
-        }
         beforeMessageSending(ret);
         return ret;
     }
@@ -162,15 +171,6 @@ public abstract class Agent extends Agt0DSL {
         return currentMessage;
     }
 
-    /**
-     * hook-in to this agent class in the given hook point hooks are mostly used
-     * for "automatic services/tools" like timestamp etc.
-     *
-     * @param hook
-     */
-    public void hookIn(Hooks.BeforeMessageSentHook hook) {
-        beforeMessageSentHooks.add(hook);
-    }
 
     /**
      * hook-in to this agent class in the given hook point hooks are mostly used
@@ -224,13 +224,41 @@ public abstract class Agent extends Agt0DSL {
      *
      * @throws InterruptedException
      */
-    public abstract void processNextMessage() throws InterruptedException;
+    public final void processNextMessage() throws InterruptedException{
+        Message msg = nextMessage(); //will block until there will be messages in the q
+        if (msg == null) return;
+        
+        for (Hooks.BeforeMessageProcessingHook hook : beforeMessageProcessingHooks) {
+            hook.hook(this, msg);
+        }
+        msg = beforeMessageProcessing(msg);
+        if (msg == null) {
+            return; //DUMPING MESSAGE..
+        }
+        Method mtd = msgToMethod.get(msg.getName());
+        if (mtd == null) {
+            throw new UnsupportedMessageException("no method to handle message: '" + msg.getName() + "' was found (use @WhenReceived on PUBLIC functions only)");
+        }
+        try {
+            mtd.invoke(this, msg.getArgs());
+            return;
+        } catch (IllegalArgumentException e) {
+            //e.printStackTrace();
+            throw new UnsupportedMessageException("wrong parameters passed with the message " + msg.getName());
+        } catch (IllegalAccessException e) {
+            //e.printStackTrace();
+            throw new InternalErrorException("internal error while processing message: '" + msg.getName() + "' in agent " + getId(), e);
+        } catch (InvocationTargetException e) {
+            //e.printStackTrace();
+            throw new InternalErrorException("internal error while processing message: '" + msg.getName() + "' in agent " + getId() + ": " + e.getCause().getMessage() + " (see cause)", e.getCause());
+        }
+    }
 
     /**
      * @return true if this agent have messages in its mailbox
      */
     public boolean hasPendingMessages() {
-        return mailbox.size() > 0;
+        return mailbox.availableMessages() > 0;
     }
 
     /**
@@ -584,6 +612,17 @@ public abstract class Agent extends Agt0DSL {
         send(SYS_TERMINATION_MESSAGE).toAll(range(0, getNumberOfVariables() - 1));
     }
 
+     /**
+     * you can override this method to perform preprocessing before messages arrive to their functions
+     * you can change the message or even return completly other one - if you will return null 
+     * the message is rejected and dumped.
+     * @param msg
+     * @return 
+     */
+    protected Message beforeMessageProcessing(Message msg) {
+        return msg;
+    }
+    
     /**
      * this class contains all the "hidden but public" methods, because the user
      * should extend the agent class all the "platform" operations can be called
@@ -604,13 +643,19 @@ public abstract class Agent extends Agt0DSL {
         private Execution exec; //The Execution That This Agent Is Currently Running Within
 
         /**
+         * @return all the messages names that the algorithm that is represented by this agent can send can send
+         */
+        public Set<String> algorithmMessages(){
+            return msgToMethod.keySet();
+        }
+        
+        /**
          * used especially in nested agents - where you want to copy all the hooks into the nested agent.
          * @param b the agent to copy this agent hooks into
          */
         public void copyHooksTo(Agent b) {
             b.beforeCallingFinishHooks = beforeCallingFinishHooks;
             b.beforeMessageProcessingHooks = beforeMessageProcessingHooks;
-            b.beforeMessageSentHooks = beforeMessageSentHooks;
         }
 
         /**

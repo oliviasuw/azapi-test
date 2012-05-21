@@ -15,7 +15,7 @@ public interface MessageQueue {
 
     void add(Message e);
 
-    int size();
+    int availableMessages();
 
     Message take() throws InterruptedException;
 

@@ -20,8 +20,11 @@ public interface Experiment extends Process {
     /**
      * @return the number of executions in this experiment
      */
-    int getLength();
+    int getTotalNumberOfExecutions();
     
+    /**
+     * return list of all the tests that are loaded to this experiment object
+     */
     List<Test> getTests();
     
     ExperimentResult getResult();
@@ -29,7 +32,9 @@ public interface Experiment extends Process {
     void addListener(ExperimentListener l);
     
     void removeListener(ExperimentListener l);
-
+    
+    boolean isVisual();
+    
     /**
      * return the global thread pool used by this experiment
      */

@@ -1,10 +1,9 @@
 package bgu.dcr.az.api.exen;
 
 import bgu.dcr.az.api.Agent;
+import bgu.dcr.az.api.Hooks;
 import bgu.dcr.az.api.Message;
-import bgu.dcr.az.api.exen.MessageQueue;
 import bgu.dcr.az.api.exp.UnRegisteredAgentException;
-import bgu.dcr.az.api.exen.Execution;
 
 /**
  * This is a familiar concept, an Interface for designing mailers – the mailer is attached to the Execution object – what means that you should be able to attach different mailers to test the algorithm with (some mailers can help with producing algorithm visualization and some can be used for debugging).
@@ -68,4 +67,9 @@ public interface Mailer {
      * as it may harm the integrity of its results
      */
     public void releaseAllBlockingAgents();
+    
+    /**
+     * hook that will get called whenever the mailer will get new message
+     */
+    public void hookIn(Hooks.BeforeMessageSentHook hook);
 }

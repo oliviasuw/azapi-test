@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <!-- INTERFACE -->
+    <cc:interface>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <table id="header" cellspacing="0px" cellpadding="0px"> 
+            <tr>
+
+                <td align="center">
+                    <img id="logo-image" src="/AzLaboratory/faces/images/az-logo.png" style="margin: 10px; margin-bottom: 15px;"/> 
+                </td>
+            </tr>
+
+            <tr>
+                <td class="nav-wrapper">
+                    <ul id="nav" style="position: relative; float: left; left: 48%; margin: 0px auto;">
+                        <ui:repeat var="page" value="#{labNavigator.pages}">
+                            <li> <h:outputLink styleClass="#{page == labNavigator.currentPageName? 'current-view': 'not-current-view'}" value="/AzLaboratory/faces/main/#{page}.xhtml"> #{page} </h:outputLink> </li>
+                        </ui:repeat>
+                    </ul>
+                </td>
+            </tr>
+
+        </table>
+
+    </cc:implementation>
+</html>

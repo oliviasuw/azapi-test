@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:h="http://java.sun.com/jsf/html">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="title" required="true"/>
+        <cc:attribute name="imgUrl" required="true"/>
+        <cc:attribute name="date" required="true"/>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <div class="search-result" >
+            <tr>
+                <td>
+                    <img src="#{cc.attrs.imgUrl}"/>
+                </td>
+
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                #{cc.attrs.title}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                #{cc.attrs.date}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </div>
+    </cc:implementation>
+</html>

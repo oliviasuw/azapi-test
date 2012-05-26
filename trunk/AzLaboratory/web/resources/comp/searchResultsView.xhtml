@@ -15,7 +15,7 @@
         <table class="search-result" >
             <tr>
                 <td>
-                    <img class="search-result-img" src="/AzLaboratory/faces/images/pic/#{cc.attrs.article.imgUrl}.png"/>
+
                 </td>
 
                 <td>
@@ -23,13 +23,13 @@
                         <tr>
                             <td class="search-result-title">
                                 <h:form>
-                                <p:commandLink action="#{search.changeViewed(cc.attrs.article.id)}" value="#{cc.attrs.article.title}" update=":search-view"></p:commandLink>
+                                <p:commandLink action="#{search.changeViewed(cc.attrs.article.id)}" value="#{cc.attrs.article.title}" update=":search-view"/>
                                 </h:form>
                             </td>
                         </tr>
                         <tr>
                             <td class="search-result-date">
-                                #{cc.attrs.article.date}
+                                #{cc.attrs.article.creationDate}
                             </td>
                         </tr>
                     </table>

@@ -90,7 +90,7 @@
                                             LATEST ARTICLES
                                         </td>
                                     </tr>
-                                    <ui:repeat var="article" value="#{articleList.articles}">
+                                    <ui:repeat var="article" value="#{articleList.articles(3)}">
                                         <tr>
                                             <td>
                                                 <az:articleView user="#{articleList.user(article)}" date="#{articleList.date(article)}" title="#{articleList.title(article)}"></az:articleView>

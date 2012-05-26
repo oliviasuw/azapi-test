@@ -29,6 +29,7 @@
                                 <td colspan="4" class="news-left-search-input" width="100%">
                                     <h:inputText class="news-search-input" id="search" required="true" value="" label="search" autocomplete="false"/>
                                     <p:watermark styleClass="news-search-watermark" value="To search - type key word and press enter" for="search"/>
+                                    
                                 </td>
                             </h:form>
                         </tr>
@@ -38,20 +39,24 @@
                                     <table>
                                         <tr>
                                             <td>
-                                                <p:commandButton  action="#{search.recent()}" value="Recent" styleClass="news-search-button #{search.watchingNow == 'recent'? 'news-watching-now':''}" update=":results,:buttons"/>
+                                                <p:commandButton  action="#{search.changeStateTo('recent')}" value="Recent" styleClass="news-search-button #{search.watchingNow.toString() == 'recent'? 'news-watching-now':''}" update=":results,:buttons"/>
                                             </td>
                                             <td>
-                                                <p:commandButton  action="#{search.comments()}" value="Comments" styleClass="news-search-button #{search.watchingNow == 'comments'? 'news-watching-now':''}" update=":results,:buttons"/>
+                                                <p:commandButton  action="#{search.changeStateTo('comments')}" value="Comments" styleClass="news-search-button #{search.watchingNow.toString() == 'comments'? 'news-watching-now':''}" update=":results,:buttons"/>
                                             </td>
                                             <td>
-                                                <p:commandButton  action="#{search.tags()}" value="Tags" styleClass="news-search-button #{search.watchingNow == 'tags'? 'news-watching-now':''}" update=":results,:buttons"/>
+                                                <p:commandButton  action="#{search.changeStateTo('tags')}" value="Tags" styleClass="news-search-button #{search.watchingNow.toString() == 'tags'? 'news-watching-now':''}" update=":results,:buttons"/>
                                             </td>
                                             <td>
-                                                <p:commandButton  action="#{search.popular()}" value="Popular" styleClass="news-search-button #{search.watchingNow == 'popular'? 'news-watching-now':''}" update=":results,:buttons" />
+                                                <p:commandButton  action="#{search.changeStateTo('popular')}" value="Popular" styleClass="news-search-button #{search.watchingNow.toString() == 'popular'? 'news-watching-now':''}" update=":results,:buttons" />
+                                                
                                             </td>
-
+                                            <td>
+                                                <p:commandLink action="#{search.writeSomething()}" value="Write Something"/>
+                                            </td>
                                         </tr>
                                     </table>
+                                    
                                 </h:form>
                             </td>
                         </tr>
@@ -67,7 +72,18 @@
                                             </tr>
                                         </ui:repeat>     
                                     </table>
+                                    <div class="news-paging"> 
+                                        <h:form>
+                                            <p:commandLink action="#{search.prevPage()}" value="prev" update=":results"/>
+                                            page #{search.currentPage} of #{search.totalPages}
+                                            <p:commandLink action="#{search.nextPage()}" value="next" update=":results"/>
+                                            <br/>
+                                            #{search.getCurrentUser()}
+                                            
+                                        </h:form>
+                                    </div>
                                 </p:panel>
+
                             </td>
                         </tr> 
                     </table>
@@ -82,15 +98,15 @@
                             </tr>
                             <tr>
                                 <td class="news-search-result-date">
-                                    by <span class="news-search-result-date-inner">#{search.viewed.author}</span> on <span class="news-search-result-date-inner">#{search.viewed.date}</span> 
+                                    by <span class="news-search-result-date-inner">#{search.viewed.users.name}</span> on <span class="news-search-result-date-inner">#{search.viewed.creationDate}</span> 
                                 </td>
                             </tr>
                             <tr>
                                 <td class="news-search-result-content">
-                                    #{search.viewed.content}
+                                    #{search.getViewdContent()}
                                 </td>
                             </tr>
-                            
+
                         </table>
                     </p:panel>
                 </td>

@@ -2,38 +2,39 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html">
 
     <!-- INTERFACE -->
     <cc:interface>
-        <cc:attribute name="title" required="true"/>
-        <cc:attribute name="imgUrl" required="true"/>
-        <cc:attribute name="date" required="true"/>
+        <cc:attribute name="article" required="true"/>
     </cc:interface>
 
     <!-- IMPLEMENTATION -->
     <cc:implementation>
-        <div class="search-result" >
+        <table class="search-result" >
             <tr>
                 <td>
-                    <img src="#{cc.attrs.imgUrl}"/>
+                    <img class="search-result-img" src="/AzLaboratory/faces/images/pic/#{cc.attrs.article.imgUrl}.png"/>
                 </td>
 
                 <td>
                     <table>
                         <tr>
-                            <td>
-                                #{cc.attrs.title}
+                            <td class="search-result-title">
+                                <h:form>
+                                <p:commandLink action="#{search.changeViewed(cc.attrs.article.id)}" value="#{cc.attrs.article.title}" update=":search-view"></p:commandLink>
+                                </h:form>
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                #{cc.attrs.date}
+                            <td class="search-result-date">
+                                #{cc.attrs.article.date}
                             </td>
                         </tr>
                     </table>
                 </td>
             </tr>
-        </div>
+        </table>
     </cc:implementation>
 </html>

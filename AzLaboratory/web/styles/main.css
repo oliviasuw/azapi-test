@@ -66,6 +66,11 @@ a:hover {
     text-decoration: underline;
 }
 
+
+.ui-button-text{
+    padding: 0 !important;   
+}
+
 /* INTRO RELATED */
 .intro {
     background-color: rgba(255,255,255,0.4);
@@ -218,7 +223,7 @@ a:hover {
     margin-left: auto;
     margin-right: auto;
     padding: 10px;    
-    
+
     background-color: white;
     border: 1px rgb(192,192,192) solid;
     text-align: left;
@@ -403,7 +408,7 @@ a:hover {
 .welcome{
     background: white;
     border: 1px rgb(202,202,202) solid;
-/*    width:80%;*/
+    /*    width:80%;*/
     /*    margin-left: 150px;
         margin-right: 150px; */
     margin-left: auto;
@@ -516,6 +521,171 @@ a:hover {
 }
 
 
+
+/*News Related*/
+
+.news{
+    background: rgb(247,247,247);
+    border: 1px rgb(202,202,202) solid;
+    margin-left: 150px;
+    margin-right: 150px;
+    margin-top: 50px;
+    margin-bottom: 30px;
+}
+
+.news .ui-panel{
+    padding: 0;
+}
+
+.news .news-right{
+/*    background-color: rgba(255,255,255,0.4);*/
+background-color: white;
+    margin: auto;
+    border: solid 1px rgb(210,210,210);
+    margin-top: 10px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+
+    /* SHADOW */
+    -moz-box-shadow:    0px 0px 5px 3px #ccc;
+    -webkit-box-shadow: 0px 0px 5px 3px #ccc;
+    box-shadow:         0px 0px 10px 2px #ccc;
+}
+
+.news .news-left{
+    vertical-align: top;
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+.news .news-right .ui-widget-content {
+    border: 0;
+}
+
+.news .news-left-title{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: lighter;
+    letter-spacing: normal;
+    color: rgb(102,102,102);
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 20px;
+    border-bottom: 6px rgb(232,232,232) solid;
+}
+
+.news .news-left-search-input{
+    padding-top: 25px;
+    padding-bottom: 25px;
+    border-bottom: 6px rgb(232,232,232) solid;
+    
+}
+
+.news .news-search-input{
+    width: 300px;
+    height: 30px;
+    border: 1px #ccc solid;
+    background-color: rgb(247,247,247);
+    font-style: italic;
+}
+
+.news .news-search-buttons{
+    padding-top: 20px;
+}
+
+.news .news-search-results{
+    background-color: rgb(247,247,247);
+}
+
+.news .news-search-result{
+    padding: 30px;
+    border: none;
+}
+
+.news .news-search-result-title{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 30px;
+/*    font-weight: lighter;*/
+    letter-spacing: normal;
+    color: rgb(72,72,72);
+    padding: 20px;
+    padding-top: 0;
+    padding-bottom: 15px;
+/*    margin-left: 40px;*/
+    border-bottom: 3px rgb(212,212,212) double;
+}
+
+.news .news-search-result-date{
+    padding-top: 15px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-style: italic;
+    letter-spacing: normal;
+    color: rgb(172,172,172);
+    padding-bottom: 10px;
+}
+
+.news .news-search-result-date-inner{
+    padding-top: 15px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    font-style: normal;
+    letter-spacing: normal;
+    color: rgb(122,122,122);
+    
+}
+
+
+.news .news-search-result-content{
+    padding-top: 15px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    font-style: normal;
+    letter-spacing: normal;
+    color: rgb(102,102,102);
+}
+
+.news .news-search-button{
+    text-align: center;
+    font-size: 13px;
+    color: rgb(72,72,72);
+    font-weight: lighter;
+    background: rgb(222,222,222) !important;
+    box-shadow: none !important;
+    moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    padding: 7px;
+    border:1px rgb(222,222,222) solid;
+
+}
+
+.news .news-watching-now{
+    text-align: center;
+    font-size: 13px;
+    color: rgb(242,242,242);
+    font-weight: lighter;
+    background: rgb(41,58,67) !important;
+    box-shadow: none !important;
+    moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    padding: 7px;
+    border:1px rgb(41,58,67) solid;
+    text-shadow: none;
+}
+
+.news .news-search-results{
+    border: 0;
+}
+
+.news .ui-panel .ui-panel-content {
+    padding: 0;
+}
+
+
+
+
+/*AZ Widgets*/
+
 /*Post Related*/
 
 .post .post-title{
@@ -574,52 +744,28 @@ a:hover {
     padding-bottom: 10px;
 }
 
-/*News Related*/
 
-.news{
-    background: white;
+/*Search Result Related*/
+
+.search-result .search-result-img{
+    padding: 3px;
     border: 1px rgb(202,202,202) solid;
-    margin-left: 150px;
-    margin-right: 150px;
-    margin-top: 50px;
-    margin-bottom: 30px;
 }
 
-.news .news-right{
-    background-color: rgba(255,255,255,0.4);
-    margin: auto;
-    border: solid 1px rgb(210,210,210);
-    margin-top: 10px;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-
-    /* SHADOW */
-    -moz-box-shadow:    0px 0px 5px 3px #ccc;
-    -webkit-box-shadow: 0px 0px 5px 3px #ccc;
-    box-shadow:         0px 0px 10px 2px #ccc;
-}
-
-.news .news-left{
-}
-
-.news .news-left-title{
+.search-result .search-result-title{
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: lighter;
     letter-spacing: normal;
     color: rgb(102,102,102);
-    padding-bottom: 20px;
-    border-bottom: 6px rgb(232,232,232) solid;
+    padding-bottom: 10px;
 }
 
-.news .news-left-search-input{
-    padding-top: 25px;
-    padding-bottom: 25px;
-    border-bottom: 6px rgb(232,232,232) solid;
-}
-
-.news .news-search-input{
-    width: 300px;
-    height: 30px;
-    border: 1px #ccc solid;
+.search-result .search-result-date{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    font-weight: lighter;
+    letter-spacing: normal;
+    color: rgb(192,192,192);
+    padding-bottom: 10px;
 }

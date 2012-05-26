@@ -4,7 +4,8 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:az="http://java.sun.com/jsf/composite/comp">
+      xmlns:az="http://java.sun.com/jsf/composite/comp"
+      xmlns:f="http://java.sun.com/jsf/core">
     <h:head>
         <title>Agent Zero</title>
 
@@ -15,51 +16,83 @@
         <az:labHeader/>
         <table class="news" id="welcome-table"  cellspacing="15px" cellpadding="0px">
             <tr coll-span="3">
-                <td class="news-left" width="100%">
+                <td colspan="4" class="news-left" width="35%">
                     <table width="100%">
                         <tr>
-
-                            <td class="news-left-title">
+                            <td colspan="4" class="news-left-title">
                                 welcome to the AgentZero NewsStand. Your source<br/>
                                 for DCR related news, articles and new discoveries.
                             </td>
                         </tr>
                         <tr>
                             <h:form>
-                                <td class="news-left-search-input" width="100%">
+                                <td colspan="4" class="news-left-search-input" width="100%">
                                     <h:inputText class="news-search-input" id="search" required="true" value="" label="search" autocomplete="false"/>
-                                    <p:watermark value="To search - type key word and press enter" for="search"/>
+                                    <p:watermark styleClass="news-search-watermark" value="To search - type key word and press enter" for="search"/>
                                 </td>
                             </h:form>
                         </tr>
                         <tr>
                             <td>
-                                <h:commandButton action="#{search.recent()}" value="Recent" class="news-search-buttons"/>
-                            </td>
-                            <td>
-                                <h:commandButton action="#{search.comments()}" value="Comments" class="news-search-buttons"/>
-                            </td>
-                            <td>
-                                <h:commandButton action="#{search.tags()}" value="Tags" class="news-search-buttons"/>
-                            </td>
-                            <td>
-                                <h:commandButton action="#{search.popular()}" value="Popular" class="news-search-buttons"/>
+                                <h:form id="buttons" class="news-search-buttons">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <p:commandButton  action="#{search.recent()}" value="Recent" styleClass="news-search-button #{search.watchingNow == 'recent'? 'news-watching-now':''}" update=":results,:buttons"/>
+                                            </td>
+                                            <td>
+                                                <p:commandButton  action="#{search.comments()}" value="Comments" styleClass="news-search-button #{search.watchingNow == 'comments'? 'news-watching-now':''}" update=":results,:buttons"/>
+                                            </td>
+                                            <td>
+                                                <p:commandButton  action="#{search.tags()}" value="Tags" styleClass="news-search-button #{search.watchingNow == 'tags'? 'news-watching-now':''}" update=":results,:buttons"/>
+                                            </td>
+                                            <td>
+                                                <p:commandButton  action="#{search.popular()}" value="Popular" styleClass="news-search-button #{search.watchingNow == 'popular'? 'news-watching-now':''}" update=":results,:buttons" />
+                                            </td>
+
+                                        </tr>
+                                    </table>
+                                </h:form>
                             </td>
                         </tr>
-                        <h:form>
-                            <ui:repeat var="result" value="#{search.results}">
-                                <tr>
-                                    <az:searchResultsView imgUrl="/AzLaboratory/faces/images/pic/#{result.imgUrl}.png" title="#{result.title}" date="#{result.date}"/>
-                                </tr>                                    
-                            </ui:repeat>    
-                        </h:form>
-
+                        <tr>
+                            <td>
+                                <p:panel id="results" styleClass="news-search-results">
+                                    <table>
+                                        <ui:repeat var="result" value="#{search.results}">
+                                            <tr>
+                                                <td>
+                                                    <az:searchResultsView article="#{result}"/>
+                                                </td>
+                                            </tr>
+                                        </ui:repeat>     
+                                    </table>
+                                </p:panel>
+                            </td>
+                        </tr> 
                     </table>
                 </td>
-                <td class="news-right" width="100%">
-                    <table width="100%">  
-                        Bla Bla
-                    </table>
+                <td class="news-right" width="65%">
+                    <p:panel id="search-view">
+                        <table width="100%" class="news-search-result">  
+                            <tr>
+                                <td class="news-search-result-title">
+                                    #{search.viewed.title}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="news-search-result-date">
+                                    by <span class="news-search-result-date-inner">#{search.viewed.author}</span> on <span class="news-search-result-date-inner">#{search.viewed.date}</span> 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="news-search-result-content">
+                                    #{search.viewed.content}
+                                </td>
+                            </tr>
+                            
+                        </table>
+                    </p:panel>
                 </td>
             </tr>
         </table>

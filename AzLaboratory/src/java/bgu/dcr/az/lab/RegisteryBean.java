@@ -6,23 +6,33 @@ package bgu.dcr.az.lab;
 
 import bgu.dcr.az.lab.data.Users;
 import bgu.dcr.az.lab.db.DBManager;
+import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 
 /**
  *
- * @author Inna
+ * @author kdima85
  */
 @ManagedBean(eager = true)
-@SessionScoped
-public class SimpleLogin {
+@ApplicationScoped
+public class RegisteryBean {
+    
+    String name;
+    String password;
+    String email;
 
-    String email = "";
-    String password = "";
-    SimpleLogin user;
 
-    public SimpleLogin() {
+
+    
+    public String handleRegistry(){
+        DBManager.UNIT.registerNewUser(new Users(email, password, name, new byte[0], false));
+        return "Laboratory";
     }
+    
+    
+
+    
+  
 
     public String getEmail() {
         return email;
@@ -32,6 +42,14 @@ public class SimpleLogin {
         this.email = email;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -39,13 +57,7 @@ public class SimpleLogin {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    public String checkValidUser() {
-        Users u = DBManager.UNIT.isVerifiedUserCredentials(this.email, this.password);
-        if (u !=null) {
-            SessionManager.putInSessionMap(SessionManager.CURRENT_USER, u);
-            return "Welcome";
-        }
-        return "Laboratory";
-    }
+    
+    
+    
 }

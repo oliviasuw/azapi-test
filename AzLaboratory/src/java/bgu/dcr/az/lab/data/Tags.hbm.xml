@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 21:13:44 25/05/2012 by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+    <class name="bgu.dcr.az.lab.data.Tags" table="tags" catalog="agent_zero_lab">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="name" type="string">
+            <column name="name" length="80" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

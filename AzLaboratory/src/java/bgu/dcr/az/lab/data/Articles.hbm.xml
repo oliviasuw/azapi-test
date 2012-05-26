@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 21:13:44 25/05/2012 by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+    <class name="bgu.dcr.az.lab.data.Articles" table="articles" catalog="agent_zero_lab">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="users" class="bgu.dcr.az.lab.data.Users" fetch="select">
+            <column name="user" not-null="true" />
+        </many-to-one>
+        <property name="title" type="string">
+            <column name="title" length="150" not-null="true" />
+        </property>
+        <property name="content" type="binary">
+            <column name="content" />
+        </property>
+        <property name="creationDate" type="timestamp">
+            <column name="creationDate" length="19" not-null="true" />
+        </property>
+        <property name="viewedAmount" type="int">
+            <column name="viewedAmount" not-null="true" />
+        </property>
+        <property name="type" type="boolean">
+            <column name="type" not-null="true" />
+        </property>
+        <set name="commentses" inverse="true">
+            <key>
+                <column name="article" not-null="true" />
+            </key>
+            <one-to-many class="bgu.dcr.az.lab.data.Comments" />
+        </set>
+    </class>
+</hibernate-mapping>

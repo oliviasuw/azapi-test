@@ -1,0 +1,9 @@
+
+<experiment visual="true">
+    <async-test name="AC-ANT" seed="152915" repeat-count="5" run-var="_" start="2" end="4" tick-size="1">
+        <algorithm name="ABT" />
+        <dcsp-connected n="7" d="10" p1="0.5" p2="1"/>
+    </async-test>
+</experiment>
+
+

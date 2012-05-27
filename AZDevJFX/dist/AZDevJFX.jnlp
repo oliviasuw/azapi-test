@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="AZDevJFX.jnlp">
+  <information>
+    <title>AZDevJFX</title>
+    <vendor>Administrator</vendor>
+    <description>Sample JavaFX 2.0 application.</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <jfx:javafx-runtime version="2.0+" href="http://javadl.sun.com/webapps/download/GetFile/javafx-latest/windows-i586/javafx2.jnlp"/>
+  </resources>
+  <resources>
+    <j2se version="1.6+" java-vm-args="-server "  href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="AZDevJFX.jar" size="325574" download="eager" />
+    <jar href="lib/AZAPI.jar" size="219227" download="eager" />
+    <jar href="lib/AZCoreImpl.jar" size="367617" download="eager" />
+    <jar href="lib/DeepCopyUtil.jar" size="22477" download="eager" />
+    <jar href="lib/ScenicView.jar" size="111874" download="eager" />
+    <jar href="lib/args4j-2.0.17.jar" size="58480" download="eager" />
+    <jar href="lib/collections-generic-4.01.jar" size="531557" download="eager" />
+    <jar href="lib/gnujaxp.jar" size="231445" download="eager" />
+    <jar href="lib/gson-1.7.1.jar" size="173590" download="eager" />
+    <jar href="lib/guava-10.0.1.jar" size="1501575" download="eager" />
+    <jar href="lib/h2-1.3.160.jar" size="1256613" download="eager" />
+    <jar href="lib/iText-2.1.5.jar" size="1117661" download="eager" />
+    <jar href="lib/javassist-3.8.0.GA.jar" size="593959" download="eager" />
+    <jar href="lib/jcommon-1.0.16.jar" size="309293" download="eager" />
+    <jar href="lib/jfreechart-1.0.13-experimental.jar" size="13423" download="eager" />
+    <jar href="lib/jfreechart-1.0.13.jar" size="1425744" download="eager" />
+    <jar href="lib/jung-algorithms-2.0.1.jar" size="233113" download="eager" />
+    <jar href="lib/jung-api-2.0.1.jar" size="40975" download="eager" />
+    <jar href="lib/jung-graph-impl-2.0.1.jar" size="62329" download="eager" />
+    <jar href="lib/junit.jar" size="121070" download="eager" />
+    <jar href="lib/reflections-0.9.5-javadoc.jar" size="263906" download="eager" />
+    <jar href="lib/reflections-0.9.5-sources.jar" size="40314" download="eager" />
+    <jar href="lib/reflections-0.9.5.jar" size="94040" download="eager" />
+    <jar href="lib/slf4j-api-1.6.4.jar" size="25962" download="eager" />
+    <jar href="lib/xom-1.2.7.jar" size="312996" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="AZDevJFX" >
+    <param name="requiredFXVersion" value="2.0+"/>
+  </applet>
+  <jfx:javafx-desc  width="800" height="600" main-class="bgu.dcr.az.vdev.ui.TestUI"  name="AZDevJFX" />
+  <update check="background"/>
+</jnlp>

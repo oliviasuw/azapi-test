@@ -27,13 +27,21 @@ public interface Experiment extends Process {
      */
     List<Test> getTests();
     
+    /**
+     * @return the experiment result - this is valid only if the experiment already done
+     */
     ExperimentResult getResult();
 
+    /**
+     * add experiment listener
+     */
     void addListener(ExperimentListener l);
     
+    /**
+     * remove experiment listeners
+     * @param l 
+     */
     void removeListener(ExperimentListener l);
-    
-    boolean isVisual();
     
     /**
      * return the global thread pool used by this experiment

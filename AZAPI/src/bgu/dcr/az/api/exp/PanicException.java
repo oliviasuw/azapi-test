@@ -8,13 +8,13 @@ package bgu.dcr.az.api.exp;
  *
  * @author bennyl
  */
-public class PanicedAgentException extends RuntimeException{
+public class PanicException extends RuntimeException{
 
     /**
      * 
      * @param cause
      */
-    public PanicedAgentException(Throwable cause) {
+    public PanicException(Throwable cause) {
         super(cause);
     }
 
@@ -23,7 +23,7 @@ public class PanicedAgentException extends RuntimeException{
      * @param message
      * @param cause
      */
-    public PanicedAgentException(String message, Throwable cause) {
+    public PanicException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -31,14 +31,14 @@ public class PanicedAgentException extends RuntimeException{
      * 
      * @param message
      */
-    public PanicedAgentException(String message) {
+    public PanicException(String message) {
         super(message);
     }
 
     /**
      * 
      */
-    public PanicedAgentException() {
+    public PanicException() {
     }
     
 }

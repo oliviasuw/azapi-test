@@ -4,6 +4,7 @@
  */
 package bgu.dcr.az.api.exen.vis;
 
+import bgu.dcr.az.api.exen.Execution;
 import bgu.dcr.az.utils.RoadBlock;
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
@@ -14,19 +15,19 @@ import java.util.concurrent.Semaphore;
  */
 public class VisualizationFrameSynchronizer {
 
-    private int numAgents;
     private int taking = 0;
     private RoadBlock roadBlock = null;
     private Semaphore lock = new Semaphore(1);
     private LinkedList<FrameSyncListener> frameSyncListeners = new LinkedList<FrameSyncListener>();
     private volatile boolean syncNeeded = false;
+    private Execution ex;
     
     /**
      * this must be set before the start of the frame synchronizer
      * @param n 
      */
-    public void setNumberOfAgentRunners(int n){
-        this.numAgents = n;
+    public void setExecution(Execution ex){
+        this.ex = ex;
     }
 
     public void beforeTakingMessage() {
@@ -36,7 +37,7 @@ public class VisualizationFrameSynchronizer {
             locked = true;
             taking++;
             if (syncNeeded) {
-                if (taking == numAgents) { // this is the last agent
+                if (taking == ex.getNumberOfAgentRunners()) { // this is the last agent
                     for (FrameSyncListener f : frameSyncListeners) {
                         f.onFrameSync();
                     }
@@ -73,12 +74,22 @@ public class VisualizationFrameSynchronizer {
         }
     }
 
+    public boolean isSyncing(){
+        return syncNeeded;
+    }
+    
     public void sync() {
         try {
             lock.acquire();
             if (!syncNeeded) { //sync can be called multiple times...
                 syncNeeded = true;
                 roadBlock = new RoadBlock();
+                
+                lock.release();
+                beforeTakingMessage();
+                afterTakingMessage();
+                lock.acquire();
+                
             }
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt(); //reenterupting...
@@ -95,6 +106,10 @@ public class VisualizationFrameSynchronizer {
         for (FrameSyncListener f : frameSyncListeners){
             f.onFrameSync();
         }
+    }
+    
+    public void addFrameSyncListener(FrameSyncListener lis){
+        this.frameSyncListeners.add(lis);
     }
 
     public static interface FrameSyncListener {

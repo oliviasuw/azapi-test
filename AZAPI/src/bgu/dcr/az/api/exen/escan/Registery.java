@@ -95,6 +95,8 @@ public enum Registery {
     }
 
     public Set<String> getExtendingEntities(Class c) {
+        if (entitiyInheritence == null) scanEntityInheritance();
+        
         Set<String> ret = entitiyInheritence.get(c);
         if (ret == null) {
             return Collections.emptySet();

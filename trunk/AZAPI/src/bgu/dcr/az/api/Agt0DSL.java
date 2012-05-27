@@ -4,7 +4,7 @@
  */
 package bgu.dcr.az.api;
 
-import bgu.dcr.az.api.exp.PanicedAgentException;
+import bgu.dcr.az.api.exp.PanicException;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -684,9 +684,9 @@ public class Agt0DSL {
      */
     public static <T> T panic(String why, Exception cause) {
         if (cause == null) {
-            throw new PanicedAgentException(why);
+            throw new PanicException(why);
         }
-        throw new PanicedAgentException(why, cause);
+        throw new PanicException(why, cause);
     }
 
     /**
@@ -697,4 +697,5 @@ public class Agt0DSL {
     public static void panic(Exception cause) {
         panic(null, cause);
     }
+    
 }

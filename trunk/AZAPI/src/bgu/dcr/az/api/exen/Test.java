@@ -22,16 +22,29 @@ import java.util.List;
  * 
  */
 public interface Test extends Process {
-
+    
+    /**
+     * add test listener
+     * @param l 
+     */
     void addListener(TestListener l);
 
+    /**
+     * remove test listener
+     * @param l 
+     */
     void removeListener(TestListener l);
 
     /**
      * @return number of executions * number of algorithms in this test
      */
-    int getLength();
+    int getTotalNumberOfExecutions();
 
+    /**
+     * @return
+     * @deprecated use - get total number of executions instead as it is much more accurate
+     */
+    @Deprecated
     int getNumberOfExecutions();
 
     List<String> getIncludedAlgorithmsInstanceNames();

@@ -6,11 +6,15 @@ package bgu.dcr.az.exen;
 
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Agt0DSL;
+import bgu.dcr.az.api.Hooks;
+import bgu.dcr.az.api.Hooks.BeforeMessageSentHook;
 import bgu.dcr.az.api.exen.Mailer;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.exen.MessageQueue;
 import bgu.dcr.az.api.exen.Execution;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
@@ -19,12 +23,10 @@ import java.util.concurrent.Semaphore;
  * @author Inna
  */
 public abstract class AbstractMailer implements Mailer {
-
-//    private final static boolean DEBUG = true;
-//    public static final String RECEPIENT_MESSAGE_METADATA = "AbstractMailer.RECEPIENT_MESSAGE_METADATA";
     private Execution exec;
     private Map<String, MessageQueue[]> mailBoxes = new HashMap<String, MessageQueue[]>();
-    Semaphore mailBoxModifierKey = new Semaphore(1);
+    private Semaphore mailBoxModifierKey = new Semaphore(1);
+    protected List<Hooks.BeforeMessageSentHook> beforeMessageSentHooks = new LinkedList<Hooks.BeforeMessageSentHook>();
 
     @Override
     public void releaseAllBlockingAgents(String mailGroup) {
@@ -88,7 +90,7 @@ public abstract class AbstractMailer implements Mailer {
     public boolean isAllMailBoxesAreEmpty(String groupKey) {
         MessageQueue[] qs = takeQueues(groupKey);
         for (MessageQueue q : qs) {
-            if (q.size() > 0) {
+            if (q.availableMessages() > 0) {
                 return false;
             }
         }
@@ -103,10 +105,18 @@ public abstract class AbstractMailer implements Mailer {
     @Override
     public void send(Message msg, int to, String groupKey) {
         MessageQueue q = takeQueues(groupKey)[to];
+        
+        for (BeforeMessageSentHook h : beforeMessageSentHooks){
+            h.hook(msg.getSender(), to, msg);
+        }
+        
         Message mcopy = msg.copy();
-//        mcopy.getMetadata().put(AsyncMailer.RECEPIENT_MESSAGE_METADATA, to);
-        //dp("Mailer got message " + msg + " to send to agent " + to + " in group " + groupKey);
         q.add(mcopy);
+    }
+
+    @Override
+    public void hookIn(BeforeMessageSentHook hook) {
+        beforeMessageSentHooks.add(hook);
     }
 
     @Override

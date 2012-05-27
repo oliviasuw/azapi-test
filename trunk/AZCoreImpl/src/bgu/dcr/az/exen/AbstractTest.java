@@ -21,10 +21,13 @@ import bgu.dcr.az.api.exen.Test;
 import bgu.dcr.az.api.exen.Test.TestResult;
 import bgu.dcr.az.api.exen.mdef.StatisticCollector;
 import bgu.dcr.az.api.Problem;
+import bgu.dcr.az.api.exen.*;
 import bgu.dcr.az.api.exen.escan.ConfigurationMetadata;
 import bgu.dcr.az.api.exen.escan.ExternalConfigurationAware;
 import bgu.dcr.az.api.exen.mdef.ProblemGenerator;
 import bgu.dcr.az.api.exen.mdef.Limiter;
+import bgu.dcr.az.exen.async.AsyncTest;
+import bgu.dcr.az.exen.pgen.ConnectedDCOPGen;
 import bgu.dcr.az.exen.stat.db.DatabaseUnit;
 import bgu.dcr.az.exen.pgen.MapProblem;
 import bgu.dcr.az.exen.stat.AbstractStatisticCollector;
@@ -48,7 +51,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
 
     public static final String PROBLEM_GENERATOR_PROBLEM_METADATA = "PROBLEM GENERATOR";
     public static final String SEED_PROBLEM_METADATA = "SEED";
-    /**
+    /*
      * V A R I A B L E S
      */
     @Variable(name = "name", description = "the test name", defaultValue = "")
@@ -66,7 +69,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
     float end = 0.9f;
     @Variable(name = "tick-size", description = "the runinig variable value increasment", defaultValue = "0.1")
     float tickSize = 0.1f;
-    /**
+    /*
      * F I E L D S
      */
     private List<AlgorithmMetadata> algorithms = new LinkedList<AlgorithmMetadata>();
@@ -105,7 +108,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
     }
 
     @Override
-    public int getLength() {
+    public int getTotalNumberOfExecutions() {
         return getNumberOfExecutions() * getAlgorithms().size();
     }
 
@@ -194,7 +197,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
     }
 
     public Problem generateProblem(int number) {
-        if (number > getLength() || number <= 0) {
+        if (number > getTotalNumberOfExecutions() || number <= 0) {
             throw new InvalidValueException("there is no such problem");
         }
 
@@ -240,13 +243,6 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
             DatabaseUnit.UNIT.signal(this);
         }
     }
-//
-//    private float inc(float original, float inc, int precesion) {
-//        long p = (int) Math.pow(10, precesion);
-//        long iorg = (int) (original * p);
-//        long iinc = (int) (inc * p);
-//        return ((float) (iorg + iinc)) / (float) p;
-//    }
 
     public static double round3(double num) {
         double result = num * 1000;
@@ -257,7 +253,9 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
 
     @Override
     protected void _run() {
+        //list of the problems that will get limited by the limiter module
         List<Integer> limitedProblems = new LinkedList<Integer>();
+
         try {
             initialize();
             validateConfiguration();
@@ -341,9 +339,25 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
         return di;
     }
 
+    public Execution buildExecution(int number) { 
+        //dont replace it with the _run method as this code is less optimized because it will generate new problem for each algorithm...
+        //but we should think how to merge this code duplications...
+        
+        final int numberOfAlgorithms = getAlgorithms().size();
+        AlgorithmMetadata alg = getAlgorithms().get(number%numberOfAlgorithms);
+        double rvarVal = getVarStart() + (number / (numberOfAlgorithms*repeatCount))*getTickSize();
+        ConfigurationMetadata.bubbleDownVariable(this, runVar, rvarVal);
+        Problem p = nextProblem(number/numberOfAlgorithms + 1);
+        Execution e = provideExecution(p, alg);
+        e.setStatisticCollectors(collectors);
+        e.setLimiter(limiter);
+        return e;
+    }
+    
     private ExecutionResult execute(Problem p, AlgorithmMetadata alg) {
         currentAlgorithm = alg;
         Execution e = provideExecution(p, alg);
+
         try {
             e.setStatisticCollectors(collectors);
             e.setLimiter(limiter);
@@ -362,20 +376,6 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
 
             return r;
 
-//            switch (r.getState()) {
-//                case CRUSHED:
-//                    res = new TestResult(r.getCrushReason(), e);
-//                    return false;
-//                case LIMITED:
-//                    -- -- -- -- -- --
-//                    
-//                    return false;
-//                default:
-//                    if (getCorrectnessTester() != null) {
-//                    } else {
-//                        return true;
-//                    }
-//            }
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ExecutionResult(e).toCrushState(ex);
@@ -417,8 +417,8 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
         this.initialized = true;
         rand = new Random(seed);
         //creating problem seeds 
-        problemSeeds = new ArrayList<Long>(getLength());
-        for (int i = 0; i < getLength(); i++) {
+        problemSeeds = new ArrayList<Long>(getTotalNumberOfExecutions());
+        for (int i = 0; i < getTotalNumberOfExecutions(); i++) {
             problemSeeds.add(rand.nextLong());
         }
     }
@@ -439,7 +439,9 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
     }
 
     /**
-     * 1 is the first problem while 0 is the first execution number - TODO - make 0 the first problem but then you have to change the statistics removal due to limitation code
+     * 1 is the first problem while 0 is the first execution number - TODO -
+     * make 0 the first problem but then you have to change the statistics
+     * removal due to limitation code
      *
      * @param num
      * @return
@@ -558,4 +560,5 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
             throw new BadConfigurationException("[Test " + getName() + "] bad configuration discovered: " + message);
         }
     }
+    
 }

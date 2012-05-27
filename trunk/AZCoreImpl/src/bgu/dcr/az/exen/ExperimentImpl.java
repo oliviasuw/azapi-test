@@ -6,11 +6,12 @@ package bgu.dcr.az.exen;
 
 import bgu.dcr.az.api.exen.escan.Configuration;
 import bgu.dcr.az.api.ano.Register;
-import bgu.dcr.az.exen.DebugInfo;
 import bgu.dcr.az.api.exen.Execution;
 import bgu.dcr.az.api.exen.Test.TestResult;
 import bgu.dcr.az.api.exen.Experiment;
 import bgu.dcr.az.api.exen.Test;
+import bgu.dcr.az.api.exen.escan.ExternalConfigurationAware;
+import bgu.dcr.az.api.exen.mdef.Visualization;
 import bgu.dcr.az.exen.stat.db.DatabaseUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,19 +25,20 @@ import java.util.concurrent.Executors;
  * @author bennyl
  */
 @Register(name = "experiment")
-public class ExperimentImpl extends AbstractProcess implements Experiment, Test.TestListener {
+public class ExperimentImpl extends AbstractProcess implements Experiment, Test.TestListener, ExternalConfigurationAware {
 
     private List<Test> tests = new ArrayList<Test>();
     private ExperimentResult result;
     private LinkedList<Experiment.ExperimentListener> listeners = new LinkedList<ExperimentListener>();
+    private List<Visualization> visualizations = new ArrayList<Visualization>();
     private DebugInfo di;
-    private ExecutorService pool; 
+    private ExecutorService pool = Executors.newCachedThreadPool();
 
     @Override
     public void _run() {
-        pool = Executors.newCachedThreadPool();
         try {
 
+            DatabaseUnit.UNIT.start();
             fireExperimentStarted();
 
             List<Test> testsToRun = new LinkedList<Test>();
@@ -58,12 +60,8 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
 
                 currentTest.addListener(this);
 
-                if (currentTest instanceof AbstractTest) {
-                    ((AbstractTest) currentTest).setExperiment(this);
-                }
-
-
-                if (di == null) {
+                if (di == null) { //todo - for the visualization we need to make this embedded and simpler behavior
+                    //somthing like - run all / run single
                     currentTest.run();
                 } else {
                     ((AbstractTest) currentTest).debug(di);
@@ -182,26 +180,31 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
     }
 
     @Override
-    public int getLength() {
+    public int getTotalNumberOfExecutions() {
         if (di != null) {
             return 1;
         } else {
             int sum = 0;
             for (Test r : tests) {
-                sum += r.getLength();
+                sum += r.getTotalNumberOfExecutions();
             }
             return sum;
         }
 
     }
-//
-//    @Override
-//    public void stop() {
-//        pool.shutdownNow();
-//    }
 
     @Override
     public ExecutorService getThreadPool() {
         return pool;
+    }
+
+    @Override
+    public void afterExternalConfiguration() {
+        for (Test t : tests) {
+            if (t instanceof AbstractTest) {
+                ((AbstractTest) t).setExperiment(this);
+
+            }
+        }
     }
 }

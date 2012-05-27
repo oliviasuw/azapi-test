@@ -80,8 +80,8 @@ public class MessageCountStatisticCollector extends AbstractStatisticCollector<M
         new Hooks.BeforeMessageSentHook() {
 
             @Override
-            public void hook(Agent a, Message msg) {
-                counts[a.getId()]++;
+            public void hook(int sender, int recepiennt, Message msg) {
+                counts[sender]++;
             }
         }.hookInto(ex);
 

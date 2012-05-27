@@ -360,4 +360,18 @@ public class JavaDSL {
         
         return inner;
     } 
+    
+    /**
+     * return a string that has the begining of what but if what ends with ending - it removed 
+     * @param what
+     * @param ending
+     * @return 
+     */
+    public static String chop(String what, String ending){
+        if(what.endsWith(ending)){
+            return what.substring(0, what.length() - ending.length());
+        }
+        
+        return what;
+    }
 }

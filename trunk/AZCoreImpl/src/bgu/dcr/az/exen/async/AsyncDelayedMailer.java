@@ -4,6 +4,7 @@
  */
 package bgu.dcr.az.exen.async;
 
+import bgu.dcr.az.api.Hooks;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.exen.MessageQueue;
 import bgu.dcr.az.api.exen.mdef.MessageDelayer;
@@ -31,6 +32,10 @@ public class AsyncDelayedMailer extends AbstractMailer {
 
     @Override
     public void send(Message msg, int to, String groupKey) {
+        for (Hooks.BeforeMessageSentHook h : beforeMessageSentHooks){
+            h.hook(msg.getSender(), to, msg);
+        }
+        
         msg = msg.copy(); //deep copying the message.
         long mtime = dman.extractTime(msg); //time before delay
         dman.addDelay(msg, msg.getSender(), to); //adding delay

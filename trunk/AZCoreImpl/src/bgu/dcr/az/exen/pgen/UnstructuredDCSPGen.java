@@ -20,13 +20,13 @@ import java.util.Random;
 public class UnstructuredDCSPGen extends AbstractProblemGenerator {
 
     @Variable(name = "n", description = "number of variables", defaultValue = "2")
-    int n = 2;
+    public int n = 2;
     @Variable(name = "d", description = "domain size", defaultValue = "2")
-    int d = 2;
+    public int d = 2;
     @Variable(name = "p1", description = "probablity of constraint between two variables", defaultValue = "0.6")
-    float p1 = 0.6f;
+    public float p1 = 0.6f;
     @Variable(name = "p2", description = "probablity of conflict between two constrainted variables", defaultValue = "0.4")
-    float p2 = 0.4f;
+    public float p2 = 0.4f;
 
     @Override
     public String toString() {

@@ -5,13 +5,14 @@
 package bgu.dcr.az.exen.sync;
 
 import bgu.dcr.az.api.Agent;
+import bgu.dcr.az.api.Hooks;
 import bgu.dcr.az.api.exen.AgentRunner;
 import bgu.dcr.az.api.exen.Experiment;
 import bgu.dcr.az.api.exen.Test;
 import bgu.dcr.az.api.exen.escan.AlgorithmMetadata;
 import bgu.dcr.az.api.Problem;
+import bgu.dcr.az.api.exen.SystemClock;
 import bgu.dcr.az.exen.AbstractExecution;
-import java.util.concurrent.ExecutorService;
 
 /**
  *
@@ -30,6 +31,7 @@ public class SyncExecution extends AbstractExecution {
     protected void configure() {
         DefaultSystemClock clock = new DefaultSystemClock();
         setSystemClock(clock);
+        configureVisualizations(clock);
         ((SyncMailer) getMailer()).setClock(clock);
         final int numberOfVariables = getGlobalProblem().getNumberOfVariables();
         final int numberOfCores = Runtime.getRuntime().availableProcessors();
@@ -38,12 +40,24 @@ public class SyncExecution extends AbstractExecution {
         /**
          * THIS EXECUTION MOD USES AGENT RUNNER IN POOL MODE
          */
-        if (!generateAgents()) {
+        if (!tryGenerateAgents()) {
             return;
         }
 
         setAgentRunners(SyncAgentRunner.createAgentRunners(numberOfAgentRunners, getSystemClock(), this, getAgents()));
         clock.setExcution(this); //MUST BE CALLED AFTER THE AGENT RUNNERS HAVE BEEN ASSIGNED...
+    }
+
+    private void configureVisualizations(DefaultSystemClock clock) {
+        if (isVisual()){
+            clock.hookIn(new Hooks.TickHook() {
+
+                @Override
+                public void hook(SystemClock clock) {
+                    getVisualizationFrameSynchronizer().fireFrameSync();
+                }
+            });
+        }
     }
 
     @Override

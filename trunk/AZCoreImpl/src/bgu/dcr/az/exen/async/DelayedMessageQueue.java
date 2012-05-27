@@ -101,7 +101,7 @@ public class DelayedMessageQueue implements MessageQueue {
     
     
     @Override
-    public int size() {
+    public int availableMessages() {
         if (agentFinished) return 0;
         return q.size();
     }

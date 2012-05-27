@@ -13,6 +13,6 @@ import bgu.dcr.az.api.Agt0DSL;
 public class Test extends Agt0DSL{
     public static void main(String[] args){
         //AZLS.main(array("-rf", "algos.csv"));
-        AZEXE.main(array("-e", "exp.xml", "-rdir", "results", "-cs", "127.0.0.1:7000", "-id", "test-exp-id"));
+        AZEXE.main(array("-e", "exp-alon.xml", "-rdir", "results", "-id", "test-exp-id"));
     }
 }

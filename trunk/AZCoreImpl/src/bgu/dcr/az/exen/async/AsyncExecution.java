@@ -36,17 +36,24 @@ public class AsyncExecution extends AbstractExecution {
          */
         setAgentRunners(new AgentRunner[numberOfVariables]);
 
-        if (!generateAgents()) {
-            return;
+        if (!tryGenerateAgents()) {
+            return; //generate agents failed
         }
 
         for (int i = 0; i < getAgents().length; i++) {
-            getRunners()[i] = new AsyncAgentRunner(getAgents()[i], this);
+            final AsyncAgentRunner aar = new AsyncAgentRunner(getAgents()[i], this);
+            getRunners()[i] = aar;
+            if (isVisual()) {
+                aar.setVisualizationSynchronizer(getVisualizationFrameSynchronizer());
+            }
+        }
+        
+        if (getVisualizationFrameSynchronizer() != null) {
+            new AsyncVisualizationFrameSynchronizerHook().hookIn(this, getVisualizationFrameSynchronizer());
         }
     }
 
     @Override
     protected void finish() {
     }
-
 }

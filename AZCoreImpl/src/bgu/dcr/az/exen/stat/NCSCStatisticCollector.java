@@ -70,8 +70,8 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
         new Hooks.BeforeMessageSentHook() {
 
             @Override
-            public void hook(Agent a, Message msg) {
-                msg.getMetadata().put("ncsc", ncsc[a.getId()]);
+            public void hook(int sender, int recepient, Message msg) {
+                msg.getMetadata().put("ncsc", ncsc[sender]);
             }
         }.hookInto(ex);
         

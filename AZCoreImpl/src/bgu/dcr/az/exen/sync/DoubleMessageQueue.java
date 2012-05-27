@@ -42,7 +42,7 @@ public class DoubleMessageQueue implements MessageQueue {
     }
 
     @Override
-    public int size() {
+    public int availableMessages() {
         return q[qToUse()].size();
     }
 

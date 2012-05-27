@@ -37,7 +37,7 @@ public class DefaultMessageQueue implements MessageQueue {
     }
 
     @Override
-    public int size() {
+    public int availableMessages() {
         return q.size();
     }
 

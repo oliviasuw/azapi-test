@@ -6,7 +6,7 @@ package bgu.dcr.az.exen.dtp;
 
 import bgu.dcr.az.exen.util.BufferedByteReader;
 import bgu.dcr.az.exen.util.TaskMonitor;
-import bgu.dcr.az.exen.util.RoadBlock;
+import bgu.dcr.az.utils.RoadBlock;
 import bgu.dcr.az.exen.exp.BadConnectionStatusException;
 import bgu.dcr.az.exen.exp.UncheckedIOException;
 import java.io.IOException;

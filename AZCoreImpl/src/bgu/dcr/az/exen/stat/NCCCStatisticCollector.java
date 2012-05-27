@@ -26,9 +26,10 @@ import java.util.logging.Logger;
 @Register(name = "nccc-sc")
 public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStatisticCollector.NCCCRecord> {
 
-    long[] nccc;
-    long[] lastKnownCC;
-    String runningVar;
+    private long[] nccc;
+    private long[] lastKnownCC;
+    private String runningVar;
+    private Agent[] agents;
 
     @Override
     public VisualModel analyze(Database db, Test r) {
@@ -49,7 +50,7 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
 
     @Override
     public void hookIn(final Agent[] agents, final Execution ex) {
-
+        this.agents = agents;
         System.out.println("NCCC Statistic Collector registered");
 
         nccc = new long[agents.length];
@@ -62,7 +63,7 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
             public void hook(Agent a, Message msg) {
                 long newNccc = (Long) msg.getMetadata().get("nccc");
 
-                updateCurrentNccc(a);
+                updateCurrentNccc(a.getId());
                 nccc[a.getId()] = max(newNccc, nccc[a.getId()]);
             }
         }.hookInto(ex);
@@ -70,9 +71,9 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
         new Hooks.BeforeMessageSentHook() {
 
             @Override
-            public void hook(Agent a, Message msg) {
-                updateCurrentNccc(a);
-                msg.getMetadata().put("nccc", nccc[a.getId()]);
+            public void hook(int sender, int recepiennt, Message msg) {
+                updateCurrentNccc(sender);
+                msg.getMetadata().put("nccc", nccc[sender]);
             }
         }.hookInto(ex);
 
@@ -91,10 +92,10 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
         return "Number Of Concurrent Constraint Checks";
     }
 
-    private void updateCurrentNccc(Agent a) {
-        long last = lastKnownCC[a.getId()];
-        lastKnownCC[a.getId()] = a.getNumberOfConstraintChecks();
-        nccc[a.getId()] = nccc[a.getId()] + lastKnownCC[a.getId()] - last;
+    private void updateCurrentNccc(int aid) {
+        long last = lastKnownCC[aid];
+        lastKnownCC[aid] = agents[aid].getNumberOfConstraintChecks();
+        nccc[aid] = nccc[aid] + lastKnownCC[aid] - last;
     }
     
     public long currentNcccOf(int agent){

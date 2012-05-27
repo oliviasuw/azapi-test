@@ -8,6 +8,7 @@ import bgu.dcr.az.api.Hooks.BeforeMessageProcessingHook;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.agt.SimpleAgent;
 import bgu.dcr.az.api.exen.mdef.Limiter;
+import bgu.dcr.az.api.exen.vis.VisualizationFrameSynchronizer;
 import bgu.dcr.az.api.tools.IdleDetector;
 import bgu.dcr.az.exen.AbstractExecution;
 import java.util.LinkedList;
@@ -16,9 +17,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * this class should receive an agent and it will execute it 
- * this agent runner specialized in asynchronous execution
- * it supports idle detection and message delays.
+ * this class should receive an agent and it will execute it this agent runner
+ * specialized in asynchronous execution it supports idle detection and message
+ * delays.
  *
  * @author bennyl
  *
@@ -33,12 +34,14 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
     private Semaphore idleDetectionLock = new Semaphore(1);
     private boolean useIdleDetector; //see note about using idle detector within nested agents in AgentRunner.nest
     private IdleDetector currentIdleDetector = null;
-    private Limiter limiter = null; 
-    
+    private Limiter limiter = null;
+    private VisualizationFrameSynchronizer vsync;
     /**
      * used for the join method -> using a semaphore means that we are only
      * allowing 1 joining thread, this is the case currently but if we will want
      * more than one - a different solution should be applied.
+     *
+     * TODO - replace with roadblock - move to abstract agent runner
      */
     private Semaphore joinBlock = new Semaphore(1);
 
@@ -69,7 +72,7 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
 
         if (nestedAgents.isEmpty()) { // is the initial agent
             cthread = Thread.currentThread();
-            
+
             //checking if idle detection is needed: TODO: make this code simpler
             useIdleDetector = false;
             if (exec.getIdleDetector() != null) {
@@ -78,7 +81,7 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
                 useIdleDetector = true;
             }
             registerIdleDetectionCallback(currentExecutedAgent);
-            
+
         }
         //START THE AGENT
         currentExecutedAgent.start();
@@ -87,7 +90,18 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
                 //PROCESS MESSAGE LOOP
                 try {
                     while (!currentExecutedAgent.isFinished() && !Thread.currentThread().isInterrupted()) {
+                        if (vsync != null) {
+                            vsync.beforeTakingMessage();
+                        }
                         performIdleDetection();
+                        if (vsync != null) {
+                            if (!useIdleDetector || !currentExecutedAgent.isUsingIdleDetection()){
+                                currentExecutedAgent.waitForNewMessages();
+                            }
+                            vsync.afterTakingMessage();
+                        }
+                        
+                        //HANDLING NEXT MESSAGE
                         currentExecutedAgent.processNextMessage();
                         if (limiter != null && !limiter.canContinue(exec)) {
                             System.out.println("[" + Agent.PlatformOperationsExtractor.extract(currentExecutedAgent).getMailGroupKey() + "] " + currentExecutedAgent.getId() + " Interupted due to timeout - Terminating.");
@@ -111,8 +125,12 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
             } finally {
                 System.out.println("[" + Agent.PlatformOperationsExtractor.extract(currentExecutedAgent).getMailGroupKey() + "] " + currentExecutedAgent.getId() + " Terminated.");
 
-                if (currentExecutedAgent.isUsingIdleDetection()){
+                if (currentExecutedAgent.isUsingIdleDetection()) {
                     currentIdleDetector.notifyAgentIdle();
+                }
+
+                if (vsync != null) {
+                    vsync.beforeTakingMessage();
                 }
                 
                 if (nestedAgents.isEmpty()) {
@@ -211,7 +229,6 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
     private void registerIdleDetectionCallback(Agent a) {
         if (useIdleDetector && a.isUsingIdleDetection()) {
             a.hookIn(new BeforeMessageProcessingHook() {
-
                 @Override
                 public void hook(Agent a, Message msg) {
                     try {
@@ -225,5 +242,9 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
                 }
             });
         }
+    }
+
+    public void setVisualizationSynchronizer(VisualizationFrameSynchronizer vsync) {
+        this.vsync = vsync;
     }
 }

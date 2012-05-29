@@ -5,13 +5,11 @@
 package bgu.dcr.az.exen.sync;
 
 import bgu.dcr.az.api.Agent;
-import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.exen.AgentRunner;
 import bgu.dcr.az.api.ContinuationMediator;
 import bgu.dcr.az.api.agt.SimpleAgent;
 import bgu.dcr.az.api.exen.SystemClock;
 import bgu.dcr.az.api.exen.mdef.Limiter;
-import bgu.dcr.az.api.exen.vis.VisualizationFrameSynchronizer;
 import bgu.dcr.az.exen.AbstractExecution;
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;

@@ -1,5 +1,6 @@
 package bgu.dcr.az.api;
 
+import bgu.dcr.az.api.Hooks.AfterMessageProcessingHook;
 import bgu.dcr.az.api.agt.ReportMediator;
 import bgu.dcr.az.api.agt.SendMediator;
 import bgu.dcr.az.api.exen.MessageQueue;
@@ -60,6 +61,8 @@ public abstract class Agent extends Agt0DSL {
      * this agent
      */
     protected List<Hooks.BeforeMessageProcessingHook> beforeMessageProcessingHooks;
+    
+    protected List<Hooks.AfterMessageProcessingHook> afterMessageProcessingHooks;
     /**
      * collection of hooks that will be called before the agent calls finish
      */
@@ -78,6 +81,7 @@ public abstract class Agent extends Agt0DSL {
     public Agent() {
         this.id = -1;
         beforeMessageProcessingHooks = new ArrayList<Hooks.BeforeMessageProcessingHook>();
+        afterMessageProcessingHooks = new ArrayList<Hooks.AfterMessageProcessingHook>();
         beforeCallingFinishHooks = new ArrayList<Hooks.BeforeCallingFinishHook>();
         this.pops = new PlatformOps();
         final Algorithm algAnnotation = getClass().getAnnotation(Algorithm.class);
@@ -173,13 +177,23 @@ public abstract class Agent extends Agt0DSL {
 
 
     /**
-     * hook-in to this agent class in the given hook point hooks are mostly used
+     * hook-in to this agent class in the given hook point. hooks are mostly used
      * for "automatic services/tools" like timestamp etc.
      *
      * @param hook
      */
     public void hookIn(Hooks.BeforeMessageProcessingHook hook) {
         beforeMessageProcessingHooks.add(hook);
+    }
+    
+    /**
+     * hook-in to this agent class in the given hook point. hooks are mostly used
+     * for "automatic services/tools/statistics" like timestamp etc.
+     *
+     * @param hook
+     */
+    public void hookIn(Hooks.AfterMessageProcessingHook hook) {
+        afterMessageProcessingHooks.add(hook);
     }
 
     /**
@@ -241,7 +255,9 @@ public abstract class Agent extends Agt0DSL {
         }
         try {
             mtd.invoke(this, msg.getArgs());
-            return;
+            for (AfterMessageProcessingHook hook : afterMessageProcessingHooks){
+                hook.hook(this, msg);
+            }
         } catch (IllegalArgumentException e) {
             //e.printStackTrace();
             throw new UnsupportedMessageException("wrong parameters passed with the message " + msg.getName());
@@ -656,6 +672,7 @@ public abstract class Agent extends Agt0DSL {
         public void copyHooksTo(Agent b) {
             b.beforeCallingFinishHooks = beforeCallingFinishHooks;
             b.beforeMessageProcessingHooks = beforeMessageProcessingHooks;
+            b.afterMessageProcessingHooks = afterMessageProcessingHooks;
         }
 
         /**

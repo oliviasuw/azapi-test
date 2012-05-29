@@ -5,7 +5,8 @@
 package bgu.dcr.az.api.exen.mdef;
 
 import bgu.dcr.az.api.exen.Execution;
-import java.util.List;
+import bgu.dcr.az.api.exen.vis.Event;
+import bgu.dcr.az.api.exen.vis.VisualizationFrameBuffer;
 
 /**
  *
@@ -13,6 +14,5 @@ import java.util.List;
  */
 public interface Visualization<STATE> {
     public Class<? extends VisualizationDrawer> getViewType();
-    public List<STATE> sample();
-    public void initialize(Execution ex);
+    public void initialize(Execution ex, VisualizationFrameBuffer<STATE> buffer);
 }

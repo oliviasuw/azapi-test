@@ -5,6 +5,7 @@
 package bgu.dcr.az.api.exen.mdef;
 
 import bgu.dcr.az.api.exen.Execution;
+import bgu.dcr.az.api.exen.vis.Frame;
 
 /**
  *
@@ -20,7 +21,7 @@ public interface VisualizationDrawer<IMAGE_IMPL, CANVAS_IMPL, STATE> {
      * @param state
      * @return 
      */
-    public boolean play(CANVAS_IMPL canvas, STATE state);
+    public boolean play(CANVAS_IMPL canvas, Frame<STATE> state);
     public void rewind(CANVAS_IMPL canvas, STATE state);
     public void fastForward(CANVAS_IMPL canvas, STATE state);
     public IMAGE_IMPL getThumbnail();

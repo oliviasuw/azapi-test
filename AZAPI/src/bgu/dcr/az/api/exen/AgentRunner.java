@@ -7,7 +7,6 @@ package bgu.dcr.az.api.exen;
 import bgu.dcr.az.api.ContinuationMediator;
 import bgu.dcr.az.api.agt.SimpleAgent;
 import bgu.dcr.az.api.exen.mdef.Limiter;
-import bgu.dcr.az.api.exen.vis.VisualizationFrameSynchronizer;
 
 /**
  *

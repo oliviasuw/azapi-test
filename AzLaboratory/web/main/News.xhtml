@@ -26,10 +26,17 @@
                         </tr>
                         <tr>
                             <h:form>
+                                <td class="news-write">
+                                    <p:commandButton styleClass="news-write-button" action="#{search.writeSomething()}" value="Write something"/>
+                                </td>
+                            </h:form>
+                        </tr>
+                        <tr>
+                            <h:form>
                                 <td colspan="4" class="news-left-search-input" width="100%">
                                     <h:inputText class="news-search-input" id="search" required="true" value="" label="search" autocomplete="false"/>
                                     <p:watermark styleClass="news-search-watermark" value="To search - type key word and press enter" for="search"/>
-                                    
+
                                 </td>
                             </h:form>
                         </tr>
@@ -49,14 +56,11 @@
                                             </td>
                                             <td>
                                                 <p:commandButton  action="#{search.changeStateTo('popular')}" value="Popular" styleClass="news-search-button #{search.watchingNow.toString() == 'popular'? 'news-watching-now':''}" update=":results,:buttons" />
-                                                
-                                            </td>
-                                            <td>
-                                                <p:commandLink action="#{search.writeSomething()}" value="Write Something"/>
+
                                             </td>
                                         </tr>
                                     </table>
-                                    
+
                                 </h:form>
                             </td>
                         </tr>
@@ -74,12 +78,11 @@
                                     </table>
                                     <div class="news-paging"> 
                                         <h:form>
-                                            <p:commandLink action="#{search.prevPage()}" value="prev" update=":results"/>
-                                            page #{search.currentPage} of #{search.totalPages}
+                                            <p:commandButton styleClass="prev" actionListener="#{search.prevPage()}"  update=":results"  title="Previous page">
+                                            </p:commandButton>
+                                            page <span>#{search.currentPage}</span> of <span>#{search.totalPages}</span>
                                             <p:commandLink action="#{search.nextPage()}" value="next" update=":results"/>
                                             <br/>
-                                            #{search.getCurrentUser()}
-                                            
                                         </h:form>
                                     </div>
                                 </p:panel>

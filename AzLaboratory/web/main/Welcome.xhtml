@@ -56,10 +56,10 @@
                                             LATEST USER POSTS
                                         </td>
                                     </tr>
-                                    <ui:repeat var="post" value="#{postsList.posts}">
+                                    <ui:repeat var="post" value="#{postsBean.posts}">
                                         <tr>
                                             <td>
-                                                <az:postView body="#{postsList.content(post)}" date="#{postsList.date(post)}" title="#{postsList.title(post)}"></az:postView>
+                                                <az:postView body="#{postsBean.content(post)}" date="#{postsBean.date(post)}" title="#{postsBean.title(post)}"></az:postView>
                                             </td>
                                         </tr>
                                     </ui:repeat>
@@ -90,10 +90,10 @@
                                             LATEST ARTICLES
                                         </td>
                                     </tr>
-                                    <ui:repeat var="article" value="#{articleList.articles(3)}">
+                                    <ui:repeat var="article" value="#{articlesBean.articles(3)}">
                                         <tr>
                                             <td>
-                                                <az:articleView user="#{articleList.user(article)}" date="#{articleList.date(article)}" title="#{articleList.title(article)}"></az:articleView>
+                                                <az:articleView user="#{articlesBean.user(article)}" date="#{articlesBean.date(article)}" title="#{articlesBean.title(article)}"></az:articleView>
                                             </td>
                                         </tr>
                                     </ui:repeat>

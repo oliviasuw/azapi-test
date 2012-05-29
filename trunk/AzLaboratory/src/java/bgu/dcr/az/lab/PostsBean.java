@@ -14,7 +14,7 @@ import javax.faces.bean.ManagedBean;
  */
 @ManagedBean(eager = true)
 @ApplicationScoped
-public class PostsList {
+public class PostsBean {
     
     private Post[] posts = {new Post("A post from user A", "here you can find a post from user A, will be some content and maybe some statistics image", new Date()),
                             new Post("A post from user B", "here you can find a post from user B, will be some content and maybe some statistics image", new Date()),

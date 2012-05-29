@@ -17,7 +17,7 @@ import javax.faces.bean.ManagedBean;
  */
 @ManagedBean(eager = true)
 @ApplicationScoped
-public class ArticleList {
+public class ArticlesBean {
     
     
     public List<Articles> articles(int amount) throws SQLException {

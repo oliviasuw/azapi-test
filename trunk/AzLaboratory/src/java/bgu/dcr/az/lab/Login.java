@@ -8,6 +8,7 @@ import bgu.dcr.az.lab.data.Users;
 import bgu.dcr.az.lab.db.DBManager;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.bean.*;
 
 /**
  *
@@ -15,13 +16,13 @@ import javax.faces.bean.SessionScoped;
  */
 @ManagedBean(eager = true)
 @SessionScoped
-public class SimpleLogin {
+public class Login {
 
     String email = "";
     String password = "";
-    SimpleLogin user;
+    Login user;
 
-    public SimpleLogin() {
+    public Login() {
     }
 
     public String getEmail() {
@@ -42,10 +43,12 @@ public class SimpleLogin {
 
     public String checkValidUser() {
         Users u = DBManager.UNIT.isVerifiedUserCredentials(this.email, this.password);
-        if (u !=null) {
+        
+        if (u != null) {
             SessionManager.putInSessionMap(SessionManager.CURRENT_USER, u);
             return "Welcome";
         }
+        
         return "Laboratory";
     }
 }

@@ -533,8 +533,32 @@ a:hover {
     margin-bottom: 30px;
 }
 
+.ui-widget .prev {
+    background: url("#{resource['images:inna.png']}"); 
+}
+
 .news .ui-panel{
     padding: 0;
+}
+
+.news .news-write{
+    padding: 20px;
+    border-bottom: 6px rgb(232,232,232) solid;
+    text-align: center;
+}
+
+.news .news-write-button{
+    text-align: center;
+    font-size: 17px;
+    color: rgb(242,242,242);
+    font-weight: lighter;
+    background: rgb(41,58,67) !important;
+    box-shadow: none !important;
+    moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    padding: 7px;
+    border:1px rgb(41,58,67) solid;
+    text-shadow: none;
 }
 
 .news .news-right{
@@ -786,7 +810,10 @@ background-color: white;
     padding-bottom: 30px;
 }
 
-
+.register .ui-messages-error{
+/*    background-color: blue;*/
+     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 
 .register .register-table{
     background: white;

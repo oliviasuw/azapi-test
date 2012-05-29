@@ -7,8 +7,8 @@ package bgu.dcr.az.exen.vis;
 import bgu.dcr.az.api.exen.Execution;
 import bgu.dcr.az.api.exen.mdef.Visualization;
 import bgu.dcr.az.api.exen.vis.VisualExecutionRunner;
-import bgu.dcr.az.api.exen.vis.VisualizationBuffer;
-import bgu.dcr.az.api.exen.vis.VisualizationFrameSynchronizer;
+import bgu.dcr.az.api.exen.vis.VisualizationFrameBuffer;
+import bgu.dcr.az.exen.AbstractExecution;
 
 /**
  *
@@ -18,8 +18,7 @@ public class VisualExecutionRunnerImpl implements VisualExecutionRunner {
 
     private Execution execution;
     private Visualization visualization = null;
-    private VisualizationBuffer vbuf = null;
-    private VisualizationFrameSynchronizer fsync = new VisualizationFrameSynchronizer();
+    private VisualizationFrameBuffer vfb;
 
     public VisualExecutionRunnerImpl(Execution execution) {
         this.execution = execution;
@@ -47,13 +46,10 @@ public class VisualExecutionRunnerImpl implements VisualExecutionRunner {
     @Override
     public void run() {
         try {
-            vbuf = new VisualizationBuffer();
-            execution.setVisualizationFrameSynchronizer(this.fsync);
-            this.fsync.addFrameSyncListener(this);
-            this.fsync.setExecution(execution);
-            visualization.initialize(execution);
+            ((AbstractExecution) execution).initialize();
+            vfb = new VisualizationFrameBuffer(execution);
+            visualization.initialize(execution, vfb);
             execution.run();
-            this.fsync.fireFrameSync(); //final frame..
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -65,12 +61,7 @@ public class VisualExecutionRunnerImpl implements VisualExecutionRunner {
     }
 
     @Override
-    public VisualizationBuffer getLoadedVisualizationBuffer() {
-        return vbuf;
-    }
-
-    @Override
-    public void onFrameSync() {
-        vbuf.buffer(visualization.sample());
+    public VisualizationFrameBuffer getLoadedVisualizationBuffer() {
+        return vfb;
     }
 }

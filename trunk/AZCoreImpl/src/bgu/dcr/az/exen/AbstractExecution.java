@@ -13,12 +13,10 @@ import bgu.dcr.az.api.exen.Experiment;
 import bgu.dcr.az.api.exen.Test;
 import bgu.dcr.az.api.exen.mdef.StatisticCollector;
 import bgu.dcr.az.api.Problem;
-import bgu.dcr.az.api.exen.*;
 import bgu.dcr.az.api.exen.mdef.Limiter;
 import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.api.tools.IdleDetector;
 import bgu.dcr.az.api.exen.escan.AlgorithmMetadata;
-import bgu.dcr.az.api.exen.vis.VisualizationFrameSynchronizer;
 import bgu.dcr.az.exen.async.AsyncExecution;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -60,7 +58,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private List<TerminationHook> terminationHooks = new LinkedList<TerminationHook>();
     private boolean idleDetectorNeeded = false;//hard set for the execution to use idle detection
     private Limiter limiter = null;
-    private VisualizationFrameSynchronizer vsync = null;
+    private boolean initialized = false;
     
     /**
      *
@@ -73,11 +71,6 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         this.algorithmMetadata = a;
         this.test = test;
         this.experiment = exp;
-    }
-
-    @Override
-    public void setVisualizationFrameSynchronizer(VisualizationFrameSynchronizer vsync) {
-        this.vsync = vsync;
     }
     
     @Override
@@ -287,39 +280,11 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
 
         result.getAssignment().assign(var, val);
     }
-
-    public VisualizationFrameSynchronizer getVisualizationFrameSynchronizer() {
-        return vsync;
-    }
     
     @Override
     protected void _run() {
         try {
-            //setup mailer
-            mailer.setExecution(this);
-            
-            //setup idle detector
-            if (isIdleDetectionIsNeeded()) {
-                this.idleDetector = new IdleDetector(getGlobalProblem().getNumberOfVariables(), getMailer(), getAlgorithm().getAgentClass().getName());
-            }
-           
-            // do any other configuration that maight be implemented on the deriving classes
-            //TODO: check if needed and if so check if can be splited into smaller functions with miningful names
-            configure();
-
-            //setup statistic collectors
-            for (StatisticCollector sc : statisticCollectors) {
-                sc.hookIn(agents, this);
-            }
-
-            //setup limiter
-            if (limiter != null) {
-                limiter.start(this);
-                for (AgentRunner ar : agentRunners) {
-                    ar.setLimiter(limiter);
-                }
-            }
-
+            initialize();
             startExecution();
         } finally {
             finish();
@@ -372,12 +337,6 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     protected Experiment getExperiment() {
         return experiment;
     }
-
-    @Override
-    public boolean isVisual() {
-        return vsync!=null;
-    }
-
     
     protected abstract void configure();
 
@@ -385,5 +344,38 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
 
     public void setAgentRunnerFor(int id, AgentRunner aThis) {
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    /**
+     * this is called automatically when the execution is run but you can call it yourself before the actual run
+     * to get parameters from the execution that is only available after the initialization
+     */
+    public void initialize() {
+        if (initialized) return;
+        initialized = true;
+        //setup mailer
+        mailer.setExecution(this);
+        
+        //setup idle detector
+        if (isIdleDetectionIsNeeded()) {
+            this.idleDetector = new IdleDetector(getGlobalProblem().getNumberOfVariables(), getMailer(), getAlgorithm().getAgentClass().getName());
+        }
+       
+        // do any other configuration that maight be implemented on the deriving classes
+        //TODO: check if needed and if so check if can be splited into smaller functions with miningful names
+        configure();
+
+        //setup statistic collectors
+        for (StatisticCollector sc : statisticCollectors) {
+            sc.hookIn(agents, this);
+        }
+
+        //setup limiter
+        if (limiter != null) {
+            limiter.start(this);
+            for (AgentRunner ar : agentRunners) {
+                ar.setLimiter(limiter);
+            }
+        }
     }
 }

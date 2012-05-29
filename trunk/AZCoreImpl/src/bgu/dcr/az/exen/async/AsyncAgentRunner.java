@@ -8,7 +8,6 @@ import bgu.dcr.az.api.Hooks.BeforeMessageProcessingHook;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.agt.SimpleAgent;
 import bgu.dcr.az.api.exen.mdef.Limiter;
-import bgu.dcr.az.api.exen.vis.VisualizationFrameSynchronizer;
 import bgu.dcr.az.api.tools.IdleDetector;
 import bgu.dcr.az.exen.AbstractExecution;
 import java.util.LinkedList;
@@ -35,7 +34,6 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
     private boolean useIdleDetector; //see note about using idle detector within nested agents in AgentRunner.nest
     private IdleDetector currentIdleDetector = null;
     private Limiter limiter = null;
-    private VisualizationFrameSynchronizer vsync;
     /**
      * used for the join method -> using a semaphore means that we are only
      * allowing 1 joining thread, this is the case currently but if we will want
@@ -90,16 +88,7 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
                 //PROCESS MESSAGE LOOP
                 try {
                     while (!currentExecutedAgent.isFinished() && !Thread.currentThread().isInterrupted()) {
-                        if (vsync != null) {
-                            vsync.beforeTakingMessage();
-                        }
                         performIdleDetection();
-                        if (vsync != null) {
-                            if (!useIdleDetector || !currentExecutedAgent.isUsingIdleDetection()){
-                                currentExecutedAgent.waitForNewMessages();
-                            }
-                            vsync.afterTakingMessage();
-                        }
                         
                         //HANDLING NEXT MESSAGE
                         currentExecutedAgent.processNextMessage();
@@ -127,10 +116,6 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
 
                 if (currentExecutedAgent.isUsingIdleDetection()) {
                     currentIdleDetector.notifyAgentIdle();
-                }
-
-                if (vsync != null) {
-                    vsync.beforeTakingMessage();
                 }
                 
                 if (nestedAgents.isEmpty()) {
@@ -244,7 +229,4 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
         }
     }
 
-    public void setVisualizationSynchronizer(VisualizationFrameSynchronizer vsync) {
-        this.vsync = vsync;
-    }
 }

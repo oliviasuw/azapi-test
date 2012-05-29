@@ -31,7 +31,6 @@ public class SyncExecution extends AbstractExecution {
     protected void configure() {
         DefaultSystemClock clock = new DefaultSystemClock();
         setSystemClock(clock);
-        configureVisualizations(clock);
         ((SyncMailer) getMailer()).setClock(clock);
         final int numberOfVariables = getGlobalProblem().getNumberOfVariables();
         final int numberOfCores = Runtime.getRuntime().availableProcessors();
@@ -46,18 +45,6 @@ public class SyncExecution extends AbstractExecution {
 
         setAgentRunners(SyncAgentRunner.createAgentRunners(numberOfAgentRunners, getSystemClock(), this, getAgents()));
         clock.setExcution(this); //MUST BE CALLED AFTER THE AGENT RUNNERS HAVE BEEN ASSIGNED...
-    }
-
-    private void configureVisualizations(DefaultSystemClock clock) {
-        if (isVisual()){
-            clock.hookIn(new Hooks.TickHook() {
-
-                @Override
-                public void hook(SystemClock clock) {
-                    getVisualizationFrameSynchronizer().fireFrameSync();
-                }
-            });
-        }
     }
 
     @Override

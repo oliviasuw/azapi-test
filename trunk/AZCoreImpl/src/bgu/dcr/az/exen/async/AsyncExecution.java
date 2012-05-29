@@ -11,7 +11,6 @@ import bgu.dcr.az.api.exen.Test;
 import bgu.dcr.az.api.exen.escan.AlgorithmMetadata;
 import bgu.dcr.az.api.Problem;
 import bgu.dcr.az.exen.AbstractExecution;
-import java.util.concurrent.ExecutorService;
 
 /**
  *
@@ -43,13 +42,6 @@ public class AsyncExecution extends AbstractExecution {
         for (int i = 0; i < getAgents().length; i++) {
             final AsyncAgentRunner aar = new AsyncAgentRunner(getAgents()[i], this);
             getRunners()[i] = aar;
-            if (isVisual()) {
-                aar.setVisualizationSynchronizer(getVisualizationFrameSynchronizer());
-            }
-        }
-        
-        if (getVisualizationFrameSynchronizer() != null) {
-            new AsyncVisualizationFrameSynchronizerHook().hookIn(this, getVisualizationFrameSynchronizer());
         }
     }
 

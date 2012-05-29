@@ -10,7 +10,6 @@ import bgu.dcr.az.api.Hooks.TerminationHook;
 import bgu.dcr.az.api.Problem;
 import bgu.dcr.az.api.exen.mdef.StatisticCollector;
 import bgu.dcr.az.api.exen.mdef.Limiter;
-import bgu.dcr.az.api.exen.vis.VisualizationFrameSynchronizer;
 import bgu.dcr.az.api.tools.Assignment;
 import java.util.List;
 
@@ -30,12 +29,6 @@ public interface Execution extends Process {
     void hookIn(ReportHook hook);
     
     void hookIn(TerminationHook hook);
-    
-    /**
-     * this method will set the execution to be visual
-     * @param vsync 
-     */
-    void setVisualizationFrameSynchronizer(VisualizationFrameSynchronizer vsync);
     
     /**
      * @return the global problem -
@@ -103,13 +96,5 @@ public interface Execution extends Process {
     public void setLimiter(Limiter timer);
     
     public Limiter getLimiter();
-    
-    /**
-     * @return true if this execution is a visual execution which means that one or more visualizations
-     * is attached to it, if this a visual execution then a frame synchronizer will be also given to the 
-     * execution so it will be able to inform the visualization engine that a frame should be recorded
-     */
-    public boolean isVisual();
-    
-    public VisualizationFrameSynchronizer getVisualizationFrameSynchronizer();
+        
 }

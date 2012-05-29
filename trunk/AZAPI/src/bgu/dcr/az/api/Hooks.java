@@ -56,6 +56,23 @@ public class Hooks {
             }
         }
     }
+   
+     public static abstract class AfterMessageProcessingHook implements HookDefinition {
+
+        /**
+         * callback implementation
+         * @param msg
+         */
+        public abstract void hook(Agent a, Message msg);
+
+        @Override
+        public void hookInto(Execution ex) {
+            for (Agent a : ex.getAgents()) {
+                a.hookIn(this);
+            }
+        }
+    }
+   
 
     public static abstract class BeforeCallingFinishHook implements HookDefinition {
 

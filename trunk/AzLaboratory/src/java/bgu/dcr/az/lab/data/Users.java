@@ -1,5 +1,5 @@
 package bgu.dcr.az.lab.data;
-// Generated 21:13:44 25/05/2012 by Hibernate Tools 3.2.1.GA
+// Generated May 30, 2012 7:41:57 PM by Hibernate Tools 3.2.1.GA
 
 
 import java.util.HashSet;
@@ -18,7 +18,9 @@ public class Users  implements java.io.Serializable {
      private byte[] avatar;
      private boolean admin;
      private Set commentses = new HashSet(0);
+     private Set experimentses = new HashSet(0);
      private Set articleses = new HashSet(0);
+     private Set cpus = new HashSet(0);
 
     public Users() {
     }
@@ -31,14 +33,16 @@ public class Users  implements java.io.Serializable {
         this.avatar = avatar;
         this.admin = admin;
     }
-    public Users(String email, String password, String name, byte[] avatar, boolean admin, Set commentses, Set articleses) {
+    public Users(String email, String password, String name, byte[] avatar, boolean admin, Set commentses, Set experimentses, Set articleses, Set cpus) {
        this.email = email;
        this.password = password;
        this.name = name;
        this.avatar = avatar;
        this.admin = admin;
        this.commentses = commentses;
+       this.experimentses = experimentses;
        this.articleses = articleses;
+       this.cpus = cpus;
     }
    
     public Integer getId() {
@@ -90,12 +94,26 @@ public class Users  implements java.io.Serializable {
     public void setCommentses(Set commentses) {
         this.commentses = commentses;
     }
+    public Set getExperimentses() {
+        return this.experimentses;
+    }
+    
+    public void setExperimentses(Set experimentses) {
+        this.experimentses = experimentses;
+    }
     public Set getArticleses() {
         return this.articleses;
     }
     
     public void setArticleses(Set articleses) {
         this.articleses = articleses;
+    }
+    public Set getCpus() {
+        return this.cpus;
+    }
+    
+    public void setCpus(Set cpus) {
+        this.cpus = cpus;
     }
 
 

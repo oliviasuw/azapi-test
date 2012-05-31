@@ -6,7 +6,6 @@ package bgu.dcr.az.api.exen.vis;
 
 import bgu.dcr.az.api.exen.Execution;
 import bgu.dcr.az.api.exen.mdef.Visualization;
-import java.util.List;
 
 /**
  *

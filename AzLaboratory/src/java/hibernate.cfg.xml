@@ -13,5 +13,6 @@
     <mapping resource="bgu/dcr/az/lab/data/ArticlesTags.hbm.xml"/>
     <mapping resource="bgu/dcr/az/lab/data/Users.hbm.xml"/>
     <mapping resource="bgu/dcr/az/lab/data/Comments.hbm.xml"/>
+    <mapping resource="bgu/dcr/az/lab/data/Cpu.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>

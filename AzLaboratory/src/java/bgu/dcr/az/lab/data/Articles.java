@@ -1,5 +1,5 @@
 package bgu.dcr.az.lab.data;
-// Generated 21:13:44 25/05/2012 by Hibernate Tools 3.2.1.GA
+// Generated May 30, 2012 7:41:57 PM by Hibernate Tools 3.2.1.GA
 
 
 import java.util.Date;

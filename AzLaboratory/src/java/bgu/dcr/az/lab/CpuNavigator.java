@@ -15,8 +15,8 @@ import javax.faces.context.FacesContext;
  */
 @ManagedBean(eager=true)
 @ApplicationScoped
-public class LabNavigator {
-    private String[][] pages = {{"Welcome","Welcome"}, {"News","News"}, {"New Experiment","NewExperiment"}, {"CPU","Managment"}, {"My Profile","MyProfile"}, {"Exit Lab","Home"}};
+public class CpuNavigator {
+    private String[][] pages = {{"Managment","Managment"}, {"Executions","Executions"}, {"Exit CPU","Welcome"}};
     
     
     
@@ -33,7 +33,7 @@ public class LabNavigator {
         File currentUrl = new File(context.getViewRoot().getViewId());
         final String name = currentUrl.getName().replaceAll("\\.xhtml", "");
         //System.out.println("name is " + name);
-        return (name.equals("index")? getPage("Welcome"): getPage(name));
+        return (name.equals("index")? getPage("Managment"): getPage(name));
     }
     
     

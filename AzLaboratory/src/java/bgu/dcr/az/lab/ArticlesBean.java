@@ -22,8 +22,8 @@ public class ArticlesBean {
     
     public List<Articles> articles(int amount) throws SQLException {
         List<Articles> ans = DBManager.UNIT.getLastArticles(1,amount);
-        return ans;
-        
+        System.out.println("articles = " + ans.size());
+        return ans;    
     }
     
     public String title(Articles p){

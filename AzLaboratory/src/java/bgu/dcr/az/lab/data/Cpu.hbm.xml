@@ -3,16 +3,16 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated May 30, 2012 7:41:58 PM by Hibernate Tools 3.2.1.GA -->
 <hibernate-mapping>
-    <class name="bgu.dcr.az.lab.data.ArticlesTags" table="`articles-tags`" catalog="agent_zero_lab">
+    <class name="bgu.dcr.az.lab.data.Cpu" table="cpu" catalog="agent_zero_lab">
         <id name="id" type="java.lang.Integer">
             <column name="id" />
             <generator class="identity" />
         </id>
-        <property name="article" type="int">
-            <column name="article" not-null="true" />
-        </property>
-        <property name="tag" type="int">
-            <column name="tag" not-null="true" />
+        <many-to-one name="users" class="bgu.dcr.az.lab.data.Users" fetch="select">
+            <column name="user" not-null="true" />
+        </many-to-one>
+        <property name="data" type="string">
+            <column name="data" length="150" />
         </property>
     </class>
 </hibernate-mapping>

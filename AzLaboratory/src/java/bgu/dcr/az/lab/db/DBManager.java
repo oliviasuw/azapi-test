@@ -5,6 +5,8 @@
 package bgu.dcr.az.lab.db;
 
 import bgu.dcr.az.lab.data.Articles;
+import bgu.dcr.az.lab.data.Cpu;
+import bgu.dcr.az.lab.data.Experiments;
 import bgu.dcr.az.lab.data.Users;
 import java.sql.SQLException;
 import java.util.List;
@@ -28,6 +30,8 @@ public enum DBManager {
     public void init() {
     }
 
+    
+    
     
     public List<Articles> getLastArticles(int pageNumber,int pageSize) {
         SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
@@ -54,11 +58,16 @@ public enum DBManager {
     }
 
     public Users isVerifiedUserCredentials(String email, String password) {
+        System.out.println("1");
         SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+        System.out.println("2");
         Session s = sessionFactory.openSession();
+        System.out.println("3");
         Criteria cr = s.createCriteria(Users.class).add(Restrictions.eq("email", email)).add(Restrictions.eq("password", password));
 
+        System.out.println("4");
         List results = cr.list();
+        System.out.println("5");
         if (results.isEmpty()) {
             return null;
         }
@@ -85,6 +94,37 @@ public enum DBManager {
         return results;
     }
 
+    
+    public List<Cpu> getUserCpus(Users u){
+        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+        Session s = sessionFactory.openSession();
+        Criteria cr = s.createCriteria(Cpu.class).add(Restrictions.eq("users", u));
+
+        List results = cr.list();
+        
+        return results;
+    }
+    
+    public List<Experiments> getUserExperiments(Users u){
+        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+        Session s = sessionFactory.openSession();
+        Criteria cr = s.createCriteria(Experiments.class).add(Restrictions.eq("users", u));
+
+        List results = cr.list();
+        
+        return results;
+    }
+    
+    
+    public void addNewExperiment(Experiments exp){
+        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+        Session s = sessionFactory.openSession();
+        Transaction tx = s.beginTransaction();
+        s.save(exp);
+        tx.commit();
+    }
+    
+    
     //----------Users--------------------------//
     //----------Posts--------------------------//
     public static void main(String[] args) throws ClassNotFoundException, SQLException {

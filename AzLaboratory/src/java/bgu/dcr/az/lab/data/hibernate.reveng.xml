@@ -4,8 +4,9 @@
   <schema-selection match-catalog="agent_zero_lab"/>
   <table-filter match-name="tags"/>
   <table-filter match-name="comments"/>
-  <table-filter match-name="users"/>
   <table-filter match-name="articles"/>
-  <table-filter match-name="experiments"/>
+  <table-filter match-name="users"/>
+  <table-filter match-name="cpu"/>
   <table-filter match-name="articles-tags"/>
+  <table-filter match-name="experiments"/>
 </hibernate-reverse-engineering>

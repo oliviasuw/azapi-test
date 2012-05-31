@@ -203,10 +203,15 @@ public class Agt0DSL {
         if (obj1 ==  obj2) {
             return true;
         }
+        
         if (obj1 == null || obj2 == null) {
             return false;
         }
         return obj1.equals(obj2);
+    }
+    
+    public static void main(String[] args){
+        System.out.println("?" + eq(null,null));
     }
 
     /**
@@ -551,12 +556,13 @@ public class Agt0DSL {
      * @return
      */
     public static long max(long first, long... args) {
-        long min = first;
-        for (int i = 1; i < args.length; i++) {
-            min = (min < args[i] ? args[i] : min);
+        
+        long max = first;
+        for (int i = 0; i < args.length; i++) {
+            max = (max < args[i] ? args[i] : max);
         }
 
-        return min;
+        return max;
     }
 
     /**
@@ -567,21 +573,21 @@ public class Agt0DSL {
      * @return
      */
     public static double max(Double first, Double... args) {
-        double min = first;
-        for (int i = 1; i < args.length; i++) {
-            min = (min < args[i] ? args[i] : min);
+        double max = first;
+        for (int i = 0; i < args.length; i++) {
+            max = (max < args[i] ? args[i] : max);
         }
 
-        return min;
+        return max;
     }
 
     public static long max(long[] args) {
-        int min = 0;
+        int max = 0;
         for (int i = 1; i < args.length; i++) {
-            min = (args[min] < args[i] ? i : min);
+            max = (args[max] < args[i] ? i : max);
         }
 
-        return args[min];
+        return args[max];
     }
 
     /**
@@ -592,12 +598,12 @@ public class Agt0DSL {
      * @return
      */
     public static int max(int... args) {
-        int min = 0;
+        int max = 0;
         for (int i = 1; i < args.length; i++) {
-            min = (args[min] < args[i] ? i : min);
+            max = (args[max] < args[i] ? i : max);
         }
 
-        return args[min];
+        return args[max];
     }
 
     /**

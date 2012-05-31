@@ -5,7 +5,6 @@
 package bgu.dcr.az.api.exen.mdef;
 
 import bgu.dcr.az.api.exen.Execution;
-import bgu.dcr.az.api.exen.vis.Event;
 import bgu.dcr.az.api.exen.vis.VisualizationFrameBuffer;
 
 /**

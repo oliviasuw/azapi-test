@@ -245,10 +245,15 @@ public abstract class Agent extends Agt0DSL {
         for (Hooks.BeforeMessageProcessingHook hook : beforeMessageProcessingHooks) {
             hook.hook(this, msg);
         }
+        
         msg = beforeMessageProcessing(msg);
         if (msg == null) {
+            for (AfterMessageProcessingHook hook : afterMessageProcessingHooks){
+                hook.hook(this, msg);
+            }
             return; //DUMPING MESSAGE..
         }
+        
         Method mtd = msgToMethod.get(msg.getName());
         if (mtd == null) {
             throw new UnsupportedMessageException("no method to handle message: '" + msg.getName() + "' was found (use @WhenReceived on PUBLIC functions only)");

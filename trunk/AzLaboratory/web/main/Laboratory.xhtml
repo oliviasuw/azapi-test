@@ -39,7 +39,7 @@
                                         </tr>
                                         <tr>
                                             <td width="100%">
-                                                <h:inputText class="laboratory-login-field-box shadow" required="true" id="email" value="#{simpleLogin.email}" label="email"/>
+                                                <h:inputText class="laboratory-login-field-box shadow" required="true" id="email" value="#{login.email}" label="email"/>
                                                 <p:watermark for="email" value="email@example.com"/>
                                             </td> 
                                         </tr>
@@ -51,12 +51,12 @@
                                         </tr>
                                         <tr>
                                             <td width="100%">
-                                                <h:inputSecret class="laboratory-login-field-box shadow" required="true" id="password" value="#{simpleLogin.password}" />
+                                                <h:inputSecret class="laboratory-login-field-box shadow" required="true" id="password" value="#{login.password}" />
                                             </td>
                                         </tr>
                                         <tr>
                                             <td width="100%">
-                                                <h:commandButton value="Login" class="laboratory-login-button"  action="#{simpleLogin.checkValidUser}" />
+                                                <h:commandButton value="Login" class="laboratory-login-button"  action="#{login.checkValidUser}" />
 
 
                                             </td>

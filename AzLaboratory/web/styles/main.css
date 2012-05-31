@@ -707,13 +707,20 @@ background-color: white;
     padding: 0;
 }
 
-.news .news-paging{
+
+
+.news .news-page-body{
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: rgb (52,52,52);
     font-size: 15px;
-    letter-spacing: normal;
-    color: rgb(72,72,72);
 }
 
+.news .news-page{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #C2434A;
+    font-weight: lighter;
+    font-size: 15px;
+}
 
 
 /*AZ Widgets*/

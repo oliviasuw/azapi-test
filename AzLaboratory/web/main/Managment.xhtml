@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:az="http://java.sun.com/jsf/composite/comp"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Agent Zero</title>
+
+        <link rel="stylesheet" type="text/css" href="/AzLaboratory/styles/main.css" />
+    </h:head>
+
+    <h:body>
+        <az:cpuHeader/>
+        <h:form>
+
+            <p:fieldset legend="Available Experiments">  
+                <p:dataTable id="availableExperiments" var="experiment" value="#{cpuBean.experiments}" rowKey="#{experiment.id}">  
+                    <p:column>  
+                        <h:outputText id="dragIcon"  
+                                      styleClass="ui-icon ui-icon-arrow-4" />  
+                        <p:draggable for="dragIcon" revert="true" />  
+                    </p:column>  
+
+                    <p:column >  
+                        <h:outputText value="#{experiment.id}" />  
+                    </p:column>  
+                </p:dataTable>  
+            </p:fieldset>  
+
+                <p:fieldset id="selectedExperiments" legend="cpu" style="margin-top:20px">  
+                    <p:outputPanel id="dropArea">  
+                        <h:outputText value="blabla"  
+                                      rendered="#{empty cpuBean.getDroppedExperiments(1)}"  
+                                      style="font-size:24px;" />  
+
+                        <p:dataTable var="experiment" value="#{cpuBean.getDroppedExperiments(1)}"   
+                                     rendered="#{not empty cpuBean.getDroppedExperiments(1)}" rowKey="#{experiment.id}">  
+
+                            <p:column>  
+                                <h:outputText value="#{experiment.id}" />  
+                            </p:column>   
+                        </p:dataTable>  
+                    </p:outputPanel>  
+                </p:fieldset>  
+
+                <p:droppable for="selectedExperiments" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableExperiments" onDrop="handleDrop" >  
+                    <p:ajax  listener="#{cpuBean.onExperimentDrop}" update="dropArea availableExperiments" />  
+                </p:droppable>
+
+        </h:form>
+    </h:body>
+</html>
+

@@ -76,12 +76,27 @@
                                             </tr>
                                         </ui:repeat>     
                                     </table>
-                                    <div class="news-paging"> 
+                                    <div> 
                                         <h:form>
-                                            <p:commandButton styleClass="prev" actionListener="#{search.prevPage()}"  update=":results"  title="Previous page">
-                                            </p:commandButton>
-                                            page <span>#{search.currentPage}</span> of <span>#{search.totalPages}</span>
-                                            <p:commandLink action="#{search.nextPage()}" value="next" update=":results"/>
+
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <p:commandLink actionListener="#{search.prevPage()}"  update=":results"  title="Previous page">
+                                                            <img style="border: 0;" src="/AzLaboratory/images/page-prev.png"/>
+                                                        </p:commandLink>
+                                                    </td>
+                                                    <td class="news-page-body">page</td>
+                                                    <td class="news-page">#{search.currentPage}</td>
+                                                    <td class="news-page-body"> of</td>
+                                                    <td class="news-page">#{search.totalPages}</td>
+                                                    <td>
+                                                        <p:commandLink action="#{search.nextPage()}"  update=":results" title="Next page">
+                                                            <img style="border: 0;" src="/AzLaboratory/images/page-next.png"/>
+                                                        </p:commandLink>
+                                                    </td>
+                                                </tr>
+                                            </table>
                                             <br/>
                                         </h:form>
                                     </div>

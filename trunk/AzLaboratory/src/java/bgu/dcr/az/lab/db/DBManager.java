@@ -8,16 +8,7 @@ import bgu.dcr.az.lab.data.Articles;
 import bgu.dcr.az.lab.data.Cpu;
 import bgu.dcr.az.lab.data.Experiments;
 import bgu.dcr.az.lab.data.Users;
-import java.sql.SQLException;
 import java.util.List;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 
 /**
  *

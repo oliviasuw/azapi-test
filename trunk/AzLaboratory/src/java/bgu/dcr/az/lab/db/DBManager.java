@@ -23,123 +23,59 @@ import org.hibernate.criterion.Restrictions;
  *
  * @author kdima85
  */
-public enum DBManager {
+public enum DBManager implements DBManagerIfc{
 
     UNIT;
 
+
+    private final static boolean DEBUG = true;
+    private DBManagerIfc manager;
     public void init() {
+        if (DEBUG){
+            manager = new DBManagerStub();
+        }else{
+            manager = new DBManagerHibernate();
+        }
     }
 
-    
-    
-    
-    public List<Articles> getLastArticles(int pageNumber,int pageSize) {
-        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
-        Session s = sessionFactory.openSession();
-        //Transaction tx = s.beginTransaction();
-        Criteria cr = s.createCriteria(Articles.class).addOrder(Order.desc("creationDate"));
-        cr.setFirstResult(pageSize*(pageNumber-1));
-        
-            cr.setMaxResults(pageSize);
-        
+    @Override
+    public List<Articles> getLastArticles(int pageNumber, int pageSize) {
+            return manager.getLastArticles(pageNumber, pageSize);
+        }
 
-        List results = cr.list();
-
-        return results;
-    }
-    
-    public int countAllArticles(){
-        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
-        Session s = sessionFactory.openSession();
-        //Transaction tx = s.beginTransaction();
-        Criteria cr = s.createCriteria(Articles.class).setProjection(Projections.rowCount());
-        Number ans = (Number) cr.uniqueResult();
-        return ans.intValue();
+    @Override
+    public int countAllArticles() {
+        return manager.countAllArticles();
     }
 
+    @Override
     public Users isVerifiedUserCredentials(String email, String password) {
-        System.out.println("1");
-        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
-        System.out.println("2");
-        Session s = sessionFactory.openSession();
-        System.out.println("3");
-        Criteria cr = s.createCriteria(Users.class).add(Restrictions.eq("email", email)).add(Restrictions.eq("password", password));
-
-        System.out.println("4");
-        List results = cr.list();
-        System.out.println("5");
-        if (results.isEmpty()) {
-            return null;
-        }
-        return (Users) results.get(0);
+        return manager.isVerifiedUserCredentials(email, password);
     }
 
-    
-    public void registerNewUser(Users u){
-        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
-        Session s = sessionFactory.openSession();
-        Transaction tx = s.beginTransaction();
-        s.save(u);
-        tx.commit();
+    @Override
+    public void registerNewUser(Users u) {
+        manager.registerNewUser(u);
     }
+
+    @Override
     public List<Users> getAllUsers() {
-
-        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
-        Session s = sessionFactory.openSession();
-        Transaction tx = s.beginTransaction();
-        List results = s.createCriteria(Users.class).list();
-
-
-        tx.commit();
-        return results;
+        return manager.getAllUsers();
     }
 
-    
-    public List<Cpu> getUserCpus(Users u){
-        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
-        Session s = sessionFactory.openSession();
-        Criteria cr = s.createCriteria(Cpu.class).add(Restrictions.eq("users", u));
-
-        List results = cr.list();
-        
-        return results;
+    @Override
+    public List<Cpu> getUserCpus(Users u) {
+        return manager.getUserCpus(u);
     }
-    
-    public List<Experiments> getUserExperiments(Users u){
-        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
-        Session s = sessionFactory.openSession();
-        Criteria cr = s.createCriteria(Experiments.class).add(Restrictions.eq("users", u));
 
-        List results = cr.list();
-        
-        return results;
+    @Override
+    public List<Experiments> getUserExperiments(Users u) {
+        return  manager.getUserExperiments(u);
     }
-    
-    
-    public void addNewExperiment(Experiments exp){
-        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
-        Session s = sessionFactory.openSession();
-        Transaction tx = s.beginTransaction();
-        s.save(exp);
-        tx.commit();
+
+    @Override
+    public void addNewExperiment(Experiments exp) {
+        manager.addNewExperiment(exp);
     }
-    
-    
-    //----------Users--------------------------//
-    //----------Posts--------------------------//
-    public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        DBManager.UNIT.init();
-        //         DBManager.UNIT.getLastArticles(5);
-        List<Users> ans = DBManager.UNIT.getAllUsers();
-        for (Users u : ans) {
-            System.out.println("u = " + u.getName());
-        }
 
-        List<Articles> ans1 = DBManager.UNIT.getLastArticles(1,10);
-        for (Articles u : ans1) {
-            System.out.println("a = " + u.getTitle());
-        }
-
-
-    }
 }

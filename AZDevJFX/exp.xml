@@ -1,0 +1,38 @@
+
+<experiment visual="true">
+    <async-test name="ABT" seed="152915" repeat-count="1" run-var="n" start="10" end="15" tick-size="1">
+        <algorithm name="ABT" />
+        <dcsp-unstructured d="15" p1="0.5" p2="1"/>
+    </async-test>
+    
+    <sync-test name="DSA" seed="152915" repeat-count="1" run-var="_" start="2" end="4" tick-size="1">
+        <algorithm name="DSA" />
+        <adcop-unstructured n="15" d="100" p1="1"/>
+    </sync-test>
+    
+    <sync-test name="MAX_SUM" seed="152915" repeat-count="1" run-var="_" start="2" end="4" tick-size="1">
+        <algorithm name="MaxSum" />
+        <adcop-unstructured n="15" d="5" p1="1"/>
+    </sync-test>
+    
+    <sync-test name="MGM2" seed="152915" repeat-count="1" run-var="_" start="2" end="4" tick-size="1">
+        <algorithm name="MGM2" />
+        <adcop-unstructured n="15" d="5" p1="1"/>
+    </sync-test>
+    
+    <sync-test name="ACLS" seed="152915" repeat-count="1" run-var="_" start="2" end="4" tick-size="1">
+        <algorithm name="ACLS" />
+        <adcop-unstructured n="15" d="5" p1="1"/>
+    </sync-test>
+    
+    
+    <async-test name="SBB" seed="152915" repeat-count="1" run-var="_" start="2" end="4" tick-size="1">
+        <algorithm name="__SBB" />
+        <dcop-unstructured n="7" d="5" p1="0.5" p2="1"/>
+    </async-test>
+    
+    <async-test name="AFB" seed="152915" repeat-count="1" run-var="n" start="7" end="15" tick-size="1">
+        <algorithm name="AFB" />
+        <dcop-unstructured n="10" d="2" p1="1" p2="1"/>
+    </async-test>
+</experiment>

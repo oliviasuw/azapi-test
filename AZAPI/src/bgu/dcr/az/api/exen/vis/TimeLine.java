@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  *
  * @author Administrator
  */
-public class Delta {
+public class TimeLine {
 
     private Map<Integer, Change> changes = new ConcurrentHashMap<Integer, Change>();
     private ArrayList compactChanges;
@@ -28,7 +28,7 @@ public class Delta {
     private Semaphore mergeSemaphore = new Semaphore(1);
     private Semaphore addSemaphore = new Semaphore(1);
 
-    public Delta(Object initialValue) {
+    public TimeLine(Object initialValue) {
         this.initialValue = initialValue;
     }
 
@@ -47,7 +47,7 @@ public class Delta {
                     addSemaphore.acquire();
                 }
             } catch (InterruptedException ex) {
-                Logger.getLogger(Delta.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(TimeLine.class.getName()).log(Level.SEVERE, null, ex);
                 Thread.currentThread().interrupt();
             } finally {
                 addSemaphore.release();
@@ -58,7 +58,7 @@ public class Delta {
                 c.mergeWith(change);
 //                System.out.println("merge produced: " + c);     
             } catch (InterruptedException ex) {
-                Logger.getLogger(Delta.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(TimeLine.class.getName()).log(Level.SEVERE, null, ex);
                 Thread.currentThread().interrupt();
             } finally {
                 mergeSemaphore.release();

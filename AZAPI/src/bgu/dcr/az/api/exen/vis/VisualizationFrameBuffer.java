@@ -14,52 +14,28 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  *
  * @author Administrator
  */
-public class VisualizationFrameBuffer<T> {
+public class VisualizationFrameBuffer {
 
-    private AtomicLong messageIdGenerator = new AtomicLong(0);
     private Execution ex;
     private int[] ncsc;
     private int[] linkTime;
-    
-    private Map<Long, Frame<T>> frames = new HashMap<Long, Frame<T>>();
-    private ReentrantReadWriteLock framesLock = new ReentrantReadWriteLock();
-    private long currentFrame = 0;
+    private Frame frame = new Frame(this);
+    private int currentFrame = 0;
     private boolean frameAutoIncreaseEnabled = true;
-    private Map<String, Delta> deltas = new HashMap<String, Delta>();
-    
-    ////////////////////////////////////////////////////////////////////////////
-    /// Message Handling Per Frame                                           ///
-    ////////////////////////////////////////////////////////////////////////////
-    private ArrayList[] agentHandling;
-    private Interval[] currentIntervals;
+    private Map<String, TimeLine> deltas = new HashMap<String, TimeLine>();
 
     public VisualizationFrameBuffer(Execution ex) {
         this.ex = ex;
-        //msgInQueueAndOnLine = new AtomicInteger[ex.getAgents().length];
-        currentIntervals = new Interval[ex.getAgents().length];
-        agentHandling = new ArrayList[ex.getAgents().length];
         linkTime = new int[ex.getAgents().length];
-
-        for (int i = 0; i < ex.getAgents().length; i++) {
-            agentHandling[i] = new ArrayList<Interval<String>>();
-            //msgInQueueAndOnLine[i] = new AtomicInteger(0);
-        }
-
-        getOrCreateFrame(currentFrame);
         hookIn();
     }
 
     private void hookIn() {
-        Frame.currentFrameBuffer = this;
         Agent[] agents = ex.getAgents();
         ncsc = new int[agents.length];
 
@@ -72,9 +48,6 @@ public class VisualizationFrameBuffer<T> {
 
 //                System.out.println("ncsc update for agent " + a.getId() + " from " + ncsc[a.getId()] + " to " + (Math.max(newNcsc, ncsc[a.getId()]) + 1) + " because msg with " + newNcsc);
                 ncsc[a.getId()] = Math.max(newNcsc, ncsc[a.getId()]);
-
-                getOrCreateFrame(ncsc[a.getId()] + 1);
-                currentIntervals[a.getId()] = new Interval(ncsc[a.getId()], 0, msg.getName());
                 ncsc[a.getId()]++;
 //                System.out.println("Agent "  + a.getId() + " Interval Submit: " + ncsc[a.getId()]);
             }
@@ -90,46 +63,16 @@ public class VisualizationFrameBuffer<T> {
             }
         }.hookInto(ex);
 
-        new Hooks.TerminationHook() {
-            @Override
-            public void hook() {
-                int max = max(ncsc) + 1;
-                for (int i = 0; i < ncsc.length; i++) {
-                    ncsc[i] = max;
-                }
-
-                for (Delta d : deltas.values()) {
-                    d.streach((int) max);
-                }
-
-                for (long i = 0; i < max; i++) {
-                    Frame<T> frame = getOrCreateFrame(i);
-                    for (Entry<String, Delta> d : deltas.entrySet()) {
-                        frame.set(d.getKey(), d.getValue().get((int) i));
-                    }
-                }
-
-                deltas = null;
-            }
-        }.hookInto(ex);
-
-        new Hooks.AfterMessageProcessingHook() {
-            @Override
-            public void hook(Agent a, Message msg) {
-                currentIntervals[a.getId()].end = ncsc[a.getId()];
-                agentHandling[a.getId()].add(currentIntervals[a.getId()]);
-//                System.out.println("Agent " + a.getId() + " => " + currentIntervals[a.getId()]);
-                getOrCreateFrame(ncsc[a.getId()]);
-            }
-        }.hookInto(ex);
     }
 
     //TODO: switch to semaphore
     public synchronized void setMessageDelay(Message message, int recepient, int addition) {
         final NCSCToken ncsct = NCSCToken.extract(message);
         //        NCSCToken.extract(message).increaseValue(addition);
-        int ntime = (int) Math.max(linkTime[recepient] + addition/3, ncsc[message.getSender()] + addition);
-        if (linkTime[recepient] < ntime) linkTime[recepient] = ntime;
+        int ntime = (int) Math.max(linkTime[recepient] + addition / 3, ncsc[message.getSender()] + addition);
+        if (linkTime[recepient] < ntime) {
+            linkTime[recepient] = ntime;
+        }
         ncsct.setValue(ntime);
         //        System.out.println("after message delayed " + NCSCToken.extract(message).getValue());
         //        Long current = (Long) message.getMetadata().get("ncsc");
@@ -140,40 +83,7 @@ public class VisualizationFrameBuffer<T> {
         return ncsc[agent];
     }
 
-    private Frame<T> getOrCreateFrame(long frameNumber) {
-        Frame<T> ret = frames.get(frameNumber);
-        if (ret == null) {
-            framesLock.writeLock().lock();
-            try {
-                ret = frames.get(frameNumber);
-                if (ret == null) {
-                    ret = new Frame<T>(frameNumber);
-//                    ret.copyAgentHandling(agentHandling);
-                    frames.put(frameNumber, ret);
-                }
-            } finally {
-                framesLock.writeLock().unlock();
-            }
-        }
-
-        return ret;
-    }
-//
-//    private void createMessageDeliverFrames(Agent receivingAgent, Message msg) {
-//        Long exit = (Long) msg.getMetadata().get("exit-ncsc");
-//        Long received = NCSCToken.extract(msg).getValue();
-//
-//        if (exit != received) { // the message delivery is not instentanious
-//            Event.MessageTransferData mtd = new Event.MessageTransferData(msg.getName(), msg.getSender(), receivingAgent.getId(), exit, received, messageIdGenerator.getAndIncrement());
-//            final Event<T> event = new Event<T>();
-//            event.setMessageTransferData(mtd);
-//            for (long i = exit; i <= received; i++) {
-//                getOrCreateFrame(i).addEvent(receivingAgent.getId(), event);
-//            }
-//        }
-//    }
-
-    public void storeDelta(String name, Delta d) {
+    public void installDelta(String name, TimeLine d) {
         deltas.put(name, d);
     }
 
@@ -181,60 +91,19 @@ public class VisualizationFrameBuffer<T> {
         //System.out.println("submit change at " + ncsc[agent] + " for agent " + agent + " => " + delta + ": " + change);
         deltas.get(delta).add(ncsc[agent], change);
     }
-    
+
     public void submitChangeInFrame(String delta, int frame, Change change) {
 //        System.out.println("submit change in " + ncsc[agent].get() + " in agent " + agent + " => " + delta);
         deltas.get(delta).add(frame, change);
     }
-    
-    
-//    public void submitChange(String delta, Change change, int... timeZones) {
-//        int max = -1;
-//        for (int t : timeZones) {
-//            if (max == -1 || ncsc[t].get() > max) {
-//                max = (int) ncsc[t].get();
-//            }
-//        }
-//
-//        deltas.get(delta).add((int) max, change);
-//    }
 
-//    public void submitChangeInFrame(String delta, int frame, Change change) {
-//        deltas.get(delta).add(frame, change);
-//    }
     public void stall(int agent, int frames) {
-        ncsc[agent]+=frames;
-//        System.out.println("agent " + agent + " stalled to frame " + ncsc[agent]);
+        ncsc[agent] += frames;
     }
 
-//    public void submitEvent(int agent, Event<T> event) {
-//        framesLock.readLock().lock();
-//        try {
-//            frames.get(ncsc[agent]).addEvent(agent, event);
-//        } finally {
-//            framesLock.readLock().unlock();
-//        }
-//    }
-//    public void submitEvent(int agent, Event<T> event, int framesToComplete) {
-//        framesLock.readLock().lock();
-//        try {
-//            frames.get(ncsc[agent]).addEvent(agent, event);
-//        } finally {
-//            framesLock.readLock().unlock();
-//        }
-//
-//        getOrCreateFrame(ncsc[agent] + framesToComplete);
-//        ncsc[agent] += framesToComplete;
-//    }
-
     public Frame nextFrame() {
-//        for (int i = 0; i < ncsc.length; i++) {
-//            if (ncsc[i] <= currentFrame) {
-//                return null;
-//            }
-//        }
         if (currentFrame < numberOfFrames()) {
-            Frame<T> frame = frames.get(currentFrame);
+            frame.setFrameNumber(currentFrame);
             if (frameAutoIncreaseEnabled) {
                 currentFrame++;
             }
@@ -244,11 +113,11 @@ public class VisualizationFrameBuffer<T> {
         return null;
     }
 
-    public long numberOfFrames() {
+    public int numberOfFrames() {
         return ncsc[0];
     }
 
-    public void gotoFrame(long frame) {
+    public void gotoFrame(int frame) {
         currentFrame = min(frame, numberOfFrames());
     }
 
@@ -262,21 +131,6 @@ public class VisualizationFrameBuffer<T> {
 
     public void setFrameAutoIncreaseEnabled(boolean enable) {
         this.frameAutoIncreaseEnabled = enable;
-    }
-
-    public String[] getMessageHandledInFrame(Frame frame) {
-//        System.out.println("message handling for " + frame.getFrameNumber());
-        String[] ret = new String[agentHandling.length];
-        for (int i = 0; i < agentHandling.length; i++) {
-            ArrayList<Interval<String>> a = agentHandling[i];
-            int pos = Collections.binarySearch(a, frame.getFrameNumber());
-            if (pos >= 0) {
-                ret[i] = a.get(pos).data;
-            }
-
-        }
-//        System.out.println("" + Arrays.toString(ret));
-        return ret;
     }
 
     public static void main(String[] args) {
@@ -297,6 +151,25 @@ public class VisualizationFrameBuffer<T> {
         pos = Collections.binarySearch(ret, 28L);
         System.out.println("pos 28 => " + pos);
 
+    }
+
+    Object getData(int number, String delta) {
+        return deltas.get(delta).get(number);
+    }
+
+    public TimeLine getTimeLine(String name) {
+        return deltas.get(name);
+    }
+
+    public void prepereTimeLines() {
+        int max = max(ncsc) + 1;
+        for (int i = 0; i < ncsc.length; i++) {
+            ncsc[i] = max;
+        }
+
+        for (TimeLine d : deltas.values()) {
+            d.streach((int) max);
+        }
     }
 
     private static class Interval<T> implements Comparable<Long> {

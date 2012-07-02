@@ -138,6 +138,15 @@ public interface Test extends Process {
 
     public String getCurrentExecutedAlgorithmInstanceName();
 
+    /**
+     * if selector != null then on the next call to run 
+     * only the execution that is selected using the given selector will get execute.
+     * after the next call to run the selector will be dismissed and unless 
+     * other one is specified using this method - all the executions will get execute.
+     * @param selector 
+     */
+    public void select(ExecutionSelector selector);
+    
     public static enum State {
 
         SUCCESS,

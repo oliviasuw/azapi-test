@@ -378,4 +378,8 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
             }
         }
     }
+
+    public ExecutorService getThreadPool() {
+        return executorService;
+    }
 }

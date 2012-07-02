@@ -10,6 +10,7 @@ import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.exen.Execution;
 import bgu.dcr.az.api.exen.mdef.MessageDelayer;
+import bgu.dcr.az.api.exen.stat.NCSCToken;
 import java.util.Random;
 
 /**
@@ -21,8 +22,8 @@ public class DefaultMessageDelayer implements MessageDelayer {
 
     @Variable(name = "type",
               description = "the type of the delay: NCCC/NCSC, each depends on the corresponding statistic collectors",
-              defaultValue = "NCCC")
-    String type = "NCCC";
+              defaultValue = "NCSC")
+    String type = "NCSC";
     @Variable(name = "seed",
               description = "seed for the randomization of the delay",
               defaultValue = "42")
@@ -49,13 +50,13 @@ public class DefaultMessageDelayer implements MessageDelayer {
         if (type.equals("NCCC")) {
             return ((Long) m.getMetadata().get("nccc")).intValue();
         } else {
-            return ((Long) m.getMetadata().get("ncsc")).intValue();
+            return NCSCToken.extract(m).getValue();//((Long) m.getMetadata().get("ncsc")).intValue();
         }
     }
 
     @Override
     public void addDelay(Message m, int from, int to) {
-        if (maximumDelay <= minimumDelay) return; //nothinng to add..
+        if (maximumDelay < minimumDelay) return; //nothinng to add..
         int delay = rnd.nextInt(maximumDelay - minimumDelay) + minimumDelay;
         long otime = extractTime(m);
         long ntime = Math.max(delay + previousTime[from][to], otime + delay);
@@ -63,7 +64,8 @@ public class DefaultMessageDelayer implements MessageDelayer {
         if (type.equals("NCCC")) {
             m.getMetadata().put("nccc", (long)ntime);
         } else {
-            m.getMetadata().put("ncsc", (long)ntime);
+            NCSCToken.extract(m).setValue((long)ntime);
+//            m.getMetadata().put("ncsc", (long)ntime);
         }
     }
 

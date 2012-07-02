@@ -4,6 +4,7 @@
  */
 package bgu.dcr.az.exen.stat;
 
+import bgu.dcr.az.api.exen.stat.NCSCToken;
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Hooks;
 import bgu.dcr.az.api.Message;
@@ -61,7 +62,7 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
 
             @Override
             public void hook(Agent a, Message msg) {
-                long newNcsc = (Long) msg.getMetadata().get("ncsc");
+                long newNcsc = NCSCToken.extract(msg).getValue();//(Long) msg.getMetadata().get("ncsc");
                 ncsc[a.getId()] = max(newNcsc, ncsc[a.getId()]);
                 ncsc[a.getId()]++;
             }
@@ -71,7 +72,8 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
 
             @Override
             public void hook(int sender, int recepient, Message msg) {
-                msg.getMetadata().put("ncsc", ncsc[sender]);
+                NCSCToken.extract(msg).setValue(ncsc[sender]);
+//                msg.getMetadata().put("ncsc", ncsc[sender]);
             }
         }.hookInto(ex);
         

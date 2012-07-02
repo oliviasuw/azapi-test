@@ -6,20 +6,23 @@ package bgu.dcr.az.exen.escan;
 
 import bgu.dcr.az.api.exen.escan.Registery;
 import bc.dsl.ReflectionDSL;
-import bgu.dcr.az.api.exen.escan.Configuration;
-import bgu.dcr.az.api.exen.escan.ConfigurationMetadata;
 import bgu.dcr.az.api.exen.escan.ConfigurationMetadata;
 import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.exen.Experiment;
-import bgu.dcr.az.api.exen.Test;
 import bgu.dcr.az.api.exen.escan.VariableMetadata;
 import bgu.dcr.az.exen.ExperimentImpl;
 import java.io.File;
 import static bc.dsl.XNavDSL.*;
+import bgu.dcr.az.api.ano.Register;
+import bgu.dcr.az.api.exen.ExecutionSelector;
+import bgu.dcr.az.api.exen.Test;
+import bgu.dcr.az.api.exen.escan.Configuration;
+import bgu.dcr.az.exen.AbstractTest;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,10 +38,17 @@ import nu.xom.ParsingException;
  */
 public class ExperimentReader {
 
-    public static void write(Object conf, PrintWriter pw) {
-        String confName = Registery.UNIT.getEntityName(conf);
+    
+    /**
+     * writes the given object using the given print writer
+     * the object must be configurable using the Configuration and Variable annotations.
+     * @param object
+     * @param pw 
+     */
+    public static void write(Object object, PrintWriter pw) {
+        String confName = Registery.UNIT.getEntityName(object);
         Element e = new Element(confName);
-        write(conf, e);
+        write(object, e);
 
         pw.append(e.toXML());
     }
@@ -121,11 +131,16 @@ public class ExperimentReader {
         }
         VariableMetadata.assign(c, conf);
     }
-
-    public static void main(String[] args) throws Exception {
-        Experiment exp = read(new File("exp.xml"));
-        for (Test r : exp.getTests()) {
-            System.out.println(r.toString());
+    
+    public static List<ExecutionSelector> listExecutions(File experimentFile) throws IOException, InstantiationException, IllegalAccessException{
+        Experiment exp = ExperimentReader.read(experimentFile);
+        LinkedList<ExecutionSelector> selectors = new LinkedList<ExecutionSelector>();
+        for (Test t : exp.getTests()){
+            selectors.addAll(((AbstractTest) t).listAllExecutionSelectors());
         }
+        
+        return selectors;
+        
     }
+
 }

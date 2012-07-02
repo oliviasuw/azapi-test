@@ -11,7 +11,9 @@ import bgu.dcr.az.api.exen.vis.VisualizationFrameBuffer;
  *
  * @author Administrator
  */
-public interface Visualization<STATE> {
-    public Class<? extends VisualizationDrawer> getViewType();
-    public void initialize(Execution ex, VisualizationFrameBuffer<STATE> buffer);
+public interface Visualization {
+    public VisualizationDrawer loadOrRetreiveView(Object canvas);
+    public void install(Execution ex, VisualizationFrameBuffer buffer);
+    public Object getThumbnail();
+    public String getDescriptionURL();
 }

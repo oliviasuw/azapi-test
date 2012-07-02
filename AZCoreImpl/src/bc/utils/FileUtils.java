@@ -18,6 +18,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.nio.channels.FileChannel;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,20 +43,18 @@ public class FileUtils {
         }
     }
 
-    public static void copy(String source, String destination) throws FileNotFoundException, IOException {
+    public static void copy(String source, String destination) throws IOException{
         File s = new File(source);
         File d = new File(destination);
-
-        FileReader frs = new FileReader(s);
-        FileWriter fwd = new FileWriter(d);
-
-        int c;
-        while ((c = frs.read()) != -1) {
-            fwd.write(c);
-        }
-
-        frs.close();
-        fwd.close();
+        
+        FileInputStream ss = new FileInputStream(s);
+        FileOutputStream ds = new FileOutputStream(d);
+ 
+        FileChannel sourceFileChannel = ss.getChannel();
+        FileChannel destinationFileChannel = ds.getChannel();
+ 
+        long size = sourceFileChannel.size();
+        sourceFileChannel.transferTo(0, size, destinationFileChannel);
     }
 
     /**

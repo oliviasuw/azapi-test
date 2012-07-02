@@ -4,10 +4,11 @@
  */
 package bgu.dcr.az.exen.vis;
 
+import bgu.dcr.az.api.Continuation;
+import bgu.dcr.az.api.exen.vis.VisualizationFrameBuffer;
 import bgu.dcr.az.api.exen.Execution;
 import bgu.dcr.az.api.exen.mdef.Visualization;
 import bgu.dcr.az.api.exen.vis.VisualExecutionRunner;
-import bgu.dcr.az.api.exen.vis.VisualizationFrameBuffer;
 import bgu.dcr.az.exen.AbstractExecution;
 
 /**
@@ -48,8 +49,9 @@ public class VisualExecutionRunnerImpl implements VisualExecutionRunner {
         try {
             ((AbstractExecution) execution).initialize();
             vfb = new VisualizationFrameBuffer(execution);
-            visualization.initialize(execution, vfb);
+            visualization.install(execution, vfb);
             execution.run();
+//            ((AbstractExecution) execution).getThreadPool().shutdownNow();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -63,5 +65,27 @@ public class VisualExecutionRunnerImpl implements VisualExecutionRunner {
     @Override
     public VisualizationFrameBuffer getLoadedVisualizationBuffer() {
         return vfb;
+    }
+    
+    public void startRunning(final Continuation andWhenDone){
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                VisualExecutionRunnerImpl.this.run();
+                andWhenDone.doContinue();
+            }
+        }).start();
+    }
+    
+    public void startAnalyzing(final Continuation andWhenDone){
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                vfb.prepereTimeLines();
+                andWhenDone.doContinue();
+            }
+        }).start();
     }
 }

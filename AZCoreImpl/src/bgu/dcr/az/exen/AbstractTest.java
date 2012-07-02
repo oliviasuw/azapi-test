@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.exen;
 
+import bgu.dcr.az.api.exen.ExecutionSelector;
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.exen.escan.Configuration;
@@ -21,13 +22,11 @@ import bgu.dcr.az.api.exen.Test;
 import bgu.dcr.az.api.exen.Test.TestResult;
 import bgu.dcr.az.api.exen.mdef.StatisticCollector;
 import bgu.dcr.az.api.Problem;
-import bgu.dcr.az.api.exen.*;
 import bgu.dcr.az.api.exen.escan.ConfigurationMetadata;
 import bgu.dcr.az.api.exen.escan.ExternalConfigurationAware;
 import bgu.dcr.az.api.exen.mdef.ProblemGenerator;
 import bgu.dcr.az.api.exen.mdef.Limiter;
 import bgu.dcr.az.exen.async.AsyncTest;
-import bgu.dcr.az.exen.pgen.ConnectedDCOPGen;
 import bgu.dcr.az.exen.stat.db.DatabaseUnit;
 import bgu.dcr.az.exen.pgen.MapProblem;
 import bgu.dcr.az.exen.stat.AbstractStatisticCollector;
@@ -81,7 +80,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
     private CorrectnessTester ctester = null;
     private List<TestListener> listeners = new LinkedList<TestListener>();
     private double currentVarValue;
-    private DebugInfo di = null;
+    private ExecutionSelector eSelector = null;
     private List<Long> problemSeeds;
     boolean initialized = false;
     private Experiment experiment; // the executing experiment
@@ -90,6 +89,11 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
     private Limiter limiter = null;
 
     public AbstractTest() {
+    }
+
+    @Override
+    public void select(ExecutionSelector selector) {
+        eSelector = selector;
     }
 
     @Override
@@ -196,7 +200,14 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
         return limiter;
     }
 
-    public Problem generateProblem(int number) {
+    /**
+     * can be used by external tools to get a specific problem instance for
+     * example in the problem viewer (query)
+     *
+     * @param number
+     * @return
+     */
+    public Problem generateProblemForExternalUse(int number) {
         if (number > getTotalNumberOfExecutions() || number <= 0) {
             throw new InvalidValueException("there is no such problem");
         }
@@ -212,17 +223,15 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
         return p;
     }
 
-    public void debug(DebugInfo di) {
-        initialize();
-        fireTestStarted();
+    private void selectAndRun(ExecutionSelector di) {
         ExecutionResult exr;
         try {
 
-            Problem p = generateProblem(di.getFailedProblemNumber());
+            Problem p = generateProblemForExternalUse(di.getSelectedProblemNumber());
 
             AlgorithmMetadata alg = null;
             for (AlgorithmMetadata a : algorithms) {
-                if (a.getName().equals(di.getAlgorithmName())) {
+                if (a.getName().equals(di.getSelectedAlgorithmInstanceName())) {
                     alg = a;
                     break;
                 }
@@ -239,8 +248,6 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
             res.toSuccessState();
         } catch (Exception ex) {
             res.toCrushState(ex, null);
-        } finally {
-            DatabaseUnit.UNIT.signal(this);
         }
     }
 
@@ -259,8 +266,14 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
         try {
             initialize();
             validateConfiguration();
-
             fireTestStarted();
+
+            if (eSelector != null) {
+                selectAndRun(eSelector);
+                eSelector = null;
+                return;
+            }
+
 
             if (tickSize == 0) {
                 tickSize = 0.1f;
@@ -313,7 +326,10 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
                         } else {
                             algName = algorithms.get(0).getName();
                         }
-                        di = new DebugInfo(this.getName(), algName, pnum);
+
+                        //if the execution failed we want to be able to select this execution - so we will store
+                        //the execution selector for the failed execution so it will be available if anyone asks for it
+                        eSelector = new ExecutionSelector(this.getName(), algName, pnum);
                         return;
                     }
                 }
@@ -335,25 +351,43 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
 
     }
 
-    public DebugInfo getFailoreDebugInfo() {
-        return di;
-    }
-
-    public Execution buildExecution(int number) { 
+    public Execution buildExecution(int number) {
         //dont replace it with the _run method as this code is less optimized because it will generate new problem for each algorithm...
         //but we should think how to merge this code duplications...
-        
+
         final int numberOfAlgorithms = getAlgorithms().size();
-        AlgorithmMetadata alg = getAlgorithms().get(number%numberOfAlgorithms);
-        double rvarVal = getVarStart() + (number / (numberOfAlgorithms*repeatCount))*getTickSize();
+        AlgorithmMetadata alg = getAlgorithms().get(number % numberOfAlgorithms);
+        double rvarVal = getVarStart() + (number / (numberOfAlgorithms * repeatCount)) * getTickSize();
         ConfigurationMetadata.bubbleDownVariable(this, runVar, rvarVal);
-        Problem p = nextProblem(number/numberOfAlgorithms + 1);
+        Problem p = nextProblem(number / numberOfAlgorithms + 1);
         Execution e = provideExecution(p, alg);
         e.setStatisticCollectors(collectors);
         e.setLimiter(limiter);
         return e;
     }
-    
+
+    /**
+     * this method should be replaced when the new experiment model will come
+     * out please do not use it as it is bound to change
+     *
+     * @return
+     */
+    public LinkedList<ExecutionSelector> listAllExecutionSelectors() {
+        LinkedList<ExecutionSelector> ret = new LinkedList<ExecutionSelector>();
+        final int numberOfAlgorithms = getAlgorithms().size();
+        for (int execNumber = 0; execNumber < getTotalNumberOfExecutions(); execNumber++) {
+            AlgorithmMetadata alg = getAlgorithms().get(execNumber % numberOfAlgorithms);
+            double rvarVal = getVarStart() + (execNumber / (numberOfAlgorithms * getRepeatCount())) * getTickSize();
+            ConfigurationMetadata.bubbleDownVariable(this, getRunningVarName(), rvarVal);
+            
+            ExecutionSelector esel = new ExecutionSelector(getName(), alg.getInstanceName(), execNumber / numberOfAlgorithms);
+            ret.add(esel);
+        }
+
+        return ret;
+
+    }
+
     private ExecutionResult execute(Problem p, AlgorithmMetadata alg) {
         currentAlgorithm = alg;
         Execution e = provideExecution(p, alg);
@@ -400,8 +434,8 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
         return res;
     }
 
-    public DebugInfo getDebugInfo() {
-        return di;
+    public ExecutionSelector getFaildExecutionSelector() {
+        return eSelector;
     }
 
     @Override
@@ -560,5 +594,4 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
             throw new BadConfigurationException("[Test " + getName() + "] bad configuration discovered: " + message);
         }
     }
-    
 }

@@ -104,7 +104,7 @@ public class SyncAgentRunner implements AgentRunner {
                                         s.current.processNextMessage();
 
                                         //handle timeout
-                                        if (!limiter.canContinue(exec)) {
+                                        if (limiter!=null && !limiter.canContinue(exec)) {
                                             exec.terminateDueToLimiter();
                                             return;
                                         }

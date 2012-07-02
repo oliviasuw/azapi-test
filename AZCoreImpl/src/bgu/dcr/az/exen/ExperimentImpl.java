@@ -4,6 +4,7 @@
  */
 package bgu.dcr.az.exen;
 
+import bgu.dcr.az.api.exen.ExecutionSelector;
 import bgu.dcr.az.api.exen.escan.Configuration;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.exen.Execution;
@@ -31,7 +32,7 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
     private ExperimentResult result;
     private LinkedList<Experiment.ExperimentListener> listeners = new LinkedList<ExperimentListener>();
     private List<Visualization> visualizations = new ArrayList<Visualization>();
-    private DebugInfo di;
+    private ExecutionSelector eSelector;
     private ExecutorService pool = Executors.newCachedThreadPool();
 
     @Override
@@ -42,11 +43,11 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
             fireExperimentStarted();
 
             List<Test> testsToRun = new LinkedList<Test>();
-            if (di == null) {
+            if (eSelector == null) { //there is no selector so execute everything!
                 testsToRun.addAll(tests);
             } else {
                 for (Test r : tests) {
-                    if (r.getName().equals(di.getTestName())) {
+                    if (r.getName().equals(eSelector.getSelectedTest())) {
                         testsToRun.add(r);
                         break;
                     }
@@ -60,12 +61,8 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
 
                 currentTest.addListener(this);
 
-                if (di == null) { //todo - for the visualization we need to make this embedded and simpler behavior
-                    //somthing like - run all / run single
-                    currentTest.run();
-                } else {
-                    ((AbstractTest) currentTest).debug(di);
-                }
+                currentTest.select(eSelector); //if is null will have no effect
+                currentTest.run();
 
                 DatabaseUnit.UNIT.signal(currentTest); // SIGNALING - TELLING THAT STATISTICS COLLECTION TO THE CURRENT TEST IS OVER
                 currentTest.removeListener(this);
@@ -76,7 +73,8 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
                         case CRUSH:
                         case WRONG_RESULT:
                             result = new ExperimentResult(currentTest, res);
-                            setDebugInfo(((AbstractTest) currentTest).getDebugInfo());
+                            //for debug porpuse
+                            setExecutionSelector(((AbstractTest) currentTest).getFaildExecutionSelector());
                             return;
                     }
                 }
@@ -106,12 +104,12 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
 
     @Override
     public List<Test> getTests() {
-        if (di == null) {
+        if (eSelector == null) {
             return Collections.unmodifiableList(tests);
         } else {
             List<Test> ret = new LinkedList<Test>();
             for (Test r : tests) {
-                if (r.getName().equals(di.getTestName())) {
+                if (r.getName().equals(eSelector.getSelectedTest())) {
                     ret.add(r);
                     return ret;
                 }
@@ -126,13 +124,17 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
         return result;
     }
 
-    @Configuration(name = "Debug Information", description = "Required if the test is to be run in debug mode")
-    public void setDebugInfo(DebugInfo di) {
-        this.di = di;
+    @Configuration(name = "Execution Selector", description = "Required if the test is to be run in debug mode")
+    public void setExecutionSelector(ExecutionSelector di) {
+        this.eSelector = di;
+    }
+    
+    public ExecutionSelector getExecutionSelector(){
+        return eSelector;
     }
 
-    public DebugInfo getDebugInfo() {
-        return this.di;
+    public ExecutionSelector getDebugInfo() {
+        return this.eSelector;
     }
 
     @Override
@@ -181,7 +183,7 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
 
     @Override
     public int getTotalNumberOfExecutions() {
-        if (di != null) {
+        if (eSelector != null) {
             return 1;
         } else {
             int sum = 0;

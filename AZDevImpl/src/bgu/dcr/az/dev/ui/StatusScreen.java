@@ -71,7 +71,7 @@ public class StatusScreen extends javax.swing.JPanel {
         final BoundedRangeModel mod = execProgress.getModel();
         mod.setMinimum(0);
 
-        final int expLength = experiment.getLength();
+        final int expLength = experiment.getTotalNumberOfExecutions();
 
         mod.setMaximum(expLength);
         progressLabel.setText("Execution 1 " + " of " + expLength);

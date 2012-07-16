@@ -93,7 +93,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
             }
         }));
 
-        if (exp.getLength() == 0) {
+        if (exp.getTotalNumberOfExecutions() == 0) {
             remove(contentPan);
             DataPanel msg = new DataPanel();
             msg.setNoDataText("There are no problems to view");
@@ -117,7 +117,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
                 try {
                     c = (AbstractTest) Visual.getSelected(testSelect);
                     pnum = (Integer) pnumSelect.getValue();
-                    Problem p = c.generateProblem(pnum);
+                    Problem p = c.generateProblemForExternalUse(pnum);
                     showProblem(p);
                     problemViewingDescription.setText("Showing problem " + pnum + " of test " + c.getName());
                 } catch (Exception ex) {

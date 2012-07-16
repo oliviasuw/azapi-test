@@ -76,7 +76,7 @@ public class DebugSelectionScreen extends javax.swing.JPanel implements TestView
                 if (!failList.getSelectedItems().isEmpty()) {
                     ExperimentImpl selected = (ExperimentImpl) ((Visual) failList.getSelectedItems().get(0)).getItem();
                     List<Test> tests = selected.getTests();
-                    String testName = selected.getDebugInfo().getTestName();
+                    String testName = selected.getDebugInfo().getSelectedTest();
 
                     for (Test r : tests) {
                         if (r.getName().equals(testName)) {

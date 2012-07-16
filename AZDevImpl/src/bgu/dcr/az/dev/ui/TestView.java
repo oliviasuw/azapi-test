@@ -17,7 +17,7 @@ import bc.ui.swing.visuals.Visual.VisualGen;
 import bgu.dcr.az.api.exen.Test;
 import bgu.dcr.az.api.exen.escan.VariableMetadata;
 import bgu.dcr.az.api.exen.escan.AlgorithmMetadata;
-import bgu.dcr.az.exen.DebugInfo;
+import bgu.dcr.az.api.exen.ExecutionSelector;
 import bgu.dcr.az.exen.AbstractTest;
 import java.util.LinkedList;
 import java.util.List;
@@ -452,7 +452,7 @@ public class TestView extends javax.swing.JPanel {
 
 
 
-    public void addFailureData(DebugInfo di) {
+    public void addFailureData(ExecutionSelector di) {
         this.failurePan.setVisible(true);
         this.debugProblemButtonPan.setVisible(true);
         

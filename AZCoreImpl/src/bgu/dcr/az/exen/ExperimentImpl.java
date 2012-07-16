@@ -34,12 +34,16 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
     private List<Visualization> visualizations = new ArrayList<Visualization>();
     private ExecutionSelector eSelector;
     private ExecutorService pool = Executors.newCachedThreadPool();
+    private boolean allowReuse = false;
 
     @Override
     public void _run() {
         try {
 
-            DatabaseUnit.UNIT.start();
+            if (!DatabaseUnit.UNIT.isStarted() || (DatabaseUnit.UNIT.isStarted() && allowReuse)) {
+                DatabaseUnit.UNIT.start();
+            }
+            
             fireExperimentStarted();
 
             List<Test> testsToRun = new LinkedList<Test>();
@@ -90,10 +94,30 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
 
         } finally {
             fireExperimentEnded();
-            System.out.println("shutting down experiment threadpool");
-            pool.shutdown();
-            pool.shutdownNow();
+            if (!allowReuse) {
+                doneReuse();
+            }
         }
+    }
+
+    /**
+     * allow this experiment to be reused - for example with different execution
+     * selectors after you finish reusing the experiment call the method
+     * doneReuse to free all the experiment resources
+     *
+     * @param allowReuse
+     */
+    public void setAllowReuse(boolean allowReuse) {
+        this.allowReuse = allowReuse;
+    }
+
+    /**
+     * if the experiment is being reused, there are resources that cannot be
+     * freed calling this function will tell the execution that it is not going
+     * to be reused anymore thus allows it to free all its resources.
+     */
+    public void doneReuse() {
+        pool.shutdownNow();
     }
 
     @Configuration(name = "Test", description = "Add new test for the experiment")
@@ -128,8 +152,8 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
     public void setExecutionSelector(ExecutionSelector di) {
         this.eSelector = di;
     }
-    
-    public ExecutionSelector getExecutionSelector(){
+
+    public ExecutionSelector getExecutionSelector() {
         return eSelector;
     }
 

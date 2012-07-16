@@ -224,6 +224,10 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
     }
 
     private void selectAndRun(ExecutionSelector di) {
+        currentExecutionNumber = di.getExecutionNumber();
+        currentProblemNumber = di.getSelectedProblemNumber();
+        currentVarValue = di.getRunvar();
+        
         ExecutionResult exr;
         try {
 
@@ -329,7 +333,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
 
                         //if the execution failed we want to be able to select this execution - so we will store
                         //the execution selector for the failed execution so it will be available if anyone asks for it
-                        eSelector = new ExecutionSelector(this.getName(), algName, pnum);
+                        eSelector = new ExecutionSelector(this.getName(), algName, pnum, getCurrentExecutionNumber(), getCurrentVarValue());
                         return;
                     }
                 }
@@ -380,7 +384,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
             double rvarVal = getVarStart() + (execNumber / (numberOfAlgorithms * getRepeatCount())) * getTickSize();
             ConfigurationMetadata.bubbleDownVariable(this, getRunningVarName(), rvarVal);
             
-            ExecutionSelector esel = new ExecutionSelector(getName(), alg.getInstanceName(), execNumber / numberOfAlgorithms);
+            ExecutionSelector esel = new ExecutionSelector(getName(), alg.getInstanceName(), execNumber / numberOfAlgorithms + 1, execNumber + 1, rvarVal);
             ret.add(esel);
         }
 

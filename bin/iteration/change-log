@@ -1,3 +1,8 @@
+quick fix 2
+- added: more support for the cpu and amazon experiment splitting
+- added: support for visualizations 
+- fixed: regression bug with ncsc statistic 
+
 quick fix 1
 - fixed: negative NCCC bug
 - removed: some algorithms that left inside the last build accidently

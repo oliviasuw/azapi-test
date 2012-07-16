@@ -5,10 +5,7 @@
 package bgu.dcr.az.exen.cli;
 
 import bgu.dcr.az.api.exen.ExecutionSelector;
-import bgu.dcr.az.api.exen.Experiment;
-import bgu.dcr.az.api.exen.Test;
 import bgu.dcr.az.exen.escan.ExperimentReader;
-import bgu.dcr.az.exen.stat.db.DatabaseUnit;
 import bgu.dcr.az.exen.util.CLIs;
 import java.io.File;
 import java.io.IOException;

@@ -10,6 +10,8 @@ import bgu.dcr.az.api.exen.Test;
 import bgu.dcr.az.api.exen.stat.DBRecord;
 import bgu.dcr.az.api.exen.stat.Database;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -36,7 +38,7 @@ public enum DatabaseUnit {
 
     UNIT;
     public static final int MAXIMUM_NUMBER_OF_INMEMORY_STATISTICS = 5000;
-    public static final String DATA_BASE_NAME = "agentzero";
+    public static String DATA_BASE_NAME = "agentzero";
     private DBConnectionHandler connection;
     private Thread writerThread = null;
     private ArrayBlockingQueue<SimpleEntry<DBRecord, Test>> dbQueue = new ArrayBlockingQueue<SimpleEntry<DBRecord, Test>>(MAXIMUM_NUMBER_OF_INMEMORY_STATISTICS);
@@ -45,6 +47,7 @@ public enum DatabaseUnit {
     private Map<Signal, Signal> signals = new HashMap<Signal, Signal>();
     private List<SignalListner> signalListeners = new LinkedList<SignalListner>();
     private List<DataBaseChangedListener> databaseChangeListeners = new LinkedList<DataBaseChangedListener>();
+    private boolean started = false;
 
     /**
      * will attempt to connect to the database (creating it if needed)
@@ -112,6 +115,16 @@ public enum DatabaseUnit {
     }
 
     public void disconnect() {
+        try {
+            awaitStatistics();
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            Logger.getLogger(DatabaseUnit.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        stopCollectorThread();
+        knownRecords.clear();
+        insertStatments.clear();
+        dbQueue.clear();
         if (connection != null) {
             try {
                 connection.disconnect();
@@ -177,21 +190,28 @@ public enum DatabaseUnit {
 
             while (res.next()) {
                 String tableName = res.getString("TABLE_NAME");
+                System.out.println("writing table " + tableName);
                 ResultSet rs = db.query("select * from " + tableName);
-                Csv.getInstance().write(folder.getAbsolutePath() + "/" + tableName + ".csv", rs, null);
+                FileWriter fw = new FileWriter(new File(folder.getAbsolutePath() + "/" + tableName + ".csv"));
+                Csv.getInstance().write(fw, rs);
             }
 
+        } catch (IOException ex) {
+            Logger.getLogger(DatabaseUnit.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseUnit.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     /**
-     * this method designed to be used by the experiment - if there were a limitation applied after the generation of 
-     * several statistics then the statistics that are belong to the problem that was limited 
-     * need to be cleaned - use this method to do so by providing all the problem numbers that was limited 
-     * this method will scan all the statistical data and delete all the data that relevant to the given problem numbers
-     * @param problemNumbers 
+     * this method designed to be used by the experiment - if there were a
+     * limitation applied after the generation of several statistics then the
+     * statistics that are belong to the problem that was limited need to be
+     * cleaned - use this method to do so by providing all the problem numbers
+     * that was limited this method will scan all the statistical data and
+     * delete all the data that relevant to the given problem numbers
+     *
+     * @param problemNumbers
      */
     public void deleteAllStatisticsRelatedToProblems(List<Integer> problemNumbers, int numberOfAlgorithmsPerProblem) throws SQLException {
         if (problemNumbers.isEmpty()) {
@@ -219,10 +239,20 @@ public enum DatabaseUnit {
         }
 
         System.out.println("DELETE ALL STATISTICS" + deleteSQL);
-        
+
     }
 
-    public void start() throws ConnectionFaildException {
+    public synchronized boolean isStarted() {
+        return started;
+    }
+    
+    public synchronized void start() throws ConnectionFaildException {
+        if (started) {
+            disconnect();
+        } else {
+            started = true;
+        }
+
         DatabaseUnit.UNIT.delete();
         DatabaseUnit.UNIT.connect();
         DatabaseUnit.UNIT.startStatisticWriterThread();
@@ -245,6 +275,12 @@ public enum DatabaseUnit {
     public void stopCollectorThread() {
         if (writerThread != null) {
             writerThread.interrupt();
+            try {
+                writerThread.join();
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                Logger.getLogger(DatabaseUnit.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         writerThread = null;
     }
@@ -378,7 +414,7 @@ public enum DatabaseUnit {
         public void run() {
             System.out.println("Statistics Collector Activated");
             SimpleEntry<DBRecord, Test> stat;
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 try {
                     if (dbQueue.isEmpty() && Thread.currentThread().isInterrupted()) {
                         return;

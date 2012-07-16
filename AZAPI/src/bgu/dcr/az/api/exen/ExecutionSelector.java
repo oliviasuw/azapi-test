@@ -22,13 +22,19 @@ public class ExecutionSelector {
     //TODO - why is it needed?
     @Variable(name="name", description="identifier for this selector info", defaultValue="unnamed")
     String name = ""+ System.currentTimeMillis();
-    @Variable(name="exec-number", description="number of the failing problem", defaultValue="-1")
-    int number = -1;
+    @Variable(name="prob-number", description="number of the failing problem", defaultValue="-1")
+    int pnumber = -1;
+    @Variable(name="exec-number", description="the number of the failing execution", defaultValue="-1")
+    int enumber = -1;
+    @Variable(name="run-var", description="the run-var value of the execution", defaultValue="-1")
+    double runvar = -1;
     
-    public ExecutionSelector(String testName, String algName, int number) {
+    public ExecutionSelector(String testName, String algName, int number, int enumber, double runVar) {
         this.testName = testName;
         this.algName = algName;
-        this.number = number;
+        this.pnumber = number;
+        this.enumber = enumber;
+        this.runvar = runVar;
     }
 
     public ExecutionSelector() {
@@ -42,16 +48,25 @@ public class ExecutionSelector {
     }
     
     public int getSelectedProblemNumber(){
-        return number;
+        return pnumber;
     }
     
     public String getName() {
         return name;
     }
 
+    public double getRunvar() {
+        return runvar;
+    }
+
+    
     @Override
     public String toString() {
-        return "" + testName + "," + algName + "," + number;
+        return "" + testName + "," + algName + "," + pnumber + "," + enumber + "," + runvar;
+    }
+    
+    public int getExecutionNumber(){
+        return enumber;
     }
     
 }

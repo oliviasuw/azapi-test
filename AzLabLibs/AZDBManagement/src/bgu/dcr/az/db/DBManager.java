@@ -15,10 +15,9 @@ import javax.persistence.TypedQuery;
  * @author Administrator
  */
 public class DBManager {
-    
-    private static String TESTING_DB_URL = "objectdb:/az/azlab.tmp;drop";
-    private static String DB_URL = "objectdb:/az/azlab.odb;"; 
 
+    private static String TESTING_DB_URL = "objectdb:/az/azlab.tmp;drop";
+    private static String DB_URL = "objectdb:/az/azlab.odb;";
     private EntityManagerFactory emf;
 
     public DBManager() {
@@ -27,36 +26,39 @@ public class DBManager {
         emf = Persistence.createEntityManagerFactory(TESTING_DB_URL);
 //        emf = Persistence.createEntityManagerFactory(DB_URL);
     }
-    
+
     /**
-     * @return new EntityManager, dont forget to close it when you done using it!
+     * @return new EntityManager, dont forget to close it when you done using
+     * it!
      */
-    public EntityManager newEM(){
+    public EntityManager newEM() {
         return emf.createEntityManager();
     }
-        
-    public void save(Object o){
+
+    public void save(Object o) {
         EntityManager em = newEM();
         em.getTransaction().begin();
-        
+
         em.persist(o);
-        
+
         em.getTransaction().commit();
         em.close();
     }
 
-    public void save(List all){
+    public void save(Iterable... all) {
         EntityManager em = newEM();
         em.getTransaction().begin();
-        
-        for (Object a : all){
-            em.persist(a);
+
+        for (Iterable aa : all) {
+            for (Object a : aa) {
+                em.persist(a);
+            }
         }
-        
+
         em.getTransaction().commit();
         em.close();
     }
-    
+
     public <T> List<T> loadAll(Class<T> type) {
         EntityManager em = newEM();
         TypedQuery<T> q = em.createQuery("select c from " + type.getSimpleName() + " c", type);
@@ -69,6 +71,4 @@ public class DBManager {
     protected void finalize() throws Throwable {
         System.out.println("I DEAD!");
     }
-    
-    
 }

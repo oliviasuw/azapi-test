@@ -12,5 +12,5 @@ import javax.persistence.Embeddable;
  */
 @Embeddable
 public enum CodeType {
-    TOOL,AGENT,MODULE;
+    TOOL,AGENT,PROBLEM_GENERATOR, STATISTIC_COLLECTOR, CORRECTNESS_TESTER, MESSAGE_DELAYER, TIMER;
 }

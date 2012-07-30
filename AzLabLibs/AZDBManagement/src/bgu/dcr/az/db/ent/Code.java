@@ -28,6 +28,8 @@ public class Code implements Serializable {
     private int numberOfDownloads;
     private boolean safe;
     private User author;
+    private String registeredName;
+    private List<VariableDecleration> variables;
     private List<Comment> comments;
     private int rating;
 

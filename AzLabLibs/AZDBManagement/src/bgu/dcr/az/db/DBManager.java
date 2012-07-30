@@ -45,6 +45,18 @@ public class DBManager {
         em.close();
     }
 
+    public void save(List all){
+        EntityManager em = newEM();
+        em.getTransaction().begin();
+        
+        for (Object a : all){
+            em.persist(a);
+        }
+        
+        em.getTransaction().commit();
+        em.close();
+    }
+    
     public <T> List<T> loadAll(Class<T> type) {
         EntityManager em = newEM();
         TypedQuery<T> q = em.createQuery("select c from " + type.getSimpleName() + " c", type);

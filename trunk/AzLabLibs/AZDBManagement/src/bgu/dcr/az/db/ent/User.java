@@ -5,6 +5,7 @@
 package bgu.dcr.az.db.ent;
 
 import bgu.dcr.az.db.DBManager;
+import java.util.LinkedList;
 import java.util.List;
 import javax.jdo.annotations.Unique;
 import javax.persistence.Entity;
@@ -95,5 +96,15 @@ public class User {
         User r = q.getSingleResult();
         em.close();
         return r;
+    }
+    
+    public List<Code> getAllUploadedCodes(DBManager db){
+        List<Code> ans = new LinkedList<Code>();
+        EntityManager em = db.newEM();
+        TypedQuery<Code> qCode = em.createQuery("select c from Code c where c.author = :user", Code.class);
+        qCode.setParameter("user", this);
+        ans.addAll(qCode.getResultList());
+        em.close();
+        return ans;
     }
 }

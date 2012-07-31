@@ -34,7 +34,19 @@ public class DBManager {
     public EntityManager newEM() {
         return emf.createEntityManager();
     }
-
+    
+    public void update(Object o){
+        EntityManager em = newEM();
+        em.getTransaction().begin();
+        
+        
+        em.merge(o);
+        //em.persist(o);
+        
+        em.getTransaction().commit();
+        em.close();
+    }
+    
     public void save(Object o) {
         EntityManager em = newEM();
         em.getTransaction().begin();

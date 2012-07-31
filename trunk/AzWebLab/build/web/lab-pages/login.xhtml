@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:head>
+        <link rel="stylesheet" type="text/css" href="../styles/main.css" />
+    </h:head>
+    <h:body>
+<!--        <az:mainHeader/>-->
+        <table class="laboratory" id="content-table" height="100%" width="100%" cellspacing="15px" cellpadding="0px">
+            <tr>
+                <td class="laboratory-left-spacer" align="center">  
+
+                </td>
+                <td>
+                    <table class="laboratory-login" align="center" width="100%">
+                        <tr>
+                            <td class="laboratory-top-spacer">  
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="laboratory-login-title">
+                                Login to AgentZero Laboratory
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  align="center" width="100%">  
+                                <h:form>
+                                    <table class="laboratory-login-table shadow" width="100%">
+                                        <tr>
+                                            <td class="laboratory-login-field" width="100%">
+                                                Email &nbsp; &nbsp; 
+                                                <span class="laboratory-login-field-text">Don't have an account? </span>
+                                                <a class="laboratory-login-field-sign-in" href="Register.xhtml">Sign Up</a>
+                                                <span class="laboratory-login-field-text">now!</span>
+                                            </td> 
+                                        </tr>
+                                        <tr>
+                                            <td width="100%">
+                                                <h:inputText class="laboratory-login-field-box shadow" required="true" id="email" value="#{login.email}" label="email"/>
+                                                <p:watermark for="email" value="email@example.com"/>
+                                            </td> 
+                                        </tr>
+                                        <tr>
+                                            <td class="laboratory-login-field" width="100%">
+                                                Password &nbsp; &nbsp;
+                                                <a class="laboratory-login-field-sign-in" href="http://www.ynet.co.il/home/0,7340,L-8,00.html">Forgot your password?</a>
+                                            </td> 
+                                        </tr>
+                                        <tr>
+                                            <td width="100%">
+                                                <h:inputSecret class="laboratory-login-field-box shadow" required="true" id="password" value="#{login.password}" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="100%">
+                                                <h:commandButton value="Login" class="laboratory-login-button"  action="#{login.tryLogin()}" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </h:form>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+
+                <td class="laboratory-pic" align="center">
+                    <img src="/Az/faces/images/lab.png"/>  
+                </td>
+            </tr>
+        </table>
+    </h:body>
+</html>

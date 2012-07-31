@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        Hello #{(login.user!=null) ? login.user.email: 'guest'} from Facelets
+        <br />
+        <h:link outcome="lab-pages/user-register" value="register user" /><br/>
+        <h:link outcome="lab-pages/admin/users" value="admin users" /> <br/>
+        <h:link outcome="lab-pages/login" value="login" /> <br/>
+        <h:link outcome="lab-pages/profile" value="profile" /> <br/>
+        <h:link outcome="lab-pages/upload-file" value="upload file" /> <br/>
+        <h:link outcome="lab-pages/view-experiments" value="view experiments" /> <br/>
+        <h:link outcome="lab-pages/experiment-builder" value="build experiment" /> <br/>
+        
+        
+    </h:body>
+</html>
+

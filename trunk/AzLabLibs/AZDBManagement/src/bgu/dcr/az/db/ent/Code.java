@@ -23,8 +23,7 @@ public class Code implements Serializable {
     @GeneratedValue
     long id = 0;
     private CodeType type;
-    private List<Code> dependencies;
-    private List<CodeLib> extLibreries;
+    private List<File> dependencies;
     private String name;
     private File locationOnDisk;
     private String description;
@@ -38,8 +37,7 @@ public class Code implements Serializable {
 
     public Code() {
         comments = new LinkedList<Comment>();
-        dependencies = new LinkedList<Code>();
-        extLibreries = new LinkedList<CodeLib>();
+        dependencies = new LinkedList<File>();
         numberOfDownloads = 0;
         safe = false;
         rating = 0;
@@ -61,14 +59,10 @@ public class Code implements Serializable {
         return rating;
     }
 
-    public void setDependencies(List<Code> dependencies) {
+    public void setDependencies(List<File> dependencies) {
         this.dependencies = dependencies;
     }
-
-    public void setExtLibreries(List<CodeLib> extLibreries) {
-        this.extLibreries = extLibreries;
-    }
-
+    
     public void setName(String name) {
         this.name = name;
     }
@@ -101,12 +95,8 @@ public class Code implements Serializable {
         return id;
     }
 
-    public List<Code> getDependencies() {
+    public List<File> getDependencies() {
         return dependencies;
-    }
-
-    public List<CodeLib> getExtLibreries() {
-        return extLibreries;
     }
 
     public String getName() {

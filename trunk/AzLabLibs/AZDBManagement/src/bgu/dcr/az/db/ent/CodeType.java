@@ -14,4 +14,13 @@ import javax.persistence.Embeddable;
 public enum CodeType {
 
     TOOL, AGENT, PROBLEM_GENERATOR, STATISTIC_COLLECTOR, CORRECTNESS_TESTER, MESSAGE_DELAYER, LIMITER;
+
+    public static CodeType byName(String name) {
+        for (CodeType v : values()) {
+            if (v.name().equals(name)) {
+                return v;
+            }
+        }
+        return null;
+    }
 }

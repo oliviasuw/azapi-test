@@ -18,7 +18,10 @@ import javax.persistence.Id;
  */
 @Entity
 public class Code implements Serializable {
-    private @Id @GeneratedValue long id;
+
+    private @Id
+    @GeneratedValue
+    long id = 0;
     private CodeType type;
     private List<Code> dependencies;
     private List<CodeLib> extLibreries;
@@ -33,8 +36,7 @@ public class Code implements Serializable {
     private List<Comment> comments;
     private int rating;
 
-    
-    public Code(){
+    public Code() {
         comments = new LinkedList<Comment>();
         dependencies = new LinkedList<Code>();
         extLibreries = new LinkedList<CodeLib>();
@@ -42,7 +44,7 @@ public class Code implements Serializable {
         safe = false;
         rating = 0;
     }
-    
+
     public void setType(CodeType type) {
         this.type = type;
     }

@@ -4,11 +4,15 @@
  */
 package bgu.dcr.az.db.ent;
 
+import bgu.dcr.az.db.DBManager;
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -16,12 +20,50 @@ import javax.persistence.Id;
  */
 @Entity
 public class Experiment implements Serializable {
-    private @Id @GeneratedValue long id;
+
+    private @Id
+    @GeneratedValue
+    long id = 0;
     private String name;
     private String locationOnDisk;
     private String description;
     private User owner;
     private List<Comment> comments;
+    private boolean publicExp;
+    private String results;
+
+    public Experiment() {
+    }
+
+    public Experiment(String name, String description, User owner, String results) {
+        this.name = name;
+        this.description = description;
+        this.owner = owner;
+        this.comments = new LinkedList<>();
+        this.publicExp = false;
+        this.results = results;
+        this.locationOnDisk = null;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setResults(String results) {
+        this.results = results;
+    }
+
+    public String getResults() {
+        return results;
+    }
+
+    public void setPublicExp(boolean publicExp) {
+        this.publicExp = publicExp;
+    }
+
+    public boolean isPublicExp() {
+        return publicExp;
+    }
 
     public String getName() {
         return name;
@@ -62,6 +104,13 @@ public class Experiment implements Serializable {
     public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
-    
-    
+
+    public static List<Experiment> getAllPublicExperiments(DBManager db) {
+        List<Experiment> ans = new LinkedList<>();
+        EntityManager em = db.newEM();
+        TypedQuery<Experiment> qCode = em.createQuery("select e from Experiment e where e.publicExp = true", Experiment.class);
+        ans.addAll(qCode.getResultList());
+        em.close();
+        return ans;
+    }
 }

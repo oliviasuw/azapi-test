@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <link rel="stylesheet" type="text/css" href="../styles/main.css" />
+    </h:head>
+    <h:body>
+        <h:form enctype="multipart/form-data">  
+            <table style="width: 100%">
+                <tr>
+                    <td>
+                        <p:fileUpload fileUploadListener="#{codeUploader.handleFileUpload}"  
+                                      mode="advanced"  
+                                      update="classes"  
+                                      auto="false"  
+                                      sizeLimit="3000000"   
+                                      allowTypes="/(\.|\/)(zip)$/"/> 
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 100%">
+                        <p:dataTable id="classes" var="cls" value="#{codeUploader.classes}" selection="#{codeUploader.selectedClasses}" paginator="true" rows="20"
+                                     rowKey="#{cls.id}">  
+                            <p:column selectionMode="multiple"  style="width:18px"/>
+                            <p:column >
+                                <f:facet name="header">
+                                    <h:outputText value="Name"/>
+                                </f:facet>
+                                <h:outputText value="#{cls.codeName}"/>  
+                            </p:column>  
+                            <p:column >  
+                                <f:facet name="header">
+                                    <h:outputText value="Type"/>
+                                </f:facet>
+                                <h:outputText value="#{cls.type}"/>  
+                            </p:column>  
+                        </p:dataTable>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h:commandButton action="#{codeUploader.saveCode}" value="Save"/>
+                    </td>
+                </tr>
+            </table>
+        </h:form>
+    </h:body>
+</html>

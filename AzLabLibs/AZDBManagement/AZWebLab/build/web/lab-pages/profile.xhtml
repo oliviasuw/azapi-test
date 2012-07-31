@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <link rel="stylesheet" type="text/css" href="../styles/main.css" />
+    </h:head>
+    <h:body style="height: 100%">
+        <!--<az:mainHeader/>-->
+        <table style="height: 100%;">
+            <tr style="height: 100%;">
+                <td style="height: 100%; border-right: 1px black solid;">
+                    <table class="profile" id="content-table" width="100%" cellspacing="15px" cellpadding="0px">
+                        <tr>
+                            <td>
+                                <table>
+                                    <tr>
+                                        <td>
+                                            Image
+                                        </td>
+                                        <td style="padding-left: 100px;">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <span>Nickname: </span><span>#{login.user.nickName}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span>Email: </span><span>#{login.user.email}</span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td style="padding-left: 100px;">
+                                            <a class="laboratory-login-field-sign-in" href="http://www.ynet.co.il/home/0,7340,L-8,00.html">Change password</a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Description:
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid black; width: 50px; height: 50px;">
+                                <h:form id="form">
+
+                                    <p:editor id="editor" value="#{login.user.description}" width="600"/>
+
+                                    <h:panelGrid columns="2" style="margin-top:10px">
+                                        <p:commandButton id="submitButton" value="Submit" update="display" oncomplete="dlg.show()"
+                                                         icon="ui-icon-disk" />
+                                        <p:commandButton id="clearButton" type="button" value="Clear" onclick="editor.clear()"
+                                                         icon="ui-icon-close" />
+                                    </h:panelGrid>
+                                    <p:dialog header="Content" widgetVar="dlg" showEffect="fade" hideEffect="fade" modal="true">
+                                        <h:outputText id="display" value="#{login.user.description}" escape="false" />
+                                    </p:dialog>
+                                </h:form>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <p:dataTable id="codes" var="code" value="#{profile.codes}" paginator="true" rows="20"
+                                             rowKey="#{code.id}">  
+                                    <p:column >
+                                        <f:facet name="header">
+                                            <h:outputText value="Name"/>
+                                        </f:facet>
+                                        <h:outputText value="#{code.name}"/>  
+                                    </p:column>  
+                                    <p:column >  
+                                        <f:facet name="header">
+                                            <h:outputText value="Type"/>
+                                        </f:facet>
+                                        <h:outputText value="#{code.type}"/>  
+                                    </p:column>  
+                                    <p:column >  
+                                        <f:facet name="header">
+                                            <h:outputText value="Rating"/>
+                                        </f:facet>
+                                        <h:outputText value="#{code.rating}"/>  
+                                    </p:column>  
+                                    <p:column >  
+                                        <f:facet name="header">
+                                            <h:outputText value="Num. of Downloads"/>
+                                        </f:facet>
+                                        <h:outputText value="#{code.numberOfDownloads}"/>  
+                                    </p:column>  
+                                </p:dataTable>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </h:body>
+</html>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>TODO supply a title</title>
+    </h:head>
+    <body>
+        <h:form id="form">
+
+            <p:dataTable id="users" var="user" value="#{usersAdministration.allUsers}" rowKey="#{user.id}"
+                         selection="#{usersAdministration.selectedUser}" selectionMode="single">
+
+                <f:facet name="header">
+                    Click "View" button after selecting a row to see details
+                </f:facet>
+
+                <p:column headerText="Email">
+                    #{user.email}
+                </p:column>
+
+                <p:column headerText="Nick Name">
+                    #{user.nickName}
+                </p:column>
+
+                <p:column headerText="Role" >
+                    #{user.role}
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:commandButton id="viewButton" value="View" icon="ui-icon-search"
+                                     update=":form:display" oncomplete="userDialog.show()"/>
+                </f:facet>
+
+            </p:dataTable>
+
+            <p:dialog id="dialog" header="User Detail" widgetVar="userDialog" resizable="false"
+                      width="200" showEffect="clip" hideEffect="fold">
+
+                <h:panelGrid id="display" columns="2" cellpadding="4">
+                    <h:outputText value="Description:" />
+                    <h:outputText value="#{usersAdministration.selectedUser.description}" />
+                </h:panelGrid>
+            </p:dialog>
+
+        </h:form>
+
+    </body>
+</html>

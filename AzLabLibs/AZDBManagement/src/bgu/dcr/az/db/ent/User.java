@@ -5,6 +5,7 @@
 package bgu.dcr.az.db.ent;
 
 import bgu.dcr.az.db.DBManager;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import javax.jdo.annotations.Unique;
@@ -19,14 +20,16 @@ import javax.persistence.TypedQuery;
  * @author Inka
  */
 @Entity
-public class User {
+public class User implements Serializable {
     
     private @Unique String email;
     private String nickName;
     private String password;
     private String description;
-    private UserRole role;
-    private @Id @GeneratedValue long id;
+    private UserRole uRole;
+    private @Id
+    @GeneratedValue
+    long id = 0;
     
     protected User() {
     }
@@ -36,7 +39,7 @@ public class User {
         this.nickName = nickName;
         this.password = password;
         this.description = description;
-        this.role = role;
+        this.uRole = role;
     }
 
     
@@ -58,7 +61,7 @@ public class User {
     }
 
     public UserRole getRole() {
-        return role;
+        return uRole;
     }
 
     public long getId() {
@@ -82,7 +85,7 @@ public class User {
     }
 
     public void setRole(UserRole role) {
-        this.role = role;
+        this.uRole = role;
     }
 
     public static List<User> getAllUsers(DBManager db){
@@ -99,7 +102,7 @@ public class User {
     }
     
     public List<Code> getAllUploadedCodes(DBManager db){
-        List<Code> ans = new LinkedList<Code>();
+        List<Code> ans = new LinkedList<>();
         EntityManager em = db.newEM();
         TypedQuery<Code> qCode = em.createQuery("select c from Code c where c.author = :user", Code.class);
         qCode.setParameter("user", this);

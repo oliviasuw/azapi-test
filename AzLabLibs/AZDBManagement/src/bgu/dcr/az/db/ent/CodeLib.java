@@ -15,7 +15,10 @@ import javax.persistence.Id;
  */
 @Entity
 public class CodeLib {
-    private @Id @GeneratedValue long id = 0;
+
+    private @Id
+    @GeneratedValue
+    long id = 0;
     private File locationOnDisk;
     private String name;
 
@@ -46,5 +49,4 @@ public class CodeLib {
     public void setName(String name) {
         this.name = name;
     }
-    
 }

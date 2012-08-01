@@ -21,19 +21,22 @@ public class DB extends DBManager {
 
     public DB() {
         super();
-        User u = new User("bla@bla.bla", "inka", "123", "!!!", UserRole.DCR);
-        save(u);
-        final Experiment e1 = new Experiment("Inna", "no Description", u, "");
-        e1.setPublicExp(true);
-        save(e1);
-        final Experiment e2 = new Experiment("Dima", "bla bla bla", u, "");
-        e2.setPublicExp(true);
-        save(e2);
-        final Experiment e3 = new Experiment("Benny", "!!!!!!!!!!!!!!!!", u, "");
-        e3.setPublicExp(true);
-        save(e3);
-        final Experiment e4 = new Experiment("Inka", "the description is", u, "");
-        e4.setPublicExp(true);
-        save(e4);
+        try {
+            User u = new User("bla@bla.bla", "inka", "123", "!!!", UserRole.DCR);
+            save(u);
+            final Experiment e1 = new Experiment("Inna", "no Description", u, "");
+            e1.setPublicExp(true);
+            save(e1);
+            final Experiment e2 = new Experiment("Dima", "bla bla bla", u, "");
+            e2.setPublicExp(true);
+            save(e2);
+            final Experiment e3 = new Experiment("Benny", "!!!!!!!!!!!!!!!!", u, "");
+            e3.setPublicExp(true);
+            save(e3);
+            final Experiment e4 = new Experiment("Inka", "the description is", u, "");
+            e4.setPublicExp(true);
+            save(e4);
+        } catch (Exception ex) {
+        }
     }
 }

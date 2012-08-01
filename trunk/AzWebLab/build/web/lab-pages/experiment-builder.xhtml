@@ -27,66 +27,308 @@ and open the template in the editor.
                                     </td>
                                     <ui:repeat id="repeat" var="test" value="#{experimentBuilder.tests}">
                                         <td>
-                                            <p:commandButton value="#{test.name}" action="#{experimentBuilder.updateCurrentTest(test)}"/>
+                                            <p:commandButton update=":form" value="#{test.name}" action="#{experimentBuilder.updateCurrentTest(test)}"/>
                                         </td>
                                     </ui:repeat>
                                 </tr>
                             </table>
                         </p:scrollPanel>
-                        <table>
-                            <tr>
-                                <td>
-                                    <p:accordionPanel id="cont" multiple="true">  
-                                        <p:tab id="agents" title="Agents">  
-                                            <ui:repeat var="agent" value="#{experimentBuilder.selectedAgents}">
-                                                <table>
-                                                    <tr>
-                                                        <td>
-                                                            #{agent.name}
-                                                        </td>
-                                                        <td>
-                                                            <p:commandButton value="Remove" action="#{experimentBuilder.removeAgentFromSelected(agent)}" update="agents"/>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </ui:repeat>
-                                            <p:commandButton value="Add" action="#{experimentBuilder.addAgent}" update="agents"/>
-                                        </p:tab>  
-                                        <p:tab title="Statistic collectors">  
-                                            
-                                        </p:tab>  
-                                        <p:tab title="Problem generator">  
-
-                                        </p:tab>  
-                                        <p:tab title="Statistic collectors">  
-
-                                        </p:tab>  
-                                        <p:tab title="Correctness tester">  
-
-                                        </p:tab>  
-                                        <p:tab title="Message Delayer">  
-
-                                        </p:tab>  
-                                        <p:tab title="Delimiter">  
-
-                                        </p:tab>  
-                                    </p:accordionPanel> 
-                                </td>
-                            </tr>
-                        </table>
+                        <p:accordionPanel id="cont" multiple="false" dynamic="true" activeIndex="-1">  
+                            <p:tab id="agents" title="Agents">  
+                                <p:dataTable value="#{experimentBuilder.currentTest.agents}" var="agent" paginator="true" rows="10"  
+                                             selection="#{experimentBuilder.selectedAgent}" selectionMode="single">  
+                                    <p:ajax event="rowSelect" update=":form:variables"/>  
+                                    <p:column>  
+                                        #{agent.name}  
+                                    </p:column>  
+                                </p:dataTable>
+                                <p:commandButton value="Remove" action="#{experimentBuilder.removeAgent}" update="agents"/>
+                                <p:commandButton value="Add" update="agents" onclick="agentsDlg.show()"/>
+                            </p:tab>  
+                            <p:tab id="generators" title="Problem generator">  
+                                <p:dataTable value="#{experimentBuilder.currentTest.problemGenerators}" var="gen" paginator="false" rows="1"  
+                                             selection="#{experimentBuilder.selectedProblemGenerator}" selectionMode="single">  
+                                    <p:ajax event="rowSelect" update=":form:variables"/>  
+                                    <p:column>  
+                                        #{gen.name}  
+                                        <p:commandButton value="Remove" action="#{experimentBuilder.removeProblemGen}" update="generators"/>
+                                        <p:commandButton value="Replace" onclick="gensDlg.show()" update="generators"/>
+                                    </p:column>  
+                                </p:dataTable>
+                                <p:commandButton value="Add" onclick="gensDlg.show()" update="generators" disabled="#{!experimentBuilder.problemGen}"/>
+                            </p:tab>  
+                            <p:tab id="stats" title="Statistic collectors">  
+                                <p:dataTable value="#{experimentBuilder.currentTest.statisticCollectors}" var="stat" paginator="true" rows="10"  
+                                             selection="#{experimentBuilder.selectedStatisticCollector}" selectionMode="single">  
+                                    <p:ajax event="rowSelect" update=":form:variables"/>  
+                                    <p:column>  
+                                        #{stat.name}  
+                                    </p:column>  
+                                </p:dataTable>
+                                <p:commandButton value="Remove" action="#{experimentBuilder.removeStatCol}" update="stats"/>
+                                <p:commandButton value="Add" update="stats" onclick="statsDlg.show()"/>
+                            </p:tab>  
+                            <p:tab id="testers" title="Correctness tester">  
+                                <p:dataTable value="#{experimentBuilder.currentTest.correctnessTesters}" var="tester" paginator="false" rows="1"  
+                                             selection="#{experimentBuilder.selectedCorrectnessTester}" selectionMode="single">  
+                                    <p:ajax event="rowSelect" update=":form:variables"/>  
+                                    <p:column>  
+                                        #{tester.name}  
+                                        <p:commandButton value="Remove" action="#{experimentBuilder.removeCorrectTester}" update="testers"/>
+                                        <p:commandButton value="Replace" onclick="testersDlg.show()" update="testers"/>
+                                    </p:column>  
+                                </p:dataTable>
+                                <p:commandButton value="Add" onclick="testersDlg.show()" update="testers" disabled="#{!experimentBuilder.correctTester}"/>
+                            </p:tab>  
+                            <p:tab id="delayers" title="Message Delayer">  
+                                <p:dataTable value="#{experimentBuilder.currentTest.messageDelayers}" var="delayer" rows="1" paginator="false" 
+                                             selection="#{experimentBuilder.selectedMessageDelayer}" selectionMode="single">  
+                                    <p:ajax event="rowSelect" update=":form:variables"/>  
+                                    <p:column>  
+                                        #{delayer.name}  
+                                        <p:commandButton value="Remove" action="#{experimentBuilder.removeMsgDelayer}" update="delayers"/>
+                                        <p:commandButton value="Replace" onclick="delayersDlg.show()" update="delayers"/>
+                                    </p:column>  
+                                </p:dataTable>
+                                <p:commandButton value="Add" onclick="delayersDlg.show()" update="delayers" disabled="#{!experimentBuilder.msgDelayer}"/>
+                            </p:tab>  
+                            <p:tab id="limiters" title="Limiter">  
+                                <p:dataTable value="#{experimentBuilder.currentTest.limiters}" var="limiter" rows="1" paginator="false" 
+                                             selection="#{experimentBuilder.selectedLimiter}" selectionMode="single">  
+                                    <p:ajax event="rowSelect" update=":form:variables"/>  
+                                    <p:column>  
+                                        #{limiter.name}  
+                                        <p:commandButton value="Remove" action="#{experimentBuilder.removeLimiter}" update="limiters"/>
+                                        <p:commandButton value="Replace" onclick="limitersDlg.show()" update="limiters"/>
+                                    </p:column>  
+                                </p:dataTable>
+                                <p:commandButton value="Add" onclick="limitersDlg.show()" update="limiters" disabled="#{!experimentBuilder.limiter}"/>
+                            </p:tab>  
+                        </p:accordionPanel> 
                     </td>
                     <td>
-                        <table id="variables">
-                            <tr>
-                                <td>
+                        <p:dataTable var="variable" value="#{experimentBuilder.selectedCode.variables}" id="variables" editable="true">  
 
-                                </td>
-                            </tr>
-                        </table>
+                            <f:facet name="header">  
+                                #{experimentBuilder.selectedCode.name} Variables  
+                            </f:facet>  
+
+                            <p:column headerText="Name" style="width:125px">  
+                                <span>#{variable.name}</span> 
+                            </p:column>  
+
+                            <p:column headerText="Value" style="width:125px">  
+                                <p:rowEditor/>  
+                                <p:cellEditor>  
+                                    <f:facet name="output">  
+                                        <h:outputText value="#{variable.defaultValue}" />  
+                                    </f:facet>  
+                                    <f:facet name="input">  
+                                        <p:inputText value="#{variable.defaultValue}" style="width:100%" label="value"/>  
+                                    </f:facet>  
+                                </p:cellEditor>  
+                            </p:column>  
+                        </p:dataTable>
                     </td>
                 </tr>
             </table>
         </h:form>
 
+        <p:dialog header="Available Agents" widgetVar="agentsDlg" resizable="false" >  
+            <h:form>
+                <h:panelGrid>  
+                    <p:dataTable id="agentsTable" var="agent" value="#{experimentBuilder.agents}" widgetVar="agentsTable" 
+                                 emptyMessage="No agents found with given criteria" 
+                                 selection="#{experimentBuilder.selectedAgentsFromAll}" selectionMode="multiple" rowKey="#{agent.id}">  
+                        <f:facet name="header">  
+                            <p:outputPanel>  
+                                <h:outputText value="Search all fields:" />  
+                                <p:inputText id="globalAgentFilter" onkeyup="agentsTable.filter()" style="width:150px" />  
+                            </p:outputPanel>  
+                        </f:facet>  
+                        <p:column id="nameColumn" filterBy="#{agent.name}"   
+                                  headerText="Name"  
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{agent.name}" />  
+                        </p:column>  
+                        <p:column id="authorColumn" filterBy="#{agent.author}"  
+                                  headerText="Author"
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{agent.author}" />  
+                        </p:column>  
+                        <p:column id="descriptionColumn" filterBy="#{agent.description}"   
+                                  headerText="Description"
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{agent.description}" />  
+                        </p:column>  
+                    </p:dataTable> 
+                </h:panelGrid>  
+                <p:commandButton id="addAgent" action="#{experimentBuilder.saveAgents}" value="Add Selected" update=":form" oncomplete="agentsDlg.hide();"/>  
+            </h:form>
+        </p:dialog>  
+
+        <p:dialog header="Available Statistic Collectors" widgetVar="statsDlg" resizable="false" >  
+            <h:form>
+                <h:panelGrid>  
+                    <p:dataTable id="statsTable" var="stat" value="#{experimentBuilder.statisticCollectors}" widgetVar="statsTable" 
+                                 emptyMessage="No statistic collectors found with given criteria" 
+                                 selection="#{experimentBuilder.selectedStatisticCollectorsFromAll}" selectionMode="multiple" rowKey="#{stat.id}">  
+                        <f:facet name="header">  
+                            <p:outputPanel>  
+                                <h:outputText value="Search all fields:" />  
+                                <p:inputText id="globalStatsFilter" onkeyup="statsTable.filter()" style="width:150px" />  
+                            </p:outputPanel>  
+                        </f:facet>  
+                        <p:column id="nameColumn" filterBy="#{stat.name}"   
+                                  headerText="Name"  
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{stat.name}" />  
+                        </p:column>  
+                        <p:column id="authorColumn" filterBy="#{stat.author}"  
+                                  headerText="Author"
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{stat.author}" />  
+                        </p:column>  
+                        <p:column id="descriptionColumn" filterBy="#{stat.description}"   
+                                  headerText="Description"
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{stat.description}" />  
+                        </p:column>  
+                    </p:dataTable> 
+                </h:panelGrid>  
+                <p:commandButton id="addStats" action="#{experimentBuilder.saveStatisticCollectors}" value="Add Selected" update=":form" oncomplete="statsDlg.hide();"/>  
+            </h:form>
+        </p:dialog>  
+
+        <p:dialog header="Available Problem Generators" widgetVar="gensDlg" resizable="false" >  
+            <h:form>
+                <h:panelGrid>  
+                    <p:dataTable id="gensTable" var="gen" value="#{experimentBuilder.problemGenerators}" widgetVar="gensTable" 
+                                 emptyMessage="No problem generators found with given criteria" selection="#{experimentBuilder.selectedProblemGenerator}" 
+                                 selectionMode="single" rowKey="#{gen.id}">  
+                        <f:facet name="header">  
+                            <p:outputPanel>  
+                                <h:outputText value="Search all fields:" />  
+                                <p:inputText id="globalGensFilter" onkeyup="gensTable.filter()" style="width:150px" />  
+                            </p:outputPanel>  
+                        </f:facet>  
+                        <p:column id="nameColumn" filterBy="#{gen.name}"   
+                                  headerText="Name"  
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{gen.name}" />  
+                        </p:column>  
+                        <p:column id="authorColumn" filterBy="#{gen.author}"  
+                                  headerText="Author"
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{gen.author}" />  
+                        </p:column>  
+                        <p:column id="descriptionColumn" filterBy="#{gen.description}"   
+                                  headerText="Description"
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{gen.description}" />  
+                        </p:column>  
+                    </p:dataTable> 
+                </h:panelGrid>  
+                <p:commandButton id="addGen" action="#{experimentBuilder.saveProblemGenerator}" value="Add Selected" update=":form" oncomplete="gensDlg.hide();"/>  
+            </h:form>
+        </p:dialog>  
+
+        <p:dialog header="Available Limiters" widgetVar="limitersDlg" resizable="false" >  
+            <h:form>
+                <h:panelGrid>  
+                    <p:dataTable id="limitersTable" var="limiter" value="#{experimentBuilder.limiters}" widgetVar="limitersTable" 
+                                 emptyMessage="No limiters found with given criteria" selection="#{experimentBuilder.selectedLimiter}" 
+                                 selectionMode="single" rowKey="#{limiter.id}">  
+                        <f:facet name="header">  
+                            <p:outputPanel>  
+                                <h:outputText value="Search all fields:" />  
+                                <p:inputText id="globalLimiterFilter" onkeyup="limitersTable.filter()" style="width:150px" />  
+                            </p:outputPanel>  
+                        </f:facet>  
+                        <p:column id="nameColumn" filterBy="#{limiter.name}"   
+                                  headerText="Name"  
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{limiter.name}" />  
+                        </p:column>  
+                        <p:column id="authorColumn" filterBy="#{limiter.author}"  
+                                  headerText="Author"
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{limiter.author}" />  
+                        </p:column>  
+                        <p:column id="descriptionColumn" filterBy="#{limiter.description}"   
+                                  headerText="Description"
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{limiter.description}" />  
+                        </p:column>  
+                    </p:dataTable> 
+                </h:panelGrid>  
+                <p:commandButton id="addLimiter" action="#{experimentBuilder.saveLimiter}" value="Add Selected" update=":form" oncomplete="limitersDlg.hide();"/>  
+            </h:form>
+        </p:dialog>  
+
+        <p:dialog header="Available Correctness Testers" widgetVar="testersDlg" resizable="false" >  
+            <h:form>
+                <h:panelGrid>  
+                    <p:dataTable id="testersTable" var="tester" value="#{experimentBuilder.correctnessTesters}" widgetVar="testersTable" 
+                                 emptyMessage="No correctness testers found with given criteria" selection="#{experimentBuilder.selectedCorrectnessTester}" 
+                                 selectionMode="single" rowKey="#{tester.id}">  
+                        <f:facet name="header">  
+                            <p:outputPanel>  
+                                <h:outputText value="Search all fields:" />  
+                                <p:inputText id="globalTesterFilter" onkeyup="testersTable.filter()" style="width:150px" />  
+                            </p:outputPanel>  
+                        </f:facet>  
+                        <p:column id="nameColumn" filterBy="#{tester.name}"   
+                                  headerText="Name"  
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{tester.name}" />  
+                        </p:column>  
+                        <p:column id="authorColumn" filterBy="#{tester.author}"  
+                                  headerText="Author"
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{tester.author}" />  
+                        </p:column>  
+                        <p:column id="descriptionColumn" filterBy="#{tester.description}"   
+                                  headerText="Description"
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{tester.description}" />  
+                        </p:column>  
+                    </p:dataTable> 
+                </h:panelGrid>  
+                <p:commandButton id="addTester" action="#{experimentBuilder.saveCorrectnessTester}" value="Add Selected" update=":form" oncomplete="testersDlg.hide();"/>  
+            </h:form>
+        </p:dialog>  
+        <p:dialog header="Available Message Delayers" widgetVar="delayersDlg" resizable="false" >  
+            <h:form>
+                <h:panelGrid>  
+                    <p:dataTable id="delayersTable" var="delayer" value="#{experimentBuilder.messageDelayers}" widgetVar="delayersTable" 
+                                 emptyMessage="No delayers found with given criteria" selection="#{experimentBuilder.selectedMessageDelayer}" 
+                                 selectionMode="multiple" rowKey="#{delayer.id}">  
+                        <f:facet name="header">  
+                            <p:outputPanel>  
+                                <h:outputText value="Search all fields:" />  
+                                <p:inputText id="globalDelayerFilter" onkeyup="delayersTable.filter()" style="width:150px" />  
+                            </p:outputPanel>  
+                        </f:facet>  
+                        <p:column id="nameColumn" filterBy="#{delayer.name}"   
+                                  headerText="Name"  
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{delayer.name}" />  
+                        </p:column>  
+                        <p:column id="authorColumn" filterBy="#{delayer.author}"  
+                                  headerText="Author"
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{delayer.author}" />  
+                        </p:column>  
+                        <p:column id="descriptionColumn" filterBy="#{delayer.description}"   
+                                  headerText="Description"
+                                  filterMatchMode="contains">  
+                            <h:outputText value="#{delayer.description}" />  
+                        </p:column>  
+                    </p:dataTable> 
+                </h:panelGrid>  
+                <p:commandButton id="addDelayer" action="#{experimentBuilder.saveMessageDelayer}" value="Add Selected" update=":form" oncomplete="delayersDlg.hide();"/>  
+            </h:form>
+        </p:dialog>  
     </body>
 </html>

@@ -31,7 +31,7 @@ import org.primefaces.model.UploadedFile;
  *
  * @author Inka
  */
-@ManagedBean
+@ManagedBean(name="codeUploader")
 @ViewScoped
 public class CodeUploader {
 
@@ -88,23 +88,7 @@ public class CodeUploader {
     public void handleFileUpload(FileUploadEvent event) {
         System.out.println("event is " + event.toString());
         if (event.getFile() != null) {
-            file = event.getFile();
-            FacesMessage msg = new FacesMessage("Succesful", file.getFileName() + " is uploaded.");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            System.out.println("File is " + file.getFileName());
-            try {
-                User u = login.getUser();
-                File tempFolder = new File(Laboratory.BASE_PATH + "/" + u.getId() + "/temp");
-                tempFolder.mkdirs();
-                Files.persist(tempFolder, "zip.zip", file.getContents());
-                File zip = new File(tempFolder.getAbsolutePath() + "/zip.zip");
-                final File openFiles = new File(tempFolder.getAbsolutePath() + "/open");
-                Files.unzip(zip, openFiles);
-                handleOpenFiles(openFiles);
-            } catch (IOException ex) {
-                //tell the client something...
-                Logger.getLogger(CodeUploader.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            saveFile(event.getFile());
         }
     }
 
@@ -236,5 +220,25 @@ public class CodeUploader {
 
     private CodeType findModuleType(File f) {
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private void saveFile(UploadedFile file) {
+        this.file = file;
+        FacesMessage msg = new FacesMessage("Succesful", file.getFileName() + " is uploaded.");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        System.out.println("File is " + file.getFileName());
+        try {
+            User u = login.getUser();
+            File tempFolder = new File(Laboratory.BASE_PATH + "/" + u.getId() + "/temp");
+            tempFolder.mkdirs();
+            Files.persist(tempFolder, "zip.zip", file.getContents());
+            File zip = new File(tempFolder.getAbsolutePath() + "/zip.zip");
+            final File openFiles = new File(tempFolder.getAbsolutePath() + "/open");
+            Files.unzip(zip, openFiles);
+            handleOpenFiles(openFiles);
+        } catch (IOException ex) {
+            //tell the client something...
+            Logger.getLogger(CodeUploader.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

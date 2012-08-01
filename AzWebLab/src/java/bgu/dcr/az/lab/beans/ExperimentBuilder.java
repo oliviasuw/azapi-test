@@ -6,7 +6,9 @@ package bgu.dcr.az.lab.beans;
 
 import bgu.dcr.az.db.DBManager;
 import bgu.dcr.az.db.ent.Code;
+import bgu.dcr.az.db.ent.CodeType;
 import bgu.dcr.az.lab.util.CreatedTest;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -25,51 +27,82 @@ public class ExperimentBuilder {
     private DBManager db;
     private List<CreatedTest> tests;
     private List<Code> agents;
-    private List<Code> selectedAgents;
     private List<Code> statisticCollectors;
-    private List<Code> selectedStatisticCollectors;
-    private List<Code> problemGenerators;
-    private Code selectedProblemGenerator;
     private List<Code> limiters;
-    private Code selectedLimiters;
+    private List<Code> problemGenerators;
     private List<Code> messageDelayers;
-    private Code selectedMessageDelayers;
     private List<Code> correctnessTesters;
-    private Code selectedCorrectnessTesters;
-    
-    public void updateCurrentTest(CreatedTest test){
-        System.out.println("test is " + test.getName());
+    private Code[] selectedAgentsFromAll;
+    private Code[] selectedStatisticCollectorsFromAll;
+    private Code selectedProblemGeneratorFromAll;
+    private Code selectedLimiterFromAll;
+    private Code selectedMessageDelayerFromAll;
+    private Code selectedCorrectnessTesterFromAll;
+    private Code selectedAgent;
+    private Code selectedStatisticCollector;
+    private Code selectedProblemGenerator;
+    private Code selectedLimiter;
+    private Code selectedMessageDelayer;
+    private Code selectedCorrectnessTester;
+    private boolean problemGen;
+    private boolean msgDelayer;
+    private boolean limiter;
+    private boolean correctTester;
+    private CreatedTest currentTest;
+    private Code selectedCode;
+
+    public void updateCurrentTest(CreatedTest test) {
+        currentTest = test;
+        selectedCode = test.getTest();
     }
-    
-    public void addNewTest(){
+
+    public void addNewTest() {
         CreatedTest test = new CreatedTest();
-        System.out.println("adding test" + test.getName());
         tests.add(test);
+        updateCurrentTest(test);
+    }
+
+    public Code getSelectedCode() {
+        if (selectedCode == null) {
+            selectedCode = new Code();
+        }
+        return selectedCode;
+    }
+
+    public void setSelectedCode(Code selectedCode) {
+        this.selectedCode = selectedCode;
     }
 
     public DBManager getDb() {
         return db;
     }
 
-    public void removeAgentFromSelected(Code agent){
-        selectedAgents.remove(agent);
+    public void removeAgent() {
+        currentTest.getAgents().remove(selectedAgent);
     }
 
-    public void removeStatColFromSelected(Code statCol){
-        selectedStatisticCollectors.remove(statCol);
+    public void removeStatCol(Code statCol) {
+        currentTest.getStatisticCollectors().remove(selectedStatisticCollector);
     }
 
-    public void replaceSelectedProblemGen(Code problemGen){
-        selectedProblemGenerator = problemGen;
+    public void removeProblemGen() {
+        currentTest.setProblemGenerator(null);
     }
 
-    
-    public void addAgent(){
-        
+    public void removeMsgDelayer() {
+        currentTest.setMessageDelayer(null);
     }
-    
+
+    public void removeCorrectTester() {
+        currentTest.setCorrectnessTester(null);
+    }
+
+    public void removeLimiter() {
+        currentTest.setLimiter(null);
+    }
+
     public List<CreatedTest> getTests() {
-        if (tests==null){
+        if (tests == null) {
             tests = new LinkedList<CreatedTest>();
             tests.add(new CreatedTest("Inna"));
             tests.add(new CreatedTest("Dima"));
@@ -78,28 +111,179 @@ public class ExperimentBuilder {
         return tests;
     }
 
+    public boolean isProblemGen() {
+        if (currentTest == null) {
+            problemGen = true;
+        } else {
+            problemGen = (currentTest.getProblemGenerator() == null);
+        }
+        return problemGen;
+    }
+
+    public boolean isMsgDelayer() {
+        if (currentTest == null) {
+            msgDelayer = true;
+        } else {
+            msgDelayer = (currentTest.getMessageDelayer() == null);
+        }
+        return msgDelayer;
+    }
+
+    public boolean isLimiter() {
+        if (currentTest == null) {
+            limiter = true;
+        } else {
+            limiter = (currentTest.getLimiter() == null);
+        }
+        return limiter;
+    }
+
+    public boolean isCorrectTester() {
+        if (currentTest == null) {
+            correctTester = true;
+        } else {
+            correctTester = (currentTest.getCorrectnessTester() == null);
+        }
+        return correctTester;
+    }
+
+    public void saveAgents() {
+        this.currentTest.getAgents().addAll(Arrays.asList(selectedAgentsFromAll));
+        clean(selectedAgentsFromAll);
+    }
+
+    public void saveStatisticCollectors() {
+        this.currentTest.getStatisticCollectors().addAll(Arrays.asList(selectedStatisticCollectorsFromAll));
+        clean(selectedStatisticCollectorsFromAll);
+    }
+
+    public void saveProblemGenerator() {
+        this.currentTest.setProblemGenerator(selectedProblemGeneratorFromAll);
+        selectedProblemGeneratorFromAll = null;
+    }
+
+    public void saveLimiter() {
+        this.currentTest.setLimiter(selectedLimiterFromAll);
+        selectedLimiterFromAll = null;
+    }
+
+    public void saveMessageDelayer() {
+        this.currentTest.setMessageDelayer(selectedMessageDelayerFromAll);
+        selectedMessageDelayerFromAll = null;
+    }
+
+    public void saveCorrectnessTester() {
+        this.currentTest.setCorrectnessTester(selectedCorrectnessTesterFromAll);
+        selectedCorrectnessTesterFromAll = null;
+    }
+
+    private void clean(Code[] what) {
+        for (int i = 0; i < what.length; i++) {
+            what[i] = null;
+        }
+    }
+
     public List<Code> getAgents() {
+        if (agents == null) {
+            agents = Code.getAllCodesByType(db, CodeType.AGENT);
+        }
         return agents;
     }
 
     public List<Code> getStatisticCollectors() {
+        if (statisticCollectors == null) {
+            statisticCollectors = Code.getAllCodesByType(db, CodeType.STATISTIC_COLLECTOR);
+        }
         return statisticCollectors;
     }
 
     public List<Code> getProblemGenerators() {
+        if (problemGenerators == null) {
+            problemGenerators = Code.getAllCodesByType(db, CodeType.PROBLEM_GENERATOR);
+        }
         return problemGenerators;
     }
 
     public List<Code> getLimiters() {
+        if (limiters == null) {
+            limiters = Code.getAllCodesByType(db, CodeType.LIMITER);
+        }
         return limiters;
     }
 
     public List<Code> getMessageDelayers() {
+        if (messageDelayers == null) {
+            messageDelayers = Code.getAllCodesByType(db, CodeType.MESSAGE_DELAYER);
+        }
         return messageDelayers;
     }
 
     public List<Code> getCorrectnessTesters() {
+        if (correctnessTesters == null) {
+            correctnessTesters = Code.getAllCodesByType(db, CodeType.CORRECTNESS_TESTER);
+        }
         return correctnessTesters;
+    }
+
+    public Code[] getSelectedAgentsFromAll() {
+        if (selectedAgentsFromAll == null) {
+            selectedAgentsFromAll = new Code[getAgents().size()];
+        }
+        return selectedAgentsFromAll;
+    }
+
+    public Code[] getSelectedStatisticCollectorsFromAll() {
+        if (selectedStatisticCollectorsFromAll == null) {
+            selectedStatisticCollectorsFromAll = new Code[getStatisticCollectors().size()];
+        }
+        return selectedStatisticCollectorsFromAll;
+    }
+
+    public Code getSelectedProblemGeneratorFromAll() {
+        return selectedProblemGeneratorFromAll;
+    }
+
+    public Code getSelectedLimiterFromAll() {
+        return selectedLimiterFromAll;
+    }
+
+    public Code getSelectedMessageDelayerFromAll() {
+        return selectedMessageDelayerFromAll;
+    }
+
+    public Code getSelectedCorrectnessTesterFromAll() {
+        return selectedCorrectnessTesterFromAll;
+    }
+
+    public Code getSelectedAgent() {
+        return selectedAgent;
+    }
+
+    public Code getSelectedStatisticCollector() {
+        return selectedStatisticCollector;
+    }
+
+    public Code getSelectedProblemGenerator() {
+        return selectedProblemGenerator;
+    }
+
+    public Code getSelectedLimiter() {
+        return selectedLimiter;
+    }
+
+    public Code getSelectedMessageDelayer() {
+        return selectedMessageDelayer;
+    }
+
+    public Code getSelectedCorrectnessTester() {
+        return selectedCorrectnessTester;
+    }
+
+    public CreatedTest getCurrentTest() {
+        if (currentTest == null) {
+            currentTest = new CreatedTest();
+        }
+        return currentTest;
     }
 
     public void setDb(DBManager db) {
@@ -118,12 +302,12 @@ public class ExperimentBuilder {
         this.statisticCollectors = statisticCollectors;
     }
 
-    public void setProblemGenerators(List<Code> problemGenerators) {
-        this.problemGenerators = problemGenerators;
-    }
-
     public void setLimiters(List<Code> limiters) {
         this.limiters = limiters;
+    }
+
+    public void setProblemGenerators(List<Code> problemGenerators) {
+        this.problemGenerators = problemGenerators;
     }
 
     public void setMessageDelayers(List<Code> messageDelayers) {
@@ -134,53 +318,77 @@ public class ExperimentBuilder {
         this.correctnessTesters = correctnessTesters;
     }
 
-    public List<Code> getSelectedAgents() {
-        return selectedAgents;
+    public void setSelectedAgentsFromAll(Code[] selectedAgentsFromAll) {
+        this.selectedAgentsFromAll = selectedAgentsFromAll;
     }
 
-    public List<Code> getSelectedStatisticCollectors() {
-        return selectedStatisticCollectors;
+    public void setSelectedStatisticCollectorsFromAll(Code[] selectedStatisticCollectorsFromAll) {
+        this.selectedStatisticCollectorsFromAll = selectedStatisticCollectorsFromAll;
     }
 
-    public Code getSelectedProblemGenerators() {
-        return selectedProblemGenerator;
+    public void setSelectedProblemGeneratorFromAll(Code selectedProblemGeneratorFromAll) {
+        this.selectedProblemGeneratorFromAll = selectedProblemGeneratorFromAll;
     }
 
-    public Code getSelectedLimiters() {
-        return selectedLimiters;
+    public void setSelectedLimiterFromAll(Code selectedLimiterFromAll) {
+        this.selectedLimiterFromAll = selectedLimiterFromAll;
     }
 
-    public Code getSelectedMessageDelayers() {
-        return selectedMessageDelayers;
+    public void setSelectedMessageDelayerFromAll(Code selectedMessageDelayerFromAll) {
+        this.selectedMessageDelayerFromAll = selectedMessageDelayerFromAll;
     }
 
-    public Code getSelectedCorrectnessTesters() {
-        return selectedCorrectnessTesters;
+    public void setSelectedCorrectnessTesterFromAll(Code selectedCorrectnessTesterFromAll) {
+        this.selectedCorrectnessTesterFromAll = selectedCorrectnessTesterFromAll;
     }
 
-    public void setSelectedAgents(List<Code> selectedAgents) {
-        this.selectedAgents = selectedAgents;
+    public void setSelectedAgent(Code selectedAgent) {
+        this.selectedAgent = selectedAgent;
+        this.selectedCode = selectedAgent;
     }
 
-    public void setSelectedStatisticCollectors(List<Code> selectedStatisticCollectors) {
-        this.selectedStatisticCollectors = selectedStatisticCollectors;
+    public void setSelectedStatisticCollector(Code selectedStatisticCollectors) {
+        this.selectedStatisticCollector = selectedStatisticCollectors;
+        this.selectedCode = selectedStatisticCollectors;
     }
 
-    public void setSelectedProblemGenerators(Code selectedProblemGenerators) {
-        this.selectedProblemGenerator = selectedProblemGenerators;
+    public void setSelectedProblemGenerator(Code selectedProblemGenerator) {
+        this.selectedProblemGenerator = selectedProblemGenerator;
+        this.selectedCode = selectedProblemGenerator;
     }
 
-    public void setSelectedLimiters(Code selectedLimiters) {
-        this.selectedLimiters = selectedLimiters;
+    public void setSelectedLimiter(Code selectedLimiter) {
+        this.selectedLimiter = selectedLimiter;
+        this.selectedCode = selectedLimiter;
     }
 
-    public void setSelectedMessageDelayers(Code selectedMessageDelayers) {
-        this.selectedMessageDelayers = selectedMessageDelayers;
+    public void setSelectedMessageDelayer(Code selectedMessageDelayer) {
+        this.selectedMessageDelayer = selectedMessageDelayer;
+        this.selectedCode = selectedMessageDelayer;
     }
 
-    public void setSelectedCorrectnessTesters(Code selectedCorrectnessTesters) {
-        this.selectedCorrectnessTesters = selectedCorrectnessTesters;
+    public void setSelectedCorrectnessTester(Code selectedCorrectnessTester) {
+        this.selectedCorrectnessTester = selectedCorrectnessTester;
+        this.selectedCode = selectedCorrectnessTester;
     }
-    
-    
+
+    public void setProblemGen(boolean problemGen) {
+        this.problemGen = problemGen;
+    }
+
+    public void setMsgDelayer(boolean msgDelayer) {
+        this.msgDelayer = msgDelayer;
+    }
+
+    public void setLimiter(boolean limiter) {
+        this.limiter = limiter;
+    }
+
+    public void setCorrectTester(boolean correctTester) {
+        this.correctTester = correctTester;
+    }
+
+    public void setCurrentTest(CreatedTest currentTest) {
+        this.currentTest = currentTest;
+    }
 }

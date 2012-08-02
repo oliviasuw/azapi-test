@@ -1,13 +1,10 @@
 package ext.sim.modules;
 
-import bgu.dcr.az.api.Agt0DSL;
-import bgu.dcr.az.api.ProblemType;
-import bgu.dcr.az.api.ano.Register;
-import bgu.dcr.az.api.ano.Variable;
-import bgu.dcr.az.api.ds.ImmutableSet;
-import bgu.dcr.az.api.pgen.Problem;
 import java.util.Random;
-import bgu.dcr.az.impl.pgen.AbstractProblemGenerator;
+
+import bgu.dcr.az.api.Problem;
+import bgu.dcr.az.api.ano.Register;
+import bgu.dcr.az.exen.pgen.AbstractProblemGenerator;
 
 @Register(name = "${MODULE_NAME}")
 public class ${MODULE_NAME_CC} extends AbstractProblemGenerator {

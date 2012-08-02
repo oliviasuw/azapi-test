@@ -68,18 +68,6 @@ public class Login {
             return null;
         }
         
-        return "profile";
+        return "/lab-pages/profile?faces-redirect=true";
     }
-//    
-//    public String checkValidUser() {
-//        System.out.println("user name - trying to get the user" );
-//        Users u = DBManager.UNIT.isVerifiedUserCredentials(this.email, this.password);
-//        System.out.println("user name " + u.getName());
-//        if (u != null) {
-//            SessionManager.putInSessionMap(SessionManager.CURRENT_USER, u);
-//            return "Welcome";
-//        }
-//        
-//        return "Laboratory";
-//    }
 }

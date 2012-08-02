@@ -39,7 +39,7 @@ public class Register {
             return null;
             }
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sample info message", "PrimeFaces rocks!"));
-            return "/Az/faces/web-pages/Laboratory.xhtml";
+            return "Laboratory?faces-redirect=true";
         } else {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Wrong details, please try again!", ""));
             return null;

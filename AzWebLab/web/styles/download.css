@@ -1,0 +1,28 @@
+/* Download Related */
+
+.download .download-body{
+    color: rgb(122,122,122);
+    font-family: lemonde-courrier, Georgia, serif;
+    font-size: 14px;
+    padding-bottom: 5px;
+}
+
+.download .download-title{
+    color: #5A6367;
+    font-family: lemonde-courrier, Georgia, serif;
+    font-size: 22px;
+    font-weight: bold;
+    border-bottom: 1px rgb(172,172,172) solid;
+    padding-bottom: 5px;
+}
+
+.download .download-button{
+    padding: 5px;
+    padding-top: 10px;
+    border:0;
+}
+
+.download .download-pic{
+    padding-bottom: 10px;
+}
+

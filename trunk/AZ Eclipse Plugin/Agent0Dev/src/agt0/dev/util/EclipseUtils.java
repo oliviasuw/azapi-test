@@ -3,6 +3,8 @@ package agt0.dev.util;
 import static agt0.dev.util.SWTUtils.inUIThread;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -15,8 +17,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -70,6 +74,40 @@ public class EclipseUtils {
 				}
 			});
 		}
+	}
+	
+	public static <T extends Dialog> T openDialog(final Class<T> dialog){
+		final LinkedList<T> ret = new LinkedList<T>();
+		doInUiThread(new UIRunnable() {
+			
+			@Override
+			public void run(IWorkbenchWindow window) {
+				try {
+					ret.add(dialog.getConstructor(Shell.class).newInstance(window.getShell()));
+					ret.getFirst().open();
+				} catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}	
+			}
+		}, false);
+		
+		return ret.get(0);
 	}
 	
 	public static interface UIRunnable {

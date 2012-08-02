@@ -25,6 +25,7 @@ import org.eclipse.jdt.launching.VMRunnerConfiguration;
 import agt0.dev.FrameworkUpdateUnit;
 import agt0.dev.SharedDataUnit;
 import agt0.dev.project.AgentZeroProject;
+import agt0.dev.ui.WhereIsJFXDialog;
 import agt0.dev.util.EclipseUtils;
 import agt0.dev.util.JavaUtils.Fn1;
 import agt0.dev.util.ds.PrefixMap;
@@ -69,7 +70,17 @@ public class VisLauncher extends AbstractJavaLaunchConfigurationDelegate {
 			}
 			
 			classPath[libFiles.length] = binClassPath; 
-			classPath[libFiles.length+1] = "/Program Files/Oracle/JavaFX 2.1 Runtime/lib/jfxrt.jar";
+			
+			File jfxr = SharedDataUnit.UNIT.findJavaFxRuntime();
+			if (jfxr != null){
+				classPath[libFiles.length+1] = jfxr.getAbsolutePath() + "/lib/jfxrt.jar";
+			}else {
+				WhereIsJFXDialog dialog = EclipseUtils.openDialog(WhereIsJFXDialog.class);
+				jfxr = SharedDataUnit.UNIT.findJavaFxRuntime();
+				if (jfxr != null){
+					classPath[libFiles.length+1] = jfxr.getAbsolutePath() + "/lib/jfxrt.jar";
+				}	
+			}
 			
 			VMRunnerConfiguration runConfig = new VMRunnerConfiguration(
 					"bgu.dcr.az.vdev.app.VisViewApp", classPath);

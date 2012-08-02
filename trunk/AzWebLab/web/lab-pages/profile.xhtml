@@ -7,22 +7,23 @@ and open the template in the editor.
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+       xmlns:az="http://java.sun.com/jsf/composite/comp">
     <h:head>
         <link rel="stylesheet" type="text/css" href="../styles/main.css" />
     </h:head>
     <h:body style="height: 100%">
-        <!--<az:mainHeader/>-->
-        <table style="height: 100%;">
-            <tr style="height: 100%;">
-                <td style="height: 100%; border-right: 1px black solid;">
+        <az:labHeader/>
+        <table style="height: 100%; vertical-align: top !important;" >
+            <tr>
+                <td style="border-right: 1px black solid;">
                     <table class="profile" id="content-table" width="100%" cellspacing="15px" cellpadding="0px">
                         <tr>
                             <td>
                                 <table>
                                     <tr>
                                         <td>
-                                            Image
+                                            <img width="64px" src="/Az/faces/images/user.png" style="border: 2px black solid; padding: 2px;"/>
                                         </td>
                                         <td style="padding-left: 100px;">
                                             <table>

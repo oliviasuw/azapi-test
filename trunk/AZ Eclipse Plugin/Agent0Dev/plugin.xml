@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   
+   <!-- Project Support! -->
+   <extension
+         id="agent0dev.project.Agent0Nature"
+         name="Agent0 Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="agt0.dev.project.Agent0Nature">
+         </run>
+      </runtime>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="agent.zero.main.category"
+            name="AgentZero">
+      </category>
+         <category
+               id="agent.zero.files.category"
+               name="Modules"
+               parentCategory="agent.zero.main.category">
+         </category>
+         <wizard
+               category="agent.zero.main.category"
+               class="agt0.dev.wizards.ProjectWizard"
+               icon="icons/new-project.png"
+               id="Agent0Dev.project.new.wizard"
+               name="Algorithm Implementaion Project"
+               project="true">
+               
+               <description>
+                  Create new Agent 0 Project
+               </description>
+               
+               <selection class="org.eclipse.core.resources.IResource"/>
+         </wizard>
+         <wizard
+               category="agent.zero.main.category"
+               class="agt0.dev.wizards.NewAgent"
+               icon="icons/agts/4.png"
+               id="agt0.dev.wizards.new-agent"
+               name="Agent">
+            <description>
+               create new agent class
+            </description>
+         </wizard>
+         <wizard
+               category="agent.zero.main.category/agent.zero.files.category"
+               class="agt0.dev.wizards.NewProblemGenerator"
+               icon="icons/pgen.png"
+               id="agt0.dev.wizards.pgen"
+               name="Problem Generator">
+         </wizard>
+         <wizard
+               category="agent.zero.main.category/agent.zero.files.category"
+               class="agt0.dev.wizards.NewMessageDelayer"
+               icon="icons/mdelay.png"
+               id="agt0.dev.wizards.mdel"
+               name="Message Delayer">
+         </wizard>
+         <wizard
+               category="agent.zero.main.category/agent.zero.files.category"
+               class="agt0.dev.wizards.NewStatisticCollector"
+               icon="icons/scol.png"
+               id="agt0.dev.wizards.scol"
+               name="Statistic Collector">
+         </wizard>
+         <wizard
+               category="agent.zero.main.category/agent.zero.files.category"
+               class="agt0.dev.wizards.NewCorrectnessTester"
+               icon="icons/ctester.png"
+               id="agt0.dev.wizards.ctest"
+               name="Correctness Tester">
+         </wizard>
+   </extension>
+   
+   <!-- Project Explorer Changes -->
+   <extension
+         point="org.eclipse.ui.navigator.viewer">
+         <viewerContentBinding
+               viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+               <includes>
+               		<contentExtension
+                       pattern="Agent0Dev.project.explorer.content">
+               		</contentExtension>
+               </includes>
+         </viewerContentBinding>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+         <navigatorContent
+               id="Agent0Dev.project.explorer.content"
+               activeByDefault="true"
+               contentProvider="agt0.dev.project.explorer.ContentProvider"
+               labelProvider="agt0.dev.project.explorer.LabelProvider"
+               name="Agent0 Explorer!"
+               priority="highest">
+            <triggerPoints>
+               <or>
+                  <and>
+                     <adapt
+                           type="org.eclipse.core.resources.IProject">
+                     </adapt>
+                     <test
+                           property="org.eclipse.core.resources.projectNature"
+                           value="agt0.dev.project.Agent0Nature">
+                     </test>
+                  </and>
+                  
+                        <and>
+                           <adapt
+                                 type="org.eclipse.jdt.internal.core.PackageFragment">
+                           </adapt>
+                  </and>
+               </or>
+            </triggerPoints>
+               
+	      </navigatorContent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="agt0.dev.launch.Launcher"
+            id="agt0.dev.launch.launcher"
+            modes="run, debug"
+            name="AgentZero Test Execution">
+      </launchConfigurationType>
+      <launchConfigurationType
+            delegate="agt0.dev.launch.VisLauncher"
+            id="agt0.dev.launch.vlauncher"
+            modes="run"
+            name="AgentZero Visual Execution">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="agt0.dev.launch.launcher"
+            icon="icons/launch-run.png"
+            id="agt0.dev.launch.icon">
+      </launchConfigurationTypeImage>
+      <launchConfigurationTypeImage
+            configTypeID="agt0.dev.launch.vlauncher"
+            icon="icons/webcam.png"
+            id="agt0.dev.vlaunch.icon">
+      </launchConfigurationTypeImage>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="agt0.dev.launch.ConfigurationUI"
+            id="agt0.dev.launch.confui"
+            type="agt0.dev.launch.launcher">
+      </launchConfigurationTabGroup>
+      <launchConfigurationTabGroup
+            class="agt0.dev.launch.ConfigurationUI"
+            id="agt0.dev.vlaunch.confui"
+            type="agt0.dev.launch.vlauncher">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="agt0.dev.prespective.DebugPrespective"
+            icon="icons/debug.png"
+            id="agt0.dev.prespective.debug"
+            name="A0Debug">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="agt0.dev.cmd.GenerateMessage"
+            id="agt0.dev.cmd.genmsg"
+            name="Generate Message">
+      </command>
+      <command
+            defaultHandler="agt0.dev.cmd.DebugSelectedProblem"
+            id="agt0.dev.cmd.debugsprob"
+            name="Debug Selected Problem">
+      </command>
+      <command
+            defaultHandler="agt0.dev.cmd.Test"
+            id="agt0.dev.cmd.test"
+            name="Test">
+      </command>
+      <command
+            defaultHandler="agt0.dev.cmd.UpdateFrameworkCommand"
+            id="Agent0Dev.update.now.command"
+            name="Update Framework">
+      </command>
+      <command
+            defaultHandler="agt0.dev.cmd.ShowTutorialCommand"
+            id="Agent0Dev.show.tutorial"
+            name="ShowTutorial">
+      </command>
+      <command
+            defaultHandler="agt0.dev.cmd.SubmitABugCommand"
+            id="Agent0Dev.goto.bts"
+            name="Submit a Bug">
+      </command>
+      <command
+            defaultHandler="agt0.dev.cmd.ExecuteOnAmazonCloudCommand"
+            id="Agent0Dev.cloud.execution"
+            name="Execute on AmazonCloud">
+      </command>
+   </extension>
+   
+    <extension point="org.eclipse.debug.ui.launchShortcuts">
+    <shortcut
+          class="agt0.dev.launch.LauncherShortcut"
+          description="use AgentZero Tester to check the correctness of your algorithm"
+          icon="icons/launch-run.png"
+          id="agt0.dev.launch.shortcut"
+          label="AgentZero Algorithm Tester"
+          modes="run, debug">
+       <contextualLaunch>
+         <enablement>
+           <with variable="selection">
+             <count value="1"/>
+              <iterate>
+               <and>
+                <adapt type="org.eclipse.jdt.core.IJavaElement">
+                        <test property="org.eclipse.jdt.core.isInJavaProject"/>
+                </adapt>
+                 <or>
+                   <test property="org.eclipse.jdt.launching.hasMain"/>
+                   <test property="org.eclipse.jdt.launching.isContainer"/>
+                   <test property="org.eclipse.jdt.launching.isPackageFragment"/>
+                   <test property="org.eclipse.jdt.launching.isPackageFragmentRoot"/>
+                   <instanceof
+                         value="org.eclipse.jdt.core.ICompilationUnit">
+                   </instanceof>
+                 </or>
+               </and>
+              </iterate>
+             </with>
+         </enablement>
+                </contextualLaunch>
+       <configurationType
+              id="org.eclipse.jdt.launching.localJavaApplication">
+       </configurationType>
+       <description
+              description="Run your algorithm under the agent0 test environment"
+              mode="run">
+       </description>
+       <description
+              description="Debug your algorithm under the agent0 test environment"
+              mode="debug">
+       </description>
+    </shortcut>
+    <shortcut
+          class="agt0.dev.launch.VisLauncherShortcut"
+          description="visualize your experiment"
+          icon="icons/webcam.png"
+          id="agt0.dev.vlaunch.shortcut"
+          label="AgentZero Algorithm Visualization"
+          modes="run">
+       <contextualLaunch>
+          <enablement>
+             <with
+                   variable="selection">
+                <count
+                      value="1">
+                </count>
+                <iterate>
+                   <and>
+                      <adapt
+                            type="org.eclipse.jdt.core.IJavaElement">
+                         <test
+                               property="org.eclipse.jdt.core.isInJavaProject">
+                         </test>
+                      </adapt>
+                      <or>
+                         <test
+                               property="org.eclipse.jdt.launching.hasMain">
+                         </test>
+                         <test
+                               property="org.eclipse.jdt.launching.isContainer">
+                         </test>
+                         <test
+                               property="org.eclipse.jdt.launching.isPackageFragment">
+                         </test>
+                         <test
+                               property="org.eclipse.jdt.launching.isPackageFragmentRoot">
+                         </test>
+                         <instanceof
+                               value="org.eclipse.jdt.core.ICompilationUnit">
+                         </instanceof>
+                      </or>
+                   </and>
+                </iterate>
+             </with>
+          </enablement>
+       </contextualLaunch>
+       <configurationType
+             id="org.eclipse.jdt.launching.localJavaApplication">
+       </configurationType>
+       <description
+             description="Run your algorithm under the AgentZero inspector and view the resulted visualization."
+             mode="run">
+       </description>
+    </shortcut>
+ </extension>
+    <extension
+          point="org.eclipse.ui.menus">
+       <menuContribution
+             allPopups="false"
+             locationURI="menu:org.eclipse.ui.main.menu">
+          <menu
+                id="agt0.dev.menu.main"
+                label="Agent Zero">
+             <command
+                   commandId="agt0.dev.cmd.genmsg"
+                   icon="icons/mnu/genmsg.png"
+                   id="agt0.dev.menu.main.genmsg"
+                   label="Generate Message"
+                   style="push">
+             </command>
+             <command
+                   commandId="agt0.dev.cmd.test"
+                   id="agt0.dev.menu.main.test"
+                   label="Test"
+                   style="push">
+             </command>
+             <command
+                   commandId="Agent0Dev.update.now.command"
+                   icon="icons/mnu/update.png"
+                   label="Update AgentZero Framework"
+                   style="push">
+             </command>
+             <command
+                   commandId="Agent0Dev.show.tutorial"
+                   icon="icons/mnu/tutorial.png"
+                   label="Show AgentZero Tutorial"
+                   style="push">
+             </command>
+             <command
+                   commandId="Agent0Dev.goto.bts"
+                   icon="icons/mnu/bugtrack.png"
+                   label="Submit a Bug"
+                   style="push">
+             </command>
+          </menu>
+       </menuContribution>
+       <menuContribution
+             allPopups="false"
+             locationURI="popup:#CompilationUnitEditorContext">
+          <menu
+                icon="icons/agts/1.png"
+                id="agt0.dev.menu.editor"
+                label="Agent Zero">
+             <command
+                   commandId="agt0.dev.cmd.genmsg"
+                   icon="icons/mnu/genmsg.png"
+                   id="agt0.dev.menu.editor.genmsg"
+                   label="Generate Message"
+                   style="push">
+             </command>
+          </menu>
+       </menuContribution>
+       <menuContribution
+             allPopups="false"
+             locationURI="toolbar:org.eclipse.ui.main.toolbar">
+          <toolbar
+                id="Agent0Dev.main.toolbar"
+                label="AgentZero">
+             <command
+                   commandId="Agent0Dev.update.now.command"
+                   icon="icons/mnu/update.png"
+                   label="Update AgentZero Framework"
+                   style="push">
+             </command>
+             <command
+                   commandId="Agent0Dev.show.tutorial"
+                   icon="icons/mnu/tutorial.png"
+                   label="Show AgentZero Tutorial"
+                   style="push">
+             </command>
+             <command
+                   commandId="Agent0Dev.goto.bts"
+                   icon="icons/mnu/bugtrack.png"
+                   label="Submit a Bug"
+                   style="push">
+             </command>
+             <command
+                   commandId="agt0.dev.cmd.genmsg"
+                   icon="icons/mnu/genmsg.png"
+                   id="agt0.dev.menu.main.genmsg"
+                   label="Generate Message"
+                   style="push">
+             </command>
+             <command
+                   commandId="Agent0Dev.cloud.execution"
+                   id="Agent0Dev.cloud.execution.menu"
+                   label="Execute On Amazon Cloud"
+                   style="push">
+             </command>
+          </toolbar>
+       </menuContribution>
+    </extension>
+    <extension
+          point="org.eclipse.ui.bindings">
+       <key
+             commandId="agt0.dev.cmd.genmsg"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+             sequence="Alt+M">
+       </key>
+    </extension>
+    <extension
+          point="org.eclipse.ant.core.extraClasspathEntries">
+       <extraClasspathEntry
+             library="lib/ant-contrib-0.6.jar">
+       </extraClasspathEntry>
+    </extension>
+
+</plugin>

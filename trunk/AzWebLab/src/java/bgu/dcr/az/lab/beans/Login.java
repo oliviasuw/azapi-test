@@ -7,11 +7,9 @@ package bgu.dcr.az.lab.beans;
 import bgu.dcr.az.db.DBManager;
 import bgu.dcr.az.db.ent.User;
 import bgu.dcr.az.lab.util.FacesUtil;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 
 /**
  *
@@ -70,7 +68,7 @@ public class Login {
             return null;
         }
         
-        return "/index";
+        return "profile";
     }
 //    
 //    public String checkValidUser() {

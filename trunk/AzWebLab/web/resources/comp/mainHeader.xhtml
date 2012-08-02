@@ -22,7 +22,7 @@
                 <td class="nav-wrapper">
                     <ul id="nav" style="position: relative; float: left; left: 48%; margin: 0px auto;">
                         <ui:repeat var="page" value="#{mainNavigator.pages}">
-                            <li> <h:outputLink styleClass="#{page == mainNavigator.currentPageName? 'current-view': 'not-current-view'}" value="/Az/faces/web-pages/#{page}.xhtml">#{page}</h:outputLink> </li>
+                            <li> <h:outputLink styleClass="#{page == mainNavigator.currentPageName? 'current-view': 'not-current-view'}" value="/Az/faces/web-pages/#{page}.xhtml"> #{page}</h:outputLink> </li>
                         </ui:repeat>
                     </ul>
                 </td>

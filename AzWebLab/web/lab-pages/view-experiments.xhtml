@@ -8,13 +8,14 @@ and open the template in the editor.
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+       xmlns:az="http://java.sun.com/jsf/composite/comp">
 
     <h:head>
         <title>TODO supply a title</title>
     </h:head>
     <body>
-        <!--<az:mainHeader/>-->
+        <az:labHeader/>
         <h:form id="form">           
             <p:dataTable id="experiments" var="exp" value="#{experimentsView.experiments}" widgetVar="experimentsTable"   
                          emptyMessage="No experiments found with given criteria" selection="#{experimentsView.selectedExperiment}" selectionMode="single" rowKey="#{exp.id}">  

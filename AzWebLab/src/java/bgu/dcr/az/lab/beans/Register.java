@@ -17,7 +17,7 @@ import javax.faces.context.FacesContext;
 
 /**
  *
- * @author kdima85
+ * @author inka
  */
 @ManagedBean
 @RequestScoped
@@ -39,7 +39,7 @@ public class Register {
             return null;
             }
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sample info message", "PrimeFaces rocks!"));
-            return "/index";
+            return "/Az/faces/web-pages/Laboratory.xhtml";
         } else {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Wrong details, please try again!", ""));
             return null;

@@ -133,7 +133,13 @@
             delegate="agt0.dev.launch.Launcher"
             id="agt0.dev.launch.launcher"
             modes="run, debug"
-            name="Agent0 Execution">
+            name="AgentZero Test Execution">
+      </launchConfigurationType>
+      <launchConfigurationType
+            delegate="agt0.dev.launch.VisLauncher"
+            id="agt0.dev.launch.vlauncher"
+            modes="run"
+            name="AgentZero Visual Execution">
       </launchConfigurationType>
    </extension>
    <extension
@@ -143,6 +149,11 @@
             icon="icons/launch-run.png"
             id="agt0.dev.launch.icon">
       </launchConfigurationTypeImage>
+      <launchConfigurationTypeImage
+            configTypeID="agt0.dev.launch.vlauncher"
+            icon="icons/webcam.png"
+            id="agt0.dev.vlaunch.icon">
+      </launchConfigurationTypeImage>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
@@ -150,6 +161,11 @@
             class="agt0.dev.launch.ConfigurationUI"
             id="agt0.dev.launch.confui"
             type="agt0.dev.launch.launcher">
+      </launchConfigurationTabGroup>
+      <launchConfigurationTabGroup
+            class="agt0.dev.launch.ConfigurationUI"
+            id="agt0.dev.vlaunch.confui"
+            type="agt0.dev.launch.vlauncher">
       </launchConfigurationTabGroup>
    </extension>
    <extension
@@ -193,12 +209,17 @@
             id="Agent0Dev.goto.bts"
             name="Submit a Bug">
       </command>
+      <command
+            defaultHandler="agt0.dev.cmd.ExecuteOnAmazonCloudCommand"
+            id="Agent0Dev.cloud.execution"
+            name="Execute on AmazonCloud">
+      </command>
    </extension>
    
     <extension point="org.eclipse.debug.ui.launchShortcuts">
     <shortcut
           class="agt0.dev.launch.LauncherShortcut"
-          description="use Agent0 Tester to check the correctness of your algorithm"
+          description="use AgentZero Tester to check the correctness of your algorithm"
           icon="icons/launch-run.png"
           id="agt0.dev.launch.shortcut"
           label="AgentZero Algorithm Tester"
@@ -236,6 +257,58 @@
        <description
               description="Debug your algorithm under the agent0 test environment"
               mode="debug">
+       </description>
+    </shortcut>
+    <shortcut
+          class="agt0.dev.launch.VisLauncherShortcut"
+          description="visualize your experiment"
+          icon="icons/webcam.png"
+          id="agt0.dev.vlaunch.shortcut"
+          label="AgentZero Algorithm Visualization"
+          modes="run">
+       <contextualLaunch>
+          <enablement>
+             <with
+                   variable="selection">
+                <count
+                      value="1">
+                </count>
+                <iterate>
+                   <and>
+                      <adapt
+                            type="org.eclipse.jdt.core.IJavaElement">
+                         <test
+                               property="org.eclipse.jdt.core.isInJavaProject">
+                         </test>
+                      </adapt>
+                      <or>
+                         <test
+                               property="org.eclipse.jdt.launching.hasMain">
+                         </test>
+                         <test
+                               property="org.eclipse.jdt.launching.isContainer">
+                         </test>
+                         <test
+                               property="org.eclipse.jdt.launching.isPackageFragment">
+                         </test>
+                         <test
+                               property="org.eclipse.jdt.launching.isPackageFragmentRoot">
+                         </test>
+                         <instanceof
+                               value="org.eclipse.jdt.core.ICompilationUnit">
+                         </instanceof>
+                      </or>
+                   </and>
+                </iterate>
+             </with>
+          </enablement>
+       </contextualLaunch>
+       <configurationType
+             id="org.eclipse.jdt.launching.localJavaApplication">
+       </configurationType>
+       <description
+             description="Run your algorithm under the AgentZero inspector and view the resulted visualization."
+             mode="run">
        </description>
     </shortcut>
  </extension>
@@ -325,6 +398,12 @@
                    icon="icons/mnu/genmsg.png"
                    id="agt0.dev.menu.main.genmsg"
                    label="Generate Message"
+                   style="push">
+             </command>
+             <command
+                   commandId="Agent0Dev.cloud.execution"
+                   id="Agent0Dev.cloud.execution.menu"
+                   label="Execute On Amazon Cloud"
                    style="push">
              </command>
           </toolbar>

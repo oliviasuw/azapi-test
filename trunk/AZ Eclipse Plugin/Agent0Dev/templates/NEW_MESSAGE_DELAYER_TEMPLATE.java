@@ -2,10 +2,8 @@ package ext.sim.modules;
 
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.ano.Register;
-import bgu.dcr.az.api.ano.Variable;
-import bgu.dcr.az.api.infra.Execution;
-import bgu.dcr.az.api.mdelay.MessageDelayer;
-import java.util.Random;
+import bgu.dcr.az.api.exen.Execution;
+import bgu.dcr.az.api.exen.mdef.MessageDelayer;
 
 @Register(name = "${MODULE_NAME}")
 public class ${MODULE_NAME_CC} implements MessageDelayer {
@@ -18,12 +16,12 @@ public class ${MODULE_NAME_CC} implements MessageDelayer {
 	
 	
     @Override
-    public int getInitialTime() {
+    public long getInitialTime() {
         return 0;
     }
 
     @Override
-    public int extractTime(Message m) {
+    public long extractTime(Message m) {
     	//TODO: EXTRACT AND RETURN THE TIME FROM THE MESSAGE METADATA
     	return 0;
     }

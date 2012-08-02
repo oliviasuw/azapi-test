@@ -1,20 +1,13 @@
 package ext.sim.modules;
 
 import bgu.dcr.az.api.Agent;
-import bgu.dcr.az.api.Hooks.TerminationHook;
 import bgu.dcr.az.api.ano.Register;
-import bgu.dcr.az.api.infra.Execution;
-import bgu.dcr.az.api.infra.Test;
-import bgu.dcr.az.api.infra.stat.DBRecord;
-import bgu.dcr.az.api.infra.stat.Database;
-import bgu.dcr.az.api.infra.stat.VisualModel;
-import bgu.dcr.az.api.infra.stat.vmod.LineVisualModel;
-import bgu.dcr.az.impl.stat.AbstractStatisticCollector;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import bgu.dcr.az.api.exen.Execution;
+import bgu.dcr.az.api.exen.Test;
+import bgu.dcr.az.api.exen.stat.DBRecord;
+import bgu.dcr.az.api.exen.stat.Database;
+import bgu.dcr.az.api.exen.stat.VisualModel;
+import bgu.dcr.az.exen.stat.AbstractStatisticCollector;
 
 @Register(name = "${MODULE_NAME}")
 public class ${MODULE_NAME_CC} extends AbstractStatisticCollector<${MODULE_NAME_CC}.${MODULE_NAME_CC}Record> {

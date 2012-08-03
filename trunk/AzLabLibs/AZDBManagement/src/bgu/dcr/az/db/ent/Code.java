@@ -7,6 +7,8 @@ package bgu.dcr.az.db.ent;
 import bgu.dcr.az.db.DBManager;
 import java.io.File;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.Entity;
@@ -18,7 +20,7 @@ import javax.persistence.TypedQuery;
 /**
  *
  * @author Inka
- */
+*/
 @Entity
 public class Code implements Serializable {
 
@@ -50,12 +52,12 @@ public class Code implements Serializable {
         return registeredName;
     }
 
-    public List<VariableDecleration> getVariables() {
-        return variables;
-    }
-
     public void setRegisteredName(String registeredName) {
         this.registeredName = registeredName;
+    }
+
+    public List<VariableDecleration> getVariables() {
+        return variables;
     }
 
     public void setVariables(List<VariableDecleration> variables) {

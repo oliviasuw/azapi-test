@@ -19,12 +19,14 @@ public class VariableDecleration implements Serializable {
     private String defaultValue;
     private String description;
 
-    public VariableDecleration() {
+    protected VariableDecleration() {
     }
 
-    public VariableDecleration(String name, String value) {
+    public VariableDecleration(String name, String type, String defaultValue, String description) {
         this.name = name;
-        this.defaultValue = value;
+        this.type = type;
+        this.defaultValue = defaultValue;
+        this.description = description;
     }
 
     public void setName(String name) {
@@ -58,4 +60,11 @@ public class VariableDecleration implements Serializable {
     public String getDescription() {
         return description;
     }
+
+    @Override
+    public String toString() {
+        return "VariableDecleration{" + "name=" + name + ", type=" + type + ", defaultValue=" + defaultValue + ", description=" + description + '}';
+    }
+    
+    
 }

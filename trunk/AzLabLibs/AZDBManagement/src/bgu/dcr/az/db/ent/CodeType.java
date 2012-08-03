@@ -4,6 +4,7 @@
  */
 package bgu.dcr.az.db.ent;
 
+import java.io.Serializable;
 import javax.persistence.Embeddable;
 
 /**
@@ -11,7 +12,7 @@ import javax.persistence.Embeddable;
  * @author Inka
  */
 @Embeddable
-public enum CodeType {
+public enum CodeType implements Serializable {
 
     TOOL, AGENT, PROBLEM_GENERATOR, STATISTIC_COLLECTOR, CORRECTNESS_TESTER, MESSAGE_DELAYER, LIMITER, TEST;
 

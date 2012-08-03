@@ -17,20 +17,29 @@ import javax.faces.context.FacesContext;
 @ApplicationScoped
 public class MainNavigator {
 
-    private String[] pages = {"Home", "Download", "Features", "Laboratory", "Contact"};
+    private String[][] pages = {{"Home", "home"}, {"Download", "download"}, {"Features", "features"}, {"Laboratory", "login"}, {"Contact", "contact"}};
 
-    public String[] getPages() {
+    public String[][] getPages() {
         return pages;
     }
 
     public String gotoOther() {
-        return "other";
+        return "/other";
     }
 
-    public String getCurrentPageName() {
+    public String[] getCurrentPageName() {
         FacesContext context = FacesContext.getCurrentInstance();
         File currentUrl = new File(context.getViewRoot().getViewId());
         final String name = currentUrl.getName().replaceAll("\\.xhtml", "");
-        return (name.equals("index") ? "Home" : name);
+        return (name.equals("index") ? getPage("home") : getPage(name));
+    }
+    
+    private String[] getPage(String name) {
+        for (int i = 0; i < pages.length; i++) {
+            if (pages[i][1].equals(name)) {
+                return pages[i];
+            }
+        }
+        return null;
     }
 }

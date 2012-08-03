@@ -17,7 +17,7 @@ import javax.faces.context.FacesContext;
 @ApplicationScoped
 public class LabNavigator {
 
-    private String[][] pages = {{"My Profile", "profile"}, {"New Experiment", "experiment-builder"}, {"Upload File", "upload-file"}, {"Public Experiments", "view-experiments"}, {"Exit Lab", "Home"}};
+    private String[][] pages = {{"My Profile", "profile"}, {"New Experiment", "experiment-builder"}, {"Upload File", "upload-file"}, {"Public Experiments", "view-experiments"}, {"Exit Lab", "web-pages/home"}};
 
     public String[][] getPages() {
         return pages;

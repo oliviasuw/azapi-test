@@ -17,7 +17,7 @@ import javax.faces.context.FacesContext;
 @ApplicationScoped
 public class MainNavigator {
 
-    private String[][] pages = {{"Home", "home"}, {"Download", "download"}, {"Features", "features"}, {"Laboratory", "login"}, {"Contact", "contact"}};
+    private String[][] pages = {{"Home", "home"}, {"Download", "download"}, {"Features", "features"}, {"Laboratory", "user-login"}, {"Contact", "contact"}};
 
     public String[][] getPages() {
         return pages;

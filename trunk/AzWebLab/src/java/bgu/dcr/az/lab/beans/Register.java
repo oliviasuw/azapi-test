@@ -39,7 +39,7 @@ public class Register {
             return null;
             }
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sample info message", "PrimeFaces rocks!"));
-            return "login?faces-redirect=true";
+            return "user-login?faces-redirect=true";
         } else {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Wrong details, please try again!", ""));
             return null;

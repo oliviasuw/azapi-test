@@ -116,4 +116,9 @@ public class User implements Serializable {
         em.close();
         return ans;
     }
+
+    @Override
+    public String toString() {
+        return "User{" + "email=" + email + ", nickName=" + nickName + ", id=" + id + '}';
+    }
 }

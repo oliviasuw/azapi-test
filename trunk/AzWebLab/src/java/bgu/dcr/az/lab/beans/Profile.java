@@ -25,6 +25,7 @@ public class Profile implements Serializable {
     @ManagedProperty("#{dbManager}")
     private DBManager db;
     private Code[] codes;
+    private boolean edit = false;
 
     public Code[] getCodes() {
         fillClasses();
@@ -50,8 +51,22 @@ public class Profile implements Serializable {
     public void setDb(DBManager db) {
         this.db = db;
     }
+
+    public boolean isEdit() {
+        return edit;
+    }
+
+    public void setEdit(boolean edit) {
+        this.edit = edit;
+    }
     
+    public void edit(){
+        edit = true;
+    }
     
+    public void doneEditing(){
+        edit = false;
+    }
 
     private void fillClasses() {
         List<Code> content = login.getUser().getAllUploadedCodes(db);

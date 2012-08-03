@@ -1,0 +1,61 @@
+
+<project name="AmZ_Package" default="execute" basedir=".">
+    <description>
+        packaging data
+    </description>
+
+	<!-- set global properties for this build -->
+    <property name="src" value="src" />
+    <property name="build" value="build" />
+    <property name="lib" value="lib" />
+    <property name="package.zip" value="package.zip"/>
+    <property name="azlib" value="not-set!"/>
+    <property name="output.file" value="out.txt"/>
+
+    <path id="classpath">
+        <fileset dir="${lib}" includes="**/*.jar" />
+        <fileset dir="${azlib}" includes="**/*.jar" />
+    </path>
+
+    <target name="extract-package">
+        <unzip src="${package.zip}" dest="."/>
+    </target>
+
+    <target name="init" depends="extract-package">
+		<!-- Create the time stamp -->
+        <tstamp />
+		<!-- Create the build directory structure used by compile -->
+        <mkdir dir="${build}" />
+    </target>
+
+    <target name="compile" depends="init" description="compile the source">
+		<!-- Compile the java code from ${src} into ${build} using all the jars in ${lib}-->
+        <javac srcdir="${src}" destdir="${build}" classpathref="classpath" />
+    </target>
+
+    <target name="clean" description="clean up">
+		<!-- Delete the ${build} and ${dist} directory trees -->
+        <delete dir="${build}" />
+    </target>
+
+    <target name="jar" depends="compile">
+        <jar destfile="${lib}/TEMP.jar" basedir="${build}"/>
+    </target>
+
+    <path id="classpath">
+        <fileset dir="${lib}/">
+            <include name="\*.jar"/>
+        </fileset>
+        <fileset dir="${azlib}/">
+            <include name="\*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="execute" depends="jar" description="run the project">     
+        <java classname="bgu.dcr.az.ecoa.AZExtCodeAnalyzer" failonerror="true" fork="true">
+            <classpath refid="classpath"/>
+            <!--<arg line="${output.file}"/>-->
+        </java>     
+    </target>
+	
+</project>

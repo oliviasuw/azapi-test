@@ -4,13 +4,16 @@
  */
 package bgu.dcr.az.db.ent;
 
+import bgu.dcr.az.db.DBManager;
 import java.io.File;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -43,6 +46,22 @@ public class Code implements Serializable {
         rating = 0;
     }
 
+    public String getRegisteredName() {
+        return registeredName;
+    }
+
+    public List<VariableDecleration> getVariables() {
+        return variables;
+    }
+
+    public void setRegisteredName(String registeredName) {
+        this.registeredName = registeredName;
+    }
+
+    public void setVariables(List<VariableDecleration> variables) {
+        this.variables = variables;
+    }
+
     public void setType(CodeType type) {
         this.type = type;
     }
@@ -62,7 +81,7 @@ public class Code implements Serializable {
     public void setDependencies(List<File> dependencies) {
         this.dependencies = dependencies;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -125,5 +144,22 @@ public class Code implements Serializable {
 
     public List<Comment> getComments() {
         return comments;
+    }
+
+    public static List<Code> getAllCodesByType(DBManager db, CodeType type) {
+        List<Code> ans = new LinkedList<>();
+        EntityManager em = db.newEM();
+        TypedQuery<Code> qCode = em.createQuery("select c from Code c where c.type = :type", Code.class);
+        qCode.setParameter("type", type);
+        ans.addAll(qCode.getResultList());
+        em.close();
+        return ans;
+    }
+
+    public void addVariable(VariableDecleration var) {
+        if (variables == null) {
+            variables = new LinkedList<>();
+        }
+        variables.add(var);
     }
 }

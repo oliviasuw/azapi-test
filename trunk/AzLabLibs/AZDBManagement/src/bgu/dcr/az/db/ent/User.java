@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 /**
@@ -21,8 +22,9 @@ import javax.persistence.TypedQuery;
  */
 @Entity
 public class User implements Serializable {
-    
-    private @Unique String email;
+
+    private @Unique
+    String email;
     private String nickName;
     private String password;
     private String description;
@@ -30,7 +32,7 @@ public class User implements Serializable {
     private @Id
     @GeneratedValue
     long id = 0;
-    
+
     protected User() {
     }
 
@@ -42,8 +44,6 @@ public class User implements Serializable {
         this.uRole = role;
     }
 
-    
-    
     public String getEmail() {
         return email;
     }
@@ -88,7 +88,7 @@ public class User implements Serializable {
         this.uRole = role;
     }
 
-    public static List<User> getAllUsers(DBManager db){
+    public static List<User> getAllUsers(DBManager db) {
         return db.loadAll(User.class);
     }
 
@@ -96,12 +96,18 @@ public class User implements Serializable {
         EntityManager em = db.newEM();
         TypedQuery<User> q = em.createQuery("select c from User c where c.email = :email", User.class);
         q.setParameter("email", email);
-        User r = q.getSingleResult();
-        em.close();
-        return r;
+        try {
+            User r = q.getSingleResult();
+            return r;
+        } catch (NoResultException e) {
+            System.out.println(e);
+        } finally {
+            em.close();
+        }
+        return null;
     }
-    
-    public List<Code> getAllUploadedCodes(DBManager db){
+
+    public List<Code> getAllUploadedCodes(DBManager db) {
         List<Code> ans = new LinkedList<>();
         EntityManager em = db.newEM();
         TypedQuery<Code> qCode = em.createQuery("select c from Code c where c.author = :user", Code.class);

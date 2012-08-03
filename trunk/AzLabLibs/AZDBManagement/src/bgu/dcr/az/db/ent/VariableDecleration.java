@@ -13,10 +13,19 @@ import javax.persistence.Embeddable;
  */
 @Embeddable
 public class VariableDecleration implements Serializable {
+
     private String name;
     private String type;
     private String defaultValue;
     private String description;
+
+    public VariableDecleration() {
+    }
+
+    public VariableDecleration(String name, String value) {
+        this.name = name;
+        this.defaultValue = value;
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -33,7 +42,7 @@ public class VariableDecleration implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -49,6 +58,4 @@ public class VariableDecleration implements Serializable {
     public String getDescription() {
         return description;
     }
-    
-    
 }

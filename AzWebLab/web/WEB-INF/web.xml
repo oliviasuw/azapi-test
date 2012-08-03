@@ -31,7 +31,7 @@
         </session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>faces/web-pages/Home.xhtml</welcome-file>
+        <welcome-file>faces/web-pages/home.xhtml</welcome-file>
     </welcome-file-list>
     
     <filter>

@@ -8,7 +8,7 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-       xmlns:az="http://java.sun.com/jsf/composite/comp">
+      xmlns:az="http://java.sun.com/jsf/composite/comp">
     <h:head>
         <link rel="stylesheet" type="text/css" href="../styles/main.css" />
         <link rel="stylesheet" type="text/css" href="../styles/profile.css" />
@@ -17,8 +17,8 @@ and open the template in the editor.
         <az:labHeader/>
         <table class="profile" style="height: 100%;" >
             <tr>
-                <td class="profile-left" style="border-right: 1px black solid;">
-                    <table id="content-table" width="100%" cellspacing="15px" cellpadding="0px">
+                <td class="profile-left" style="border-right: 1px black solid;" >
+                    <table id="content-table" cellspacing="15px" cellpadding="0px">
                         <tr>
                             <td>
                                 <table >
@@ -48,26 +48,30 @@ and open the template in the editor.
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                Description:
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="border: 1px solid black; width: 50px; height: 50px;">
-                                <h:form id="form">
-
-                                    <p:editor id="editor" value="#{login.user.description}" width="600"/>
-
-                                    <h:panelGrid columns="2" style="margin-top:10px">
-                                        <p:commandButton id="submitButton" value="Submit" update="display" oncomplete="dlg.show()"
-                                                         icon="ui-icon-disk" />
-                                        <p:commandButton id="clearButton" type="button" value="Clear" onclick="editor.clear()"
-                                                         icon="ui-icon-close" />
-                                    </h:panelGrid>
-                                    <p:dialog header="Content" widgetVar="dlg" showEffect="fade" hideEffect="fade" modal="true">
-                                        <h:outputText id="display" value="#{login.user.description}" escape="false" />
-                                    </p:dialog>
-                                </h:form>
+                            <td style="border: 1px solid black; width: 50px; height: 50px;" >
+                                <table>
+                                    <tr>
+                                        <td>
+                                            Description:
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>   
+                                            <h:form id="description">
+                                                <h:panelGrid rendered="#{profile.edit}" columns="2" style="margin-top:10px">
+                                                    <p:editor id="editor" value="#{login.user.description}" width="600"/>
+                                                    <p:commandButton id="submitButton" value="Submit" update="description" action="#{profile.doneEditing()}"
+                                                                     icon="ui-icon-disk" />
+                                                </h:panelGrid>
+                                                <h:panelGrid rendered="#{!profile.edit}">
+                                                    <span>#{login.user.description}</span>
+                                                    <p:commandButton id="editButton" value="Edit" update="description" action="#{profile.edit()}"
+                                                                     icon="ui-icon-disk" />
+                                                </h:panelGrid>
+                                            </h:form>
+                                        </td>
+                                    </tr>
+                                </table>
                             </td>
                         </tr>
                     </table>

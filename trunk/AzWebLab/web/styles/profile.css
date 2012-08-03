@@ -1,6 +1,15 @@
 .profile{
-    
+    width: 100%;
+    height: 100%;
 }
-.profile profile-left{
-    background-color: rgb(192,192,192) !important;
+.profile .profile-left{
+    background-color: rgb(220,220,220);
+    width: 1000px !important;
+}
+
+.profile .ui-button {
+    padding:5px;
+}
+.profile .ui-button-icon-left {
+    left: -0.2em;
 }

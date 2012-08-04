@@ -52,6 +52,7 @@ public class AgentSelectionModel {
 								break;
 							}
 						}
+						
 						if (isAgent){
 							agents.add(unit.getTypes()[0].getElementName());
 							agent2class.put(unit.getTypes()[0].getElementName(), unit.getTypes()[0].getFullyQualifiedName());

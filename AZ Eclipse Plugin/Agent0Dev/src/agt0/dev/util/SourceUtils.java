@@ -60,7 +60,7 @@ public class SourceUtils {
 	}
 	
 	public static CompilationUnit ast(ICompilationUnit unit, boolean resolveBinding) {
-		ASTParser parser = ASTParser.newParser(AST.JLS3); 
+		ASTParser parser = ASTParser.newParser(AST.JLS4); 
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(unit); // set source
 		parser.setResolveBindings(resolveBinding); // we need bindings later on

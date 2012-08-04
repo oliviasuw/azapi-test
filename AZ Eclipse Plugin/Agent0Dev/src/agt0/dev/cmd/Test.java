@@ -35,7 +35,7 @@ public class Test implements IHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try{
 			AgentZeroProject az = AgentZeroProject.activeProject();
-			FrameworkUpdateUnit.UNIT.testForFirstUpdate();
+			az.findCodeUnits();
 		}catch(Exception ex){
 			System.out.println("there was an exception ... " + ex.getMessage());
 			ex.printStackTrace();
@@ -46,7 +46,7 @@ public class Test implements IHandler {
 	@Override
 	public boolean isEnabled() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override

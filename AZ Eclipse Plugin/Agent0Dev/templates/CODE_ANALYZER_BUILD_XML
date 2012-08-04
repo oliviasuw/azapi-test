@@ -1,0 +1,22 @@
+<project name="AZ_Code_Scan" default="execute" basedir=".">
+    <description>
+        code scan.
+    </description>
+
+	<!-- set global properties for this build -->
+    <property name="azlib" value="not-set!"/>
+    <property name="local.code" value="not-set!"/>
+    <property name="output.file" value="out.txt"/>
+
+    <path id="classpath">
+        <fileset dir="${azlib}" includes="**/*.jar" />
+        <pathelement path="${local.code}"/>
+    </path>
+
+    <target name="execute" description="run analyzer">     
+        <java classname="bgu.dcr.az.ecoa.AZExtCodeAnalyzer" failonerror="true" fork="true" output="log.txt">
+            <classpath refid="classpath"/>
+        </java>     
+    </target>
+	
+</project>

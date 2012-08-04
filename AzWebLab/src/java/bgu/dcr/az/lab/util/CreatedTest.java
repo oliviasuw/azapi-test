@@ -35,7 +35,7 @@ public class CreatedTest {
         this.statisticCollectors = new LinkedList<Code>();
         this.test = new Code();
         this.test.setType(CodeType.TEST);
-        this.test.addVariable(new VariableDecleration("Name",name));
+        this.test.addVariable(new VariableDecleration("Name","",name,""));
     }
 
     public CreatedTest(String name) {
@@ -45,7 +45,7 @@ public class CreatedTest {
         this.test = new Code();
         this.test.setName(name);
         this.test.setType(CodeType.TEST);
-        this.test.addVariable(new VariableDecleration("Name",name));
+        this.test.addVariable(new VariableDecleration("Name","",name,""));
     }
 
     public void setTest(Code test) {

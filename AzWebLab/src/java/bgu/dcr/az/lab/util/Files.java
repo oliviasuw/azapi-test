@@ -38,7 +38,10 @@ public class Files {
     public static void copy(String source, String destination) throws IOException {
         File s = new File(source);
         File d = new File(destination);
-
+        if(!d.getParentFile().exists()){
+            d.getParentFile().mkdirs();
+        }
+        
         FileInputStream ss = new FileInputStream(s);
         FileOutputStream ds = new FileOutputStream(d);
 

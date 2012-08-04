@@ -8,6 +8,7 @@ import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
+import bgu.dcr.az.api.exen.Test;
 import bgu.dcr.az.api.exen.mdef.CorrectnessTester;
 import bgu.dcr.az.api.exen.mdef.Limiter;
 import bgu.dcr.az.api.exen.mdef.MessageDelayer;
@@ -15,14 +16,12 @@ import bgu.dcr.az.api.exen.mdef.ProblemGenerator;
 import bgu.dcr.az.api.exen.mdef.StatisticCollector;
 import bgu.dcr.az.ecoa.rmodel.ScannedCodeUnit;
 import bgu.dcr.az.ecoa.rmodel.ScannedVariable;
-import com.thoughtworks.qdox.JavaDocBuilder;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +37,7 @@ import org.reflections.util.ConfigurationBuilder;
  *
  * @author Administrator
  */
-public class AZExtCodeAnalyzer {
+public class AZCoreCodeAnalyzer {
 
     public static final String AGENT_TYPE = "AGENT";
     public static final String CORRECTNESS_TESTER_TYPE = "CORRECTNESS_TESTER";
@@ -56,17 +55,9 @@ public class AZExtCodeAnalyzer {
         File out = new File(baseFolder + "/out.txt");
         System.out.println("writing results to: " + out.getAbsolutePath());
 
-        //extract libreries.
-        LinkedList<File> libs = new LinkedList<>();
-        final File lib = new File(baseFolder + "/lib");
-        if (lib.exists()) {
-            libs.addAll(Arrays.asList(lib.listFiles()));
-        }
-
         //scan binary
         final ExternalClassesScanner scn = new ExternalClassesScanner();
-        Reflections ref = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage("ext.sim")).setScanners(scn));
-        Map<String, Set<String>> deps = DependencyEmitter.findDependencies(new HashSet<>(scn.getClassNames()));
+        Reflections ref = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage("bgu.dcr.az")).setScanners(scn));
 
         //initialize results
         LinkedList<ScannedCodeUnit> results = new LinkedList<>();
@@ -96,18 +87,15 @@ public class AZExtCodeAnalyzer {
                         code.type = "STATISTIC_COLLECTOR";
                     } else if (Limiter.class.isAssignableFrom(c)) {
                         code.type = "LIMITER";
+                    } else if (Test.class.isAssignableFrom(c)) {
+                        code.type = "TEST";
                     } else {
                         continue;
                     }
 
-                    //fill code dependencies
-                    List<File> dependencies = new LinkedList<>(libs);
-                    for (String dep : deps.get(sc)) {
-                        dependencies.add(new File(baseFolder + "/src/" + dep.replaceAll("\\.", "/") + ".java"));
-                    }
-                    code.dependencies = dependencies;
+                    code.dependencies = new LinkedList<>();
 
-                    code.locationOnDisk = new File(baseFolder + "/src/" + sc.replaceAll("\\.", "/") + ".java");
+                    code.locationOnDisk = new File("CORE_FILE");
 
                     //fill variables
                     List<ScannedVariable> vars = new LinkedList<>();
@@ -131,19 +119,10 @@ public class AZExtCodeAnalyzer {
                         code.registeredName = c.getSimpleName();
                     }
 
-                    //scan description
-                    try {
-                        JavaDocBuilder jdocb = new JavaDocBuilder();
-                        jdocb.addSource(code.locationOnDisk);
-                        code.description = jdocb.getSources()[0].getClasses()[0].getComment();
-
-                    } catch (Exception ex) {
-                        System.err.println("cannot parse class: " + c.getCanonicalName());
-                    }
                     results.add(code);
                 }
             } catch (ClassNotFoundException ex) {
-                Logger.getLogger(AZExtCodeAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AZCoreCodeAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 

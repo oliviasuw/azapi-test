@@ -119,4 +119,10 @@ public enum SharedDataUnit {
 		
 		return where;
 	}
+	
+	public File getTempFolder(){
+		File temp = new File(AZ_WORKSPACE_PATH + "/temp");
+		if (!temp.exists()) temp.mkdirs();
+		return temp;
+	}
 }

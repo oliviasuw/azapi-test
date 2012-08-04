@@ -1,4 +1,3 @@
-
 package agt0.dev.project;
 
 import static agt0.dev.util.JavaUtils.assoc;
@@ -99,7 +98,6 @@ public class AgentZeroProject {
 		return new File(getRootDirectory().getAbsolutePath() + "/test.xml");
 	}
 
-	
 	/**
 	 * @return the directory where all the implemented agents are written
 	 */
@@ -113,12 +111,13 @@ public class AgentZeroProject {
 	public File getToolsSourceDirectory() {
 		return new File(getSrcDirectory().getAbsolutePath() + "/ext/sim/tools");
 	}
-	
+
 	/**
 	 * @return the directory where all the implemented tools are written
 	 */
 	public File getModulesSourceDirectory() {
-		return new File(getSrcDirectory().getAbsolutePath() + "/ext/sim/modules");
+		return new File(getSrcDirectory().getAbsolutePath()
+				+ "/ext/sim/modules");
 	}
 
 	/**
@@ -239,163 +238,189 @@ public class AgentZeroProject {
 	}
 
 	/**
-	 * create the default file structured that the project have - the create project 
-	 * uses this function when it creating the project
+	 * create the default file structured that the project have - the create
+	 * project uses this function when it creating the project
+	 * 
 	 * @param defaultAlgorithmName
 	 * @throws IOException
 	 */
-	private void createDefaultProjectStructure(String defaultAlgorithmName) throws IOException {
+	private void createDefaultProjectStructure(String defaultAlgorithmName)
+			throws IOException {
 		this.getAgentsSourceDirectory().mkdirs();
 		this.getToolsSourceDirectory().mkdirs();
 		this.getModulesSourceDirectory().mkdirs();
-		
-		String algoName = SourceUtils.camelCase(defaultAlgorithmName); // uc(algoName.charAt(0)) +
-		
+
+		String algoName = SourceUtils.camelCase(defaultAlgorithmName); // uc(algoName.charAt(0))
+																		// +
+
 		Map<String, String> tkeys = assoc(new HashMap<String, String>(),
 				"ALGORITHM_NAME", algoName);
 
-		//BUILD TEST.XML
+		// BUILD TEST.XML
 		FileUtils.dump(new TemplateInputStream(tkeys,
-				resource("templates/TESTING_CONFIGURATION_TEMPLATE")), getTestXmlFile());
+				resource("templates/TESTING_CONFIGURATION_TEMPLATE")),
+				getTestXmlFile());
 
-		//BUILD FIRST AGENT
+		// BUILD FIRST AGENT
 		FileUtils.dump(new TemplateInputStream(tkeys,
-				resource("templates/NEW_AGENT_TEMPLATE.java")), new File(getAgentsSourceDirectory().getAbsolutePath() + "/" + algoName + "Agent.java"));
+				resource("templates/NEW_AGENT_TEMPLATE.java")), new File(
+				getAgentsSourceDirectory().getAbsolutePath() + "/" + algoName
+						+ "Agent.java"));
 
 	}
-	
-	
+
 	/**
-	 * will try to create a new agent for the given algorithm name
-	 * if success it will return true and open the editor on the created class - if openInEditor is true
+	 * will try to create a new agent for the given algorithm name if success it
+	 * will return true and open the editor on the created class - if
+	 * openInEditor is true
+	 * 
 	 * @param algorithmName
 	 * @param openInEditor
 	 * @return
 	 */
-	public boolean createNewAgent(String algorithmName, boolean openInEditor){
+	public boolean createNewAgent(String algorithmName, boolean openInEditor) {
 		String ccase = SourceUtils.camelCase(algorithmName);
 		try {
-			File file = new File(getAgentsSourceDirectory().getAbsolutePath() + "/" + ccase + ".java");
-			createFileFromTemplate(file, "NEW_AGENT_TEMPLATE.java" , "ALGORITHM_NAME", ccase);
+			File file = new File(getAgentsSourceDirectory().getAbsolutePath()
+					+ "/" + ccase + ".java");
+			createFileFromTemplate(file, "NEW_AGENT_TEMPLATE.java",
+					"ALGORITHM_NAME", ccase);
 			refreshInEclipse();
-			if (openInEditor) EclipseUtils.openEditorFor(file);
+			if (openInEditor)
+				EclipseUtils.openEditorFor(file);
 			return true;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return false;
 	}
 
-	
 	/**
 	 * create a new problem generator with the given name
+	 * 
 	 * @param name
 	 * @return
 	 */
-	public boolean createNewProblemGenerator(String name, boolean openInEditor){
-		return createNewModule("NEW_PROBLEM_GEN_TEMPLATE.java", name, openInEditor);
-	}
-	
-	/**
-	 * create a new message delayer with the given name
-	 * @param name
-	 * @return
-	 */
-	public boolean createNewMessageDelayer(String name, boolean openInEditor){
-		return createNewModule("NEW_MESSAGE_DELAYER_TEMPLATE.java", name, openInEditor);
+	public boolean createNewProblemGenerator(String name, boolean openInEditor) {
+		return createNewModule("NEW_PROBLEM_GEN_TEMPLATE.java", name,
+				openInEditor);
 	}
 
-	
+	/**
+	 * create a new message delayer with the given name
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public boolean createNewMessageDelayer(String name, boolean openInEditor) {
+		return createNewModule("NEW_MESSAGE_DELAYER_TEMPLATE.java", name,
+				openInEditor);
+	}
+
 	/**
 	 * create a new statistic collector with the given name
+	 * 
 	 * @param name
 	 * @return
 	 */
-	public boolean createNewStatisticCollector(String name, boolean openInEditor){
-		return createNewModule("NEW_STATISTIC_COLLECTOR_TEMPLATE.java", name, openInEditor);
+	public boolean createNewStatisticCollector(String name, boolean openInEditor) {
+		return createNewModule("NEW_STATISTIC_COLLECTOR_TEMPLATE.java", name,
+				openInEditor);
 	}
-	
+
 	/**
 	 * create a new correctness tester with the given name
+	 * 
 	 * @param name
 	 * @return
 	 */
-	public boolean createNewCorrectnessTester(String name, boolean openInEditor){
-		return createNewModule("NEW_CORRECTNESS_TESTER_TEMPLATE.java", name, openInEditor);
+	public boolean createNewCorrectnessTester(String name, boolean openInEditor) {
+		return createNewModule("NEW_CORRECTNESS_TESTER_TEMPLATE.java", name,
+				openInEditor);
 	}
-	
+
 	/**
-	 * will try to create a new module for the given algorithm name
-	 * if success it will return true and open the editor on the created class - if openInEditor is true
-	 * @param moduleTemplate the module template to create
+	 * will try to create a new module for the given algorithm name if success
+	 * it will return true and open the editor on the created class - if
+	 * openInEditor is true
+	 * 
+	 * @param moduleTemplate
+	 *            the module template to create
 	 * @param moduleName
 	 * @param openInEditor
 	 * @return
 	 */
-	private boolean createNewModule(String moduleTemplate, String moduleName, boolean openInEditor, String... moreTemplateParams){
+	private boolean createNewModule(String moduleTemplate, String moduleName,
+			boolean openInEditor, String... moreTemplateParams) {
 		String ccase = SourceUtils.camelCase(moduleName);
 		try {
-			File file = new File(getModulesSourceDirectory().getAbsolutePath() + "/" + ccase + ".java");
+			File file = new File(getModulesSourceDirectory().getAbsolutePath()
+					+ "/" + ccase + ".java");
 			Map<String, String> params = buildParamMap(moreTemplateParams);
 			params.put("MODULE_NAME", moduleName);
 			params.put("MODULE_NAME_CC", ccase);
-			createFileFromTemplate(file, moduleTemplate , params);
+			createFileFromTemplate(file, moduleTemplate, params);
 			refreshInEclipse();
-			if (openInEditor) EclipseUtils.openEditorFor(file);
+			if (openInEditor)
+				EclipseUtils.openEditorFor(file);
 			return true;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return false;
 	}
 
-	
 	/**
-	 * create a new file in the project and filling it with the given template data
-	 * the new file is not synchronized with the workspace and you should refresh the project in order to see it...
+	 * create a new file in the project and filling it with the given template
+	 * data the new file is not synchronized with the workspace and you should
+	 * refresh the project in order to see it...
+	 * 
 	 * @param f
 	 * @param templateName
 	 * @param params
 	 * @throws IOException
 	 */
-	private static void createFileFromTemplate(File f, String templateName, String... params) throws IOException{
+	private static void createFileFromTemplate(File f, String templateName,
+			String... params) throws IOException {
 		Map<String, String> tkeys = buildParamMap(params);
 		createFileFromTemplate(f, templateName, tkeys);
 	}
 
 	/**
-	 * create a new file in the project and filling it with the given template data
-	 * the new file is not synchronized with the workspace and you should refresh the project in order to see it...
+	 * create a new file in the project and filling it with the given template
+	 * data the new file is not synchronized with the workspace and you should
+	 * refresh the project in order to see it...
+	 * 
 	 * @param f
 	 * @param templateName
 	 * @param params
 	 * @throws IOException
 	 */
-	private static void createFileFromTemplate(File f, String templateName, Map<String, String> params) throws IOException{
-		FileUtils.dump(new TemplateInputStream(params,
-				resource("templates/" + templateName)), f);
+	private static void createFileFromTemplate(File f, String templateName,
+			Map<String, String> params) throws IOException {
+		FileUtils.dump(new TemplateInputStream(params, resource("templates/"
+				+ templateName)), f);
 	}
 
-	
 	/**
 	 * create map from the given pairs
+	 * 
 	 * @param params
 	 * @return
 	 */
 	private static Map<String, String> buildParamMap(String... params) {
 		Map<String, String> tkeys = new HashMap<String, String>();
-		
-		for (int i=0; i<params.length; i+=2){
-			tkeys.put(params[i], params[i+1]);
+
+		for (int i = 0; i < params.length; i += 2) {
+			tkeys.put(params[i], params[i + 1]);
 		}
 		return tkeys;
 	}
 
-	
 	/**
 	 * create new project on the file system
 	 * 
@@ -427,33 +452,35 @@ public class AgentZeroProject {
 			AgentZeroProject azproj = new AgentZeroProject(jproj);
 			azproj.createDefaultProjectStructure(name);
 
-			//CONFIGURE CLASS PATH			
+			// CONFIGURE CLASS PATH
 
 			String jdpath = "";
 			try {
-				jdpath = "jar:" + SharedDataUnit.UNIT.getApiJavaDocZip().toURI().toURL().toExternalForm() + "!"
+				jdpath = "jar:"
+						+ SharedDataUnit.UNIT.getApiJavaDocZip().toURI()
+								.toURL().toExternalForm() + "!"
 						+ SharedDataUnit.JAVADOC_LOCATION_IN_ARCHIVE;
 			} catch (MalformedURLException e) {
-				//should never happen...
+				// should never happen...
 				e.printStackTrace();
 			}
 
 			IClasspathAttribute[] azapiJavadoc = new IClasspathAttribute[] { JavaCore
 					.newClasspathAttribute(
 							IClasspathAttribute.JAVADOC_LOCATION_ATTRIBUTE_NAME,
-							jdpath) }
-			;
+							jdpath) };
 			IClasspathEntry azapi = JavaCore.newLibraryEntry(new Path(
-					SharedDataUnit.UNIT.getApiJar().getAbsolutePath()), null, null, null, azapiJavadoc,
-					false);
+					SharedDataUnit.UNIT.getApiJar().getAbsolutePath()), null,
+					null, null, azapiJavadoc, false);
 
-			IClasspathEntry azcore = JavaCore.newLibraryEntry(new Path(SharedDataUnit.UNIT.getCoreJar().getAbsolutePath()), null, null);
-			
+			IClasspathEntry azcore = JavaCore.newLibraryEntry(new Path(
+					SharedDataUnit.UNIT.getCoreJar().getAbsolutePath()), null,
+					null);
+
 			IClasspathEntry[] enteries = new IClasspathEntry[] {
-					JavaRuntime.getDefaultJREContainerEntry(), //JAVA
-					JavaCore.newSourceEntry(new Path("/" + name + "/src")), //SRC 
-					azapi, azcore
-			};
+					JavaRuntime.getDefaultJREContainerEntry(), // JAVA
+					JavaCore.newSourceEntry(new Path("/" + name + "/src")), // SRC
+					azapi, azcore };
 
 			jproj.setRawClasspath(enteries, mon);
 
@@ -467,13 +494,14 @@ public class AgentZeroProject {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * refresh the project view in eclipse after modifying its content
 	 */
-	public void refreshInEclipse(){
+	public void refreshInEclipse() {
 		try {
-			project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+			project.getProject().refreshLocal(IResource.DEPTH_INFINITE,
+					new NullProgressMonitor());
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -483,62 +511,70 @@ public class AgentZeroProject {
 	public String getProjectName() {
 		return project.getProject().getName();
 	}
-	
+
 	/**
 	 * test a given project to see if it has the agent zero nature
+	 * 
 	 * @param prj
 	 * @return
 	 */
-	private static boolean isAgentZeroProject(IProject prj){
+	private static boolean isAgentZeroProject(IProject prj) {
 		try {
 			return prj.hasNature(NATURE_ID);
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			
+
 			return false;
 		}
 	}
-	
-	public static List<AgentZeroProject> allOpenedProjects(){
+
+	public static List<AgentZeroProject> allOpenedProjects() {
 		IWorkspace w = ResourcesPlugin.getWorkspace();
 		IWorkspaceRoot wf = w.getRoot();
 		IProject[] pjs = wf.getProjects();
-		
+
 		LinkedList<AgentZeroProject> ret = new LinkedList<AgentZeroProject>();
-		for (IProject p : pjs){
-			if (isAgentZeroProject(p) && p.isOpen()){
+		for (IProject p : pjs) {
+			if (isAgentZeroProject(p) && p.isOpen()) {
 				ret.add(new AgentZeroProject(JavaCore.create(p)));
 			}
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
-	 * this method is very heavy and required new process execution each time it is called 
-	 * so cache its result if you want to reuse it.
+	 * this method is very heavy and required new process execution each time it
+	 * is called so cache its result if you want to reuse it.
+	 * 
 	 * @return
 	 */
-	public List<ScannedCodeUnit> findCodeUnits(){
+	public List<ScannedCodeUnit> findCodeUnits() {
 		AntRunner runner = new AntRunner();
-		runner.setBuildFileLocation(SharedDataUnit.UNIT.getCodeAnalyzerAntScript().getAbsolutePath());
-		runner.addUserProperties(JavaUtils.assoc(new HashMap<String,String>(), "local.code", getRootDirectory().getAbsolutePath() + "/bin", "azlib", SharedDataUnit.AZ_WORKSPACE_PATH + "/lib"));
+		runner.setBuildFileLocation(SharedDataUnit.UNIT
+				.getCodeAnalyzerAntScript().getAbsolutePath());
+		runner.addUserProperties(JavaUtils.assoc(new HashMap<String, String>(),
+				"local.code", getRootDirectory().getAbsolutePath() + "/bin",
+				"azlib", SharedDataUnit.AZ_WORKSPACE_PATH + "/lib"));
 		runner.setArguments("-Dmessage=Building -verbose");
 		try {
 			runner.run(null);
 
-		FileInputStream fis = new FileInputStream(new File(SharedDataUnit.UNIT.getCodeAnalyzerBaseFolder().getAbsolutePath() + "/out.txt"));
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        List<ScannedCodeUnit> res = (List<ScannedCodeUnit>) ois.readObject();
-        System.out.println("result of size: " + res.size());
-        return res;
+			FileInputStream fis = new FileInputStream(new File(
+					SharedDataUnit.UNIT.getCodeAnalyzerBaseFolder()
+							.getAbsolutePath() + "/out.txt"));
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			List<ScannedCodeUnit> res = (List<ScannedCodeUnit>) ois
+					.readObject();
+			System.out.println("result of size: " + res.size());
+			return res;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return new LinkedList<ScannedCodeUnit>();
 		}
-		
-	}	
+
+	}
 
 }

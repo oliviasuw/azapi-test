@@ -64,7 +64,7 @@ public class DBManager {
         em.close();
     }
 
-    public void save(Iterable... all) {
+    public void saveAll(Iterable... all) {
         EntityManager em = newEM();
         em.getTransaction().begin();
 

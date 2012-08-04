@@ -4,15 +4,19 @@ package agt0.dev.project;
 import static agt0.dev.util.JavaUtils.assoc;
 import static agt0.dev.util.JavaUtils.concat;
 import static agt0.dev.util.PlatformUtils.resource;
+import static agt0.dev.util.SourceUtils.ast;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.ant.core.AntRunner;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -21,14 +25,17 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -40,10 +47,15 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
+import bgu.dcr.az.ecoa.rmodel.ScannedCodeUnit;
+
+import agt0.dev.Global;
 import agt0.dev.SharedDataUnit;
 import agt0.dev.util.EclipseUtils;
 import agt0.dev.util.FileUtils;
+import agt0.dev.util.JavaUtils;
 import agt0.dev.util.SourceUtils;
+import agt0.dev.util.SourceUtils.TypeVisitor;
 import agt0.dev.util.ds.TemplateInputStream;
 
 public class AgentZeroProject {
@@ -502,5 +514,31 @@ public class AgentZeroProject {
 		
 		return ret;
 	}
+	
+	/**
+	 * this method is very heavy and required new process execution each time it is called 
+	 * so cache its result if you want to reuse it.
+	 * @return
+	 */
+	public List<ScannedCodeUnit> findCodeUnits(){
+		AntRunner runner = new AntRunner();
+		runner.setBuildFileLocation(SharedDataUnit.UNIT.getCodeAnalyzerAntScript().getAbsolutePath());
+		runner.addUserProperties(JavaUtils.assoc(new HashMap<String,String>(), "local.code", getRootDirectory().getAbsolutePath() + "/bin", "azlib", SharedDataUnit.AZ_WORKSPACE_PATH + "/lib"));
+		runner.setArguments("-Dmessage=Building -verbose");
+		try {
+			runner.run(null);
+
+		FileInputStream fis = new FileInputStream(new File(SharedDataUnit.UNIT.getCodeAnalyzerBaseFolder().getAbsolutePath() + "/out.txt"));
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        List<ScannedCodeUnit> res = (List<ScannedCodeUnit>) ois.readObject();
+        System.out.println("result of size: " + res.size());
+        return res;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new LinkedList<ScannedCodeUnit>();
+		}
+		
+	}	
 
 }

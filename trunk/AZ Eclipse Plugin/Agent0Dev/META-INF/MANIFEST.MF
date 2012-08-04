@@ -27,7 +27,8 @@ Import-Package: org.eclipse.ant.core,
  org.eclipse.ui.views.navigator
 Bundle-ClassPath: .,
  lib/xom-1.2.7.jar,
- swing2swt.jar
+ swing2swt.jar,
+ lib/AZExtCodeAnalyzer.jar
 Export-Package: agt0.dev,
  agt0.dev.actions,
  agt0.dev.cmd,

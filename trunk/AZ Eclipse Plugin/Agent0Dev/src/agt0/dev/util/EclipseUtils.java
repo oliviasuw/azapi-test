@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
@@ -37,6 +38,7 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.part.FileEditorInput;
 
 import agt0.dev.Activator;
+import agt0.dev.project.AgentZeroProject;
 
 public class EclipseUtils {
 	/**
@@ -254,6 +256,24 @@ public class EclipseUtils {
 		}
 		
 		return null;
+	}
+	
+	public static AgentZeroProject getActiveAgentZeroProject(){
+		IJavaProject p = getActiveJavaProject();
+		if (p == null) return null;
+		return new AgentZeroProject(p);
+	}
+
+	public static void showError(final String msg) {
+		doInUiThread(new UIRunnable() {
+			
+			@Override
+			public void run(IWorkbenchWindow window) {
+				ErrorDialog ediag = new ErrorDialog(window.getShell(), "ERROR", msg, null, 0);
+				ediag.open();
+			}
+		}, false);
+		
 	}
 
 }

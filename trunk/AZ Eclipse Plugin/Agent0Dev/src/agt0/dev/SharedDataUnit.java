@@ -1,12 +1,15 @@
 package agt0.dev;
 
+import static agt0.dev.util.PlatformUtils.resource;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
+import java.util.HashMap;
 
 import agt0.dev.util.EclipseUtils;
 import agt0.dev.util.FileUtils;
+import agt0.dev.util.ds.TemplateInputStream;
 
 /**
  * this called the shared unit cause it is shared between projects
@@ -16,7 +19,7 @@ import agt0.dev.util.FileUtils;
 public enum SharedDataUnit {
 	UNIT;
 	
-	private static final String AZ_WORKSPACE_PATH = EclipseUtils
+	public static final String AZ_WORKSPACE_PATH = EclipseUtils
 			.getWorkspaceDirectory().getAbsolutePath() + "/.az";
 	
 	private static final String LIBRARY_PATH = AZ_WORKSPACE_PATH + "/lib";
@@ -93,5 +96,27 @@ public enum SharedDataUnit {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public File getCodeAnalyzerBaseFolder(){
+		File base = new File(AZ_WORKSPACE_PATH + "/canlz");
+		if (!base.exists()){
+			base.mkdirs();
+		}
+		
+		return base;
+	}
+	
+	public File getCodeAnalyzerAntScript(){
+		File where = new File(getCodeAnalyzerBaseFolder().getAbsolutePath() + "/run.xml");
+		if (where.exists()) return where;
+		try {
+			FileUtils.dump(resource("templates/CODE_ANALYZER_BUILD_XML"), where);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return where;
 	}
 }

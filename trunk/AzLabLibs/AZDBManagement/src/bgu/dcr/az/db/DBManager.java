@@ -20,7 +20,7 @@ public class DBManager {
 
     private static String TESTING_DB_URL = "objectdb:/az/azlab.tmp;drop";
     private static String DB_URL = "objectdb:/az/azlab.odb;";
-    private static String DB_SERVER_URL = "objectdb://localhost:6136/azlab.tmp;drop";
+    private static String DB_SERVER_URL = "objectdb://localhost:6136/azlab.tmp;";
     private EntityManagerFactory emf;
 
     public DBManager() {

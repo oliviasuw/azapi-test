@@ -28,9 +28,9 @@ public class Code implements Serializable {
     @GeneratedValue
     long id = 0;
     private CodeType type;
-    private List<File> dependencies;
+    private List<String> dependencies;
     private String name;
-    private File locationOnDisk;
+    private String locationOnDisk;
     private String description;
     private int numberOfDownloads;
     private boolean safe;
@@ -42,7 +42,7 @@ public class Code implements Serializable {
 
     public Code() {
         comments = new LinkedList<Comment>();
-        dependencies = new LinkedList<File>();
+        dependencies = new LinkedList<String>();
         numberOfDownloads = 0;
         safe = false;
         rating = 0;
@@ -80,7 +80,7 @@ public class Code implements Serializable {
         return rating;
     }
 
-    public void setDependencies(List<File> dependencies) {
+    public void setDependencies(List<String> dependencies) {
         this.dependencies = dependencies;
     }
 
@@ -88,7 +88,7 @@ public class Code implements Serializable {
         this.name = name;
     }
 
-    public void setLocationOnDisk(File locationOnDisk) {
+    public void setLocationOnDisk(String locationOnDisk) {
         this.locationOnDisk = locationOnDisk;
     }
 
@@ -116,7 +116,7 @@ public class Code implements Serializable {
         return id;
     }
 
-    public List<File> getDependencies() {
+    public List<String> getDependencies() {
         return dependencies;
     }
 
@@ -124,7 +124,7 @@ public class Code implements Serializable {
         return name;
     }
 
-    public File getLocationOnDisk() {
+    public String getLocationOnDisk() {
         return locationOnDisk;
     }
 
@@ -164,4 +164,10 @@ public class Code implements Serializable {
         }
         variables.add(var);
     }
+
+    @Override
+    public String toString() {
+        return "Code{" + "id=" + id + ", type=" + type + ", dependencies=" + dependencies + ", name=" + name + ", locationOnDisk=" + locationOnDisk + ", description=" + description + ", numberOfDownloads=" + numberOfDownloads + ", safe=" + safe + ", author=" + author + ", registeredName=" + registeredName + ", variables=" + variables + ", comments=" + comments + ", rating=" + rating + '}';
+    }
+
 }

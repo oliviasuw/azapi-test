@@ -52,7 +52,7 @@ public class AZExtCodeAnalyzer {
     //the first argument is the basedir. 
     //it should include the src and the lib folders.
     public static void main(String[] args) throws FileNotFoundException, IOException {
-        String baseFolder = (args.length > 0? args[0]: ".");
+        String baseFolder = (args.length > 0 ? args[0] : ".");
         File out = new File(baseFolder + "/out.txt");
         System.out.println("writing results to: " + out.getAbsolutePath());
 
@@ -79,6 +79,8 @@ public class AZExtCodeAnalyzer {
                 if (c == null) {
                     System.out.println("problem reading class " + sc);
                 } else {
+                    System.out.println("Scanning class: " + c.getCanonicalName());
+
                     ScannedCodeUnit code = new ScannedCodeUnit();
 
                     //set code type
@@ -128,13 +130,17 @@ public class AZExtCodeAnalyzer {
                     } else {
                         code.registeredName = c.getSimpleName();
                     }
-                    
+
                     //scan description
-                    JavaDocBuilder jdocb = new JavaDocBuilder();
-                    jdocb.addSource(code.locationOnDisk);
-                    code.description = jdocb.getSources()[0].getClasses()[0].getComment();
-                    
-                    results.add(code);
+                    try {
+                        JavaDocBuilder jdocb = new JavaDocBuilder();
+                        jdocb.addSource(code.locationOnDisk);
+                        code.description = jdocb.getSources()[0].getClasses()[0].getComment();
+
+                        results.add(code);
+                    } catch (Exception ex) {
+                        System.err.println("cannot parse class: " + c.getCanonicalName());
+                    }
                 }
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(AZExtCodeAnalyzer.class.getName()).log(Level.SEVERE, null, ex);

@@ -66,10 +66,12 @@ public class Profile implements Serializable {
     
     public void doneEditing(){
         edit = false;
+        db.update(login.getUser());
     }
 
     private void fillClasses() {
         List<Code> content = login.getUser().getAllUploadedCodes(db);
+        this.codes = new Code[content.size()];
         int i = 0;
         for (Code c : content) {
             codes[i++] = c;

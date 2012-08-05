@@ -9,6 +9,17 @@ body{
     background-repeat: repeat;
 }
 
+.page-title {
+    font-style: italic;
+    font-size: 32px;
+    letter-spacing: -1px;
+    border: 0;
+    vertical-align: baseline;
+    color: #293A43;
+    font-family: lemonde-courrier, Georgia, serif;
+    margin-left: 5px;
+}
+
 a {
     text-decoration: none;
 }
@@ -70,6 +81,9 @@ a:hover {
 
 .ui-button-text{
     /*padding: 0 !important;*/   
+    font-size: 12px !important;
+    color: rgb(50,50,70);
+    /*margin-left: 7px;*/
 }
 
 /* TwoPartsText related*/

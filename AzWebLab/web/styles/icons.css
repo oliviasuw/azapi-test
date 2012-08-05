@@ -1,0 +1,11 @@
+.ui-button-text-icon-left .ui-button-text { 
+    padding: .2em .5em .2em 1.8em;
+    /*margin-left: 0px;*/
+}
+
+
+.add-test-icon{
+    background-image: url("/Az/images/icons/add-test.png") !important;
+    height: 16px !important;
+    width: 16px !important;
+}

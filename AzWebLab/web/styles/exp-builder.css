@@ -1,0 +1,155 @@
+.exp-builder{
+    width: 80%;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    /*padding-bottom: 30px;*/
+    background-color: white;
+    border: 1px rgb(192,192,192) solid;
+    text-align: left;
+    padding: 10px;
+}
+
+.exp-builder-test {
+    margin: 4px;
+}
+
+.exp-builder-title{
+    padding: 10px;
+    font-style: italic;
+    font-size: 27px;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+    border: 0;
+    vertical-align: baseline;
+    color: #293A43;
+    font-family: lemonde-courrier, Georgia, serif;
+    line-height: 24px;
+    text-align: justify;
+}
+
+.exp-builder-tests .ui-scrollpanel-hbar .ui-widget-header .ui-corner-bottom {
+    display: none !important;
+    height: 0px !important;
+}
+
+.exp-builder .exp-builder-left{
+    height: 100%;
+    width: 2%;
+    border-right: black 1px solid;
+    padding: 5px;
+    padding-right: 15px;
+    vertical-align: top;
+}
+
+
+.exp-builder .exp-builder-tests{
+    height:90px;
+    margin-bottom: 5px;
+    width: 100px;
+    padding-top: 10px;
+}
+
+
+.exp-builder .exp-builder-tests-title{
+    text-align: justify;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 17px;
+    color: rgb(102,102,102);
+    letter-spacing: normal;
+    padding-left: 10px;
+}
+
+.exp-builder .exp-builder-tests-buttons{
+    padding-left: 5px;
+    padding-top: 5px;
+}
+
+.exp-builder .exp-builder-tests-buttons .ui-state-default, 
+.exp-builder .exp-builder-tests-buttons .ui-widget-content, 
+.exp-builder .exp-builder-tests-buttons .ui-state-default, 
+.exp-builder .exp-builder-tests-buttons .ui-widget-header, 
+.exp-builder .exp-builder-tests-buttons .ui-state-default {
+    border: 1px solid #93C3CD;
+    background: #93C3CD url("/Az/faces/images/ui-bg_diagonals-small_50_93c3cd_40x40.png") 50% 50% repeat;
+    font-weight: normal;
+    color: rgb(240,240,240);
+}
+/*
+.exp-builder .exp-builder-right .ui-widget-content .ui-dt-c{
+    height: 270px;
+}*/
+
+.exp-builder .exp-builder-right{
+    height: 100%;
+    width: 20%;
+    padding: 6px;
+    vertical-align: top;
+}
+
+.ui-accordion .ui-accordion-content {
+    padding: 1.5em 1.5em;
+}
+
+.exp-builder .ui-datatable{
+    width: 80%;
+    padding-bottom: 7px;
+}
+
+.exp-builder .exp-builder-table ui-widget{
+    padding-bottom: 10px;
+}
+
+.exp-builder  .ui-state-highlight, 
+.exp-builder  .ui-widget-content 
+.exp-builder  .ui-state-highlight,
+.exp-builder  .ui-widget-header 
+.exp-builder  .ui-state-highlight {
+    border: 1px solid #93C3CD;
+    background: #FFEB80 url("/Az/faces/images/ui-bg_diagonals-small_50_93c3cd_40x40.png") 50% bottom repeat-x;
+    color: #363636;
+}
+
+.exp-builder .exp-builder-right .ui-cell-editor{
+    width: 10px;
+}
+
+.exp-builder .exp-builder-right .ui-datatable th div.ui-dt-c,
+/*.exp-builder .exp-builder-right .ui-datatable .ui-datatable-data td div.ui-dt-c,*/
+/*.exp-builder .exp-builder-right .ui-datatable .ui-datatable-data-empty td div.ui-dt-c,*/
+.exp-builder .exp-builder-right .ui-datatable tfoot td div.ui-dt-c {
+    padding: 3px 1px 3px 10px;
+}
+
+.exp-builder-add-test{
+    /*width: 100px;*/
+}
+
+.exp-builder .exp-builder-right .ui-inputfield {
+    padding: 2px;
+}
+
+.exp-builder .ui-button-text-only .ui-button-text {
+    padding: .2em 0.5em;
+}
+
+.exp-builder .exp-builder-accordion .ui-state-default,
+.exp-builder .exp-builder-accordion .ui-widget-content .ui-state-default,
+.exp-builder .exp-builder-accordion .ui-widget-header .ui-state-default {
+    background: url("/Az/faces/images/header-bg.png") 50% bottom repeat-x;
+    border: #ccc 1px solid;
+}
+
+.exp-builder .exp-builder-accordion{
+    border-right: black 1px solid;
+    padding: 5px;
+    width: 60%;
+    vertical-align: top;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.exp-builder .ui-accordion-header a{
+    color:black;
+}

@@ -26,6 +26,7 @@ public class FileUtils {
     public static void copy(String source, String destination) throws FileNotFoundException, IOException {
         File s = new File(source);
         File d = new File(destination);
+        d.getParentFile().mkdirs();
 
         FileReader frs = new FileReader(s);
         FileWriter fwd = new FileWriter(d);

@@ -31,14 +31,14 @@ public class Register {
 
     public String handleRegister() {
         if (validateDetails()) {
-            User u = new User(email, name, password, "no description entered yet...", UserRole.UNAUTHORIZED);
             try {
+            User u = new User(email, name, password, "no description entered yet...", UserRole.UNAUTHORIZED);
                 db.save(u);
             } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "email already exists, please try again!", ""));
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Email already exists, please try again!", ""));
             return null;
             }
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sample info message", "PrimeFaces rocks!"));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Registered Succesfully!", ""));
             return "user-login?faces-redirect=true";
         } else {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Wrong details, please try again!", ""));

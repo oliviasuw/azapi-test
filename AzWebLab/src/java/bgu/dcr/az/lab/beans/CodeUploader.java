@@ -117,6 +117,7 @@ public class CodeUploader {
 //                User uploader = new User("email", "nick", "pass", "desc", UserRole.DCR);
 
                 this.sp = new SourcePackage(packageZip, fs, uploader);
+                System.out.println("package files: " + sp.getCodeInPackage());
                 fillUserCodesFromSourcePackage();
 
 

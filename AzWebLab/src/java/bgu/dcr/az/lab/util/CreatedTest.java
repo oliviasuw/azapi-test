@@ -27,18 +27,14 @@ public class CreatedTest {
     private List<Code> correctnessTesters;
     private List<Code> limiters;
     private List<VariableDecleration> variables;
+    private String type;
 
-    public CreatedTest() {
+    public CreatedTest(String name, String type) {
         id = counter++;
-        this.name = "Test" + id;
-        this.agents = new LinkedList<Code>();
-        this.statisticCollectors = new LinkedList<Code>();
-        this.test = new Code();
-        this.test.setType(CodeType.TEST);
-        this.test.addVariable(new VariableDecleration("Name","",name,""));
-    }
-
-    public CreatedTest(String name) {
+        if (name.equals("")) {
+            name = "Test" + id;
+        }
+        this.type = type;
         this.name = name;
         this.agents = new LinkedList<Code>();
         this.statisticCollectors = new LinkedList<Code>();
@@ -52,6 +48,32 @@ public class CreatedTest {
         this.test = test;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setProblemGenerators(List<Code> problemGenerators) {
+        this.problemGenerators = problemGenerators;
+    }
+
+    public void setMessageDelayers(List<Code> messageDelayers) {
+        this.messageDelayers = messageDelayers;
+    }
+
+    public void setCorrectnessTesters(List<Code> correctnessTesters) {
+        this.correctnessTesters = correctnessTesters;
+    }
+
+    public void setLimiters(List<Code> limiters) {
+        this.limiters = limiters;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    
+    
     public Code getTest() {
         return test;
     }

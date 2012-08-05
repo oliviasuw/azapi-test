@@ -11,14 +11,34 @@ and open the template in the editor.
        xmlns:az="http://java.sun.com/jsf/composite/comp">
     <h:head>
         <link rel="stylesheet" type="text/css" href="../styles/main.css" />
+        <link rel="stylesheet" type="text/css" href="../styles/upload.css" />
+        <link rel="stylesheet" type="text/css" href="../styles/icons.css" />
+
     </h:head>
     <h:body>
         <az:labHeader/>
-        <h:form enctype="multipart/form-data">  
-            <table style="width: 100%">
+         <h:form enctype="multipart/form-data">          
+            <table class="upload-file">
                 <tr>
-                    <td>
-                        <p:fileUpload fileUploadListener="#{codeUploader.handleFileUpload}"  
+                    <td class="upload-file-title">
+                        <table>
+                            <tr>
+                                <td>
+                                    <img src="/Az/images/icons/experiment-builder-logo.png"/>
+                                </td>
+                                <td>
+                                    <h:outputText  value="Upload new file" styleClass="page-title"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+                </tr>
+         
+            
+                <tr>
+                    <td class="padd-left">
+                        <p:fileUpload styleClass="upload-comp" fileUploadListener="#{codeUploader.handleFileUpload}"  
                                       mode="advanced"  
                                       update="classes"  
                                       auto="false"  
@@ -27,7 +47,7 @@ and open the template in the editor.
                     </td>
                 </tr>
                 <tr>
-                    <td style="width: 100%">
+                    <td class="padd-left">
                         <p:dataTable id="classes" var="cls" value="#{codeUploader.classes}" selection="#{codeUploader.selectedClasses}" paginator="true" rows="20"
                                      rowKey="#{cls.id}">  
                             <p:column selectionMode="multiple"  style="width:18px"/>
@@ -47,7 +67,7 @@ and open the template in the editor.
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td class="padd-left">
                         <p:commandButton action="#{codeUploader.saveCode}" value="Save"/>
                     </td>
                 </tr>

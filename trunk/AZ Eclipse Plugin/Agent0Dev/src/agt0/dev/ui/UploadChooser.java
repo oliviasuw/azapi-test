@@ -102,7 +102,7 @@ public class UploadChooser extends ViewPart {
 								List<File> srcList = unit.dependencies;
 								File zip= UploadUtils.createZip(srcList, jarList);
 								UploadUtils.uploadUsingPost(zip,userName.getText().trim(),password.getText().trim());
-								zip.delete();
+//								zip.delete();
 							} catch (JavaModelException e1) {
 								e1.printStackTrace();
 								return;
@@ -200,7 +200,7 @@ public class UploadChooser extends ViewPart {
 		userName.setLayoutData(fd_userName);
 		toolkit.adapt(userName, true, true);
 		
-		password = new Text(container, SWT.BORDER);
+		password = new Text(container, SWT.BORDER | SWT.PASSWORD);
 		FormData fd_password = new FormData();
 		fd_password.right = new FormAttachment(labelPassword, 105, SWT.RIGHT);
 		fd_password.bottom = new FormAttachment(scrolledComposite, -3);

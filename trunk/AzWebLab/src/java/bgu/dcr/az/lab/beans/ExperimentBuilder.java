@@ -9,11 +9,13 @@ import bgu.dcr.az.db.ent.Code;
 import bgu.dcr.az.db.ent.CodeType;
 import bgu.dcr.az.lab.util.CreatedTest;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
+import org.primefaces.event.SelectEvent;
 
 /**
  *
@@ -54,10 +56,18 @@ public class ExperimentBuilder {
     public void updateCurrentTest(CreatedTest test) {
         currentTest = test;
         selectedCode = test.getTest();
+        System.out.println("selected Test is" + test);
+        System.out.println("selected Tests agents are" + test.getAgents());
     }
 
-    public void addNewTest() {
-        CreatedTest test = new CreatedTest();
+    public void addNewSyncTest() {
+        CreatedTest test = new CreatedTest("", "Sync");
+        tests.add(test);
+        updateCurrentTest(test);
+    }
+    
+    public void addNewAsyncTest() {
+        CreatedTest test = new CreatedTest("", "Async");
         tests.add(test);
         updateCurrentTest(test);
     }
@@ -66,11 +76,13 @@ public class ExperimentBuilder {
         if (selectedCode == null) {
             selectedCode = new Code();
         }
+        System.out.println("selected Code is" + selectedCode.getName());
         return selectedCode;
     }
 
     public void setSelectedCode(Code selectedCode) {
         this.selectedCode = selectedCode;
+        System.out.println("selected Code is" + selectedCode.getName());
     }
 
     public DBManager getDb() {
@@ -104,9 +116,9 @@ public class ExperimentBuilder {
     public List<CreatedTest> getTests() {
         if (tests == null) {
             tests = new LinkedList<CreatedTest>();
-            tests.add(new CreatedTest("Inna"));
-            tests.add(new CreatedTest("Dima"));
-            tests.add(new CreatedTest("Benny"));
+            tests.add(new CreatedTest("Inna", "Sync"));
+            tests.add(new CreatedTest("Dima", "Async"));
+            tests.add(new CreatedTest("Benny", "Sync"));
         }
         return tests;
     }
@@ -148,7 +160,13 @@ public class ExperimentBuilder {
     }
 
     public void saveAgents() {
+        System.out.println("test " + currentTest.getName() + "before saving agents: " + currentTest.getAgents());
+        
         this.currentTest.getAgents().addAll(Arrays.asList(selectedAgentsFromAll));
+        HashSet<Code> temp  = new HashSet<Code>(this.currentTest.getAgents());
+        this.currentTest.setAgents(new LinkedList<Code>(temp));
+        
+        System.out.println("test " + currentTest.getName() + "before saving agents: " + currentTest.getAgents());
         clean(selectedAgentsFromAll);
     }
 
@@ -281,7 +299,7 @@ public class ExperimentBuilder {
 
     public CreatedTest getCurrentTest() {
         if (currentTest == null) {
-            currentTest = new CreatedTest();
+            currentTest = new CreatedTest("", "Sync");
         }
         return currentTest;
     }
@@ -390,5 +408,18 @@ public class ExperimentBuilder {
 
     public void setCurrentTest(CreatedTest currentTest) {
         this.currentTest = currentTest;
+        this.selectedCode = this.currentTest.getTest();
+    }
+
+    public void onRowSelect(SelectEvent event) {
+        System.out.println("got selection event, object is " + event.getObject());
+        if (event.getObject() instanceof Code) {
+            Code code = (Code) event.getObject();
+            setSelectedCode(code);
+        } else if (event.getObject() instanceof CreatedTest) {
+            CreatedTest test = (CreatedTest) event.getObject();
+            setSelectedCode(test.getTest());
+            currentTest = test;
+        }
     }
 }

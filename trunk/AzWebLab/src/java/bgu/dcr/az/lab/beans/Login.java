@@ -7,9 +7,11 @@ package bgu.dcr.az.lab.beans;
 import bgu.dcr.az.db.DBManager;
 import bgu.dcr.az.db.ent.User;
 import bgu.dcr.az.lab.util.FacesUtil;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 
 /**
  *
@@ -62,9 +64,19 @@ public class Login {
     }
     
     public String tryLogin(){
+        try{
         user = User.getByEmail(this.email, db);
+        
         if (user == null){
-            FacesUtil.showError("no such user!");
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "No user found with this email, please try again!", ""));
+            return null;
+        }
+        if (!password.equals(user.getPassword())){
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Wrong password, please try again!", ""));
+            return null;
+        }
+        }catch(Exception e){
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Cannot connect to the server, please try again later", ""));
             return null;
         }
         

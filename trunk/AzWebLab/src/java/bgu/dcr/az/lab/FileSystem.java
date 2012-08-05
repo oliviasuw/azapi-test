@@ -30,17 +30,17 @@ public class FileSystem {
         return f;
     }
 
-    public File getUserLibFolder(User u) throws UnRecognizedUserException{
-        File f = new File (getUserFolder(u).getAbsolutePath() + "/lib");
+    public File getUserLibFolder(User u) throws UnRecognizedUserException {
+        File f = new File(getUserFolder(u).getAbsolutePath() + "/lib");
         f.mkdirs();
         return f;
     }
-    
-    public File makeUserReandomFolder(User u) throws UnRecognizedUserException{
+
+    public File makeUserReandomFolder(User u) throws UnRecognizedUserException {
         return makeRandomFolderAt(getUserFolder(u));
     }
-    
-    private File makeRandomFolderAt(String from){
+
+    private File makeRandomFolderAt(String from) {
         while (true) {
             File f = new File(from + "/" + Math.random());
             if (!f.exists()) {
@@ -50,8 +50,8 @@ public class FileSystem {
             }
         }
     }
-    
-    private File makeRandomFolderAt(File from){
+
+    private File makeRandomFolderAt(File from) {
         while (true) {
             File f = new File(from.getAbsolutePath() + "/" + Math.random());
             if (!f.exists()) {
@@ -60,9 +60,7 @@ public class FileSystem {
             }
         }
     }
-    
-    
-    
+
     public File getTemporaryFolder() {
         return makeRandomFolderAt(BASE_FOLDER + "/tmp/");
     }
@@ -94,6 +92,10 @@ public class FileSystem {
 
     public File getSourceAnalyzerAntScript() {
         return new File(getSourceAnalyzerFolderPath() + "/package.xml");
+    }
+
+    public File getInitialSourceAnalyzerAntScript() {
+        return new File(getSourceAnalyzerFolderPath() + "/initial-package.xml");
     }
 
     public File getTestDataFolder() {

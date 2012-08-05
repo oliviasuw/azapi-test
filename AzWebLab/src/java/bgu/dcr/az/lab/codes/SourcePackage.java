@@ -38,8 +38,12 @@ public class SourcePackage {
     User user;
 
     public SourcePackage(File packageZip, FileSystem fs, User uploader) throws PackageReadFailedException {
+        this(fs.getSourceAnalyzerAntScript(), packageZip, fs, uploader);
+    }
+
+    public SourcePackage(File antScript, File packageZip, FileSystem fs, User uploader) throws PackageReadFailedException {
         this.fs = fs;
-        this.location = packageZip.getParentFile();
+        this.location = packageZip.getAbsoluteFile().getParentFile();
         System.out.println("Location is: " + location.getAbsolutePath());
         this.user = uploader;
         Project p = new Project();
@@ -52,7 +56,7 @@ public class SourcePackage {
         p.init();
         ProjectHelper helper = ProjectHelper.getProjectHelper();
         p.addReference("ant.projectHelper", helper);
-        helper.parse(p, fs.getSourceAnalyzerAntScript());
+        helper.parse(p, antScript);
         p.executeTarget(p.getDefaultTarget());
         ObjectInputStream ois = null;
 
@@ -150,6 +154,13 @@ public class SourcePackage {
                 newDependencies.add(to);
             }
         }
+
+        //TODO: update the location on disk of the code
+        String preffix = userPackageFolder.getAbsolutePath();
+        String suffix = c.getLocationOnDisk().substring(location.getAbsolutePath().length());
+        String to = preffix + "/" + suffix;
+
+        c.setLocationOnDisk(to);
         c.setDependencies(newDependencies);
     }
 

@@ -5,7 +5,7 @@
 
 <!-- PROPERTIES -->
 	<property name="iter.url" value="http://azapi-test.googlecode.com/svn/trunk/bin/iteration" />
-	<property name="ext.version" value="i4.1" />
+	<property name="ext.version" value="i4.2" />
 
 	<property name="temp.dir" value="temp"/>
 	<property name="lib.dir" value="lib"/>

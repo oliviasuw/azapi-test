@@ -55,8 +55,8 @@ public class UploadUtils {
 			srcFolder.mkdir();
 		for (File file : src) {
 			String filePath = file.getPath().substring(1);
-			FileUtils.copy(path + filePath, srcFolder.getAbsolutePath() + "\\"
-					+ file.getName());
+			FileUtils.copy(path + filePath, srcFolder.getAbsolutePath()
+					+ file.getPath().substring(5));
 		}
 		File libFolder = new File(zipFolder, "lib");
 		if (!libFolder.exists())
@@ -68,15 +68,7 @@ public class UploadUtils {
 		File zipFile = new File(tempFolder, "export.zip");
 		if (!libFolder.exists())
 			libFolder.mkdir();
-
-		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
-		byte[] tmpBuf = new byte[1024];
-		out.putNextEntry(new ZipEntry("lib\\"));
-		out.putNextEntry(new ZipEntry("src\\"));
-		out.closeEntry();
-		writeTozip(libFolder, out);
-		writeTozip(srcFolder, out);
-		out.close();
+		zipFolder(srcFolder.getAbsolutePath(),libFolder.getAbsolutePath(),zipFile.getAbsolutePath());
 		FileUtils.delete(libFolder);
 		FileUtils.delete(srcFolder);
 		FileUtils.delete(zipFolder);
@@ -84,22 +76,123 @@ public class UploadUtils {
 
 	}
 
-	private static void writeTozip(File srcFolder, ZipOutputStream out)
-			throws FileNotFoundException, IOException {
-		String path = srcFolder.getName() + "\\";
-		byte[] tmpBuf = new byte[1024];
-		for (File file : srcFolder.listFiles()) {
-			FileInputStream in = new FileInputStream(file.getAbsolutePath());
-			System.out.println(" Adding: " + path + file.getName());
-			out.putNextEntry(new ZipEntry(path + file.getName()));
-			int len;
-			while ((len = in.read(tmpBuf)) > 0) {
-				out.write(tmpBuf, 0, len);
-			}
-			out.closeEntry();
-			in.close();
-		}
-	}
+	static public void zipFolder(String srcFolder,String libFolder , String destZipFile) throws Exception {
+        ZipOutputStream zip = null;
+        FileOutputStream fileWriter = null;
+
+        fileWriter = new FileOutputStream(destZipFile);
+        zip = new ZipOutputStream(fileWriter);
+
+        addFolderToZip("", srcFolder, zip);
+        addFolderToZip("", libFolder, zip);
+        zip.flush();
+        zip.close();
+    }
+
+    static private void addFileToZip(String path, String srcFile, ZipOutputStream zip)
+            throws Exception {
+
+        File folder = new File(srcFile);
+        if (folder.isDirectory()) {
+            addFolderToZip(path, srcFile, zip);
+        } else {
+            byte[] buf = new byte[1024];
+            int len;
+            //srcFile = srcFile.substring(5);
+            System.out.println(path + " " + srcFile);
+            FileInputStream in = new FileInputStream(srcFile);
+            zip.putNextEntry(new ZipEntry(path + "/" + folder.getName()));
+            while ((len = in.read(buf)) > 0) {
+                zip.write(buf, 0, len);
+            }
+        }
+    }
+
+    static private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip)
+            throws Exception {
+        File folder = new File(srcFolder);
+
+        for (String fileName : folder.list()) {
+            System.out.println(fileName);
+            if (path.equals("")) {
+                addFileToZip(folder.getName(), srcFolder + "/" + fileName, zip);
+            } else {
+                addFileToZip(path + "/" + folder.getName(), srcFolder + "/" + fileName, zip);
+            }
+        }
+    }
+
+	
+	
+	
+//	private static void writeTozip(File srcFolder, ZipOutputStream out)
+//			throws FileNotFoundException, IOException {
+//		String path = srcFolder.getName() + "\\";
+//		byte[] tmpBuf = new byte[1024];
+//		for (File file : srcFolder.listFiles()) {
+//			FileInputStream in = new FileInputStream(file.getAbsolutePath());
+//			System.out.println(" Adding: " + path + file.getName());
+//			out.putNextEntry(new ZipEntry(path + file.getName()));
+//			int len;
+//			while ((len = in.read(tmpBuf)) > 0) {
+//				out.write(tmpBuf, 0, len);
+//			}
+//			out.closeEntry();
+//			in.close();
+//		}
+//	}
+//
+//	public static void zipDir(File dirPath, ZipOutputStream zos) {
+//		try {
+//			// create a ZipOutputStream to zip the data to
+//			
+//			// assuming that there is a directory named inFolder (If there
+//			// isn't create one) in the same directory as the one the code
+//			// runs from,
+//			// call the zipDir method
+//			zipDir(dirPath,"", zos);
+//			// close the stream
+//			zos.close();
+//		} catch (Exception e) {
+//			// handle exception
+//		}
+//		// here is the code for the method
+//	}
+//
+//	public static void zipDir(File dir2zip,String inZip, ZipOutputStream zos) {
+//		try {
+//			File[] fileList = dir2zip.listFiles();
+//			// loop through dirList, and zip the files
+//			for (int i = 0; i < fileList.length; i++) {
+//				if (fileList[i].isDirectory()) {
+//					ZipEntry anEntry = new ZipEntry(inZip+fileList[i].getName());
+//					zos.putNextEntry(anEntry);
+//					zipDir(fileList[i],inZip+"\\"+fileList[i].getName(), zos);
+//					// loop again
+//					
+//					continue;
+//				}
+//				// if we reached here, the File object f was not
+//				// a directory
+//				// create a FileInputStream on top of f
+//				FileInputStream fis = new FileInputStream(fileList[i]);
+//				// create a new zip entry
+//				ZipEntry anEntry = new ZipEntry(inZip+"\\"+fileList[i].getName());
+//				// place the zip entry in the ZipOutputStream object
+//				zos.putNextEntry(anEntry);
+//				// now write the content of the file to the ZipOutputStream
+//				byte[] readBuffer = new byte[2156];
+//				int bytesIn = 0;
+//				while ((bytesIn = fis.read(readBuffer)) != -1) {
+//					zos.write(readBuffer, 0, bytesIn);
+//				}
+//				// close the Stream
+//				fis.close();
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	public static List<File> coolectJars(IJavaProject project)
 			throws JavaModelException {
@@ -129,8 +222,8 @@ public class UploadUtils {
 		return true;
 	}
 
-	public static void uploadUsingPost(File zip,String user,String password) {
-		HttpClient client=null;
+	public static void uploadUsingPost(File zip, String user, String password) {
+		HttpClient client = null;
 		try {
 			String url = "http://10.0.0.138:8084/Az/file-upload-servlet";
 			client = new DefaultHttpClient();

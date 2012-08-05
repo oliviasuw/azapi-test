@@ -36,13 +36,24 @@
 
 .exp-builder .exp-builder-left{
     height: 100%;
-    width: 2%;
     border-right: black 1px solid;
     padding: 5px;
     padding-right: 15px;
     vertical-align: top;
+    width:20% !important;
 }
 
+.exp-builder .exp-builder-middle{
+    border-right: black 1px solid;
+    width:60%;
+}
+
+.exp-builder .exp-builder-right{
+    height: 100%;
+    width: 20%;
+    padding: 6px;
+    vertical-align: top;
+}
 
 .exp-builder .exp-builder-tests{
     height:90px;
@@ -81,12 +92,6 @@
     height: 270px;
 }*/
 
-.exp-builder .exp-builder-right{
-    height: 100%;
-    width: 20%;
-    padding: 6px;
-    vertical-align: top;
-}
 
 .ui-accordion .ui-accordion-content {
     padding: 1.5em 1.5em;
@@ -99,6 +104,10 @@
 
 .exp-builder .exp-builder-table ui-widget{
     padding-bottom: 10px;
+}
+.exp-builder .exp-builder-table{
+    width: 100%;
+    padding-left: 5px;
 }
 
 .exp-builder  .ui-state-highlight, 
@@ -142,12 +151,10 @@
 }
 
 .exp-builder .exp-builder-accordion{
-    border-right: black 1px solid;
-    padding: 5px;
-    width: 60%;
+    /*padding: 5px;*/
+    width: 95%;
     vertical-align: top;
-    padding-right: 15px;
-    padding-left: 15px;
+    margin: auto;
 }
 
 .exp-builder .ui-accordion-header a{

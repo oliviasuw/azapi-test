@@ -125,9 +125,6 @@
 	      </navigatorContent>
    </extension>
    <extension
-         point="org.eclipse.ui.views">
-   </extension>
-   <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             delegate="agt0.dev.launch.Launcher"
@@ -423,5 +420,25 @@
              library="lib/ant-contrib-0.6.jar">
        </extraClasspathEntry>
     </extension>
+
+
+<extension point="org.eclipse.ui.views">
+     <category 
+           id="org.eclipse.ui.article"
+           name="Article">
+        </category>
+        <view id="org.eclipse.ui.articles.views.wordview"
+                name="Word View"
+                icon="icons\view.gif"
+             category="org.eclipse.ui.article"
+                class="agt0.dev.ui.UploadChooser"/>
+</extension>
+
+<!-- <extension point="org.eclipse.ui.views">
+        <view id="org.eclipse.ui.articles.views.labelview"
+             name="Label View"
+          class="agt0.dev.ui.UploadChooser"
+          icon="icons\view.gif"/>
+</extension> -->
 
 </plugin>

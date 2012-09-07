@@ -1,5 +1,7 @@
-quick fix 4.1
+quick fix 4
 synchronize javadoc
+update libraries
+fix issues regarding running visualizations 
 
 quick fix 3
 added visualization support to the plugin

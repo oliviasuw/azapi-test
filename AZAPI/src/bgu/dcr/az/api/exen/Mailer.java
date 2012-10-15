@@ -37,6 +37,12 @@ public interface Mailer {
      * @param msg
      */
     void broadcast(Message msg, String groupKey);
+    
+    /**
+     * broadcast the given message to all mail groups
+     * @param msg 
+     */
+    void broadcast(Message msg);
 
     /**
      * remove agent with the given id from the registered list, 

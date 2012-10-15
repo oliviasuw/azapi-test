@@ -1,5 +1,6 @@
 package bgu.dcr.az.api.tools;
 
+import bgu.dcr.az.api.prob.ImmutableProblem;
 import bgu.dcr.az.api.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,10 +8,11 @@ import java.util.Map.Entry;
 
 import bgu.dcr.az.api.ds.ImmutableSet;
 import bgu.dcr.az.api.exp.UnassignedVariableException;
+import bgu.dcr.az.api.prob.Problem;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.ConcurrentModificationException;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 /**
  *
@@ -95,64 +97,24 @@ public class Assignment implements Serializable, DeepCopyable {
         return ass;
     }
 
+    public Set<Entry<Integer, Integer>> getAssignments(){
+        return assignment.entrySet();
+    }
+    
     /**
      * @param p
      * @return the cost of this assignment - (increase cc checks)
      */
     public int calcCost(ImmutableProblem p) {
         if (p instanceof Agent.AgentProblem) {
-            if (cachedCost >= 0) {
-                return cachedCost;
+            if (cachedCost < 0) {
+                cachedCost = p.calculateCost(this);;
             }
+            
+            return cachedCost;
+        }else {
+            return ((Problem) p).calculateGlobalCost(this);
         }
-
-        int c = 0;
-        LinkedList<Entry<Integer, Integer>> past = new LinkedList<Entry<Integer, Integer>>();
-        if (p.type() == ProblemType.ADCOP) {
-            if (p instanceof Agent.AgentProblem) {
-                int agent = ((Agent.AgentProblem) p).getAgentId();
-                int value = assignment.get(agent);
-                for (Entry<Integer, Integer> e : assignment.entrySet()) {
-                    int var = e.getKey();
-                    int val = e.getValue();
-                    c += p.getConstraintCost(agent, value, var, val);
-                }
-            } else {
-                for (Entry<Integer, Integer> e : assignment.entrySet()) {
-                    int var = e.getKey();
-                    int val = e.getValue();
-                    c += p.getConstraintCost(var, val);
-
-                    for (Entry<Integer, Integer> pe : past) {
-                        int pvar = pe.getKey();
-                        int pval = pe.getValue();
-
-                        c += p.getConstraintCost(pvar, pval, var, val);
-                        c += p.getConstraintCost(var, val, pvar, pval);
-                    }
-
-                    past.add(e);
-                }
-            }
-        } else {
-            for (Entry<Integer, Integer> e : assignment.entrySet()) {
-                int var = e.getKey();
-                int val = e.getValue();
-                c += p.getConstraintCost(var, val);
-
-                for (Entry<Integer, Integer> pe : past) {
-                    int pvar = pe.getKey();
-                    int pval = pe.getValue();
-
-                    c += p.getConstraintCost(pvar, pval, var, val);
-                }
-                past.add(e);
-            }
-
-        }
-
-        cachedCost = c;
-        return c;
     }
 
     /**

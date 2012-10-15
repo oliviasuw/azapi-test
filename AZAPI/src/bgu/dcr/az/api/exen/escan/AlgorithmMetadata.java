@@ -1,7 +1,7 @@
 package bgu.dcr.az.api.exen.escan;
 
 import bgu.dcr.az.api.Agent;
-import bgu.dcr.az.api.ProblemType;
+import bgu.dcr.az.api.prob.ProblemType;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.exp.InvalidValueException;

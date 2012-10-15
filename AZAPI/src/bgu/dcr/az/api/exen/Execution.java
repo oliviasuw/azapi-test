@@ -7,7 +7,7 @@ package bgu.dcr.az.api.exen;
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Hooks.ReportHook;
 import bgu.dcr.az.api.Hooks.TerminationHook;
-import bgu.dcr.az.api.Problem;
+import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.api.exen.mdef.StatisticCollector;
 import bgu.dcr.az.api.exen.mdef.Limiter;
 import bgu.dcr.az.api.tools.Assignment;
@@ -97,4 +97,9 @@ public interface Execution extends Process {
     
     public Limiter getLimiter();
         
+    /**
+     * @return true if for some reason this execution is interrupted, 
+     * Agent Runners should check the status of the execution interruption allways and if it is true they should never continue executing.
+     */
+    public boolean isInterrupted();
 }

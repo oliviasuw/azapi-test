@@ -2,12 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.api;
+package bgu.dcr.az.api.prob;
 
 import bgu.dcr.az.api.ds.ImmutableSet;
 import bgu.dcr.az.api.tools.Assignment;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -16,6 +15,9 @@ import java.util.Set;
  */
 public interface ImmutableProblem {
     
+    /**
+     * @return the problem type.
+     */
     ProblemType type();
 
     /**
@@ -35,15 +37,22 @@ public interface ImmutableProblem {
      * @return the cost of assigning var1=val1
      */
     int getConstraintCost(int var1, int val1);
+//
+//    /**
+//     * @param var
+//     * @param val
+//     * @param ass
+//     * @return the constraint cost of assigning var=val and X=V for each <X=V> in ass
+//     */
+//    int getConstraintCost(int var, int val, Assignment ass);
 
     /**
-     * @param var
-     * @param val
+     * return the cost of the k-ary constraint represented by the given assignment
      * @param ass
-     * @return the constraint cost of assigning var=val and X=V for each <X=V> in ass
+     * @return 
      */
-    int getConstraintCost(int var, int val, Assignment ass);
-
+    int getConstraintCost(Assignment ass);
+    
     /**
      * return the domain of the given variable
      * @param var
@@ -90,4 +99,12 @@ public interface ImmutableProblem {
      * operation cost: o(d^2)cc
      */
     boolean isConstrained(int var1, int var2);
+    
+    /**
+     * return the cost of the given assignment (taking into consideration all the constraints that apply to it)
+     * @param a
+     * @return 
+     */
+    int calculateCost(Assignment a);
+    
 }

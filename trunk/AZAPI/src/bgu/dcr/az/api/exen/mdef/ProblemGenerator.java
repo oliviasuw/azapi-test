@@ -4,7 +4,7 @@
  */
 package bgu.dcr.az.api.exen.mdef;
 
-import bgu.dcr.az.api.Problem;
+import bgu.dcr.az.api.prob.Problem;
 import java.util.Random;
 
 /**

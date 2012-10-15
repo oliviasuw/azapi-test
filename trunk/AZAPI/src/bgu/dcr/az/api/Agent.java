@@ -1,11 +1,12 @@
 package bgu.dcr.az.api;
 
+import bgu.dcr.az.api.prob.ImmutableProblem;
+import bgu.dcr.az.api.prob.ProblemType;
 import bgu.dcr.az.api.Hooks.AfterMessageProcessingHook;
 import bgu.dcr.az.api.agt.ReportMediator;
 import bgu.dcr.az.api.agt.SendMediator;
 import bgu.dcr.az.api.exen.MessageQueue;
 import bgu.dcr.az.api.Hooks.BeforeCallingFinishHook;
-import bgu.dcr.az.api.Hooks.BeforeMessageSentHook;
 import bgu.dcr.az.api.ano.Algorithm;
 import bgu.dcr.az.api.ano.WhenReceived;
 import bgu.dcr.az.api.ds.ImmutableSet;
@@ -20,7 +21,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +50,9 @@ public abstract class Agent extends Agt0DSL {
      * order for him to re-tick the clock
      */
     public static final String SYS_TICK_MESSAGE = "__TICK__";
+    
+    public static final String SYS_TIMEOUT_MESSAGE = "__TIMEOUT__";
+    
     private int id; //The Agent ID
     private MessageQueue mailbox; //This Agent Mailbox
     private ImmutableProblem prob; // The Agent Local Problem
@@ -61,7 +64,6 @@ public abstract class Agent extends Agt0DSL {
      * this agent
      */
     protected List<Hooks.BeforeMessageProcessingHook> beforeMessageProcessingHooks;
-    
     protected List<Hooks.AfterMessageProcessingHook> afterMessageProcessingHooks;
     /**
      * collection of hooks that will be called before the agent calls finish
@@ -96,12 +98,11 @@ public abstract class Agent extends Agt0DSL {
             }
             this.algorithmName = name;
         }
-        
+
         msgToMethod = new HashMap<String, Method>();
         scanMethods();
     }
-    
-    
+
     /**
      * will scan methods that should handle messages
      */
@@ -114,7 +115,6 @@ public abstract class Agent extends Agt0DSL {
         }
     }
 
-
     public boolean isUsingIdleDetection() {
         return usingIdleDetection;
     }
@@ -123,7 +123,7 @@ public abstract class Agent extends Agt0DSL {
      * @return the number of constraint checks this agent performed
      */
     public long getNumberOfConstraintChecks() {
-        return ((AgentProblem)prob).cc;
+        return ((AgentProblem) prob).cc;
     }
 
     /**
@@ -175,20 +175,19 @@ public abstract class Agent extends Agt0DSL {
         return currentMessage;
     }
 
-
     /**
-     * hook-in to this agent class in the given hook point. hooks are mostly used
-     * for "automatic services/tools" like timestamp etc.
+     * hook-in to this agent class in the given hook point. hooks are mostly
+     * used for "automatic services/tools" like timestamp etc.
      *
      * @param hook
      */
     public void hookIn(Hooks.BeforeMessageProcessingHook hook) {
         beforeMessageProcessingHooks.add(hook);
     }
-    
+
     /**
-     * hook-in to this agent class in the given hook point. hooks are mostly used
-     * for "automatic services/tools/statistics" like timestamp etc.
+     * hook-in to this agent class in the given hook point. hooks are mostly
+     * used for "automatic services/tools/statistics" like timestamp etc.
      *
      * @param hook
      */
@@ -238,29 +237,32 @@ public abstract class Agent extends Agt0DSL {
      *
      * @throws InterruptedException
      */
-    public final void processNextMessage() throws InterruptedException{
+    public final void processNextMessage() throws InterruptedException {
         Message msg = nextMessage(); //will block until there will be messages in the q
-        if (msg == null) return;
-        
+        if (msg == null) {
+            System.out.println("Agent " + getId() + " got null message.");
+            return;
+        }
+
         for (Hooks.BeforeMessageProcessingHook hook : beforeMessageProcessingHooks) {
             hook.hook(this, msg);
         }
-        
+
         msg = beforeMessageProcessing(msg);
         if (msg == null) {
-            for (AfterMessageProcessingHook hook : afterMessageProcessingHooks){
+            for (AfterMessageProcessingHook hook : afterMessageProcessingHooks) {
                 hook.hook(this, msg);
             }
             return; //DUMPING MESSAGE..
         }
-        
+
         Method mtd = msgToMethod.get(msg.getName());
         if (mtd == null) {
             throw new UnsupportedMessageException("no method to handle message: '" + msg.getName() + "' was found (use @WhenReceived on PUBLIC functions only)");
         }
         try {
             mtd.invoke(this, msg.getArgs());
-            for (AfterMessageProcessingHook hook : afterMessageProcessingHooks){
+            for (AfterMessageProcessingHook hook : afterMessageProcessingHooks) {
                 hook.hook(this, msg);
             }
         } catch (IllegalArgumentException e) {
@@ -542,9 +544,10 @@ public abstract class Agent extends Agt0DSL {
     /**
      * sends a new message the message should have a name and any number of
      * arguments the message which will be sent here will be received by an
-     * agent in the method that defines @WhenReceived with the name of the
-     * message (case sensitive!) and the arguments will be inserted to the
-     * parameters of that method
+     * agent in the method that defines
+     *
+     * @WhenReceived with the name of the message (case sensitive!) and the
+     * arguments will be inserted to the parameters of that method
      *
      * usage: send("MESSAGE_NAME", ARG1, ARG2, ..., ARGn).to(OTHER_AGENT_ID)
      *
@@ -590,16 +593,21 @@ public abstract class Agent extends Agt0DSL {
      * message. you should override it as follows:
      * <pre>
      * {@code
-     * @WhenReceived(Agent.SYS_TERMINATION_MESSAGE)
-     *  protected void handleTermination() {
-     *    //your code here...
-     *  }
+     *
+     * @WhenReceived(Agent.SYS_TERMINATION_MESSAGE) protected void
+     * handleTermination() { //your code here... }
      * }
      * </pre>
      *
      */
     @WhenReceived(Agent.SYS_TERMINATION_MESSAGE)
     public void handleTermination() {
+        finish();
+    }
+    
+    @WhenReceived(Agent.SYS_TIMEOUT_MESSAGE)
+    public void handleTimeout() {
+        log("Got Timeout indication message");
         finish();
     }
 
@@ -633,17 +641,19 @@ public abstract class Agent extends Agt0DSL {
         send(SYS_TERMINATION_MESSAGE).toAll(range(0, getNumberOfVariables() - 1));
     }
 
-     /**
-     * you can override this method to perform preprocessing before messages arrive to their functions
-     * you can change the message or even return completly other one - if you will return null 
-     * the message is rejected and dumped.
+    /**
+     * you can override this method to perform preprocessing before messages
+     * arrive to their functions you can change the message or even return
+     * completly other one - if you will return null the message is rejected and
+     * dumped.
+     *
      * @param msg
-     * @return 
+     * @return
      */
     protected Message beforeMessageProcessing(Message msg) {
         return msg;
     }
-    
+
     /**
      * this class contains all the "hidden but public" methods, because the user
      * should extend the agent class all the "platform" operations can be called
@@ -664,14 +674,17 @@ public abstract class Agent extends Agt0DSL {
         private Execution exec; //The Execution That This Agent Is Currently Running Within
 
         /**
-         * @return all the messages names that the algorithm that is represented by this agent can send can send
+         * @return all the messages names that the algorithm that is represented
+         * by this agent can send can send
          */
-        public Set<String> algorithmMessages(){
+        public Set<String> algorithmMessages() {
             return msgToMethod.keySet();
         }
-        
+
         /**
-         * used especially in nested agents - where you want to copy all the hooks into the nested agent.
+         * used especially in nested agents - where you want to copy all the
+         * hooks into the nested agent.
+         *
          * @param b the agent to copy this agent hooks into
          */
         public void copyHooksTo(Agent b) {
@@ -690,18 +703,20 @@ public abstract class Agent extends Agt0DSL {
             this.exec = exec;
             prob = new AgentProblem();
         }
-        
+
         /**
-         * intended for calling from nested agent that actually sharing the same problem with the outer agent
+         * intended for calling from nested agent that actually sharing the same
+         * problem with the outer agent
+         *
          * @param exec
-         * @param prob 
+         * @param prob
          */
-        public void setExecution(Execution exec, ImmutableProblem prob){
+        public void setExecution(Execution exec, ImmutableProblem prob) {
             this.exec = exec;
             Agent.this.prob = prob;
         }
-        
-        public ImmutableProblem getProblem(){
+
+        public ImmutableProblem getProblem() {
             return prob;
         }
 
@@ -797,7 +812,8 @@ public abstract class Agent extends Agt0DSL {
     public class AgentProblem implements ImmutableProblem {
 
         long cc = 0;
-        
+        int[] queryTemp = new int[2];
+
         public int getAgentId() {
             return Agent.this.getId();
         }
@@ -815,24 +831,18 @@ public abstract class Agent extends Agt0DSL {
         @Override
         public int getConstraintCost(int var1, int val1) {
             ++cc;
-            return pops.exec.getGlobalProblem().getConstraintCost(var1, val1);
+            return pops.exec.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1);
         }
 
         @Override
         public int getConstraintCost(int var1, int val1, int var2, int val2) {
             ++cc;
-            return pops.exec.getGlobalProblem().getConstraintCost(var1, val1, var2, val2);
+            return pops.exec.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1, var2, val2);
         }
 
         @Override
         public String toString() {
             return pops.exec.getGlobalProblem().toString();
-        }
-
-        @Override
-        public int getConstraintCost(int var, int val, Assignment ass) {
-            ++cc;
-            return pops.exec.getGlobalProblem().getConstraintCost(var, val, ass);
         }
 
         @Override
@@ -852,6 +862,7 @@ public abstract class Agent extends Agt0DSL {
 
         @Override
         public boolean isConsistent(int var1, int val1, int var2, int val2) {
+            ++cc;
             return pops.exec.getGlobalProblem().isConsistent(var1, val1, var2, val2);
         }
 
@@ -866,6 +877,19 @@ public abstract class Agent extends Agt0DSL {
         @Override
         public ProblemType type() {
             return pops.exec.getGlobalProblem().type();
+        }
+
+        @Override
+        public int getConstraintCost(Assignment ass) {
+            ++cc;
+            return pops.exec.getGlobalProblem().getConstraintCost(getAgentId(), ass);
+        }
+
+        @Override
+        public int calculateCost(Assignment a) {
+            pops.exec.getGlobalProblem().calculateCostAndCountCCs(getAgentId(), a, queryTemp);
+            cc+=queryTemp[1];
+            return queryTemp[0];
         }
     }
 }

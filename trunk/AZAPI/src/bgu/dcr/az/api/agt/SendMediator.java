@@ -1,6 +1,6 @@
 package bgu.dcr.az.api.agt;
 
-import bgu.dcr.az.api.ImmutableProblem;
+import bgu.dcr.az.api.prob.ImmutableProblem;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.exen.Mailer;
 import bgu.dcr.az.api.exp.UnRegisteredAgentException;

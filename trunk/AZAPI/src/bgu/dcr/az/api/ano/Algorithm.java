@@ -4,7 +4,7 @@
  */
 package bgu.dcr.az.api.ano;
 
-import bgu.dcr.az.api.ProblemType;
+import bgu.dcr.az.api.prob.ProblemType;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

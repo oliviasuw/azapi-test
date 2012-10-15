@@ -18,6 +18,11 @@ public interface Experiment extends Process {
     void addTest(Test test);
 
     /**
+     * remove statistic collectors and correctness testers from all the tests in the given experiment
+     */
+    void removeInspectorsFromAllTests();
+    
+    /**
      * @return the number of executions in this experiment
      */
     int getTotalNumberOfExecutions();

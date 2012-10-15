@@ -78,8 +78,9 @@ public abstract class NestableTool {
     }
 
     /**
-     * flag the nested agent to be started it will only start after the current
-     * message handling ends (or if you are using it from within the start
+     * flag the nested agent to be started.
+     * Notice that it will only start after the agent done handling the current message
+     * (or if you are using it from within the start
      * function after it ends)
      *
      * you should use continuations (by calling

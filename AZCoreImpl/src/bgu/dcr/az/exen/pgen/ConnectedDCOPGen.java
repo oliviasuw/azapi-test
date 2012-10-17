@@ -5,7 +5,7 @@
 package bgu.dcr.az.exen.pgen;
 
 import bgu.dcr.az.api.ano.Register;
-import bgu.dcr.az.api.Problem;
+import bgu.dcr.az.api.prob.Problem;
 import java.util.Random;
 
 /**

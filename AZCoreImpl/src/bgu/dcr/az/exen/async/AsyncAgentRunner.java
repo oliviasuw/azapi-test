@@ -87,8 +87,8 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
             try {
                 //PROCESS MESSAGE LOOP
                 try {
-                    while (!currentExecutedAgent.isFinished() && !Thread.currentThread().isInterrupted()) {
-                        performIdleDetection();
+                    while (!currentExecutedAgent.isFinished() && !Thread.currentThread().isInterrupted() && !exec.isInterrupted()) {
+                        awaitNextMessage();
                         
                         //HANDLING NEXT MESSAGE
                         currentExecutedAgent.processNextMessage();
@@ -118,7 +118,7 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
                     currentIdleDetector.notifyAgentIdle();
                 }
                 
-                if (nestedAgents.isEmpty()) {
+                if (nestedAgents.isEmpty() || exec.isInterrupted()) {
                     joinBlock.release();
                     return;
                 } else {
@@ -126,13 +126,13 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
                     this.currentExecutedAgent = this.nestedAgents.removeFirst();
                     updateCurrentIdleDetector();
                     cmed.executeContinuation();
-                    System.out.println("Returning Back to " + currentExecutedAgent.getClass().getSimpleName());
+                    System.out.println("Agent " + getRunningAgentId() + " Returning Back to " + currentExecutedAgent.getClass().getSimpleName());
                 }
             }
         }
     }
 
-    private void performIdleDetection() throws InterruptedException {
+    private void awaitNextMessage() throws InterruptedException {
         if (useIdleDetector && currentExecutedAgent.isUsingIdleDetection()) {
             if (!currentExecutedAgent.hasPendingMessages()) {
                 currentIdleDetector.notifyAgentIdle();

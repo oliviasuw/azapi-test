@@ -8,7 +8,7 @@ import bgu.dcr.az.api.exen.escan.Configuration;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.exen.mdef.MessageDelayer;
 import bgu.dcr.az.api.exen.Execution;
-import bgu.dcr.az.api.Problem;
+import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.api.exen.escan.AlgorithmMetadata;
 import bgu.dcr.az.exen.AbstractTest;
 

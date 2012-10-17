@@ -5,10 +5,10 @@
 package bgu.dcr.az.exen.pgen;
 
 import bgu.dcr.az.api.Agt0DSL;
-import bgu.dcr.az.api.ProblemType;
+import bgu.dcr.az.api.prob.ProblemType;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.ds.ImmutableSet;
-import bgu.dcr.az.api.Problem;
+import bgu.dcr.az.api.prob.Problem;
 import java.util.Random;
 
 /**

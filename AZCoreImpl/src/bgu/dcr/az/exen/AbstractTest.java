@@ -21,14 +21,12 @@ import bgu.dcr.az.api.exen.Experiment;
 import bgu.dcr.az.api.exen.Test;
 import bgu.dcr.az.api.exen.Test.TestResult;
 import bgu.dcr.az.api.exen.mdef.StatisticCollector;
-import bgu.dcr.az.api.Problem;
+import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.api.exen.escan.ConfigurationMetadata;
 import bgu.dcr.az.api.exen.escan.ExternalConfigurationAware;
 import bgu.dcr.az.api.exen.mdef.ProblemGenerator;
 import bgu.dcr.az.api.exen.mdef.Limiter;
-import bgu.dcr.az.exen.async.AsyncTest;
 import bgu.dcr.az.exen.stat.db.DatabaseUnit;
-import bgu.dcr.az.exen.pgen.MapProblem;
 import bgu.dcr.az.exen.stat.AbstractStatisticCollector;
 import bgu.dcr.az.utils.DeepCopyUtil;
 import java.sql.SQLException;
@@ -217,7 +215,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
         ProblemGenerator tpgen = DeepCopyUtil.deepCopy(pgen);
 
         ConfigurationMetadata.bubbleDownVariable(tpgen, runVar, vvar);
-        Problem p = new MapProblem();
+        Problem p = new Problem();
 
         tpgen.generate(p, new Random(problemSeeds.get(number - 1)));
         return p;
@@ -323,7 +321,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
                         limitedProblems.add(getCurrentProblemNumber());
                     }
 
-                    if (res.getState() != State.SUCCESS || Thread.currentThread().isInterrupted()) {
+                    if (res.getFailedClass() != null && ( res.getState() != State.SUCCESS || Thread.currentThread().isInterrupted())) {
                         String algName;
                         if (Agent.class.isAssignableFrom(res.getFailedClass())) {
                             algName = ((Algorithm) res.getFailedClass().getAnnotation(Algorithm.class)).name();
@@ -489,7 +487,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
             currentProblemNumber = num;
             long pseed = problemSeeds.get(num - 1);
             Random nrand = new Random(pseed);
-            MapProblem p = new MapProblem();
+            Problem p = new Problem();
             HashMap<String, Object> metadata = p.getMetadata();
 
             metadata.put(SEED_PROBLEM_METADATA, pseed);
@@ -527,6 +525,12 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
     @Override
     public void removeListener(TestListener l) {
         listeners.remove(l);
+    }
+
+    @Override
+    public void removeInspectors() {
+        this.collectors.clear();
+        this.ctester = null;
     }
 
     private void fireTestStarted() {

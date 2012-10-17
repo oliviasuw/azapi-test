@@ -12,7 +12,7 @@ import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.api.exen.Experiment;
 import bgu.dcr.az.api.exen.Test;
 import bgu.dcr.az.api.exen.mdef.StatisticCollector;
-import bgu.dcr.az.api.Problem;
+import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.api.exen.mdef.Limiter;
 import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.api.tools.IdleDetector;
@@ -59,7 +59,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private boolean idleDetectorNeeded = false;//hard set for the execution to use idle detection
     private Limiter limiter = null;
     private boolean initialized = false;
-    
+
     /**
      *
      */
@@ -72,7 +72,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         this.test = test;
         this.experiment = exp;
     }
-    
+
     @Override
     public void setLimiter(Limiter timer) {
         this.limiter = timer;
@@ -80,9 +80,12 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
 
     @Override
     public void terminateDueToLimiter() {
-        shuttingdown = true;
-        result.toEndedByLimiterState();
-        getMailer().releaseAllBlockingAgents();
+        if (!shuttingdown) {
+            result.toEndedByLimiterState();
+            shuttingdown = true; //TODO - check if can combine those state markers - there are 3 different markers for termination.
+
+            getMailer().releaseAllBlockingAgents();
+        }
     }
 
     @Override
@@ -280,7 +283,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
 
         result.getAssignment().assign(var, val);
     }
-    
+
     @Override
     protected void _run() {
         try {
@@ -337,30 +340,39 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     protected Experiment getExperiment() {
         return experiment;
     }
-    
+
     protected abstract void configure();
 
     protected abstract void finish();
 
+    //TODO - CHECK WHY THIS METHOD IS NEEDED.
     public void setAgentRunnerFor(int id, AgentRunner aThis) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    @Override
+    public boolean isInterrupted() {
+        return result != null && result.getState() == ExecutionResult.State.LIMITED;
+    }
+    
     /**
-     * this is called automatically when the execution is run but you can call it yourself before the actual run
-     * to get parameters from the execution that is only available after the initialization
+     * this is called automatically when the execution is run but you can call
+     * it yourself before the actual run to get parameters from the execution
+     * that is only available after the initialization
      */
     public void initialize() {
-        if (initialized) return;
+        if (initialized) {
+            return;
+        }
         initialized = true;
         //setup mailer
         mailer.setExecution(this);
-        
+
         //setup idle detector
         if (isIdleDetectionIsNeeded()) {
             this.idleDetector = new IdleDetector(getGlobalProblem().getNumberOfVariables(), getMailer(), getAlgorithm().getAgentClass().getName());
         }
-       
+
         // do any other configuration that maight be implemented on the deriving classes
         //TODO: check if needed and if so check if can be splited into smaller functions with miningful names
         configure();

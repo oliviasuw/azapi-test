@@ -23,6 +23,7 @@ import java.util.concurrent.Semaphore;
  * @author Inna
  */
 public abstract class AbstractMailer implements Mailer {
+
     private Execution exec;
     private Map<String, MessageQueue[]> mailBoxes = new HashMap<String, MessageQueue[]>();
     private Semaphore mailBoxModifierKey = new Semaphore(1);
@@ -30,18 +31,18 @@ public abstract class AbstractMailer implements Mailer {
 
     @Override
     public void releaseAllBlockingAgents(String mailGroup) {
-        for (MessageQueue q : takeQueues(mailGroup)){
+        for (MessageQueue q : takeQueues(mailGroup)) {
             q.releaseBlockedAgent();
         }
     }
 
     @Override
     public void releaseAllBlockingAgents() {
-        for (String mailGroup : mailBoxes.keySet()){
+        for (String mailGroup : mailBoxes.keySet()) {
             releaseAllBlockingAgents(mailGroup);
         }
     }
-    
+
     protected MessageQueue[] takeQueues(String groupKey) {
         try {
             MessageQueue[] qs = mailBoxes.get(groupKey);
@@ -66,7 +67,7 @@ public abstract class AbstractMailer implements Mailer {
             return null;
         }
     }
-    
+
     public AbstractMailer() {
     }
 
@@ -76,6 +77,18 @@ public abstract class AbstractMailer implements Mailer {
         for (int i = 0; i < exec.getGlobalProblem().getNumberOfVariables(); i++) {
             if (i != sender) {
                 send(msg, i, groupKey);
+            }
+        }
+    }
+
+    @Override
+    public void broadcast(Message msg) {
+        int sender = msg.getSender();
+        for (String gkey  : mailBoxes.keySet()) {
+            for (int i = 0; i < exec.getGlobalProblem().getNumberOfVariables(); i++) {
+                if (i != sender) {
+                    send(msg, i, gkey);
+                }
             }
         }
     }
@@ -105,11 +118,11 @@ public abstract class AbstractMailer implements Mailer {
     @Override
     public void send(Message msg, int to, String groupKey) {
         MessageQueue q = takeQueues(groupKey)[to];
-        
-        for (BeforeMessageSentHook h : beforeMessageSentHooks){
+
+        for (BeforeMessageSentHook h : beforeMessageSentHooks) {
             h.hook(msg.getSender(), to, msg);
         }
-        
+
         Message mcopy = msg.copy();
         q.add(mcopy);
     }

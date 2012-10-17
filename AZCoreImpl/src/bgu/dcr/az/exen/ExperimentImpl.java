@@ -100,6 +100,13 @@ public class ExperimentImpl extends AbstractProcess implements Experiment, Test.
         }
     }
 
+    @Override
+    public void removeInspectorsFromAllTests() {
+        for (Test t : tests) {
+            t.removeInspectors();
+        }
+    }
+    
     /**
      * allow this experiment to be reused - for example with different execution
      * selectors after you finish reusing the experiment call the method

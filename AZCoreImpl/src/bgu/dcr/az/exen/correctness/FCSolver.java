@@ -4,7 +4,7 @@
  */
 package bgu.dcr.az.exen.correctness;
 
-import bgu.dcr.az.api.Problem;
+import bgu.dcr.az.api.prob.Problem;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;

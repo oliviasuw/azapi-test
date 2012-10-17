@@ -56,29 +56,29 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
         nccc = new long[agents.length];
         lastKnownCC = new long[agents.length];
         runningVar = ex.getTest().getRunningVarName();
-        
-        new Hooks.BeforeMessageProcessingHook() {
 
+        new Hooks.BeforeMessageProcessingHook() {
             @Override
             public void hook(Agent a, Message msg) {
-                long newNccc = (Long) msg.getMetadata().get("nccc");
+                if (msg.getMetadata().containsKey("nccc")) { //can be system message or something...
+                    long newNccc = (Long) msg.getMetadata().get("nccc");
 
-                updateCurrentNccc(a.getId());
-                nccc[a.getId()] = max(newNccc, nccc[a.getId()]);
+                    updateCurrentNccc(a.getId());
+                    nccc[a.getId()] = max(newNccc, nccc[a.getId()]);
+                }
             }
         }.hookInto(ex);
-
         new Hooks.BeforeMessageSentHook() {
-
             @Override
             public void hook(int sender, int recepiennt, Message msg) {
-                updateCurrentNccc(sender);
-                msg.getMetadata().put("nccc", nccc[sender]);
+                if (sender >= 0) { //not system or something..
+                    updateCurrentNccc(sender);
+                    msg.getMetadata().put("nccc", nccc[sender]);
+                }
             }
         }.hookInto(ex);
 
         new Hooks.TerminationHook() {
-
             @Override
             public void hook() {
                 submit(new NCCCRecord(ex.getTest().getCurrentVarValue(), max(nccc)));
@@ -97,8 +97,8 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
         lastKnownCC[aid] = agents[aid].getNumberOfConstraintChecks();
         nccc[aid] = nccc[aid] + lastKnownCC[aid] - last;
     }
-    
-    public long currentNcccOf(int agent){
+
+    public long currentNcccOf(int agent) {
         return nccc[agent];
     }
 
@@ -117,5 +117,4 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector<NCCCStati
             return "NCCC";
         }
     }
-    
 }

@@ -47,10 +47,10 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
         return null;
     }
 
-    public long currentNcscOf(int agent){
+    public long currentNcscOf(int agent) {
         return ncsc[agent];
     }
-    
+
     @Override
     public void hookIn(final Agent[] agents, Execution ex) {
         System.out.println("NCSC Statistic Collector registered");
@@ -59,7 +59,6 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
         final double rvar = ex.getTest().getCurrentVarValue();
 
         new Hooks.BeforeMessageProcessingHook() {
-
             @Override
             public void hook(Agent a, Message msg) {
                 long newNcsc = NCSCToken.extract(msg).getValue();//(Long) msg.getMetadata().get("ncsc");
@@ -69,16 +68,15 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector<NCSCRecor
         }.hookInto(ex);
 
         new Hooks.BeforeMessageSentHook() {
-
             @Override
             public void hook(int sender, int recepient, Message msg) {
-                NCSCToken.extract(msg).setValue(ncsc[sender]);
-//                msg.getMetadata().put("ncsc", ncsc[sender]);
+                if (sender >= 0) {
+                    NCSCToken.extract(msg).setValue(ncsc[sender]);
+                }
             }
         }.hookInto(ex);
-        
-        new Hooks.TerminationHook() {
 
+        new Hooks.TerminationHook() {
             @Override
             public void hook() {
                 submit(new NCSCRecord(max(ncsc), rvar));

@@ -9,7 +9,7 @@ import bgu.dcr.az.api.exen.Mailer;
 import bgu.dcr.az.api.exen.Experiment;
 import bgu.dcr.az.api.exen.Test;
 import bgu.dcr.az.api.exen.escan.AlgorithmMetadata;
-import bgu.dcr.az.api.Problem;
+import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.exen.AbstractExecution;
 
 /**

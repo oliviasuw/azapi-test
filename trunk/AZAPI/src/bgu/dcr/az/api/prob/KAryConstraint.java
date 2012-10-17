@@ -11,6 +11,6 @@ import bgu.dcr.az.api.tools.Assignment;
  * @author bennyl
  */
 public interface KAryConstraint {
-    int getCost(Assignment a);
+    void getCost(Assignment a, ConstraintCheckResult result);
     int[] getParicipients();
 }

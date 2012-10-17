@@ -4,6 +4,7 @@
  */
 package bgu.dcr.az.api.prob.cpack;
 
+import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.prob.NeighboresSet;
 import bgu.dcr.az.api.tools.Assignment;
 import java.util.Set;
@@ -30,7 +31,12 @@ public abstract class AbstractConstraintPackage implements ConstraintsPackage {
 
     @Override
     public void addNeighbor(int to, int neighbor) {
-        neighbores[to].add(neighbor);
+        if (to != neighbor) { //you cannot be yourown neighbor!
+            neighbores[to].add(neighbor);
+        }else {
+            Agt0DSL.panic("agent cannot be its own neighbor");
+        }
+        
     }
 
     protected int getNumberOfVariables() {

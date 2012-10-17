@@ -30,12 +30,12 @@ public class Assignment implements Serializable, DeepCopyable {
         this.assignment = new LinkedHashMap<Integer, Integer>();
 
     }
-    
-    public Assignment(int... of){
+
+    public Assignment(int... of) {
         this();
-        Agt0DSL.panicIf(of.length % 2 !=0 , "for every variable you must supply a value which means that the number of parameters must be even while it: " + of.length); 
-        for (int i=0; i<of.length; i+=2){
-            assign(of[i], of[i+1]);
+        Agt0DSL.panicIf(of.length % 2 != 0, "for every variable you must supply a value which means that the number of parameters must be even while it: " + of.length);
+        for (int i = 0; i < of.length; i += 2) {
+            assign(of[i], of[i + 1]);
         }
     }
 
@@ -97,10 +97,10 @@ public class Assignment implements Serializable, DeepCopyable {
         return ass;
     }
 
-    public Set<Entry<Integer, Integer>> getAssignments(){
+    public Set<Entry<Integer, Integer>> getAssignments() {
         return assignment.entrySet();
     }
-    
+
     /**
      * @param p
      * @return the cost of this assignment - (increase cc checks)
@@ -110,9 +110,9 @@ public class Assignment implements Serializable, DeepCopyable {
             if (cachedCost < 0) {
                 cachedCost = p.calculateCost(this);;
             }
-            
+
             return cachedCost;
-        }else {
+        } else {
             return ((Problem) p).calculateGlobalCost(this);
         }
     }
@@ -121,22 +121,26 @@ public class Assignment implements Serializable, DeepCopyable {
      * @param var
      * @param val
      * @param p
-     * @return the cost that will be added to this assignment by assigning
-     * 		   {@code var <- val} in the problem p
+     * @return the cost that will be added to this assignment by assigning null     {@code var <- val} in the problem p
      *             this includes binary and unary costs
      * * (increase cc checks)
      */
     public int calcAddedCost(int var, int val, ImmutableProblem p) {
-        int c = 0;
-        c += p.getConstraintCost(var, val);
+        int oldCost = calcCost(p);
+        boolean assignend = isAssigned(var);
+        int old = (assignend ? getAssignment(var) : 0);
 
-        int var2, val2;
-        for (Entry<Integer, Integer> e : assignment.entrySet()) {
-            var2 = e.getKey();
-            val2 = e.getValue();
-            c += p.getConstraintCost(var, val, var2, val2);
+        assign(var, val);
+        int ans = calcCost(p) - oldCost;
+        if (assignend) {
+            assign(var, old);
+        } else {
+            unassign(var);
         }
-        return c;
+        
+        cachedCost = old; //fix cache
+
+        return ans;
     }
 
     /**
@@ -145,30 +149,18 @@ public class Assignment implements Serializable, DeepCopyable {
      * @return the cost of the assignment without the given variable assignment
      */
     public int calcCostWithout(int var, ImmutableProblem p) {
-        int c = 0;
-        LinkedList<Entry<Integer, Integer>> past = new LinkedList<Entry<Integer, Integer>>();
+        boolean assignend = isAssigned(var);
+        int old = (assignend ? getAssignment(var) : 0);
+        
+        unassign(var);
+        int ans = calcCost(p);
+        if (assignend) {
+            assign(var, old);
+        } 
+        
+        cachedCost = old; //fix cache
 
-        for (Entry<Integer, Integer> e : assignment.entrySet()) {
-            int vr = e.getKey();
-            int vl = e.getValue();
-
-            if (vr == var) {
-                continue;
-            }
-
-            c += p.getConstraintCost(vr, vl);
-
-            for (Entry<Integer, Integer> pe : past) {
-                int pvar = pe.getKey();
-                int pval = pe.getValue();
-
-                c += p.getConstraintCost(pvar, pval, vr, vl);
-            }
-
-            past.add(e);
-        }
-
-        return c;
+        return ans;
     }
 
     /**
@@ -238,12 +230,12 @@ public class Assignment implements Serializable, DeepCopyable {
     public ImmutableSet<Integer> assignedVariables() {
         return new ImmutableSet<Integer>(assignment.keySet());
     }
-    
+
     /**
-     * @return the unassigned variables in this assignemt - same as calling 
+     * @return the unassigned variables in this assignemt - same as calling
      */
     public ImmutableSet<Integer> unassignedVariables(ImmutableProblem p) {
-        List<Integer> all = Agt0DSL.range(0, p.getNumberOfVariables()-1);
+        List<Integer> all = Agt0DSL.range(0, p.getNumberOfVariables() - 1);
         all.removeAll(assignment.keySet());
         return new ImmutableSet<Integer>(all);
     }
@@ -255,10 +247,10 @@ public class Assignment implements Serializable, DeepCopyable {
         return assignment.keySet().size();
     }
 
-    public boolean isFull(ImmutableProblem problem){
+    public boolean isFull(ImmutableProblem problem) {
         return getNumberOfAssignedVariables() == problem.getNumberOfVariables();
     }
-    
+
     /**
      * return true if the assignment is consistent with assigning var->val
      *
@@ -268,20 +260,23 @@ public class Assignment implements Serializable, DeepCopyable {
      * @return
      */
     public boolean isConsistentWith(int var, int val, ImmutableProblem p) {
-        if (!isConsistent(p)) return false;
+        boolean assignend = isAssigned(var);
+        int old = (assignend ? getAssignment(var) : 0);
+        int oldCache = cachedCost;
         
-        for (Entry<Integer, Integer> e : assignment.entrySet()) {
-            int var2 = e.getKey();
-            int val2 = e.getValue();
-            if (p.getConstraintCost(var, val, var2, val2) != 0) {
-                return false;
-            }
+        assign(var, val);
+        boolean ans = calcCost(p) == 0;
+        if (assignend) {
+            assign(var, old);
+        } else {
+            unassign(var);
         }
-
-        return true;
+        
+        cachedCost = oldCache; //fix cache
+        return ans;
     }
-    
-    public boolean isConsistent(ImmutableProblem p){
+
+    public boolean isConsistent(ImmutableProblem p) {
         return calcCost(p) == 0;
     }
 

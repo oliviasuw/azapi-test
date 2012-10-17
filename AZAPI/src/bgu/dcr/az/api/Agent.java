@@ -16,6 +16,7 @@ import bgu.dcr.az.api.exp.RepeatedCallingException;
 import bgu.dcr.az.api.exen.Execution;
 import bgu.dcr.az.api.exen.escan.VariableMetadata;
 import bgu.dcr.az.api.exp.UnsupportedMessageException;
+import bgu.dcr.az.api.prob.ConstraintCheckResult;
 import bgu.dcr.az.api.tools.Assignment;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -812,7 +813,7 @@ public abstract class Agent extends Agt0DSL {
     public class AgentProblem implements ImmutableProblem {
 
         long cc = 0;
-        int[] queryTemp = new int[2];
+        ConstraintCheckResult queryTemp = new ConstraintCheckResult();
 
         public int getAgentId() {
             return Agent.this.getId();
@@ -830,14 +831,18 @@ public abstract class Agent extends Agt0DSL {
 
         @Override
         public int getConstraintCost(int var1, int val1) {
-            ++cc;
-            return pops.exec.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1);
+            pops.exec.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1, queryTemp);
+            
+            cc+=queryTemp.getCheckCost();
+            return queryTemp.getCost();
         }
 
         @Override
         public int getConstraintCost(int var1, int val1, int var2, int val2) {
-            ++cc;
-            return pops.exec.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1, var2, val2);
+            pops.exec.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1, var2, val2, queryTemp);
+            
+            cc+=queryTemp.getCheckCost();
+            return queryTemp.getCost();
         }
 
         @Override
@@ -862,8 +867,10 @@ public abstract class Agent extends Agt0DSL {
 
         @Override
         public boolean isConsistent(int var1, int val1, int var2, int val2) {
-            ++cc;
-            return pops.exec.getGlobalProblem().isConsistent(var1, val1, var2, val2);
+            pops.exec.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1, var2, val2, queryTemp);
+            
+            cc += queryTemp.getCheckCost();
+            return queryTemp.getCost() == 0;
         }
 
         @Override
@@ -881,15 +888,18 @@ public abstract class Agent extends Agt0DSL {
 
         @Override
         public int getConstraintCost(Assignment ass) {
-            ++cc;
-            return pops.exec.getGlobalProblem().getConstraintCost(getAgentId(), ass);
+            pops.exec.getGlobalProblem().getConstraintCost(getAgentId(), ass, queryTemp);
+            
+            cc+=queryTemp.getCheckCost();
+            return queryTemp.getCost();
         }
 
         @Override
         public int calculateCost(Assignment a) {
-            pops.exec.getGlobalProblem().calculateCostAndCountCCs(getAgentId(), a, queryTemp);
-            cc+=queryTemp[1];
-            return queryTemp[0];
+            pops.exec.getGlobalProblem().calculateCost(getAgentId(), a, queryTemp);
+            
+            cc+=queryTemp.getCheckCost();
+            return queryTemp.getCost();
         }
     }
 }

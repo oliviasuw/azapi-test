@@ -92,6 +92,7 @@ public interface ImmutableProblem {
      */
     boolean isConsistent(int var1, int val1, int var2, int val2);
 
+    
     /**
      * @param var1
      * @param var2

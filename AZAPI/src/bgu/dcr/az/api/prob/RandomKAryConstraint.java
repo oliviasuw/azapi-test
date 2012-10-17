@@ -5,6 +5,7 @@
 package bgu.dcr.az.api.prob;
 
 import bgu.dcr.az.api.tools.Assignment;
+import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.Random;
 
@@ -32,7 +33,7 @@ public class RandomKAryConstraint implements KAryConstraint{
     }
     
     @Override
-    public int getCost(Assignment a) {
+    public void getCost(Assignment a, ConstraintCheckResult result) {
         Random r = new Random();
         int cost = 0;
         for (int p : participients){
@@ -40,12 +41,17 @@ public class RandomKAryConstraint implements KAryConstraint{
             cost += r.nextInt();
         }
         
-        return Math.abs(cost) % maxCostPlus;
+        result.set(Math.abs(cost) % maxCostPlus, 1);
     }
     
     @Override
     public int[] getParicipients() {
         return participients;
     }
-    
+
+    @Override
+    public String toString() {
+        return "KAryConstraint{" + "participients=" + Arrays.toString(participients) + '}';
+    }
+
 }

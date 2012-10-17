@@ -6,6 +6,7 @@ package bgu.dcr.az.api.prob;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -45,19 +46,19 @@ public class NeighboresSet implements Set<Integer>{
             
             @Override
             public boolean hasNext() {
-                return read < size;
+                return read < size && size != 0;
             }
 
             @Override
             public Integer next() {
-                for (; pos<size; pos++){
+                for (; pos<neighbores.length; pos++){
                     if (neighbores[pos]) {
                         read++;
-                        return pos;
+                        return pos++;
                     }
                 }
                 
-                return -1;
+                throw new NoSuchElementException();
             }
 
             @Override

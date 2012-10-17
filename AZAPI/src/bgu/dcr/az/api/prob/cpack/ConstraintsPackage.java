@@ -4,6 +4,7 @@
  */
 package bgu.dcr.az.api.prob.cpack;
 
+import bgu.dcr.az.api.prob.ConstraintCheckResult;
 import bgu.dcr.az.api.prob.KAryConstraint;
 import bgu.dcr.az.api.tools.Assignment;
 import java.util.Set;
@@ -50,7 +51,7 @@ public interface ConstraintsPackage {
      * @param v1
      * @return
      */
-    public int getConstraintCost(int owner, int x1, int v1);
+    public void getConstraintCost(int owner, int x1, int v1, ConstraintCheckResult result);
 
     /**
      * Binary version
@@ -61,7 +62,7 @@ public interface ConstraintsPackage {
      * @param v2
      * @return
      */
-    public int getConstraintCost(int owner, int x1, int v1, int x2, int v2);
+    public void getConstraintCost(int owner, int x1, int v1, int x2, int v2, ConstraintCheckResult result);
 
     /**
      * K-ary version
@@ -69,7 +70,7 @@ public interface ConstraintsPackage {
      * @param k
      * @return
      */
-    public int getConstraintCost(int owner, Assignment k);
+    public void getConstraintCost(int owner, Assignment k, ConstraintCheckResult result);
 
     /**
      * return the set of neighbor's belongs to the variable xi
@@ -93,7 +94,7 @@ public interface ConstraintsPackage {
      * @return 
      * 
      */
-    public void calculateCost(int owner, Assignment a, int[] result);
+    public void calculateCost(int owner, Assignment a, ConstraintCheckResult result);
     
     /**
      * calculate the cost relative to the system - means that this cost is calculated to be the sum of costs of all owners possible

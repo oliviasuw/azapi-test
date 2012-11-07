@@ -4,6 +4,7 @@
  */
 package bgu.dcr.az.api.prob;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -80,6 +81,12 @@ public class NeighboresSet implements Set<Integer>{
         return ret;
     }
 
+    @Override
+    public String toString() {
+        return Arrays.toString(toArray());
+    }
+
+    
     @Override
     public <T> T[] toArray(T[] a) {
         return (T[]) toArray();

@@ -22,9 +22,9 @@ public abstract class NestableTool {
     private boolean hasAssignment = false;
 
     /**
-     * flag the nested agent to be started - it will only start after the current
-     * message handling ends (or if you are using it from within the start
-     * function after it ends)
+     * flag the nested agent to be started - it will only start after the
+     * current message handling ends (or if you are using it from within the
+     * start function after it ends)
      *
      * you should use continuations (by calling
      * calculate(..).andWhenDoneDo(Continuation) to get notified when the nested
@@ -63,13 +63,14 @@ public abstract class NestableTool {
      * same and they will all be switched to "one" environment when they done
      * and you want to run other nested agent call this method with the group
      * name "two" then if there are any other agents that still not exit "one"
-     * you will run isolated from them. 
-     * 
+     * you will run isolated from them.
+     *
      * ********************************************
-     * * same as calling calculate(callingAgent,  *
-     * * callingAgent.getClass.getName())         *
-     * ********************************************
-     * @param groupName
+     * * same as calling calculate(callingAgent, * *
+     * callingAgent.getClass.getName())
+     *
+     *
+     * ******************************************** @param groupName
      * @param callingAgent
      * @return
      */
@@ -78,10 +79,9 @@ public abstract class NestableTool {
     }
 
     /**
-     * flag the nested agent to be started.
-     * Notice that it will only start after the agent done handling the current message
-     * (or if you are using it from within the start
-     * function after it ends)
+     * flag the nested agent to be started. Notice that it will only start after
+     * the agent done handling the current message (or if you are using it from
+     * within the start function after it ends)
      *
      * you should use continuations (by calling
      * calculate(..).andWhenDoneDo(Continuation) to get notified when the nested
@@ -94,11 +94,9 @@ public abstract class NestableTool {
     private ContinuationMediator startCalculation(final Agent callingAgent, String mailGroup) {
         final Execution exec = Agent.PlatformOperationsExtractor.extract(callingAgent).getExecution();
         ContinuationMediator ret = new ContinuationMediator() {
-
             @Override
             public void andWhenDoneDo(final Continuation c) {
                 super.andWhenDoneDo(new Continuation() {
-
                     @Override
                     public void doContinue() {
                         final Assignment assignment = exec.getResult().getAssignment();
@@ -116,7 +114,7 @@ public abstract class NestableTool {
 
         AgentRunner runner = exec.getAgentRunnerFor(callingAgent);
         SimpleAgent nested = createNestedAgent();
-        System.out.println("Calculating - transforming from " + callingAgent.getClass().getSimpleName() + " to " + nested.getClass().getSimpleName());
+        System.out.println( "Request to nest new Agent for algorithm " +  nested.getAlgorithmName() + " inside " + callingAgent.getId() + "@" + callingAgent.getAlgorithmName());
         final PlatformOps nestedOps = Agent.PlatformOperationsExtractor.extract(nested);
         final PlatformOps originalOps = Agent.PlatformOperationsExtractor.extract(callingAgent);
 
@@ -131,21 +129,28 @@ public abstract class NestableTool {
         return ret;
     }
 
+    private String cname(Object obj) {
+        return (obj.getClass().getSimpleName().isEmpty()
+                ? obj.getClass().getName()
+                : obj.getClass().getSimpleName());
+    }
+
     protected abstract SimpleAgent createNestedAgent();
 
     /**
-     * @return the assignment that the nested agent exit with, before using the value of this method check that the 
-     * agent was actually exit with an assignment using the method {@link hasAssignment}
+     * @return the assignment that the nested agent exit with, before using the
+     * value of this method check that the agent was actually exit with an
+     * assignment using the method {@link hasAssignment}
      */
     public int getFinalAssignment() {
         return this.finalAssignment;
     }
 
     /**
-     * @return true if the nested agent exit with an assignment by any of the following methods:
-     * * call finish(int)
-     * * call finish(cpa) and the agent has an assignment in that cpa
-     * * submit some assignment during its execution and then call finish() 
+     * @return true if the nested agent exit with an assignment by any of the
+     * following methods: * call finish(int) * call finish(cpa) and the agent
+     * has an assignment in that cpa * submit some assignment during its
+     * execution and then call finish()
      */
     public boolean hasAssignment() {
         return hasAssignment;

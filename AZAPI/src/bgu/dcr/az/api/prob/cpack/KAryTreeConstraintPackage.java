@@ -70,7 +70,7 @@ public class KAryTreeConstraintPackage extends AbstractConstraintPackage {
 
     @Override
     public void setConstraintCost(int owner, KAryConstraint constraint) {
-        System.out.println("Adding constraint: " + constraint + " to " + owner);
+//        System.out.println("Adding constraint: " + constraint + " to " + owner);
         roots[owner].add(constraint);
 
         //update neighbores
@@ -86,15 +86,15 @@ public class KAryTreeConstraintPackage extends AbstractConstraintPackage {
         Set<Integer> participients = a.assignedVariables();
         List<KAryConstraint> constraintsToConsider = roots[owner].collectAllSubConstraints(a);
 
-        //TEST CODE.
-        if (constraintsToConsider != null) {
-            System.out.println("owner: " + owner + "\nparticipients: " + participients.toString() + "\nconsidering constraints:");
-            for (KAryConstraint c : constraintsToConsider) {
-                System.out.println(c.toString());
-            }
-
-            System.out.println("---------------------");
-        }
+//        //TEST CODE.
+//        if (constraintsToConsider != null) {
+//            System.out.println("owner: " + owner + "\nparticipients: " + participients.toString() + "\nconsidering constraints:");
+//            for (KAryConstraint c : constraintsToConsider) {
+//                System.out.println(c.toString());
+//            }
+//
+//            System.out.println("---------------------");
+//        }
         int cost = 0;
         int cc = 0;
         if (constraintsToConsider != null) {

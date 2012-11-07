@@ -51,9 +51,7 @@ public abstract class Agent extends Agt0DSL {
      * order for him to re-tick the clock
      */
     public static final String SYS_TICK_MESSAGE = "__TICK__";
-    
     public static final String SYS_TIMEOUT_MESSAGE = "__TIMEOUT__";
-    
     private int id; //The Agent ID
     private MessageQueue mailbox; //This Agent Mailbox
     private ImmutableProblem prob; // The Agent Local Problem
@@ -77,6 +75,13 @@ public abstract class Agent extends Agt0DSL {
     private boolean usingIdleDetection;
     private HashMap<String, Method> msgToMethod;
 
+    @Override
+    public String toString() {
+        final String prefix = "Agent " + (getId() < 10 ? "00" : getId() < 100 ? "0" : "") + getId();
+
+        return prefix + "@" + getAlgorithmName();
+    }
+
     /**
      * create a default agent - this agent will have id = -1 so you must
      * reassign it
@@ -89,6 +94,7 @@ public abstract class Agent extends Agt0DSL {
         this.pops = new PlatformOps();
         final Algorithm algAnnotation = getClass().getAnnotation(Algorithm.class);
         this.usingIdleDetection = false;
+
         if (algAnnotation != null) {
             this.algorithmName = algAnnotation.name();
             this.usingIdleDetection = algAnnotation.useIdleDetector();
@@ -241,7 +247,7 @@ public abstract class Agent extends Agt0DSL {
     public final void processNextMessage() throws InterruptedException {
         Message msg = nextMessage(); //will block until there will be messages in the q
         if (msg == null) {
-            System.out.println("Agent " + getId() + " got null message.");
+//            System.out.println("Agent " + getId() + " got null message.");
             return;
         }
 
@@ -363,9 +369,11 @@ public abstract class Agent extends Agt0DSL {
      * here so that you can implement your own shutdown mechanism
      */
     protected void finish() {
-        hookBeforeCallingFinish();
-        finished = true;
-        mailbox.onAgentFinish();
+        if (!finished) {
+            hookBeforeCallingFinish();
+            finished = true;
+            mailbox.onAgentFinish();
+        }
     }
 
     /**
@@ -605,7 +613,7 @@ public abstract class Agent extends Agt0DSL {
     public void handleTermination() {
         finish();
     }
-    
+
     @WhenReceived(Agent.SYS_TIMEOUT_MESSAGE)
     public void handleTimeout() {
         log("Got Timeout indication message");
@@ -832,16 +840,16 @@ public abstract class Agent extends Agt0DSL {
         @Override
         public int getConstraintCost(int var1, int val1) {
             pops.exec.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1, queryTemp);
-            
-            cc+=queryTemp.getCheckCost();
+
+            cc += queryTemp.getCheckCost();
             return queryTemp.getCost();
         }
 
         @Override
         public int getConstraintCost(int var1, int val1, int var2, int val2) {
             pops.exec.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1, var2, val2, queryTemp);
-            
-            cc+=queryTemp.getCheckCost();
+
+            cc += queryTemp.getCheckCost();
             return queryTemp.getCost();
         }
 
@@ -868,7 +876,7 @@ public abstract class Agent extends Agt0DSL {
         @Override
         public boolean isConsistent(int var1, int val1, int var2, int val2) {
             pops.exec.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1, var2, val2, queryTemp);
-            
+
             cc += queryTemp.getCheckCost();
             return queryTemp.getCost() == 0;
         }
@@ -889,16 +897,16 @@ public abstract class Agent extends Agt0DSL {
         @Override
         public int getConstraintCost(Assignment ass) {
             pops.exec.getGlobalProblem().getConstraintCost(getAgentId(), ass, queryTemp);
-            
-            cc+=queryTemp.getCheckCost();
+
+            cc += queryTemp.getCheckCost();
             return queryTemp.getCost();
         }
 
         @Override
         public int calculateCost(Assignment a) {
             pops.exec.getGlobalProblem().calculateCost(getAgentId(), a, queryTemp);
-            
-            cc+=queryTemp.getCheckCost();
+
+            cc += queryTemp.getCheckCost();
             return queryTemp.getCost();
         }
     }

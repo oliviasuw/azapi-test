@@ -1,3 +1,6 @@
+quick fix 6
+- bug with message delays along with nested agents that require idle detection 
+
 quick fix 5
 - bug with infinite execution when enabling message delayer
 

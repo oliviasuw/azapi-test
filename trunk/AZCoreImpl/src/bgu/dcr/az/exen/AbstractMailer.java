@@ -17,6 +17,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -25,7 +27,7 @@ import java.util.concurrent.Semaphore;
 public abstract class AbstractMailer implements Mailer {
 
     private Execution exec;
-    private Map<String, MessageQueue[]> mailBoxes = new HashMap<String, MessageQueue[]>();
+    protected Map<String, MessageQueue[]> mailBoxes = new HashMap<String, MessageQueue[]>();
     private Semaphore mailBoxModifierKey = new Semaphore(1);
     protected List<Hooks.BeforeMessageSentHook> beforeMessageSentHooks = new LinkedList<Hooks.BeforeMessageSentHook>();
 
@@ -38,8 +40,14 @@ public abstract class AbstractMailer implements Mailer {
 
     @Override
     public void releaseAllBlockingAgents() {
-        for (String mailGroup : mailBoxes.keySet()) {
-            releaseAllBlockingAgents(mailGroup);
+        try {
+            mailBoxModifierKey.acquire();
+            for (String mailGroup : mailBoxes.keySet()) {
+                releaseAllBlockingAgents(mailGroup);
+            }
+            mailBoxModifierKey.release();
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -52,7 +60,7 @@ public abstract class AbstractMailer implements Mailer {
                     final int numberOfVariables = exec.getGlobalProblem().getNumberOfVariables();
                     qs = new MessageQueue[numberOfVariables];
                     for (int i = 0; i < numberOfVariables; i++) {
-                        qs[i] = generateNewMessageQueue(groupKey);
+                        qs[i] = generateNewMessageQueue(i, groupKey);
                     }
                     mailBoxes.put(groupKey, qs);
                 } else {
@@ -63,7 +71,7 @@ public abstract class AbstractMailer implements Mailer {
 
             return qs;
         } catch (InterruptedException ex) {
-            Agt0DSL.throwUncheked(ex);
+            Thread.currentThread().interrupt();
             return null;
         }
     }
@@ -93,7 +101,7 @@ public abstract class AbstractMailer implements Mailer {
         }
     }
 
-    protected abstract MessageQueue generateNewMessageQueue(String forGroup);
+    protected abstract MessageQueue generateNewMessageQueue(int agent, String forGroup);
 
     public Map<String, MessageQueue[]> getMailBoxes() {
         return mailBoxes;

@@ -10,6 +10,7 @@ import bgu.dcr.az.api.exen.mdef.MessageDelayer;
 import bgu.dcr.az.api.exen.Execution;
 import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.api.exen.escan.AlgorithmMetadata;
+import bgu.dcr.az.api.tools.IdleDetector;
 import bgu.dcr.az.exen.AbstractTest;
 
 /**
@@ -33,13 +34,14 @@ public class AsyncTest extends AbstractTest {
     @Override
     protected Execution provideExecution(Problem p, AlgorithmMetadata alg) {
         if (dman != null) {
-            AsyncExecution ret = new AsyncExecution(p, alg, this, new AsyncDelayedMailer(dman, p.getNumberOfVariables()), getExperiment());
-            ret.setIdleDetectionNeeded(true);
+            final AsyncDelayedMailer mailer = new AsyncDelayedMailer(dman, p.getNumberOfVariables());
+            AsyncExecution ret = new AsyncExecution(p, alg, this, mailer, getExperiment());
+//                        ret.setIdleDetector(idle.getSubDetector(ret.getAlgorithm().getAgentClass().getName()));
+//            ret.setForceIdleDetection(true);
             dman.initialize(ret);
             return ret;
         } else {
             return new AsyncExecution(p, alg, this, getExperiment());
         }
     }
-    
 }

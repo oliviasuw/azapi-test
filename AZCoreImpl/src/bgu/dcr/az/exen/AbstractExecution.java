@@ -56,9 +56,9 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     private final Test test; //the test that this execution is running in
     private Multimap<String, ReportHook> reportHooks = HashMultimap.create();//list of report hook listeners
     private List<TerminationHook> terminationHooks = new LinkedList<TerminationHook>();
-    private boolean idleDetectorNeeded = false;//hard set for the execution to use idle detection
     private Limiter limiter = null;
     private boolean initialized = false;
+    private boolean forceIdleDetection = false;
 
     /**
      *
@@ -71,6 +71,14 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         this.algorithmMetadata = a;
         this.test = test;
         this.experiment = exp;
+    }
+
+    public void setForceIdleDetection(boolean forceIdleDetection) {
+        this.forceIdleDetection = forceIdleDetection;
+    }
+
+    public boolean isForceIdleDetection() {
+        return forceIdleDetection;
     }
 
     @Override
@@ -122,16 +130,6 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
             shuttingdown = true;
             stop();
         }
-    }
-
-    /**
-     * force the execution to use idle detector (even if not stated so in the
-     * algorithm metadata)
-     *
-     * @param needed
-     */
-    public void setIdleDetectionNeeded(boolean needed) {
-        this.idleDetectorNeeded = needed;
     }
 
     @Override
@@ -303,14 +301,6 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         }
     }
 
-    /**
-     * this function return true if idle detection is needed overrite this
-     * function to change the idle detection activation setup
-     */
-    protected boolean isIdleDetectionIsNeeded() {
-        return getAlgorithm().isUseIdleDetector() || this.idleDetectorNeeded; //TODO: reduce for one variable
-    }
-
     @Override
     public Limiter getLimiter() {
         return limiter;
@@ -354,7 +344,11 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
     public boolean isInterrupted() {
         return result != null && result.getState() == ExecutionResult.State.LIMITED;
     }
-    
+
+    public void setIdleDetector(IdleDetector idleDetector) {
+        this.idleDetector = idleDetector;
+    }
+
     /**
      * this is called automatically when the execution is run but you can call
      * it yourself before the actual run to get parameters from the execution
@@ -369,7 +363,7 @@ public abstract class AbstractExecution extends AbstractProcess implements Execu
         mailer.setExecution(this);
 
         //setup idle detector
-        if (isIdleDetectionIsNeeded()) {
+        if (this.idleDetector == null) {
             this.idleDetector = new IdleDetector(getGlobalProblem().getNumberOfVariables(), getMailer(), getAlgorithm().getAgentClass().getName());
         }
 

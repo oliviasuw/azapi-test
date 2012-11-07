@@ -31,7 +31,6 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
     private Thread cthread;
     private AbstractExecution exec;
     private Semaphore idleDetectionLock = new Semaphore(1);
-    private boolean useIdleDetector; //see note about using idle detector within nested agents in AgentRunner.nest
     private IdleDetector currentIdleDetector = null;
     private Limiter limiter = null;
     /**
@@ -66,18 +65,16 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
     @Override
     public void run() {
         ContinuationMediator cmed;
-        Thread.currentThread().setName("Agent Runner For Agent " + currentExecutedAgent.getId());
+        updateThreadName(); //for debugging ease.
 
         if (nestedAgents.isEmpty()) { // is the initial agent
             cthread = Thread.currentThread();
 
             //checking if idle detection is needed: TODO: make this code simpler
-            useIdleDetector = false;
-            if (exec.getIdleDetector() != null) {
-                exec.getIdleDetector().addListener(this);
-                currentIdleDetector = exec.getIdleDetector();
-                useIdleDetector = true;
-            }
+//            if (exec.isIdleDetectionForced()) {
+            exec.getIdleDetector().addListener(this);
+            currentIdleDetector = exec.getIdleDetector();
+//            }
             registerIdleDetectionCallback(currentExecutedAgent);
 
         }
@@ -88,36 +85,40 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
                 //PROCESS MESSAGE LOOP
                 try {
                     while (!currentExecutedAgent.isFinished() && !Thread.currentThread().isInterrupted() && !exec.isInterrupted()) {
-                        awaitNextMessage();
-                        
+                        awaitNextMessage(); //involve idle detection
+
                         //HANDLING NEXT MESSAGE
                         currentExecutedAgent.processNextMessage();
                         if (limiter != null && !limiter.canContinue(exec)) {
-                            System.out.println("[" + Agent.PlatformOperationsExtractor.extract(currentExecutedAgent).getMailGroupKey() + "] " + currentExecutedAgent.getId() + " Interupted due to timeout - Terminating.");
+                            System.out.println("[" + currentExecutedAgent + "] " + " Interupted due to timeout - Terminating.");
                             exec.terminateDueToLimiter();
                             return;
                         };
                     }
                 } catch (InterruptedException ex) {
                     cthread.interrupt(); //REFLAGING THE CURRENT THREAD.
-                    System.out.println("[" + Agent.PlatformOperationsExtractor.extract(currentExecutedAgent).getMailGroupKey() + "] " + currentExecutedAgent.getId() + " Interupted - Terminating.");
+                    System.out.println("[" + currentExecutedAgent + "] Interupted - Terminating.");
                 }
 
             } catch (Exception ex) {
 
-                exec.terminateDueToCrush(ex, "Agent " + currentExecutedAgent.getId() + " Cause An Error!");
+                exec.terminateDueToCrush(ex, "[" + currentExecutedAgent + "] Cause An Error!");
                 //BECAUSE THE AGENT RUNNER WILL RUN INSIDE EXECUTION SERVICE 
                 //THIS IS THE LAST POINT THAT EXCEPTION CAN BE PRINTED
                 //AFTER THIS POINT THE EXCEPTION WILL BE LOST (BUT CAN BE RETRIVED VIA THE RESULT OF THIS ALGORITHM)) 
                 ex.printStackTrace();
 
             } finally {
-                System.out.println("[" + Agent.PlatformOperationsExtractor.extract(currentExecutedAgent).getMailGroupKey() + "] " + currentExecutedAgent.getId() + " Terminated.");
+                System.out.println("[" + currentExecutedAgent + "] Terminated.");
 
-                if (currentExecutedAgent.isUsingIdleDetection()) {
-                    currentIdleDetector.notifyAgentIdle();
+//                if (currentExecutedAgent.isUsingIdleDetection()) {
+//                    currentIdleDetector.notifyAgentIdle();
+//                }
+
+                if (exec.isForceIdleDetection() || currentExecutedAgent.isUsingIdleDetection()) {
+                    currentIdleDetector.notifyAgentIdle(); //out = permenantly waiting for messages...
                 }
-                
+
                 if (nestedAgents.isEmpty() || exec.isInterrupted()) {
                     joinBlock.release();
                     return;
@@ -125,15 +126,19 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
                     cmed = this.nestedAgentsCalculationMediators.removeFirst();
                     this.currentExecutedAgent = this.nestedAgents.removeFirst();
                     updateCurrentIdleDetector();
+                    Agent bef = currentExecutedAgent;
                     cmed.executeContinuation();
-                    System.out.println("Agent " + getRunningAgentId() + " Returning Back to " + currentExecutedAgent.getClass().getSimpleName());
+                    if (bef == currentExecutedAgent) {
+                        System.out.println("Resuming " + currentExecutedAgent);
+                    }
+                    updateThreadName(); //for debugging ease.
                 }
             }
         }
     }
 
     private void awaitNextMessage() throws InterruptedException {
-        if (useIdleDetector && currentExecutedAgent.isUsingIdleDetection()) {
+        if (exec.isForceIdleDetection() || currentExecutedAgent.isUsingIdleDetection()) {
             if (!currentExecutedAgent.hasPendingMessages()) {
                 currentIdleDetector.notifyAgentIdle();
                 currentExecutedAgent.waitForNewMessages();
@@ -152,12 +157,6 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
 
     @Override
     public boolean tryResolveIdle() {
-        if (exec.getMailer() instanceof AsyncDelayedMailer) {
-            PlatformOps pop = Agent.PlatformOperationsExtractor.extract(currentExecutedAgent);
-            if (((AsyncDelayedMailer) exec.getMailer()).resolveIdle(pop.getMailGroupKey())) {
-                return true;
-            }
-        }
         return false;
     }
 
@@ -175,8 +174,13 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
         if (currentExecutedAgent.isFinished()) {
             return; //IDLE RESULVED AS AGENT LEAVE THE ALGORITHM...
         }
-        System.out.println("Idle Detected - Agent " + currentExecutedAgent.getId() + " Being Notified.");
-        currentExecutedAgent.onIdleDetected();
+
+        if (currentExecutedAgent.isUsingIdleDetection()) {
+            System.out.println("Idle Detected - " + currentExecutedAgent + " Being Notified.");
+
+            currentExecutedAgent.onIdleDetected();
+        }
+
         idleDetectionLock.release();
         exec.getMailer().releaseAllBlockingAgents(Agent.PlatformOperationsExtractor.extract(currentExecutedAgent).getMailGroupKey());
     }
@@ -188,12 +192,13 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
         registerIdleDetectionCallback(currentExecutedAgent);
         updateCurrentIdleDetector();
         this.nestedAgentsCalculationMediators.addFirst(cmed);
-        System.out.println("Starting Inner Agent Of Type: " + nestedAgent.getClass().getSimpleName());
+        System.out.println("Starting Inner " + nestedAgent);
+        updateThreadName(); //for debugging ease.
         currentExecutedAgent.start();
     }
 
     private void updateCurrentIdleDetector() {
-        if (useIdleDetector && currentExecutedAgent.isUsingIdleDetection()) {
+        if (exec.isForceIdleDetection() || currentExecutedAgent.isUsingIdleDetection()) {
             currentIdleDetector = currentIdleDetector.getSubDetector(Agent.PlatformOperationsExtractor.extract(currentExecutedAgent).getMailGroupKey());
         }
     }
@@ -212,7 +217,7 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
 
     //TODO: FIGURE OUT HOW TO REMOVE THIS CODE!
     private void registerIdleDetectionCallback(Agent a) {
-        if (useIdleDetector && a.isUsingIdleDetection()) {
+        if (a.isUsingIdleDetection()) {
             a.hookIn(new BeforeMessageProcessingHook() {
                 @Override
                 public void hook(Agent a, Message msg) {
@@ -229,4 +234,7 @@ public class AsyncAgentRunner implements AgentRunner, IdleDetector.Listener {
         }
     }
 
+    public void updateThreadName() {
+        Thread.currentThread().setName("Agent Runner For " + currentExecutedAgent);
+    }
 }

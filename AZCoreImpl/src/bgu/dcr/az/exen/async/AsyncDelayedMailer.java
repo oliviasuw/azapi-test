@@ -4,38 +4,59 @@
  */
 package bgu.dcr.az.exen.async;
 
+import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Hooks;
+import bgu.dcr.az.api.Hooks.BeforeMessageSentHook;
 import bgu.dcr.az.api.Message;
+import bgu.dcr.az.api.exen.Execution;
+import bgu.dcr.az.api.exen.Mailer;
 import bgu.dcr.az.api.exen.MessageQueue;
 import bgu.dcr.az.api.exen.mdef.MessageDelayer;
+import bgu.dcr.az.api.exp.UnRegisteredAgentException;
+import bgu.dcr.az.api.tools.IdleDetector;
 import bgu.dcr.az.exen.AbstractMailer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  *
  * @author bennyl
  */
-public class AsyncDelayedMailer extends AbstractMailer {
+public class AsyncDelayedMailer extends AbstractMailer implements IdleDetector.Listener {
 
     MessageDelayer dman;
     AtomicLong time;
+    IdleDetector timeForwardDetector;
+    String[] agentActiveGroups;
 
+    @SuppressWarnings("LeakingThisInConstructor")
     public AsyncDelayedMailer(MessageDelayer dman, int numberOfAgents) {
         this.dman = dman;
         this.time = new AtomicLong(dman.getInitialTime());
+        this.agentActiveGroups = new String[numberOfAgents];
+        this.timeForwardDetector = new IdleDetector(numberOfAgents, new DetectionMailer(), "TFD");
+        this.timeForwardDetector.addListener(this);
+    }
+
+    public void updateAgentActiveGroup(int agent, String activeGroup) {
+        if (agentActiveGroups[agent] != null && activeGroup != agentActiveGroups[agent]) { //agent was in leaving state, now is back...
+            timeForwardDetector.notifyAgentWorking();
+        }
+        agentActiveGroups[agent] = activeGroup;
     }
 
     @Override
-    protected MessageQueue generateNewMessageQueue(String groupKey) {
-        return new DelayedMessageQueue(dman);
+    protected MessageQueue generateNewMessageQueue(int agent, String groupKey) {
+        return new DelayedMessageQueue(dman, this, timeForwardDetector, groupKey, agent);
     }
 
     @Override
     public void send(Message msg, int to, String groupKey) {
-        for (Hooks.BeforeMessageSentHook h : beforeMessageSentHooks){
+        for (Hooks.BeforeMessageSentHook h : beforeMessageSentHooks) {
             h.hook(msg.getSender(), to, msg);
         }
-        
+
         msg = msg.copy(); //deep copying the message.
         long mtime = dman.extractTime(msg); //time before delay
         dman.addDelay(msg, msg.getSender(), to); //adding delay
@@ -67,31 +88,119 @@ public class AsyncDelayedMailer extends AbstractMailer {
      * @param groupKey
      * @return true if idle was resolved
      */
-    public boolean resolveIdle(String groupKey) {
+    public boolean forwardTime() {
 
-        MessageQueue[] qus = takeQueues(groupKey); //all the queues from the current group
         boolean found = false;
         long min = -1;
-       
-        for (MessageQueue q : qus) {
-            Long v = ((DelayedMessageQueue) q).minimumMessageTime();
-            if (v == null) {
-                continue;
-            }
-            if (min > v || !found) {
-                min = v;
-                found = true;
+
+        for (String groupKey : mailBoxes.keySet()) {
+            MessageQueue[] qus = takeQueues(groupKey); //all the queues from the current group
+            for (MessageQueue q : qus) {
+                Long v = ((DelayedMessageQueue) q).minimumMessageTime();
+                if (v == null) {
+                    continue;
+                }
+                if (min > v || !found) {
+                    min = v;
+                    found = true;
+                }
             }
         }
 
         if (found) {
-            for (MessageQueue q : qus) { //release all queues by the known time.
-                ((DelayedMessageQueue) q).release(min);
+            for (String groupKey : mailBoxes.keySet()) {
+                MessageQueue[] qus = takeQueues(groupKey); //all the queues from the current group
+                for (MessageQueue q : qus) { //release all queues by the known time.
+                    ((DelayedMessageQueue) q).release(min);
+                }
             }
+
+            releaseAllBlockingAgents();
             return true;
         }
 
         return false;
     }
 
+    @Override
+    public void onIdleDetection() {
+        forwardTime();
+    }
+
+    @Override
+    public boolean tryResolveIdle() {
+        return false;
+    }
+
+    @Override
+    public void idleCannotBeResolved() {
+    }
+
+    @Override
+    public void idleResolved() {
+    }
+
+    private class DetectionMailer implements Mailer {
+
+        @Override
+        public MessageQueue register(Agent agent, String groupKey) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void unregisterAll() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void send(Message msg, int to, String groupKey) throws UnRegisteredAgentException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void broadcast(Message msg, String groupKey) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void broadcast(Message msg) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void unregister(int id, String groupKey) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public boolean isAllMailBoxesAreEmpty(String groupKey) {
+            for (int i = 0; i < agentActiveGroups.length; i++) {
+                if (takeQueues(agentActiveGroups[i])[i].availableMessages() > 0) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        @Override
+        public void setExecution(Execution aThis) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void releaseAllBlockingAgents(String mailGroup) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void releaseAllBlockingAgents() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void hookIn(BeforeMessageSentHook hook) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
 }

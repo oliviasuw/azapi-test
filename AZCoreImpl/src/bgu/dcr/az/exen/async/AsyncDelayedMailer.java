@@ -15,8 +15,6 @@ import bgu.dcr.az.api.exen.mdef.MessageDelayer;
 import bgu.dcr.az.api.exp.UnRegisteredAgentException;
 import bgu.dcr.az.api.tools.IdleDetector;
 import bgu.dcr.az.exen.AbstractMailer;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -39,6 +37,14 @@ public class AsyncDelayedMailer extends AbstractMailer implements IdleDetector.L
         this.timeForwardDetector.addListener(this);
     }
 
+    /**
+     * tells the mailer what group the agent is currently on - used for solving the nested agents + message delays correlation
+     * where agents in different levels of the nest has their messages delayed and because they are not on the same 
+     * level no empty boxes are detected - this method will update the mail box group key that a given agent is looking on 
+     * so that we will be able to check the right message box.
+     * @param agent
+     * @param activeGroup 
+     */
     public void updateAgentActiveGroup(int agent, String activeGroup) {
         if (agentActiveGroups[agent] != null && activeGroup != agentActiveGroups[agent]) { //agent was in leaving state, now is back...
             timeForwardDetector.notifyAgentWorking();
@@ -144,32 +150,32 @@ public class AsyncDelayedMailer extends AbstractMailer implements IdleDetector.L
 
         @Override
         public MessageQueue register(Agent agent, String groupKey) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported.");
         }
 
         @Override
         public void unregisterAll() {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported.");
         }
 
         @Override
         public void send(Message msg, int to, String groupKey) throws UnRegisteredAgentException {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported.");
         }
 
         @Override
         public void broadcast(Message msg, String groupKey) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported.");
         }
 
         @Override
         public void broadcast(Message msg) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported.");
         }
 
         @Override
         public void unregister(int id, String groupKey) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported.");
         }
 
         @Override
@@ -185,22 +191,22 @@ public class AsyncDelayedMailer extends AbstractMailer implements IdleDetector.L
 
         @Override
         public void setExecution(Execution aThis) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported.");
         }
 
         @Override
         public void releaseAllBlockingAgents(String mailGroup) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported.");
         }
 
         @Override
         public void releaseAllBlockingAgents() {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported.");
         }
 
         @Override
         public void hookIn(BeforeMessageSentHook hook) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 }

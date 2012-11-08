@@ -1,3 +1,6 @@
+quick fix 7
+- incorrect calculation of Assignment.calcAddedCost (from quick fix 6)
+
 quick fix 6
 - bug with message delays along with nested agents that require idle detection 
 

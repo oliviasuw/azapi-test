@@ -121,24 +121,30 @@ public class Assignment implements Serializable, DeepCopyable {
      * @param var
      * @param val
      * @param p
-     * @return the cost that will be added to this assignment by assigning null     {@code var <- val} in the problem p
+     * @return the cost that will be added (or all ready added) to this assignment by assigning  {@code var <- val} in the problem p
      *             this includes binary and unary costs
+     * 
+     * means: 
+     * costOf(assignment + <var,val>) - costOf(assignment - <var, currentAssignmentOf(var)>)
+     * 
      * * (increase cc checks)
      */
     public int calcAddedCost(int var, int val, ImmutableProblem p) {
-        int oldCost = calcCost(p);
+        int oldCache = cachedCost;
         boolean assignend = isAssigned(var);
         int old = (assignend ? getAssignment(var) : 0);
-
+        unassign(var);
+        int withoutCost = calcCost(p);
+        
         assign(var, val);
-        int ans = calcCost(p) - oldCost;
+        int ans = calcCost(p) - withoutCost;
         if (assignend) {
             assign(var, old);
+            cachedCost = oldCache;
         } else {
             unassign(var);
+            cachedCost = withoutCost;
         }
-        
-        cachedCost = old; //fix cache
 
         return ans;
     }
@@ -149,6 +155,7 @@ public class Assignment implements Serializable, DeepCopyable {
      * @return the cost of the assignment without the given variable assignment
      */
     public int calcCostWithout(int var, ImmutableProblem p) {
+        int oldCache = cachedCost;
         boolean assignend = isAssigned(var);
         int old = (assignend ? getAssignment(var) : 0);
         
@@ -158,7 +165,7 @@ public class Assignment implements Serializable, DeepCopyable {
             assign(var, old);
         } 
         
-        cachedCost = old; //fix cache
+        cachedCost = oldCache; //fix cache
 
         return ans;
     }

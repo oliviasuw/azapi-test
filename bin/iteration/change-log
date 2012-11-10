@@ -1,4 +1,7 @@
 quick fix 9
+remove redundent logs
+
+quick fix 9
 -Fix: deadlock on message delayer.
 
 quick fix 8

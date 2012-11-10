@@ -1,3 +1,6 @@
+quick fix 9
+-Fix: deadlock on message delayer.
+
 quick fix 8
 - Fix: concurrent modification exception when using message delayer
 

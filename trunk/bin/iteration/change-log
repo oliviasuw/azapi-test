@@ -1,11 +1,14 @@
+quick fix 8
+- Fix: concurrent modification exception when using message delayer
+
 quick fix 7
-- incorrect calculation of Assignment.calcAddedCost (from quick fix 6)
+- Fix: incorrect calculation of Assignment.calcAddedCost (from quick fix 6)
 
 quick fix 6
-- bug with message delays along with nested agents that require idle detection 
+- Fix: bug with message delays along with nested agents that require idle detection 
 
 quick fix 5
-- bug with infinite execution when enabling message delayer
+- Fix: bug with infinite execution when enabling message delayer
 
 quick fix 4
 - synchronize javadoc

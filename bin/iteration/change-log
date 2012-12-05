@@ -1,22 +1,14 @@
-quick fix 10
-remove redundent logs
+quick fix 11
+- Fix UI not showing correctly the cost in the constraint matrix.
+- Visualization support was re-added.
 
-quick fix 9
--Fix: deadlock on message delayer.
-
-quick fix 8
+quick fixs 4 - 10
+- Remove redundent logs
+- Fix: deadlock on message delayer.
 - Fix: concurrent modification exception when using message delayer
-
-quick fix 7
 - Fix: incorrect calculation of Assignment.calcAddedCost (from quick fix 6)
-
-quick fix 6
 - Fix: bug with message delays along with nested agents that require idle detection 
-
-quick fix 5
 - Fix: bug with infinite execution when enabling message delayer
-
-quick fix 4
 - synchronize javadoc
 - update libraries
 - fix issues regarding running visualizations 

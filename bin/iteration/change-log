@@ -1,8 +1,12 @@
+quick fix 12
+- Fix crash when calling calcCost when the problem is asymetric and the owner is not assigned
+- Fix javadoc in agent class
+
 quick fix 11
 - Fix UI not showing correctly the cost in the constraint matrix.
 - Visualization support was re-added.
 
-quick fixs 4 - 10
+quick fixes 4 - 10
 - Remove redundent logs
 - Fix: deadlock on message delayer.
 - Fix: concurrent modification exception when using message delayer

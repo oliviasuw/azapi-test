@@ -1,12 +1,18 @@
-quick fix 12
-- Fix crash when calling calcCost when the problem is asymetric and the owner is not assigned
-- Fix javadoc in agent class
+AgentZero i5.1
+preperation for experiment language enhancements
 
-quick fix 11
-- Fix UI not showing correctly the cost in the constraint matrix.
-- Visualization support was re-added.
-
-quick fixes 4 - 10
+AgentZero i5
+CPU version 
+this version contain many preperations to the CPU
+it also contain some package name changes - so some import statments in your classes may need to be changed
+this version also include new type of module - limiter
+and one implementation of this module called 'time-limiter'
+it usage is very simple - inside test add: <time-limiter seconde="20"/> to limit your algorithm time to 20 seconds
+- fixed: negative NCCC bug
+- removed: some algorithms that left inside the last build accidently
+- added: more support for the cpu and amazon experiment splitting
+- added: support for visualizations 
+- fixed: regression bug with ncsc statistic 
 - Remove redundent logs
 - Fix: deadlock on message delayer.
 - Fix: concurrent modification exception when using message delayer
@@ -16,25 +22,9 @@ quick fixes 4 - 10
 - synchronize javadoc
 - update libraries
 - fix issues regarding running visualizations 
-
-quick fix 3
-added visualization support to the plugin
-
-quick fix 2
-- added: more support for the cpu and amazon experiment splitting
-- added: support for visualizations 
-- fixed: regression bug with ncsc statistic 
-
-quick fix 1
-- fixed: negative NCCC bug
-- removed: some algorithms that left inside the last build accidently
-
-AgentZero i5
-CPU version 
-this version contain many preperations to the CPU
-it also contain some package name changes - so some import statments in your classes may need to be changed
-this version also include new type of module - limiter
-and one implementation of this module called 'time-limiter'
-it usage is very simple - inside test add: <time-limiter seconde="20"/> to limit your algorithm time to 20 seconds
+- Fix UI not showing correctly the cost in the constraint matrix.
+- Visualization support was re-added.
+- Fix crash when calling calcCost when the problem is asymetric and the owner is not assigned
+- Fix javadoc in agent class
 
 

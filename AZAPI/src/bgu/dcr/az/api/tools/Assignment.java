@@ -111,6 +111,8 @@ public class Assignment implements Serializable, DeepCopyable {
                 cachedCost = p.calculateCost(this);;
             }
 
+            
+//            System.out.println("Cost of " + this + " is: " + cachedCost);
             return cachedCost;
         } else {
             return ((Problem) p).calculateGlobalCost(this);
@@ -199,6 +201,25 @@ public class Assignment implements Serializable, DeepCopyable {
         return minv;
     }
 
+    /**
+     * searches for the first value that is consistent with this assignment in the given domain of values
+     * if no such value found then this function will return the defaultValue
+     * @param var
+     * @param domain
+     * @param p
+     * @param defaultValue
+     * @return 
+     */
+    public int findConsistentValue(int var, Collection<Integer> domain, ImmutableProblem p, int defaultValue){
+        for (Integer d : domain){
+            if (isConsistentWith(var, d, p)){
+                return d;
+            }
+        }
+        
+        return defaultValue;
+    }
+    
     /**
      * find the first assignment to variable - var that keeps the assignment
      * under the given upperbound returns -1 if none found..

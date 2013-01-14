@@ -21,10 +21,14 @@ public class AsymmetricBinaryMapConstraintPackage extends BinaryMapConstraintPac
 
     @Override
     public void calculateCost(int owner, Assignment k, ConstraintCheckResult result) {
+        if (!k.isAssigned(owner)) { //if owner is not assigned then its cost is 0 because it is not conflicting with any value.
+            result.set(0, 0);
+            return;
+        }
         int value = k.getAssignment(owner);
         int c = 0;
         int cc = 0;
-        
+
         for (Map.Entry<Integer, Integer> e : k.getAssignments()) {
             int var = e.getKey();
             int val = e.getValue();
@@ -41,13 +45,13 @@ public class AsymmetricBinaryMapConstraintPackage extends BinaryMapConstraintPac
         ConstraintCheckResult result = new ConstraintCheckResult();
         int c = 0;
         LinkedList<Map.Entry<Integer, Integer>> past = new LinkedList<Map.Entry<Integer, Integer>>();
-        
+
         for (Map.Entry<Integer, Integer> e : assignment.getAssignments()) {
             int var = e.getKey();
             int val = e.getValue();
             getConstraintCost(var, var, val, result);
             c += result.getCost();
-            
+
             for (Map.Entry<Integer, Integer> pe : past) {
                 int pvar = pe.getKey();
                 int pval = pe.getValue();
@@ -60,7 +64,7 @@ public class AsymmetricBinaryMapConstraintPackage extends BinaryMapConstraintPac
 
             past.add(e);
         }
-        
+
         return c;
     }
 }

@@ -55,6 +55,7 @@ public class IdleDetector {
             waiting++;
             s.release();
         } catch (InterruptedException ex) {
+            ex.printStackTrace();
             Thread.currentThread().interrupt();
         }
 
@@ -81,6 +82,7 @@ public class IdleDetector {
             }
 
         } catch (InterruptedException ex) {
+            ex.printStackTrace();
             Thread.currentThread().interrupt();
         }
 

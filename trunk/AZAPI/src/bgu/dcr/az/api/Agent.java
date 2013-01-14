@@ -388,9 +388,9 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * the agent can submit its assignment so that when the function
-     * finishWithAccumulationOfSubmitedPartialAssignments will get called this
-     * will be the assignment to be accumulated - if you want to re-assign a new
+     * the agent can submit its assignment so that when the algorithm is finish running 
+     * (happened when all agents call finish) this will be the assignment to be accumulated
+     * - if you want to re-assign a new
      * value you don't have to call unSubmitCurrentAssignment, you can just call
      * this function again with the new value
      *

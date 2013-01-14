@@ -253,7 +253,7 @@ public class Problem implements ImmutableProblem {
     public int getConstraintCost(int x1, int v1, int x2, int v2) {
         ConstraintCheckResult result = new ConstraintCheckResult();
         constraints.getConstraintCost(x1, x1, v1, x2, v2, result);
-        return result.getCheckCost();
+        return result.getCost();
     }
 
     public void getConstraintCost(int owner, Assignment k, ConstraintCheckResult result) {
@@ -263,7 +263,7 @@ public class Problem implements ImmutableProblem {
     public int getConstraintCost(int owner, Assignment k) {
         ConstraintCheckResult result = new ConstraintCheckResult();
         constraints.getConstraintCost(owner, k, result);
-        return result.getCheckCost();
+        return result.getCost();
     }
 
     public void addNeighbor(int to, int neighbor) {

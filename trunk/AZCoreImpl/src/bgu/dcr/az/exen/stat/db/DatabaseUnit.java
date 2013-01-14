@@ -184,6 +184,8 @@ public enum DatabaseUnit {
 
     public void dumpToCsv(File folder) {
         try {
+            if (!folder.exists()) folder.mkdirs();
+            
             Database db = getDatabase();
             String allTablesSQL = "SELECT TABLE_NAME  FROM INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = 'PUBLIC'";
             ResultSet res = db.query(allTablesSQL);
@@ -192,7 +194,9 @@ public enum DatabaseUnit {
                 String tableName = res.getString("TABLE_NAME");
                 System.out.println("writing table " + tableName);
                 ResultSet rs = db.query("select * from " + tableName);
-                FileWriter fw = new FileWriter(new File(folder.getAbsolutePath() + "/" + tableName + ".csv"));
+                File ff = new File(folder.getAbsolutePath() + "/" + tableName + ".csv");
+                ff.createNewFile();
+                FileWriter fw = new FileWriter(ff);
                 Csv.getInstance().write(fw, rs);
             }
 

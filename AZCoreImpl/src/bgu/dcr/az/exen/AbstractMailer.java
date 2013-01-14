@@ -28,7 +28,7 @@ public abstract class AbstractMailer implements Mailer {
 
     private Execution exec;
     protected Map<String, MessageQueue[]> mailBoxes = new HashMap<String, MessageQueue[]>();
-    private Semaphore mailBoxModifierKey = new Semaphore(1);
+    protected Semaphore mailBoxModifierKey = new Semaphore(1);
     protected List<Hooks.BeforeMessageSentHook> beforeMessageSentHooks = new LinkedList<Hooks.BeforeMessageSentHook>();
 
     @Override

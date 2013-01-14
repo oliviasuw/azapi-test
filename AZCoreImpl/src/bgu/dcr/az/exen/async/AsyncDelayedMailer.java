@@ -16,6 +16,8 @@ import bgu.dcr.az.api.exp.UnRegisteredAgentException;
 import bgu.dcr.az.api.tools.IdleDetector;
 import bgu.dcr.az.exen.AbstractMailer;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -38,12 +40,15 @@ public class AsyncDelayedMailer extends AbstractMailer implements IdleDetector.L
     }
 
     /**
-     * tells the mailer what group the agent is currently on - used for solving the nested agents + message delays correlation
-     * where agents in different levels of the nest has their messages delayed and because they are not on the same 
-     * level no empty boxes are detected - this method will update the mail box group key that a given agent is looking on 
-     * so that we will be able to check the right message box.
+     * tells the mailer what group the agent is currently on - used for solving
+     * the nested agents + message delays correlation where agents in different
+     * levels of the nest has their messages delayed and because they are not on
+     * the same level no empty boxes are detected - this method will update the
+     * mail box group key that a given agent is looking on so that we will be
+     * able to check the right message box.
+     *
      * @param agent
-     * @param activeGroup 
+     * @param activeGroup
      */
     public void updateAgentActiveGroup(int agent, String activeGroup) {
         if (agentActiveGroups[agent] != null && activeGroup != agentActiveGroups[agent]) { //agent was in leaving state, now is back...
@@ -98,33 +103,42 @@ public class AsyncDelayedMailer extends AbstractMailer implements IdleDetector.L
 
         boolean found = false;
         long min = -1;
+        try {
+            mailBoxModifierKey.acquire();
+            try {
+                for (String groupKey : mailBoxes.keySet()) {
+                    MessageQueue[] qus = takeQueues(groupKey); //all the queues from the current group
+                    for (MessageQueue q : qus) {
+                        Long v = ((DelayedMessageQueue) q).minimumMessageTime();
+                        if (v == null) {
+                            continue;
+                        }
+                        if (min > v || !found) {
+                            min = v;
+                            found = true;
+                        }
+                    }
+                }
 
-        for (String groupKey : mailBoxes.keySet()) {
-            MessageQueue[] qus = takeQueues(groupKey); //all the queues from the current group
-            for (MessageQueue q : qus) {
-                Long v = ((DelayedMessageQueue) q).minimumMessageTime();
-                if (v == null) {
-                    continue;
+                if (found) {
+                    for (String groupKey : mailBoxes.keySet()) {
+                        MessageQueue[] qus = takeQueues(groupKey); //all the queues from the current group
+                        for (MessageQueue q : qus) { //release all queues by the known time.
+                            ((DelayedMessageQueue) q).release(min);
+                        }
+                    }
+                    
+                    mailBoxModifierKey.release();
+                    releaseAllBlockingAgents();
+                    mailBoxModifierKey.acquire();
+                    return true;
                 }
-                if (min > v || !found) {
-                    min = v;
-                    found = true;
-                }
+            } finally {
+                mailBoxModifierKey.release();
             }
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
         }
-
-        if (found) {
-            for (String groupKey : mailBoxes.keySet()) {
-                MessageQueue[] qus = takeQueues(groupKey); //all the queues from the current group
-                for (MessageQueue q : qus) { //release all queues by the known time.
-                    ((DelayedMessageQueue) q).release(min);
-                }
-            }
-
-            releaseAllBlockingAgents();
-            return true;
-        }
-
         return false;
     }
 

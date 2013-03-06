@@ -1,3 +1,6 @@
+i5.1 quickfix2
+* Critical fix [nested agents in sync execution bug.]
+
 i5.1 quickfix1
 * DFS Pseudo Tree moved to the API
 

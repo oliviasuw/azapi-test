@@ -1,0 +1,9 @@
+<experiment>
+    <async-test name="test1" run-var="n" repeat-count="30" start="1" end="7" tick-size="1">
+        <dcop-unstructured p1="0.8" d="7"/>
+        <algorithm name="__SBB"/>
+        <msgc-sc/>
+        <nccc-sc/>
+        <ncsc-sc/>
+    </async-test>
+</experiment>

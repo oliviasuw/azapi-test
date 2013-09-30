@@ -110,9 +110,6 @@ public class Assignment implements Serializable, DeepCopyable {
             if (cachedCost < 0) {
                 cachedCost = p.calculateCost(this);;
             }
-
-            
-//            System.out.println("Cost of " + this + " is: " + cachedCost);
             return cachedCost;
         } else {
             return ((Problem) p).calculateGlobalCost(this);

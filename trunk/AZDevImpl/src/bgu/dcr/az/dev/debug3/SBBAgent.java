@@ -5,20 +5,16 @@ import java.util.List;
 
 import bgu.dcr.az.api.agt.SimpleAgent;
 import bgu.dcr.az.api.ano.Algorithm;
-import bgu.dcr.az.api.ano.Variable;
 import bgu.dcr.az.api.ano.WhenReceived;
 import bgu.dcr.az.api.tools.Assignment;
 
 /**
- * 
+ * the synchronous-back-bounding algorithm
+ * should be used with Binary DCOP's only.
  * @author bennyl
  */
 @Algorithm(name = "__SBB")
 public class SBBAgent extends SimpleAgent {
-
-    @Variable(name = "test", description = "test variable", defaultValue = "50")
-    public double test = 0.75;
-    
     Assignment cpa, best;
     List<Integer> currentDomain;
 
@@ -26,7 +22,8 @@ public class SBBAgent extends SimpleAgent {
     public void start() {
         if (isFirstAgent()) {
             cpa = new Assignment();
-            currentDomain = new LinkedList<Integer>(getDomain());
+            //copying the domain as it is immutable
+            currentDomain = new LinkedList<Integer>(getDomain()); 
             assignCpa();
         }
     }
@@ -46,7 +43,9 @@ public class SBBAgent extends SimpleAgent {
                 best = cpa.deepCopy();
                 backtrack();
             } else {
-                send("CPA", cpa).toNextAgent();
+                send("CPA", cpa).toNextAgent(); 
+                //you can also use:
+                //send("CPA", cpa).to(getId() + 1);
             }
         } else {
             backtrack();
@@ -73,7 +72,6 @@ public class SBBAgent extends SimpleAgent {
     public void handleBACKTRACK(Assignment cpa, Assignment best) {
         this.cpa = cpa;
         this.best = best;
-
         assignCpa();
     }
 }

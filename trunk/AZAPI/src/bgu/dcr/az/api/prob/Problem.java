@@ -35,7 +35,7 @@ public class Problem implements ImmutableProblem {
      * @param var1
      * @param var2
      * @return true if there is a constraint between var1 and var2 operation
-     * cost: o(d^2)cc
+     *         cost: o(d^2)cc
      */
     @Override
     public boolean isConstrained(int var1, int var2) {
@@ -116,9 +116,9 @@ public class Problem implements ImmutableProblem {
      * initialize the problem with multiple domains the number of variables is
      * the domain.size()
      *
-     * @param type the type of the problem
+     * @param type    the type of the problem
      * @param domains list of domains for each agent - this list also determines
-     * the number of variables that will be domains.size
+     *                the number of variables that will be domains.size
      */
     public void initialize(ProblemType type, List<? extends Set<Integer>> domains) {
         initialize(type, domains, false);
@@ -127,9 +127,9 @@ public class Problem implements ImmutableProblem {
     /**
      * initialize the problem with a single domain
      *
-     * @param type the problem type
+     * @param type              the problem type
      * @param numberOfVariables number of variables in this problem
-     * @param domain the domain for all the variables.
+     * @param domain            the domain for all the variables.
      */
     public void initialize(ProblemType type, int numberOfVariables, Set<Integer> domain) {
         initialize(type, ImmutableSetOfIntegers.repeat(domain, numberOfVariables), true);
@@ -202,8 +202,48 @@ public class Problem implements ImmutableProblem {
         }
     }
 
+    /**
+     * replaces the k-ary constraint if it exists
+     *
+     * @param owner
+     * @param constraint
+     */
     public void setConstraint(int owner, KAryConstraint constraint) {
         constraints.setConstraintCost(owner, constraint);
+    }
+
+    /**
+     * add into the existing constrains
+     *
+     * @param owner
+     * @param constraint
+     */
+    public void addConstraint(int owner, KAryConstraint constraint) {
+        constraints.addConstraintCost(owner, constraint);
+    }
+
+    /**
+     * symmetrically adding the constraint to all of the participants
+     *
+     * @param constraint
+     */
+    public void addConstraint(KAryConstraint constraint) {
+        for (int participant : constraint.getParicipients()) {
+            constraints.addConstraintCost(participant, constraint);
+        }
+    }
+
+    /**
+     * symmetrically setting the constraint to all of the participants
+     *
+     * @see setConstraintCost
+     *
+     * @param constraint
+     */
+    public void setConstraint(KAryConstraint constraint) {
+        for (int participant : constraint.getParicipients()) {
+            constraints.setConstraintCost(participant, constraint);
+        }
     }
 
     public void setConstraintCost(int owner, int x1, int v1, int x2, int v2, int cost) {
@@ -259,7 +299,7 @@ public class Problem implements ImmutableProblem {
     public void getConstraintCost(int owner, Assignment k, ConstraintCheckResult result) {
         constraints.getConstraintCost(owner, k, result);
     }
-    
+
     public int getConstraintCost(int owner, Assignment k) {
         ConstraintCheckResult result = new ConstraintCheckResult();
         constraints.getConstraintCost(owner, k, result);

@@ -24,6 +24,8 @@ public interface ConstraintsPackage {
      */
     public void setConstraintCost(int owner, KAryConstraint constraint);
 
+    public void addConstraintCost(int owner, KAryConstraint constraint);
+
     /**
      * Binary version
      *
@@ -74,33 +76,36 @@ public interface ConstraintsPackage {
 
     /**
      * return the set of neighbor's belongs to the variable xi
+     *
      * @param xi
-     * @return 
+     * @return
      */
     public Set<Integer> getNeighbores(int xi);
-    
+
     /**
      * add neighbor to the set of neighborer's belongs to 'to'
+     *
      * @param to
-     * @param neighbor 
+     * @param neighbor
      */
     public void addNeighbor(int to, int neighbor);
-    
+
     /**
      * return the cost of the given assignment from the given owner point of view inside the parameter result
      * the result parameter is an array of 2: [cost, number of constraint checks required]
+     *
      * @param owner
      * @param a
-     * @return 
-     * 
+     * @return
+     *
      */
     public void calculateCost(int owner, Assignment a, ConstraintCheckResult result);
-    
+
     /**
      * calculate the cost relative to the system - means that this cost is calculated to be the sum of costs of all owners possible
+     *
      * @param a
-     * @return 
+     * @return
      */
     public int calculateGlobalCost(Assignment a);
-
 }

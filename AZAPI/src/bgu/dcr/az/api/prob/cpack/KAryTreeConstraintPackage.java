@@ -5,16 +5,14 @@
 package bgu.dcr.az.api.prob.cpack;
 
 import bgu.dcr.az.api.Agt0DSL;
-import bgu.dcr.az.api.ds.ImmutableSet;
+import bgu.dcr.az.api.prob.ComposedKAryConstraint;
 import bgu.dcr.az.api.prob.ConstraintCheckResult;
 import bgu.dcr.az.api.prob.KAryConstraint;
-import bgu.dcr.az.api.prob.RandomKAryConstraint;
 import bgu.dcr.az.api.tools.Assignment;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -68,10 +66,8 @@ public class KAryTreeConstraintPackage extends AbstractConstraintPackage {
         }
     }
 
-    @Override
-    public void setConstraintCost(int owner, KAryConstraint constraint) {
-//        System.out.println("Adding constraint: " + constraint + " to " + owner);
-        roots[owner].add(constraint);
+    private void insertKAryConstraint(int owner, KAryConstraint constraint, boolean replace){
+        roots[owner].add(constraint, replace);
 
         //update neighbores
         for (int p : constraint.getParicipients()) {
@@ -80,10 +76,15 @@ public class KAryTreeConstraintPackage extends AbstractConstraintPackage {
             }
         }
     }
+    
+    @Override
+    public void setConstraintCost(int owner, KAryConstraint constraint) {
+        insertKAryConstraint(owner, constraint, true);
+    }
 
     @Override
     public void calculateCost(int owner, Assignment a, ConstraintCheckResult result) {
-        Set<Integer> participients = a.assignedVariables();
+//        Set<Integer> participients = a.assignedVariables();
         List<KAryConstraint> constraintsToConsider = roots[owner].collectAllSubConstraints(a);
 
 //        //TEST CODE.
@@ -119,23 +120,28 @@ public class KAryTreeConstraintPackage extends AbstractConstraintPackage {
         return cost;
     }
 
+    @Override
+    public void addConstraintCost(int owner, KAryConstraint constraint) {
+        insertKAryConstraint(owner, constraint, false);
+    }
+
     private static class Node {
 
-        KAryConstraint constraint;
+        ComposedKAryConstraint constraint = new ComposedKAryConstraint();
         Map<Integer, Node> childrens;
 
         public Node() {
-            this.constraint = null;
             this.childrens = new HashMap<Integer, Node>();
         }
 
-        public void add(KAryConstraint constraint) {
+        public void add(KAryConstraint constraint, boolean replace) {
             int[] participients = constraint.getParicipients();
             Arrays.sort(participients);
-            _add(constraint, participients, 0);
+            _add(constraint, participients, 0, replace);
         }
 
-        private void _add(KAryConstraint constraint, int[] participients, int idx) {
+        private void _add(KAryConstraint constraint, int[] participients, int idx, boolean replace) {
+
             if (idx < participients.length) {
                 Node children = childrens.get(participients[idx]);
                 if (children == null) {
@@ -143,9 +149,12 @@ public class KAryTreeConstraintPackage extends AbstractConstraintPackage {
                     childrens.put(participients[idx], children);
                 }
 
-                children._add(constraint, participients, idx + 1);
+                children._add(constraint, participients, idx + 1, replace);
             } else {
-                this.constraint = constraint;
+                if (replace) {
+                    this.constraint.getComposition().clear();
+                }
+                this.constraint.getComposition().add(constraint);
             }
         }
 
@@ -153,7 +162,7 @@ public class KAryTreeConstraintPackage extends AbstractConstraintPackage {
             List<Integer> participients = extractParticipients(a);
             Node currentNode = this;
             for (Integer p : participients) {
-                currentNode = childrens.get(p);
+                currentNode = currentNode.childrens.get(p);
                 if (currentNode == null) {
                     return null;
                 }

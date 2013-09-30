@@ -14,7 +14,7 @@ import bc.dsl.SwingDSL;
 import bgu.dcr.az.api.exen.Execution;
 import bgu.dcr.az.api.exen.Experiment;
 import bgu.dcr.az.api.exen.Test;
-import bgu.dcr.az.api.Problem;
+import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.dev.ExperimentExecutionController;
 import bgu.dcr.az.exen.stat.db.DatabaseUnit;

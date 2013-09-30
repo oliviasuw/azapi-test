@@ -4,7 +4,6 @@
  */
 package bgu.dcr.az.api.prob.cpack;
 
-import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.prob.ConstraintCheckResult;
 import bgu.dcr.az.api.prob.KAryConstraint;
@@ -142,5 +141,10 @@ public class BinaryMapConstraintPackage extends AbstractConstraintPackage {
         ConstraintCheckResult res = new ConstraintCheckResult();
         calculateCost(-1, assignment, res);
         return res.getCost();
+    }
+
+    @Override
+    public void addConstraintCost(int owner, KAryConstraint constraint) {
+        throw new UnsupportedOperationException("Not supported.");
     }
 }

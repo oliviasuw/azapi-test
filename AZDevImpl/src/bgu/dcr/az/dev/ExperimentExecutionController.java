@@ -46,7 +46,7 @@ public enum ExperimentExecutionController implements Experiment.ExperimentListen
     File badProblemStorage = new File("fail-problems");
     boolean inDebugMode = false;
 
-    void run(File xml, boolean withGui, boolean debug) throws InterruptedException {
+    public void run(File xml, boolean withGui, boolean debug) throws InterruptedException {
         try {
             this.inDebugMode = debug;
             worker.start();

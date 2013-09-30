@@ -71,6 +71,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
      */
     private List<AlgorithmMetadata> algorithms = new LinkedList<AlgorithmMetadata>();
     private ProblemGenerator pgen = null;
+    private ProblemGenerator pgenForExternalUse = null;
     private List<StatisticCollector> collectors = new LinkedList<StatisticCollector>();
     private TestResult res = new TestResult().toSuccessState();
     private Random rand;
@@ -212,12 +213,11 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
 
         int ticksPerformed = (number - 1) / repeatCount;
         float vvar = start + tickSize * (float) ticksPerformed;
-        ProblemGenerator tpgen = DeepCopyUtil.deepCopy(pgen);
 
-        ConfigurationMetadata.bubbleDownVariable(tpgen, runVar, vvar);
+        ConfigurationMetadata.bubbleDownVariable(pgenForExternalUse, runVar, vvar);
         Problem p = new Problem();
 
-        tpgen.generate(p, new Random(problemSeeds.get(number - 1)));
+        pgenForExternalUse.generate(p, new Random(problemSeeds.get(number - 1)));
         return p;
     }
 
@@ -472,6 +472,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
     @Configuration(name = "Problem Generator", description = "Set problem generator")
     public void setProblemGenerator(ProblemGenerator pgen) {
         this.pgen = pgen;
+        this.pgenForExternalUse = DeepCopyUtil.deepCopy(pgen);
     }
 
     /**

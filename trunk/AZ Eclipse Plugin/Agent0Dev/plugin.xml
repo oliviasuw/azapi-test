@@ -187,11 +187,6 @@
             name="Debug Selected Problem">
       </command>
       <command
-            defaultHandler="agt0.dev.cmd.Test"
-            id="agt0.dev.cmd.test"
-            name="Test">
-      </command>
-      <command
             defaultHandler="agt0.dev.cmd.UpdateFrameworkCommand"
             id="Agent0Dev.update.now.command"
             name="Update Framework">
@@ -205,11 +200,6 @@
             defaultHandler="agt0.dev.cmd.SubmitABugCommand"
             id="Agent0Dev.goto.bts"
             name="Submit a Bug">
-      </command>
-      <command
-            defaultHandler="agt0.dev.cmd.ExecuteOnAmazonCloudCommand"
-            id="Agent0Dev.cloud.execution"
-            name="Execute on AmazonCloud">
       </command>
    </extension>
    
@@ -325,12 +315,6 @@
                    style="push">
              </command>
              <command
-                   commandId="agt0.dev.cmd.test"
-                   id="agt0.dev.menu.main.test"
-                   label="Test"
-                   style="push">
-             </command>
-             <command
                    commandId="Agent0Dev.update.now.command"
                    icon="icons/mnu/update.png"
                    label="Update AgentZero Framework"
@@ -395,12 +379,6 @@
                    icon="icons/mnu/genmsg.png"
                    id="agt0.dev.menu.main.genmsg"
                    label="Generate Message"
-                   style="push">
-             </command>
-             <command
-                   commandId="Agent0Dev.cloud.execution"
-                   id="Agent0Dev.cloud.execution.menu"
-                   label="Execute On Amazon Cloud"
                    style="push">
              </command>
           </toolbar>

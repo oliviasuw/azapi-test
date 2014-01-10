@@ -45,8 +45,6 @@ public interface Execution extends Process {
 
     ExecutionResult getResult();
     
-//    ExecutionResult getPartialResult();
-    
     AgentRunner getAgentRunnerFor(Agent a);
 
     /**
@@ -86,6 +84,7 @@ public interface Execution extends Process {
     /**
      * will stop the execution - interupting all the agent runners!
      */
+    @Override
     void stop();
     
     /**

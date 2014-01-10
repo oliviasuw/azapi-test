@@ -18,10 +18,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  *
@@ -51,6 +54,14 @@ public class TestUI extends Application {
         primaryStage.setScene(scene);
         loadSelectionScreen();
         primaryStage.show();
+        
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent t) {
+                System.exit(42);
+            }
+        });
     }
 
     //executing algorithm -> analyzing data -> show
@@ -101,7 +112,7 @@ public class TestUI extends Application {
             FXMLLoader loader = new FXMLLoader(VisualizationChooseScreen.class.getResource("VisualizationChooseScreen.fxml"));
             vchooseScreen = (Pane) loader.load();
             VisualizationChooseScreen controller = (VisualizationChooseScreen) loader.getController();
-            exp = ExperimentReader.read(new File("exp.xml"));
+            exp = ExperimentReader.read(new File("test.xml"));
             controller.setExperiment(exp);
         }
         primaryStage.getScene().setRoot(vchooseScreen);

@@ -5,7 +5,6 @@
 package bgu.dcr.az.exen;
 
 import bgu.dcr.az.api.Agent;
-import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.Hooks;
 import bgu.dcr.az.api.Hooks.BeforeMessageSentHook;
 import bgu.dcr.az.api.exen.Mailer;
@@ -17,8 +16,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *

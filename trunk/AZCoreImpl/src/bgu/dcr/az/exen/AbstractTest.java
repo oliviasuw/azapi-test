@@ -225,7 +225,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
         currentExecutionNumber = di.getExecutionNumber();
         currentProblemNumber = di.getSelectedProblemNumber();
         currentVarValue = di.getRunvar();
-        
+
         ExecutionResult exr;
         try {
 
@@ -276,7 +276,6 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
                 return;
             }
 
-
             if (tickSize == 0) {
                 tickSize = 0.1f;
             }
@@ -321,7 +320,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
                         limitedProblems.add(getCurrentProblemNumber());
                     }
 
-                    if (res.getFailedClass() != null && ( res.getState() != State.SUCCESS || Thread.currentThread().isInterrupted())) {
+                    if (res.getFailedClass() != null && (res.getState() != State.SUCCESS || Thread.currentThread().isInterrupted())) {
                         String algName;
                         if (Agent.class.isAssignableFrom(res.getFailedClass())) {
                             algName = ((Algorithm) res.getFailedClass().getAnnotation(Algorithm.class)).name();
@@ -381,7 +380,7 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
             AlgorithmMetadata alg = getAlgorithms().get(execNumber % numberOfAlgorithms);
             double rvarVal = getVarStart() + (execNumber / (numberOfAlgorithms * getRepeatCount())) * getTickSize();
             ConfigurationMetadata.bubbleDownVariable(this, getRunningVarName(), rvarVal);
-            
+
             ExecutionSelector esel = new ExecutionSelector(getName(), alg.getInstanceName(), execNumber / numberOfAlgorithms + 1, execNumber + 1, rvarVal);
             ret.add(esel);
         }
@@ -442,7 +441,11 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
 
     @Override
     public String getCurrentExecutedAlgorithmInstanceName() {
-        return currentAlgorithm.getInstanceName();
+        if (currentAlgorithm != null) {
+            return currentAlgorithm.getInstanceName();
+        } else {
+            return "?";
+        }
     }
 
     private void initialize() {
@@ -603,4 +606,10 @@ public abstract class AbstractTest extends AbstractProcess implements Test, Exte
             throw new BadConfigurationException("[Test " + getName() + "] bad configuration discovered: " + message);
         }
     }
+
+    @Override
+    public String toString() {
+        return this.getName();
+    }
+
 }

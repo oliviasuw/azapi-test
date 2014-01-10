@@ -20,6 +20,7 @@ import bgu.dcr.az.vdev.vis.misc.AgentIcon;
 import bgu.dcr.az.vdev.vis.ngr.NetworkGraphVisualizationDrawer;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import resources.img.ResourcesImgAnchor;
 
 /**
  *
@@ -71,7 +72,7 @@ public class NetworkTrafficVisualization implements Visualization {
 
     @Override
     public Image getThumbnail() {
-        return AgentIcon.agentImage;
+        return new Image(ResourcesImgAnchor.class.getResourceAsStream("camera.png"));
     }
 
     @Override

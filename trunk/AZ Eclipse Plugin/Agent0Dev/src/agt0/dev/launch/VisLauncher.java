@@ -70,20 +70,21 @@ public class VisLauncher extends AbstractJavaLaunchConfigurationDelegate {
 			}
 			
 			classPath[libFiles.length] = binClassPath; 
-			
-			File jfxr = SharedDataUnit.UNIT.findJavaFxRuntime();
-			if (jfxr != null){
-				classPath[libFiles.length+1] = jfxr.getAbsolutePath() + "/lib/jfxrt.jar";
-			}else {
-				WhereIsJFXDialog dialog = EclipseUtils.openDialog(WhereIsJFXDialog.class);
-				jfxr = SharedDataUnit.UNIT.findJavaFxRuntime();
-				if (jfxr != null){
-					classPath[libFiles.length+1] = jfxr.getAbsolutePath() + "/lib/jfxrt.jar";
-				}	
-			}
-			
+//			
+//			File jfxr = SharedDataUnit.UNIT.findJavaFxRuntime();
+//			if (jfxr != null){
+//				classPath[libFiles.length+1] = jfxr.getAbsolutePath() + "/lib/jfxrt.jar";
+//			}else {
+//				WhereIsJFXDialog dialog = EclipseUtils.openDialog(WhereIsJFXDialog.class);
+//				jfxr = SharedDataUnit.UNIT.findJavaFxRuntime();
+//				if (jfxr != null){
+//			classPath[libFiles.length+1] = jfxr.getAbsolutePath() + "/lib/jfxrt.jar";
+			classPath[libFiles.length+1] = System.getProperty("java.home")+ File.separator+"lib"+File.separator+"jfxrt.jar";
+//				}	
+//			}
+//			
 			VMRunnerConfiguration runConfig = new VMRunnerConfiguration(
-					"bgu.dcr.az.vdev.app.VisViewApp", classPath);
+					"bgu.dcr.az.vdev.ui.TestUI", classPath);
 			
 			println("localpath is " + localPath);
 			

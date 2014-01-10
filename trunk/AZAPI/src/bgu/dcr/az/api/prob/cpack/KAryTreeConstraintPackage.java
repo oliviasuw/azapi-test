@@ -82,20 +82,16 @@ public class KAryTreeConstraintPackage extends AbstractConstraintPackage {
         insertKAryConstraint(owner, constraint, true);
     }
 
+    /**
+     * calculate the cost for the given assignment
+     * @param owner
+     * @param a
+     * @param result 
+     */
     @Override
     public void calculateCost(int owner, Assignment a, ConstraintCheckResult result) {
-//        Set<Integer> participients = a.assignedVariables();
         List<KAryConstraint> constraintsToConsider = roots[owner].collectAllSubConstraints(a);
 
-//        //TEST CODE.
-//        if (constraintsToConsider != null) {
-//            System.out.println("owner: " + owner + "\nparticipients: " + participients.toString() + "\nconsidering constraints:");
-//            for (KAryConstraint c : constraintsToConsider) {
-//                System.out.println(c.toString());
-//            }
-//
-//            System.out.println("---------------------");
-//        }
         int cost = 0;
         int cc = 0;
         if (constraintsToConsider != null) {
@@ -172,7 +168,7 @@ public class KAryTreeConstraintPackage extends AbstractConstraintPackage {
         }
 
         public List<KAryConstraint> collectAllSubConstraints(Assignment a) {
-            LinkedList<KAryConstraint> ret = new LinkedList<KAryConstraint>();
+            LinkedList<KAryConstraint> ret = new LinkedList<>();
             _collectAllSubConstraints(a.assignedVariables(), ret);
             return ret;
         }
@@ -190,7 +186,7 @@ public class KAryTreeConstraintPackage extends AbstractConstraintPackage {
         }
 
         private List<Integer> extractParticipients(Assignment a) {
-            List<Integer> participients = new ArrayList<Integer>(a.assignedVariables());
+            List<Integer> participients = new ArrayList<>(a.assignedVariables());
             Collections.sort(participients);
             return participients;
         }

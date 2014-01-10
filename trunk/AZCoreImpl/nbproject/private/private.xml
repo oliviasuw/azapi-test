@@ -2,4 +2,25 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group name="AgentZero">
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/test/bgu/dcr/az/texen/AbstractTestingTickable.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/test/bgu/dcr/az/texen/TickablesExecutorServiceTest.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/test/bgu/dcr/az/texen/CrushingTickable.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/test/bgu/dcr/az/texen/IdleTickable.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/test/bgu/dcr/az/texen/SimpleIdleTickable.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/src/bgu/dcr/az/exen/AbstractExecution.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/src/bgu/dcr/az/exen/async/AsyncAgentRunner.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/src/bgu/dcr/az/texen/WorkingTickableQueue.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/src/bgu/dcr/az/texen/Tickable.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/src/bgu/dcr/az/texen/TickablesExecutorService.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/src/bgu/dcr/az/texen/IdleDetectionCallback.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/test/bgu/dcr/az/texen/SanityTickable.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/test/bgu/dcr/az/texen/TestResult.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/src/bgu/dcr/az/texen/base/TickableAgentRunner.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/src/bgu/dcr/az/texen/base/SimpleNonBlockingMailer.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/src/bgu/dcr/az/texen/base/OneToOneAgentVariableMapper.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCoreImpl/src/bgu/dcr/az/exen/AbstractMailer.java</file>
+        </group>
+    </open-files>
 </project-private>

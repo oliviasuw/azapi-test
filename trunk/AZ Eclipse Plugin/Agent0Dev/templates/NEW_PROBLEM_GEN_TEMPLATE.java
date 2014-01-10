@@ -2,8 +2,10 @@ package ext.sim.modules;
 
 import java.util.Random;
 
-import bgu.dcr.az.api.Problem;
 import bgu.dcr.az.api.ano.Register;
+import bgu.dcr.az.api.ano.Variable;
+import bgu.dcr.az.api.prob.Problem;
+import bgu.dcr.az.api.prob.ProblemType;
 import bgu.dcr.az.exen.pgen.AbstractProblemGenerator;
 
 @Register(name = "${MODULE_NAME}")
@@ -16,7 +18,7 @@ public class ${MODULE_NAME_CC} extends AbstractProblemGenerator {
     @Override
     public void generate(Problem p, Random rand) {
     	//FIRST INITIALIZE THE PROBLEM LIKE THIS:
-    	//p.initialize(ProblemType.DCSP, n, new ImmutableSet<Integer>(Agt0DSL.range(0, d - 1)));
+    	//p.initialize(ProblemType.DCOP, n, d);
         
     	//THEN CREATE CONSTRAINTS LIKE THIS:
     	//p.setConstraintCost(i, vi, j, vj, cost);

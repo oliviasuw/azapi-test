@@ -88,9 +88,9 @@ public abstract class Agent extends Agt0DSL {
      */
     public Agent() {
         this.id = -1;
-        beforeMessageProcessingHooks = new ArrayList<Hooks.BeforeMessageProcessingHook>();
-        afterMessageProcessingHooks = new ArrayList<Hooks.AfterMessageProcessingHook>();
-        beforeCallingFinishHooks = new ArrayList<Hooks.BeforeCallingFinishHook>();
+        beforeMessageProcessingHooks = new ArrayList<>();
+        afterMessageProcessingHooks = new ArrayList<>();
+        beforeCallingFinishHooks = new ArrayList<>();
         this.pops = new PlatformOps();
         final Algorithm algAnnotation = getClass().getAnnotation(Algorithm.class);
         this.usingIdleDetection = false;
@@ -106,7 +106,7 @@ public abstract class Agent extends Agt0DSL {
             this.algorithmName = name;
         }
 
-        msgToMethod = new HashMap<String, Method>();
+        msgToMethod = new HashMap<>();
         scanMethods();
     }
 
@@ -151,12 +151,12 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * report to statistic analyzer / algorithm visualization
+     * report to statistic collector
      *
      * @param args
      * @return
      */
-    public ReportMediator report(Object... args) {
+    protected ReportMediator report(Object... args) {
         return new ReportMediator(args, this);
     }
 
@@ -178,7 +178,7 @@ public abstract class Agent extends Agt0DSL {
      *
      * @return
      */
-    public Message getCurrentMessage() {
+    protected Message getCurrentMessage() {
         return currentMessage;
     }
 
@@ -225,7 +225,7 @@ public abstract class Agent extends Agt0DSL {
     /**
      * @return set of variables that are constrainted with this agent variable
      */
-    public Set<Integer> getNeighbors() {
+    protected Set<Integer> getNeighbors() {
         return prob.getNeighbors(getId());
     }
 
@@ -247,7 +247,6 @@ public abstract class Agent extends Agt0DSL {
     public final void processNextMessage() throws InterruptedException {
         Message msg = nextMessage(); //will block until there will be messages in the q
         if (msg == null) {
-//            System.out.println("Agent " + getId() + " got null message.");
             return;
         }
 
@@ -316,14 +315,11 @@ public abstract class Agent extends Agt0DSL {
      *
      * @param what
      */
-    public void log(String what) {
+    protected void log(String what) {
         pops.exec.log(id, pops.mailGroupKey, what);
-//        if (USE_DEBUG_LOGS) {
-//            System.out.println("[" + getClass().getSimpleName() + "] " + getId() + ": " + what);
-//        }
     }
 
-    public void logIf(boolean predicate, String what) {
+    protected void logIf(boolean predicate, String what) {
         if (predicate) {
             log(what);
         }
@@ -442,18 +438,18 @@ public abstract class Agent extends Agt0DSL {
      * if this agent's id +1 is num_of_vars but later implementations can use
      * variable arranger that can change the last agent's id
      */
-    public boolean isLastAgent() {
+    protected boolean isLastAgent() {
         return this.getId() + 1 == getNumberOfVariables();
     }
 
     /**
      * same as calling a.calcCost(getProblem()); accept - if a is null returns
-     * infinity
+     * infinity (= Integer.MAX_VALUE)
      *
      * @param a
      * @return
      */
-    public int costOf(Assignment a) {
+    protected int costOf(Assignment a) {
         return (a == null ? Integer.MAX_VALUE : a.calcCost(prob));
     }
 
@@ -465,7 +461,7 @@ public abstract class Agent extends Agt0DSL {
      * @return the cost of assigning var1<-val1 while var2=val2 in the current
      * problem
      */
-    public int getConstraintCost(int var1, int val1, int var2, int val2) {
+    protected int getConstraintCost(int var1, int val1, int var2, int val2) {
         return getProblem().getConstraintCost(var1, val1, var2, val2);
     }
 
@@ -474,7 +470,7 @@ public abstract class Agent extends Agt0DSL {
      * @param val1
      * @return the unary cost of assigning var1<-val1 in the current problem
      */
-    public int getConstraintCost(int var1, int val1) {
+    protected int getConstraintCost(int var1, int val1) {
         return getProblem().getConstraintCost(var1, val1);
     }
 
@@ -489,7 +485,7 @@ public abstract class Agent extends Agt0DSL {
      * @param var
      * @return the domain of some variable in the current problem
      */
-    public ImmutableSet<Integer> getDomainOf(int var) {
+    protected ImmutableSet<Integer> getDomainOf(int var) {
         return getProblem().getDomainOf(var);
     }
 
@@ -498,7 +494,7 @@ public abstract class Agent extends Agt0DSL {
      * change your domain- copy this set and then change your copy :
      * HashSet<Integer> currentDomain = new HashSet<Integer>(getDomain());
      */
-    public ImmutableSet<Integer> getDomain() {
+    protected ImmutableSet<Integer> getDomain() {
         return getProblem().getDomainOf(getId());
     }
 
@@ -507,7 +503,7 @@ public abstract class Agent extends Agt0DSL {
      *
      * @return
      */
-    public int getDomainSize() {
+    protected int getDomainSize() {
         return getDomainOf(getId()).size();
     }
 
@@ -518,7 +514,7 @@ public abstract class Agent extends Agt0DSL {
      * in domainOf[var1] and val2 in domainOf[var2] where
      * getConstraintCost(val1, var1, var2, val2) != 0
      */
-    public boolean isConstrained(int var1, int var2) {
+    protected boolean isConstrained(int var1, int var2) {
         return getProblem().isConstrained(var1, var2);
     }
 
@@ -536,7 +532,7 @@ public abstract class Agent extends Agt0DSL {
      * @param msg
      * @param args
      */
-    public void broadcast(String msg, Object... args) {
+    protected void broadcast(String msg, Object... args) {
         broadcast(createMessage(msg, args));
     }
 
@@ -546,7 +542,7 @@ public abstract class Agent extends Agt0DSL {
      *
      * @param msg
      */
-    public void broadcast(Message msg) {
+    protected void broadcast(Message msg) {
         pops.getExecution().getMailer().broadcast(msg, pops.mailGroupKey);
     }
 
@@ -564,7 +560,7 @@ public abstract class Agent extends Agt0DSL {
      * @param args the list (variadic) of arguments that belongs to this message
      * @return continuation class
      */
-    public SendMediator send(String msg, Object... args) {
+    protected SendMediator send(String msg, Object... args) {
         return send(createMessage(msg, args));
     }
 
@@ -574,7 +570,7 @@ public abstract class Agent extends Agt0DSL {
      * @param msg
      * @return
      */
-    public SendMediator send(Message msg) {
+    protected SendMediator send(Message msg) {
         final Execution execution = pops.getExecution();
         return new SendMediator(msg, execution.getMailer(), execution.getGlobalProblem(), pops.mailGroupKey);
     }
@@ -615,7 +611,7 @@ public abstract class Agent extends Agt0DSL {
     }
 
     @WhenReceived(Agent.SYS_TIMEOUT_MESSAGE)
-    public void handleTimeout() {
+    protected void handleTimeout() {
         log("Got Timeout indication message");
         finish();
     }
@@ -626,7 +622,7 @@ public abstract class Agent extends Agt0DSL {
      * @return the number of ticks passed since the algorithm start (first tick
      * is 0), you can read about the definition of tick in agent zero manual
      */
-    public long getSystemTimeInTicks() {
+    protected long getSystemTimeInTicks() {
         return pops.getExecution().getSystemClock().time();
     }
 

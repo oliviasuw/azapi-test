@@ -13,16 +13,15 @@ import java.util.Random;
  *
  * @author bennyl
  */
-public class RandomKAryConstraint implements KAryConstraint{
+public class RandomKAryConstraint implements KAryConstraint {
+
     private static final long BIG_PRIME = 10123457689L;
     private static final long MEDIUM_PRIME = 101111L;
-
-    int base;
-    long seed;
-    int maxCostPlus;
-    long jump;
-    int[] participients;
-    
+    private int base;
+    private long seed;
+    private int maxCostPlus;
+    private long jump;
+    private int[] participients;
 
     public RandomKAryConstraint(int numVars, int maxDomainSize, int maxCost, int seed, int[] participients) {
         this.base = Math.max(numVars, maxDomainSize);
@@ -31,19 +30,19 @@ public class RandomKAryConstraint implements KAryConstraint{
         this.jump = 101111 * Math.abs(new Random(seed).nextInt((int) MEDIUM_PRIME));
         this.participients = participients;
     }
-    
+
     @Override
     public void getCost(Assignment a, ConstraintCheckResult result) {
         Random r = new Random();
         int cost = 0;
-        for (int p : participients){
-            r.setSeed(seed + jump*(base * p + a.getAssignment(p)));
+        for (int p : participients) {
+            r.setSeed(seed + jump * (base * p + a.getAssignment(p)));
             cost += r.nextInt();
         }
-        
+
         result.set(Math.abs(cost) % maxCostPlus, 1);
     }
-    
+
     @Override
     public int[] getParicipients() {
         return participients;
@@ -53,5 +52,4 @@ public class RandomKAryConstraint implements KAryConstraint{
     public String toString() {
         return "KAryConstraint{" + "participients=" + Arrays.toString(participients) + '}';
     }
-
 }

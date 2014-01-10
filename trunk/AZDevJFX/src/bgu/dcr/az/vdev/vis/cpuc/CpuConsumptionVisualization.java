@@ -4,7 +4,6 @@
  */
 package bgu.dcr.az.vdev.vis.cpuc;
 
-import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.ano.Register;
 import bgu.dcr.az.api.exen.Execution;
 import bgu.dcr.az.api.exen.mdef.Visualization;
@@ -14,16 +13,17 @@ import bgu.dcr.az.vdev.timelines.CpuConsumptionChange;
 import bgu.dcr.az.vdev.timelines.CurrentMessageHandlingChange;
 import bgu.dcr.az.vdev.vis.misc.AgentIcon;
 import bgu.dcr.az.vdev.vis.ngr.NetworkGraphVisualization;
-import bgu.dcr.az.vdev.vis.ngr.NetworkGraphVisualizationDrawer;
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import javax.imageio.ImageIO;
+import resources.img.ResourcesImgAnchor;
 
 /**
  *
@@ -70,7 +70,7 @@ public class CpuConsumptionVisualization implements Visualization {
 
     @Override
     public Object getThumbnail() {
-        return AgentIcon.agentImage;
+        return new Image(ResourcesImgAnchor.class.getResourceAsStream("camera.png"));
     }
 
     @Override

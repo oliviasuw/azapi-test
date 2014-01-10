@@ -37,14 +37,6 @@ public interface ImmutableProblem {
      * @return the cost of assigning var1=val1
      */
     int getConstraintCost(int var1, int val1);
-//
-//    /**
-//     * @param var
-//     * @param val
-//     * @param ass
-//     * @return the constraint cost of assigning var=val and X=V for each <X=V> in ass
-//     */
-//    int getConstraintCost(int var, int val, Assignment ass);
 
     /**
      * return the cost of the k-ary constraint represented by the given assignment

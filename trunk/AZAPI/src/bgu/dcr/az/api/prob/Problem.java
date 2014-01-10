@@ -18,7 +18,7 @@ import java.util.Set;
  */
 public class Problem implements ImmutableProblem {
 
-    private HashMap<String, Object> metadata = new HashMap<String, Object>();
+    private HashMap<String, Object> metadata = new HashMap<>();
     protected int numvars;
     protected ImmutableSetOfIntegers[] domain;
     protected ConstraintsPackage constraints;
@@ -82,16 +82,7 @@ public class Problem implements ImmutableProblem {
         return constraints.getNeighbores(var);
     }
 
-//    @Override
-//    public int getConstraintCost(int var, int val, Assignment ass) {
-//        int sum = 0;
-//        for (Integer av : ass.assignedVariables()) {
-//            sum += getConstraintCost(var, val, av, ass.getAssignment(av));
-//        }
-//
-//        return sum;
-//    }
-//    abstract public void setConstraintCost(int var1, int val1, int var2, int val2, int cost);
+
     public ImmutableSet<Integer> getDomain() {
         if (!singleDomain) {
             throw new UnsupportedOperationException("calling get domain on a problem with domain that is unique to each variable is unsupported - call  getDomainOf(int) instaed.");
@@ -147,6 +138,9 @@ public class Problem implements ImmutableProblem {
         initialize(type, numberOfVariables, new HashSet<Integer>(Agt0DSL.range(0, domainSize - 1)));
     }
 
+    /**
+     * @return the type of the problem
+     */
     @Override
     public ProblemType type() {
         return type;
@@ -162,7 +156,7 @@ public class Problem implements ImmutableProblem {
 
     @Override
     public int getConstraintCost(Assignment ass) {
-        throw new UnsupportedOperationException("Not supported without providing owner.");
+        throw new UnsupportedOperationException("Not supported without providing owner. Please use getConstraintCost(int owner, Assignment ass)");
     }
 
     @Override
@@ -203,6 +197,7 @@ public class Problem implements ImmutableProblem {
     }
 
     /**
+     * tries to add new kary constraint - as can be seen from the owner eyes
      * replaces the k-ary constraint if it exists
      *
      * @param owner

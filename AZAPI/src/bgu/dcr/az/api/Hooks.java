@@ -26,10 +26,7 @@ public class Hooks {
      */
     public static abstract class BeforeMessageSentHook implements HookDefinition {
 
-        /**
-         * callback implementation
-         * @param msg
-         */
+        
         public abstract void hook(int senderId, int recepientId, Message msg);
 
         @Override

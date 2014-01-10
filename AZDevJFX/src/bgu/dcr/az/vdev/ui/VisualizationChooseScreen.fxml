@@ -26,7 +26,7 @@
               <children>
                 <ImageView id="emptyImageView1" fx:id="selectedVisualizationImage" fitHeight="64.0" fitWidth="64.0" smooth="false" styleClass="visualization-selected-image">
                   <image>
-                    <Image url="file:/C:/Users/Administrator/Desktop/temp/lab%20theme/64/User-Info-64.png" preserveRatio="false" smooth="false" />
+                    <Image url="@../../../../../resources/img/camera.png" preserveRatio="false" smooth="false" />
                   </image>
                 </ImageView>
               </children>
@@ -135,6 +135,6 @@
     </GridPane>
   </children>
   <stylesheets>
-    <URL value="file:/C:/Users/Administrator/Documents/NetBeansProjects/AZDevJFX/src/azdevjfx/azVis.css" />
+    <URL value="@../../../../../azdevjfx/azVis.css" />
   </stylesheets>
 </VBox>

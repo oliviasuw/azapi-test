@@ -282,7 +282,7 @@ public class AgentZeroProject {
 		String ccase = SourceUtils.camelCase(algorithmName);
 		try {
 			File file = new File(getAgentsSourceDirectory().getAbsolutePath()
-					+ "/" + ccase + ".java");
+					+ "/" + ccase + "Agent.java");
 			createFileFromTemplate(file, "NEW_AGENT_TEMPLATE.java",
 					"ALGORITHM_NAME", ccase);
 			refreshInEclipse();

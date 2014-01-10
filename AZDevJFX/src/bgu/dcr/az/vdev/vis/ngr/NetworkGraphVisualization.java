@@ -19,7 +19,9 @@ import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import resources.img.ResourcesImgAnchor;
 
 /**
  *
@@ -67,7 +69,7 @@ public class NetworkGraphVisualization implements Visualization {
 
     @Override
     public Object getThumbnail() {
-        return AgentIcon.agentImage;
+        return new Image(ResourcesImgAnchor.class.getResourceAsStream("camera.png"));
     }
 
     @Override

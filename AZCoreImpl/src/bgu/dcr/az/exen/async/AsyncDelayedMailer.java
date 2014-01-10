@@ -16,8 +16,6 @@ import bgu.dcr.az.api.exp.UnRegisteredAgentException;
 import bgu.dcr.az.api.tools.IdleDetector;
 import bgu.dcr.az.exen.AbstractMailer;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *

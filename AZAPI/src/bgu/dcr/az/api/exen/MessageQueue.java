@@ -11,17 +11,9 @@ import java.util.List;
  *
  * @author bennyl
  */
-public interface MessageQueue {
-
-    void add(Message e);
-
-    int availableMessages();
-
-    Message take() throws InterruptedException;
+public interface MessageQueue extends NonBlockingMessageQueue {
 
     void waitForNewMessages() throws InterruptedException;
-
-    boolean isEmpty();
 
     boolean isNotEmpty();
 

@@ -3,36 +3,19 @@ package agt0.dev.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.ParseException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.util.EntityUtils;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
-import org.xml.sax.InputSource;
 
 import agt0.dev.SharedDataUnit;
 import agt0.dev.project.AgentZeroProject;
@@ -222,39 +205,6 @@ public class UploadUtils {
 		return true;
 	}
 
-	public static void uploadUsingPost(File zip, String user, String password) {
-		HttpClient client = null;
-		try {
-			String url = "http://10.0.0.138:8084/Az/file-upload-servlet";
-			client = new DefaultHttpClient();
-			client.getParams().setParameter(
-					CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-			HttpPost post = new HttpPost(url);
-			post.addHeader("user", user);
-			post.addHeader("password", password);
-			MultipartEntity entity = new MultipartEntity(
-					HttpMultipartMode.BROWSER_COMPATIBLE);
-
-			entity.addPart("attachment_field", new FileBody(zip,
-					"application/octet-stream"));
-			post.setEntity(entity);
-			HttpResponse response = client.execute(post);
-			if (200 != response.getStatusLine().getStatusCode()) {
-				EclipseUtils.showError("the server returned :"
-						+ inputToString(response.getEntity().getContent()));
-			}
-			String responseString = EntityUtils.toString(response.getEntity(),
-					"UTF-8");
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		} catch (ParseException ex) {
-			ex.printStackTrace();
-		} finally {
-			if (client != null) {
-				client.getConnectionManager().shutdown();
-			}
-		}
-	}
 
 	public static String inputToString(InputStream in) throws IOException {
 		StringBuilder sb = new StringBuilder();

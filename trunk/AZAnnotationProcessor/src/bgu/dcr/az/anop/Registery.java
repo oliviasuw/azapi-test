@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.anop;
 
+import bgu.dcr.az.anop.conf.Configuration;
 import java.util.Collection;
 
 /**
@@ -21,4 +22,5 @@ public interface Registery {
     
     Collection<String> getAllRegisteredNames();
 
+    Configuration getConfiguration(Class c);
 }

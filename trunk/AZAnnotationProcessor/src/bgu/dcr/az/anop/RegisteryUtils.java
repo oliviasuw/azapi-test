@@ -5,9 +5,6 @@
  */
 package bgu.dcr.az.anop;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  *
  * @author User

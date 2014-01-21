@@ -4,7 +4,6 @@
  */
 package bgu.dcr.az.anop.conf;
 
-import bgu.dcr.az.anop.*;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;

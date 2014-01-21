@@ -1,11 +1,15 @@
 package resources.templets;
 
+import bgu.dcr.az.anop.conf.ConfigurableTypeInfo;
 import bgu.dcr.az.anop.conf.impl.AbstractConfiguration;
-import bgu.dcr.az.anop.conf.impl.ConfigurableTypeInfoImpl;
 import bgu.dcr.az.anop.utils.JavaTypeParser;
 import java.util.HashMap;
 
 public class @{className} extends AbstractConfiguration{
+
+    @foreach{property : properties}
+    public static final ConfigurableTypeInfo @{property.name.toUpperCase()}_TYPE_INFO = JavaTypeParser.parse("@{property.typeInfo}");
+    @end{}
 
     public @{className}() {
         this.properties = new HashMap<>();

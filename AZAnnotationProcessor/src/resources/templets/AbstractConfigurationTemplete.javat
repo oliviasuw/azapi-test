@@ -1,7 +1,10 @@
-package resources.templets;
+package bgu.dcr.autogen;
 
 import bgu.dcr.az.anop.conf.ConfigurableTypeInfo;
+import bgu.dcr.az.anop.conf.VisualData;
 import bgu.dcr.az.anop.conf.impl.AbstractConfiguration;
+import bgu.dcr.az.anop.conf.impl.PropertyImpl;
+import bgu.dcr.az.anop.conf.impl.VisualDataImpl;
 import bgu.dcr.az.anop.utils.JavaTypeParser;
 import java.util.HashMap;
 
@@ -13,8 +16,14 @@ public class @{className} extends AbstractConfiguration{
 
     public @{className}() {
         this.properties = new HashMap<>();
-        //fill properties
         
+        //fill properties
+        VisualData vd = null;
+        @foreach{p : properties}
+        vd = new VisualDataImpl("@{p.displayName}", "@{p.iconPath}", "@{p.description}");
+        properties.put("@{p.name}", new PropertyImpl("@{p.name}", this, @{p.name.toUpperCase()}_TYPE_INFO , vd));
+        @end{}
+
         this.type = JavaTypeParser.parse("@{typeInfo}");
     }
 

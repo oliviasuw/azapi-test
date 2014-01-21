@@ -191,10 +191,23 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
 
         public String name;
         public String typeInfo;
+        public String displayName, iconPath, description;
 
         public PropertyInfo(String name, String typeInfo) {
             this.name = name;
             this.typeInfo = typeInfo;
+
+            this.displayName = name;
+            this.description = "";
+            this.iconPath = "";
+        }
+
+        public PropertyInfo(String name, String typeInfo, String displayName, String iconPath, String description) {
+            this.name = name;
+            this.typeInfo = typeInfo;
+            this.displayName = displayName;
+            this.iconPath = iconPath;
+            this.description = description;
         }
 
     }

@@ -461,7 +461,7 @@ public abstract class Agent extends Agt0DSL {
      * @return the cost of assigning var1<-val1 while var2=val2 in the current
      * problem
      */
-    protected int getConstraintCost(int var1, int val1, int var2, int val2) {
+    public int getConstraintCost(int var1, int val1, int var2, int val2) {
         return getProblem().getConstraintCost(var1, val1, var2, val2);
     }
 
@@ -470,7 +470,7 @@ public abstract class Agent extends Agt0DSL {
      * @param val1
      * @return the unary cost of assigning var1<-val1 in the current problem
      */
-    protected int getConstraintCost(int var1, int val1) {
+    public int getConstraintCost(int var1, int val1) {
         return getProblem().getConstraintCost(var1, val1);
     }
 
@@ -494,7 +494,7 @@ public abstract class Agent extends Agt0DSL {
      * change your domain- copy this set and then change your copy :
      * HashSet<Integer> currentDomain = new HashSet<Integer>(getDomain());
      */
-    protected ImmutableSet<Integer> getDomain() {
+    public ImmutableSet<Integer> getDomain() {
         return getProblem().getDomainOf(getId());
     }
 
@@ -514,7 +514,7 @@ public abstract class Agent extends Agt0DSL {
      * in domainOf[var1] and val2 in domainOf[var2] where
      * getConstraintCost(val1, var1, var2, val2) != 0
      */
-    protected boolean isConstrained(int var1, int var2) {
+    public boolean isConstrained(int var1, int var2) {
         return getProblem().isConstrained(var1, var2);
     }
 
@@ -622,7 +622,7 @@ public abstract class Agent extends Agt0DSL {
      * @return the number of ticks passed since the algorithm start (first tick
      * is 0), you can read about the definition of tick in agent zero manual
      */
-    protected long getSystemTimeInTicks() {
+    public long getSystemTimeInTicks() {
         return pops.getExecution().getSystemClock().time();
     }
 

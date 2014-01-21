@@ -1,2 +1,0 @@
-serviceClass: bgu.dcr.az.cpu.client.CPUService
-path: 09D8C45BDF0EE4F75DFC9063D53C096C.gwt.rpc

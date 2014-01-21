@@ -24,10 +24,10 @@ public class Assignment implements Serializable, DeepCopyable {
     private transient int cachedCost = -1;
 
     /**
-     * constracting new empty assignment
+     * construction of a new empty assignment
      */
     public Assignment() {
-        this.assignment = new LinkedHashMap<Integer, Integer>();
+        this.assignment = new LinkedHashMap<>();
 
     }
 
@@ -40,7 +40,7 @@ public class Assignment implements Serializable, DeepCopyable {
     }
 
     private Assignment(Assignment a) {
-        this.assignment = new LinkedHashMap<Integer, Integer>();
+        this.assignment = new LinkedHashMap<>();
         for (Entry<Integer, Integer> e : a.assignment.entrySet()) {
             this.assignment.put(e.getKey(), e.getValue());
         }
@@ -253,7 +253,7 @@ public class Assignment implements Serializable, DeepCopyable {
      * @return the assigned variables in this assignment
      */
     public ImmutableSet<Integer> assignedVariables() {
-        return new ImmutableSet<Integer>(assignment.keySet());
+        return new ImmutableSet<>(assignment.keySet());
     }
 
     /**
@@ -262,7 +262,7 @@ public class Assignment implements Serializable, DeepCopyable {
     public ImmutableSet<Integer> unassignedVariables(ImmutableProblem p) {
         List<Integer> all = Agt0DSL.range(0, p.getNumberOfVariables() - 1);
         all.removeAll(assignment.keySet());
-        return new ImmutableSet<Integer>(all);
+        return new ImmutableSet<>(all);
     }
 
     /**
@@ -310,9 +310,13 @@ public class Assignment implements Serializable, DeepCopyable {
         if (obj == null || !(obj instanceof Assignment)) {
             return false;
         } else {
-            Assignment ass = (Assignment) obj;
+            Assignment otherAssignment = (Assignment) obj;
+            if (otherAssignment.assignment.size() != assignment.size()){
+                return false;
+            }
+            
             for (Entry<Integer, Integer> e : assignment.entrySet()) {
-                if (!ass.isAssigned(e.getKey()) || ass.getAssignment(e.getKey()) != e.getValue()) {
+                if (!otherAssignment.isAssigned(e.getKey()) || otherAssignment.getAssignment(e.getKey()) != e.getValue()) {
                     return false;
                 }
             }

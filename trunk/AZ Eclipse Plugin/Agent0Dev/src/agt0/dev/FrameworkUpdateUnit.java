@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.IWorkbenchWindow;
 
 import agt0.dev.project.AgentZeroProject;
@@ -22,6 +23,7 @@ import agt0.dev.ui.update.UpdateAnywayWindow;
 import agt0.dev.ui.update.UpdateAvailableWindow;
 import agt0.dev.util.EclipseUtils;
 import agt0.dev.util.FileUtils;
+import agt0.dev.util.SWTUtils;
 
 public enum FrameworkUpdateUnit {
 	UNIT;
@@ -350,9 +352,8 @@ public enum FrameworkUpdateUnit {
 					FrameworkUpdateUnit.UNIT.update(monitor, force);
 
 				} catch (UpdateException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return Status.CANCEL_STATUS; // NEED TO NOTIFY USER
+					SWTUtils.errbox("Error while updating", e);
+					return Status.CANCEL_STATUS; 
 				}
 
 				showChangeLog();

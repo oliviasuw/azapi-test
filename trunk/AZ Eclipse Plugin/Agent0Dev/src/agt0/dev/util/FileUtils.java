@@ -50,7 +50,7 @@ public class FileUtils {
      */
     public static File persist(File path, String fileName, byte[] data) throws IOException {
         path.mkdirs();
-        File f = new File(path.getAbsolutePath() + "\\" + fileName);
+        File f = new File(path.getAbsolutePath() , fileName);
         f.createNewFile();
         FileOutputStream fos = new FileOutputStream(f);
         fos.write(data);
@@ -61,7 +61,7 @@ public class FileUtils {
 
     public static File persistText(File path, String fileName, String data) throws IOException {
         path.mkdirs();
-        File f = new File(path.getAbsolutePath() + "\\" + fileName);
+        File f = new File(path.getAbsolutePath() ,  fileName);
         f.createNewFile();
         BufferedWriter bw = new BufferedWriter(new FileWriter(f));
         bw.write(data);
@@ -77,7 +77,7 @@ public class FileUtils {
 
     public static File persistObject(File path, String fileName, Serializable ser) throws IOException {
         path.mkdirs();
-        File f = new File(path.getAbsolutePath() + "\\" + fileName);
+        File f = new File(path.getAbsolutePath() , fileName);
         f.createNewFile();
         FileOutputStream fos = new FileOutputStream(f);
         ObjectOutputStream os = new ObjectOutputStream(fos);
@@ -193,9 +193,9 @@ public class FileUtils {
             
             //this will assume the folders in the zip is allways stored before the files stored in them 
             if (e.isDirectory()) {
-                new File(path + "/" + e.getName()).mkdirs();
+                new File(path , e.getName()).mkdirs();
             }else {
-                dump(zf.getInputStream(e), new File(path + "/" + e.getName()));
+                dump(zf.getInputStream(e), new File(path,  e.getName()));
             }
         }
     }

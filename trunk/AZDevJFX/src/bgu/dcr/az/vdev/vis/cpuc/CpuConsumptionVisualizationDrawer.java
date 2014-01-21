@@ -42,8 +42,8 @@ public class CpuConsumptionVisualizationDrawer implements Initializable, Visuali
 
     public void save() {
         Random r = new Random();
-        for (int i = 0; i < cvs.length; i++) {
-            new FXImaging().nodeToImage(cvs[i], back.getChildren(), new File("" + r.nextInt() + ".png"));
+        for (ComputerView cv : cvs) {
+            new FXImaging().nodeToImage(cv, back.getChildren(), new File("" + r.nextInt() + ".png"));
         }
     }
 

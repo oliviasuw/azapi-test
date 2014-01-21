@@ -3,20 +3,21 @@
   <information>
     <title>AZDevJFX</title>
     <vendor>Administrator</vendor>
-    <description>Sample JavaFX 2.0 application.</description>
+    <description>null</description>
     <offline-allowed/>
   </information>
   <resources>
-    <jfx:javafx-runtime version="2.0+" href="http://javadl.sun.com/webapps/download/GetFile/javafx-latest/windows-i586/javafx2.jnlp"/>
+    <jfx:javafx-runtime version="2.2+" href="http://javadl.sun.com/webapps/download/GetFile/javafx-latest/windows-i586/javafx2.jnlp"/>
   </resources>
   <resources>
     <j2se version="1.6+" java-vm-args="-Xmx1024m "  href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="AZDevJFX.jar" size="1268296" download="eager" />
-    <jar href="lib/AZAPI.jar" size="234912" download="eager" />
-    <jar href="lib/AZCoreImpl.jar" size="360482" download="eager" />
+    <jar href="AZDevJFX.jar" size="1233375" download="eager" />
+    <jar href="lib/AZAPI.jar" size="306416" download="eager" />
+    <jar href="lib/AZCoreImpl.jar" size="394861" download="eager" />
     <jar href="lib/DeepCopyUtil.jar" size="22477" download="eager" />
     <jar href="lib/args4j-2.0.17.jar" size="58480" download="eager" />
     <jar href="lib/collections-generic-4.01.jar" size="531557" download="eager" />
+    <jar href="lib/gson-1.7.1.jar" size="173590" download="eager" />
     <jar href="lib/guava-10.0.1.jar" size="1501575" download="eager" />
     <jar href="lib/h2-1.3.160.jar" size="1256613" download="eager" />
     <jar href="lib/javassist-3.8.0.GA.jar" size="593959" download="eager" />
@@ -28,8 +29,8 @@
     <jar href="lib/xom-1.2.7.jar" size="312996" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="AZDevJFX" >
-    <param name="requiredFXVersion" value="2.0+"/>
-  </applet>
+    <param name="requiredFXVersion" value="2.2+"/>
+  </applet-desc>
   <jfx:javafx-desc  width="800" height="600" main-class="bgu.dcr.az.vdev.ui.TestUI"  name="AZDevJFX" />
   <update check="background"/>
 </jnlp>

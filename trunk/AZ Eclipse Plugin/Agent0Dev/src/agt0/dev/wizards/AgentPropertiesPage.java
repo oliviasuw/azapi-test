@@ -24,6 +24,11 @@ public class AgentPropertiesPage extends WizardPage {
 		return agentName.getText();
 	}
 	
+	@Override
+	public boolean canFlipToNextPage() {
+		return !agentName.getText().isEmpty();
+	}
+	
 	/**
 	 * Create contents of the wizard.
 	 * @param parent

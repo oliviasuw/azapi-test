@@ -17,6 +17,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
 import agt0.dev.FrameworkUpdateUnit;
+import agt0.dev.util.SWTUtils;
 
 public class FirstUpdateWindow extends Dialog {
 

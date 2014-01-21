@@ -17,6 +17,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate;
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMRunner;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -94,9 +95,13 @@ public class VisLauncher extends AbstractJavaLaunchConfigurationDelegate {
 			
 			runConfig.setProgramArguments(programArgs.toArray(new String[0]));
 
-			runConfig.setVMArguments(new String[] { "-Xmx1024m",
-					"-XX:MaxPermSize=128m" });
+//			runConfig.setVMArguments(new String[] { "-Xmx1024m",
+//					"-XX:MaxPermSize=128m" });
 
+			String vmAttributes = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "-Xmx1024m -XX:MaxPermSize=128m");			
+			runConfig.setVMArguments(vmAttributes.split("\\s+"));
+
+			
 			runConfig.setWorkingDirectory(localPath);
 
 			// Bootpath

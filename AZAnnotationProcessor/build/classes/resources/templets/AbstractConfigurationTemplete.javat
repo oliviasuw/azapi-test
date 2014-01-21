@@ -1,0 +1,22 @@
+package resources.templets;
+
+import bgu.dcr.az.anop.conf.impl.AbstractConfiguration;
+import bgu.dcr.az.anop.conf.impl.ConfigurableTypeInfoImpl;
+import bgu.dcr.az.anop.utils.JavaTypeParser;
+import java.util.HashMap;
+
+public class @{className} extends AbstractConfiguration{
+
+    public @{className}() {
+        this.properties = new HashMap<>();
+        //fill properties
+        
+        this.type = JavaTypeParser.parse("@{typeInfo}");
+    }
+
+    @Override
+    public Object create() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+}

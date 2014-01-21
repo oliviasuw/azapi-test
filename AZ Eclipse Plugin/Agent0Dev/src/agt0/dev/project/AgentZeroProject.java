@@ -453,25 +453,15 @@ public class AgentZeroProject {
 			azproj.createDefaultProjectStructure(name);
 
 			// CONFIGURE CLASS PATH
-
-			String jdpath = "";
-			try {
-				jdpath = "jar:"
-						+ SharedDataUnit.UNIT.getApiJavaDocZip().toURI()
-								.toURL().toExternalForm() + "!"
-						+ SharedDataUnit.JAVADOC_LOCATION_IN_ARCHIVE;
-			} catch (MalformedURLException e) {
-				// should never happen...
-				e.printStackTrace();
-			}
-
-			IClasspathAttribute[] azapiJavadoc = new IClasspathAttribute[] { JavaCore
-					.newClasspathAttribute(
-							IClasspathAttribute.JAVADOC_LOCATION_ATTRIBUTE_NAME,
-							jdpath) };
-			IClasspathEntry azapi = JavaCore.newLibraryEntry(new Path(
-					SharedDataUnit.UNIT.getApiJar().getAbsolutePath()), null,
-					null, null, azapiJavadoc, false);
+			
+			Path azapiJarPath = new Path(
+					SharedDataUnit.UNIT.getApiJar().getAbsolutePath());
+			
+			Path azapiSourcePath = new Path(
+					SharedDataUnit.AZ_WORKSPACE_PATH + "/lib/AZAPI-sources.jar");
+			
+			IClasspathEntry azapi = JavaCore.newLibraryEntry(azapiJarPath, azapiSourcePath,
+					null, null, null, false);
 
 			IClasspathEntry azcore = JavaCore.newLibraryEntry(new Path(
 					SharedDataUnit.UNIT.getCoreJar().getAbsolutePath()), null,

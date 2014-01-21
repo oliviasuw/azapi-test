@@ -12,10 +12,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate;
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMRunner;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
@@ -24,6 +26,7 @@ import agt0.dev.FrameworkUpdateUnit;
 import agt0.dev.SharedDataUnit;
 import agt0.dev.project.AgentZeroProject;
 import agt0.dev.util.EclipseUtils;
+import agt0.dev.util.SWTUtils;
 
 public class Launcher extends AbstractJavaLaunchConfigurationDelegate {
 
@@ -42,6 +45,7 @@ public class Launcher extends AbstractJavaLaunchConfigurationDelegate {
 		}
 		
 		IJavaProject project = getJavaProject(configuration);
+		
 		if (project == null){
 			project = EclipseUtils.getActiveJavaProject();
 		}
@@ -110,14 +114,11 @@ public class Launcher extends AbstractJavaLaunchConfigurationDelegate {
 			
 			runConfig.setProgramArguments(programArgs.toArray(new String[0]));
 
-			runConfig.setVMArguments(new String[] { "-Xmx1024m",
-					"-XX:MaxPermSize=128m" });
-
-//			File workingDir = verifyWorkingDirectory(configuration);
-//			String workingDirName = null;
-//			if (workingDir != null) {
-//				workingDirName = workingDir.getAbsolutePath();
-//			}
+			String vmAttributes = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "-Xmx1024m -XX:MaxPermSize=128m");			
+			runConfig.setVMArguments(vmAttributes.split("\\s+"));
+//			runConfig.setVMArguments(new String[] { "-Xmx1024m",
+//					"-XX:MaxPermSize=128m" });
+			
 
 			runConfig.setWorkingDirectory(localPath);
 
@@ -154,60 +155,4 @@ public class Launcher extends AbstractJavaLaunchConfigurationDelegate {
 			return null;
 		}
 	}
-//
-//	public static interface IEventListener {
-//		void onEvent(Event e);
-//	}
-
-//	public static enum EventManager {
-//		INSTANCE;
-//
-//		public static Event RESET_EVENT = new Event("launcher-reset",
-//				new HashMap<String, String>());
-//
-//		PrefixMap<List<IEventListener>> prefixMap;
-//		HashSet<IEventListener> all;
-//
-//		private EventManager() {
-//			prefixMap = new PrefixMap<List<IEventListener>>();
-//			all = new HashSet<Launcher.IEventListener>();
-//		}
-//
-//		public void register(String prefix, Launcher.IEventListener listener) {
-//			List<IEventListener> pfl = prefixMap.getExact(prefix);
-//			if (pfl == null) {
-//				pfl = new LinkedList<IEventListener>();
-//				prefixMap.put(prefix, pfl);
-//			}
-//
-//			pfl.add(listener);
-//			all.add(listener);
-//		}
-//		
-//		public void unRegister(final Launcher.IEventListener listener){
-//			prefixMap.map(new Fn1<List<IEventListener>, List<IEventListener>>() {
-//				
-//				@Override
-//				public List<IEventListener> invoke(List<IEventListener> arg) {
-//					arg.remove(listener);
-//					return arg;
-//				}
-//			});
-//		}
-//
-//		public void fireReset() {
-//			for (IEventListener a : all)
-//				a.onEvent(RESET_EVENT);
-//		}
-//		
-//		public void fire(Event e){
-//			List<List<IEventListener>> lis = prefixMap.get(e.getName());
-//			for (List<IEventListener> l : lis){
-//				for (IEventListener el : l){
-//					el.onEvent(e);
-//				}
-//			}
-//		}
-//
-//	}
 }

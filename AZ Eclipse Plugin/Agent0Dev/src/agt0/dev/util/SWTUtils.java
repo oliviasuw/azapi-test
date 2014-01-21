@@ -3,6 +3,7 @@ package agt0.dev.util;
 import static agt0.dev.util.JavaUtils.cint;
 import static agt0.dev.util.JavaUtils.isNummeric;
 
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
@@ -150,6 +151,23 @@ public class SWTUtils {
 
 	}
 
+	public static void errbox(final String messageTitle, final Exception ex) {
+		StringBuilderWriter w = new StringBuilderWriter();
+		ex.printStackTrace(new PrintWriter(w));
+		final String exceptionMessage = w.getStringBuilder().toString();
+		
+		inUIThread(new Runnable() {
+
+			@Override
+			public void run() {
+				MessageDialog.openError(PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getShell(), messageTitle, exceptionMessage);
+			}
+		});
+
+	}
+
+	
 	/**
 	 * defines jface table viewer as a selection list
 	 * 

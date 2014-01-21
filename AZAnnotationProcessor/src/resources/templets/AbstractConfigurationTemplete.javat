@@ -1,6 +1,7 @@
 package bgu.dcr.autogen;
 
 import bgu.dcr.az.anop.conf.ConfigurableTypeInfo;
+import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.conf.VisualData;
 import bgu.dcr.az.anop.conf.impl.AbstractConfiguration;
 import bgu.dcr.az.anop.conf.impl.PropertyImpl;
@@ -8,10 +9,17 @@ import bgu.dcr.az.anop.conf.impl.VisualDataImpl;
 import bgu.dcr.az.anop.utils.JavaTypeParser;
 import java.util.HashMap;
 
+@code{  
+    // SOME HELPER FUNCTIONS
+    def lc(string) {
+        CodeUtils.camelCaseToLowerLine(string).toUpperCase();
+    }
+}
 public class @{className} extends AbstractConfiguration{
 
+    public static final ConfigurableTypeInfo TYPE_INFO = JavaTypeParser.parse("@{typeInfo}");
     @foreach{property : properties}
-    public static final ConfigurableTypeInfo @{property.name.toUpperCase()}_TYPE_INFO = JavaTypeParser.parse("@{property.typeInfo}");
+    public static final ConfigurableTypeInfo @{lc(property.name)}_TYPE_INFO = JavaTypeParser.parse("@{property.typeInfo}");
     @end{}
 
     public @{className}() {
@@ -21,15 +29,28 @@ public class @{className} extends AbstractConfiguration{
         VisualData vd = null;
         @foreach{p : properties}
         vd = new VisualDataImpl("@{p.displayName}", "@{p.iconPath}", "@{p.description}");
-        properties.put("@{p.name}", new PropertyImpl("@{p.name}", this, @{p.name.toUpperCase()}_TYPE_INFO , vd));
+        properties.put("@{p.name}", new PropertyImpl("@{p.name}", this, @{lc(p.name)}_TYPE_INFO , vd));
         @end{}
 
-        this.type = JavaTypeParser.parse("@{typeInfo}");
+        this.type = TYPE_INFO;
     }
 
     @Override
     public Object create() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        @{configuredClassName} result = new @{configuredClassName}();
+        configure(result);
+        
+        return result;
     }
-    
+
+    public void configure(Object obj) {
+        @{configuredClassName} o = (@{configuredClassName}) obj;
+        Property property = null;
+        @foreach{p : properties}
+        property = properties.get("@{p.name}");
+        if (property.get() != null){
+            o.@{p.setter}((@{p.unParameterizedTypeInfo}) property.get().create());
+        }
+        @end{}
+    }    
 }

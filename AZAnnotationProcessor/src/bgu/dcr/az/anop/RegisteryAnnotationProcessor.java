@@ -1,7 +1,8 @@
 package bgu.dcr.az.anop;
 
+import bgu.dcr.az.anop.utils.CodeUtils;
 import bgu.dcr.az.anop.utils.StringBuilderWriter;
-import java.io.File;
+import bgu.dcr.az.anop.visitors.QualifiedUnparametrizedNameTypeVisitor;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -27,6 +28,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.SimpleElementVisitor7;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
+import org.mvel2.ParserContext;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRuntime;
@@ -45,8 +47,15 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
     public static final String AUTOGEN_PACKAGE = "bgu.dcr.autogen";
     private Messager msg;
 
-    private CompiledTemplate registeryTemplate = TemplateCompiler.compileTemplate(ResourcesTemplatesAncor.class.getResourceAsStream("CompiledRegistery.javat"));
-    private CompiledTemplate configurationTemplate = TemplateCompiler.compileTemplate(ResourcesTemplatesAncor.class.getResourceAsStream("AbstractConfigurationTemplete.javat"));
+    private CompiledTemplate registeryTemplate;
+    private CompiledTemplate configurationTemplate;
+
+    public RegisteryAnnotationProcessor() {
+        ParserContext ctx = ParserContext.create();
+        ctx.addImport(CodeUtils.class);
+        registeryTemplate = TemplateCompiler.compileTemplate(ResourcesTemplatesAncor.class.getResourceAsStream("CompiledRegistery.javat"));
+        configurationTemplate = TemplateCompiler.compileTemplate(ResourcesTemplatesAncor.class.getResourceAsStream("AbstractConfigurationTemplete.javat"), ctx);
+    }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -105,12 +114,14 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
     private void createConfiguration(TypeElement te) {
 
         final Map ctx = new HashMap();
+        final List<PropertyInfo> properties = new LinkedList<>();
+
         ctx.put("typeInfo", te.asType().toString());
         ctx.put("className", te.getQualifiedName().toString().replaceAll("\\.", "_"));
-        final List<PropertyInfo> properties = new LinkedList<>();
         ctx.put("properties", properties);
+        ctx.put("configuredClassName", te.getQualifiedName().toString());
 
-//        Map<String, ExecutableElement> 
+        final Map<String, ExecutableElement> methods = new HashMap<>();
         for (Element e : te.getEnclosedElements()) {
             if (e.getKind() == ElementKind.METHOD) {
 
@@ -128,10 +139,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
                         note("exec: " + e);
                         note("return type: " + e.getReturnType() + ", params: " + e.getParameters() + ", simple name: " + e.getSimpleName());
 
-                        if (e.getSimpleName().toString().startsWith("get")) {//found getter
-                            PropertyInfo info = new PropertyInfo(e.getSimpleName().toString().substring("get".length()), e.getReturnType().toString());
-                            properties.add(info);
-                        }
+                        methods.put(e.getSimpleName().toString(), e);
 
                         return null;
                     }
@@ -163,7 +171,19 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
                 };
 
                 e.accept(visitor, null);
+            }
 
+        }
+
+        for (Map.Entry<String, ExecutableElement> p : methods.entrySet()) {
+            final String setterName = "set" + p.getKey().substring("get".length());
+            if (p.getKey().startsWith("get") && methods.containsKey(setterName)) {
+                note("adding " + p.getKey());
+                PropertyInfo info = new PropertyInfo(p.getValue().getSimpleName().toString().substring("get".length()), p.getValue().getReturnType().toString());
+                info.setter = setterName;
+
+                info.unParameterizedTypeInfo = p.getValue().getReturnType().accept(new QualifiedUnparametrizedNameTypeVisitor(msg), null);
+                properties.add(info);
             }
         }
 
@@ -191,7 +211,9 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
 
         public String name;
         public String typeInfo;
+        public String unParameterizedTypeInfo;
         public String displayName, iconPath, description;
+        public String setter;
 
         public PropertyInfo(String name, String typeInfo) {
             this.name = name;

@@ -1,11 +1,15 @@
 package bgu.dcr.az.anop;
 
+import bgu.dcr.az.anop.conf.ConfigurableTypeInfo;
+import bgu.dcr.az.anop.conf.impl.ConfigurableTypeInfoImpl;
 import bgu.dcr.az.anop.utils.CodeUtils;
+import bgu.dcr.az.anop.utils.JavaTypeParser;
 import bgu.dcr.az.anop.utils.StringBuilderWriter;
 import bgu.dcr.az.anop.visitors.QualifiedUnparametrizedNameTypeVisitor;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +36,7 @@ import org.mvel2.ParserContext;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRuntime;
-import resources.templets.ResourcesTemplatesAncor;
+import resources.templates.ResourcesTemplatesAncor;
 
 /**
  *
@@ -47,8 +51,8 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
     public static final String AUTOGEN_PACKAGE = "bgu.dcr.autogen";
     private Messager msg;
 
-    private CompiledTemplate registeryTemplate;
-    private CompiledTemplate configurationTemplate;
+    private final CompiledTemplate registeryTemplate;
+    private final CompiledTemplate configurationTemplate;
 
     public RegisteryAnnotationProcessor() {
         ParserContext ctx = ParserContext.create();
@@ -176,14 +180,29 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         }
 
         for (Map.Entry<String, ExecutableElement> p : methods.entrySet()) {
-            final String setterName = "set" + p.getKey().substring("get".length());
-            if (p.getKey().startsWith("get") && methods.containsKey(setterName)) {
-                note("adding " + p.getKey());
-                PropertyInfo info = new PropertyInfo(p.getValue().getSimpleName().toString().substring("get".length()), p.getValue().getReturnType().toString());
-                info.setter = setterName;
 
-                info.unParameterizedTypeInfo = p.getValue().getReturnType().accept(new QualifiedUnparametrizedNameTypeVisitor(msg), null);
-                properties.add(info);
+            if (p.getKey().startsWith("get")) {
+                PropertyInfo info = new PropertyInfo();
+                info.description = "";
+                info.displayName = p.getValue().getSimpleName().toString().substring("get".length());
+                info.iconPath = "";
+                info.name = info.displayName;
+                info.getter = p.getKey();
+                info.setter = "";
+                info.typeInfo = JavaTypeParser.parse(p.getValue().getReturnType().toString());
+                if (Collection.class.isAssignableFrom(info.typeInfo.getType())) {
+                    info.type = PropertyInfo.TypeOfTheType.Collection;
+                } else if (Map.class.isAssignableFrom(info.typeInfo.getType())) {
+                    info.type = PropertyInfo.TypeOfTheType.Map;
+                } else {
+                    info.type = PropertyInfo.TypeOfTheType.Basic;
+                }
+                final String setterName = "set" + p.getKey().substring("get".length());
+                if (!info.type.isBasic() || methods.containsKey(setterName)) {
+                    info.setter = setterName;
+                    note("adding " + p.getKey());
+                    properties.add(info);
+                }
             }
         }
 
@@ -210,28 +229,43 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
     public static class PropertyInfo {
 
         public String name;
-        public String typeInfo;
-        public String unParameterizedTypeInfo;
+        public ConfigurableTypeInfo typeInfo;
         public String displayName, iconPath, description;
         public String setter;
+        public String getter;
+        public TypeOfTheType type;
 
-        public PropertyInfo(String name, String typeInfo) {
-            this.name = name;
-            this.typeInfo = typeInfo;
+        public static enum TypeOfTheType {
 
-            this.displayName = name;
-            this.description = "";
-            this.iconPath = "";
+            Basic {
+                        @Override
+                        public boolean isBasic() {
+                            return true;
+                        }
+                    }, Collection {
+                        @Override
+                        public boolean isCollection() {
+                            return true;
+                        }
+                    }, Map {
+                        @Override
+                        public boolean isMap() {
+                            return true;
+                        }
+                    };
+
+            public boolean isBasic() {
+                return false;
+            }
+
+            public boolean isCollection() {
+                return false;
+            }
+
+            public boolean isMap() {
+                return false;
+            }
         }
-
-        public PropertyInfo(String name, String typeInfo, String displayName, String iconPath, String description) {
-            this.name = name;
-            this.typeInfo = typeInfo;
-            this.displayName = displayName;
-            this.iconPath = iconPath;
-            this.description = description;
-        }
-
     }
 
 }

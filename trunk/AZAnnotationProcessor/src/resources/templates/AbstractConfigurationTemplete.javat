@@ -18,8 +18,8 @@ import java.util.HashMap;
 public class @{className} extends AbstractConfiguration{
 
     public static final ConfigurableTypeInfo TYPE_INFO = JavaTypeParser.parse("@{typeInfo}");
-    @foreach{property : properties}
-    public static final ConfigurableTypeInfo @{lc(property.name)}_TYPE_INFO = JavaTypeParser.parse("@{property.typeInfo}");
+    @foreach{p : properties}
+    public static final ConfigurableTypeInfo @{lc(p.name)}_TYPE_INFO = JavaTypeParser.parse("@{p.typeInfo.toString()}");
     @end{}
 
     public @{className}() {
@@ -38,18 +38,26 @@ public class @{className} extends AbstractConfiguration{
     @Override
     public Object create() {
         @{configuredClassName} result = new @{configuredClassName}();
+
         configure(result);
         
         return result;
     }
 
-    public void configure(Object obj) {
-        @{configuredClassName} o = (@{configuredClassName}) obj;
+    private void configure(@{configuredClassName} o) {
         Property property = null;
         @foreach{p : properties}
         property = properties.get("@{p.name}");
         if (property.get() != null){
-            o.@{p.setter}((@{p.unParameterizedTypeInfo}) property.get().create());
+        @if{p.type.isBasic()}
+            o.@{p.setter}( property.get().<@{p.typeInfo.getType().getCanonicalName()}>create());
+        @else{p.type.isCollection()}
+            //o.@{p.getter}().clear();
+            o.@{p.getter}().addAll( property.get().<@{p.typeInfo.getType().getCanonicalName()}>create());
+        @else{p.type.isMap()}
+            //o.@{p.getter}().clear();
+            o.@{p.getter}().putAll( property.get().<@{p.typeInfo.getType().getCanonicalName()}>create());
+        @end{}
         }
         @end{}
     }    

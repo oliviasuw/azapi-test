@@ -42,7 +42,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
 
     private static boolean run = false;
 
-    public static final String RESULT_PACKAGE = "bgu.dcr.autogen";
+    public static final String AUTOGEN_PACKAGE = "bgu.dcr.autogen";
     private Messager msg;
 
     private CompiledTemplate registeryTemplate = TemplateCompiler.compileTemplate(ResourcesTemplatesAncor.class.getResourceAsStream("CompiledRegistery.javat"));
@@ -60,7 +60,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
 
         for (Element element : roundEnv.getElementsAnnotatedWith(Register.class)) {
             note("Scanning: " + element);
-            
+
             if (element instanceof TypeElement) {
                 TypeElement te = (TypeElement) element;
 
@@ -72,17 +72,17 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
 
         //create context
         Map context = new HashMap();
-        context.put("packageName", RESULT_PACKAGE);
+        context.put("packageName", AUTOGEN_PACKAGE);
         context.put("registrations", registeredClasses);
 
-        writeClass(RESULT_PACKAGE + ".CompiledRegistery", registeryTemplate, context);
+        writeClass(AUTOGEN_PACKAGE + ".CompiledRegistery", registeryTemplate, context);
 
         return true;
     }
-    
+
     private void writeClass(String classFQN, CompiledTemplate codeTemplate, Map context) {
         String out = (String) TemplateRuntime.execute(codeTemplate, context);
-        writeClass(classFQN, out);   
+        writeClass(classFQN, out);
     }
 
     private void writeClass(String classFQN, String code) {
@@ -107,8 +107,9 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         final Map ctx = new HashMap();
         ctx.put("typeInfo", te.asType().toString());
         ctx.put("className", te.getQualifiedName().toString().replaceAll("\\.", "_"));
+        final List<PropertyInfo> properties = new LinkedList<>();
+        ctx.put("properties", properties);
 
-        
 //        Map<String, ExecutableElement> 
         for (Element e : te.getEnclosedElements()) {
             if (e.getKind() == ElementKind.METHOD) {
@@ -126,9 +127,10 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
                     public Void visitExecutable(ExecutableElement e, Void p) {
                         note("exec: " + e);
                         note("return type: " + e.getReturnType() + ", params: " + e.getParameters() + ", simple name: " + e.getSimpleName());
-                        
-                        if (e.getSimpleName().toString().startsWith("get")){//found getter
-                            
+
+                        if (e.getSimpleName().toString().startsWith("get")) {//found getter
+                            PropertyInfo info = new PropertyInfo(e.getSimpleName().toString().substring("get".length()), e.getReturnType().toString());
+                            properties.add(info);
                         }
 
                         return null;
@@ -164,8 +166,8 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
 
             }
         }
-        
-        writeClass(RESULT_PACKAGE + "." + ctx.get("className"), configurationTemplate, ctx);
+
+        writeClass(AUTOGEN_PACKAGE + "." + ctx.get("className"), configurationTemplate, ctx);
 
     }
 
@@ -181,6 +183,18 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         public RegisteredClass(String clazz, String regName) {
             this.clazz = clazz;
             this.regName = regName;
+        }
+
+    }
+
+    public static class PropertyInfo {
+
+        public String name;
+        public String typeInfo;
+
+        public PropertyInfo(String name, String typeInfo) {
+            this.name = name;
+            this.typeInfo = typeInfo;
         }
 
     }

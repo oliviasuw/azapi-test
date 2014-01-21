@@ -16,7 +16,7 @@ public class RegisteryUtils {
     public static Registery getDefaultRegistery() {
         if (defaultRegistery == null) {
             try {
-                defaultRegistery = (Registery) Class.forName("bgu.dcr.autogen.CompiledRegistery").newInstance();
+                defaultRegistery = (Registery) Class.forName(RegisteryAnnotationProcessor.AUTOGEN_PACKAGE + ".CompiledRegistery").newInstance();
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }

@@ -15,5 +15,5 @@ public interface PropertyValue {
 
     ConfigurableTypeInfo type();
 
-    Object create();
+    <T> T create();
 }

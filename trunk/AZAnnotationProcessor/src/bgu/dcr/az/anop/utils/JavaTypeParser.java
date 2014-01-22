@@ -7,9 +7,7 @@ package bgu.dcr.az.anop.utils;
 
 import bgu.dcr.az.anop.conf.impl.ConfigurableTypeInfoImpl;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  *
@@ -17,9 +15,6 @@ import java.util.Map;
  */
 public class JavaTypeParser {
     
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
         System.out.println(parse("java.lang.String"));
         System.out.println(parse("java.util.List<java.lang.Integer>"));

@@ -30,6 +30,9 @@ public class @{className} extends AbstractConfiguration{
     @end{}
     public static final JavaDocInfo JAVADOC = JavaDocParser.parse("@{escapedJavadoc}");
 
+    @if{extension != null}
+    private @{extensionConfiurationClass} parent;
+    @end{}
     public @{className}() {
         this.properties = new HashMap<>();
         
@@ -38,6 +41,10 @@ public class @{className} extends AbstractConfiguration{
         @foreach{p : properties}
         vd = new VisualDataImpl("@{p.displayName}", "@{p.iconPath}", "@{p.description}");
         properties.put("@{p.name}", new PropertyImpl("@{p.name}", this, @{lc(p.name)}_TYPE_INFO , vd));
+        @end{}
+        @if{extension != null}
+        parent = new @{extensionConfiurationClass}();
+        this.properties.putAll(parent.propertiesMap());
         @end{}
 
         this.type = TYPE_INFO;
@@ -56,6 +63,9 @@ public class @{className} extends AbstractConfiguration{
     public void configure(Object obj) throws ConfigurationException {
         @{configuredClassName} o = (@{configuredClassName}) obj;
         Property property = null;
+        @if{extension != null}
+        parent.configure(obj);
+        @end{}
         @foreach{p : properties}
         property = properties.get("@{p.name}");
         if (property.get() != null){

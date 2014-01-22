@@ -35,6 +35,10 @@ public abstract class AbstractConfiguration implements Configuration {
         return type;
     }
 
+    public Map<String, Property> propertiesMap() {
+        return properties;
+    }
+
     @Override
     public VisualData visualData() {
         return vdata;

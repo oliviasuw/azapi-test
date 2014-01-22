@@ -22,6 +22,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import org.mvel2.ParserContext;
@@ -45,6 +46,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
 
     private final CompiledTemplate registeryTemplate;
     private final CompiledTemplate configurationTemplate;
+    private final Map<String, TypeElement> configurableClasses = new HashMap<>();
 
     public RegisteryAnnotationProcessor() {
         ParserContext ctx = ParserContext.create();
@@ -63,16 +65,11 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         msg = processingEnv.getMessager();
 
         List<RegisteredClass> registeredClasses = new LinkedList<>();
+        findConfigurableClasses(roundEnv);
 
-        for (Element element : roundEnv.getElementsAnnotatedWith(Register.class)) {
-            note("Scanning: " + element);
-
-            if (element instanceof TypeElement) {
-                TypeElement te = (TypeElement) element;
-
-                createConfiguration(te);
-                registeredClasses.add(new RegisteredClass(te.getQualifiedName().toString(), te.getAnnotation(Register.class).value()));
-            }
+        for (TypeElement te : configurableClasses.values()) {
+            createConfiguration(te);
+            registeredClasses.add(new RegisteredClass(te.getQualifiedName().toString(), te.getAnnotation(Register.class).value()));
         }
 
         //create context
@@ -83,6 +80,16 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         writeClass(AUTOGEN_PACKAGE + ".CompiledRegistery", registeryTemplate, context);
 
         return true;
+    }
+
+    private void findConfigurableClasses(RoundEnvironment roundEnv) {
+        for (Element element : roundEnv.getElementsAnnotatedWith(Register.class)) {
+            note("Scanning: " + element);
+
+            if (element instanceof TypeElement) {
+                configurableClasses.put("" + element, (TypeElement) element);
+            }
+        }
     }
 
     private void writeClass(String classFQN, CompiledTemplate codeTemplate, Map context) {
@@ -113,10 +120,19 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         final List<PropertyInfo> properties = new LinkedList<>();
 
         ctx.put("typeInfo", te.asType().toString());
-        ctx.put("className", te.getQualifiedName().toString().replaceAll("\\.", "_"));
+        ctx.put("className", fqnToConfigurationClassName(te.getQualifiedName().toString()));
         ctx.put("properties", properties);
         ctx.put("configuredClassName", te.getQualifiedName().toString());
         ctx.put("escapedJavadoc", StringUtils.escapedString(ProcessorUtils.extractJavadoc(te)));
+        ctx.put("extension", null);
+        ctx.put("extensionConfiurationClass", null);
+
+        TypeMirror parent = te.getSuperclass();
+        String parentFQN = "" + parent;
+        if (configurableClasses.containsKey(parentFQN)) {
+            ctx.put("extension", parentFQN);
+            ctx.put("extensionConfiurationClass", AUTOGEN_PACKAGE + "." + fqnToConfigurationClassName(parentFQN));
+        }
 
         Map<String, ExecutableElement> methods = ProcessorUtils.extractMethods(te);
         for (Map.Entry<String, ExecutableElement> p : methods.entrySet()) {
@@ -143,6 +159,10 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
 
         writeClass(AUTOGEN_PACKAGE + "." + ctx.get("className"), configurationTemplate, ctx);
 
+    }
+
+    public static String fqnToConfigurationClassName(String fqn) {
+        return fqn.replaceAll("\\.", "_");
     }
 
     public void note(String note) {

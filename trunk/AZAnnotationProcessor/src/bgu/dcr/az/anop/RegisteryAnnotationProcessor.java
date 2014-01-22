@@ -1,14 +1,12 @@
 package bgu.dcr.az.anop;
 
-import bgu.dcr.az.anop.conf.ConfigurableTypeInfo;
 import bgu.dcr.az.anop.utils.CodeUtils;
-import bgu.dcr.az.anop.utils.JavaTypeParser;
-import bgu.dcr.az.anop.utils.MirrorUtils;
+import bgu.dcr.az.anop.utils.ProcessorUtils;
 import bgu.dcr.az.anop.utils.StringBuilderWriter;
+import bgu.dcr.az.anop.utils.StringUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,6 +58,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         if (run) {
             return false;
         }
+        ProcessorUtils.initialize(processingEnv);
         run = true;
         msg = processingEnv.getMessager();
 
@@ -72,7 +71,6 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
                 TypeElement te = (TypeElement) element;
 
                 createConfiguration(te);
-
                 registeredClasses.add(new RegisteredClass(te.getQualifiedName().toString(), te.getAnnotation(Register.class).value()));
             }
         }
@@ -118,10 +116,10 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         ctx.put("className", te.getQualifiedName().toString().replaceAll("\\.", "_"));
         ctx.put("properties", properties);
         ctx.put("configuredClassName", te.getQualifiedName().toString());
+        ctx.put("escapedJavadoc", StringUtils.escapedString(ProcessorUtils.extractJavadoc(te)));
 
-        Map<String, ExecutableElement> methods = MirrorUtils.extractMethods(te);
+        Map<String, ExecutableElement> methods = ProcessorUtils.extractMethods(te);
         for (Map.Entry<String, ExecutableElement> p : methods.entrySet()) {
-
             if (p.getKey().startsWith("get")) {
                 PropertyInfo info = new PropertyInfo();
                 info.description = "";
@@ -130,20 +128,16 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
                 info.name = info.displayName;
                 info.getter = p.getKey();
                 info.setter = "";
-                info.typeInfo = JavaTypeParser.parse(p.getValue().getReturnType().toString());
-                if (Collection.class.isAssignableFrom(info.typeInfo.getType())) {
-                    info.type = PropertyInfo.TypeOfTheType.Collection;
-                } else if (Map.class.isAssignableFrom(info.typeInfo.getType())) {
-                    info.type = PropertyInfo.TypeOfTheType.Map;
-                } else {
-                    info.type = PropertyInfo.TypeOfTheType.Basic;
-                }
+                info.type = ProcessorUtils.extractTypeUnparametrizedFQN(p.getValue().getReturnType());
+                info.typeFQN = p.getValue().getReturnType().toString();
+
                 final String setterName = "set" + p.getKey().substring("get".length());
-                if (!info.type.isBasic() || methods.containsKey(setterName)) {
+                if (methods.containsKey(setterName)) {
                     info.setter = setterName;
-                    note("adding " + p.getKey() + " with doc: " + processingEnv.getElementUtils().getDocComment(p.getValue()));
-                    properties.add(info);
                 }
+
+                note("adding " + p.getKey() + " with doc: " + processingEnv.getElementUtils().getDocComment(p.getValue()));
+                properties.add(info);
             }
         }
 
@@ -170,43 +164,12 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
     public static class PropertyInfo {
 
         public String name;
-        public ConfigurableTypeInfo typeInfo;
+        public String type;
+        public String typeFQN;
         public String displayName, iconPath, description;
         public String setter;
         public String getter;
-        public TypeOfTheType type;
 
-        public static enum TypeOfTheType {
-
-            Basic {
-                        @Override
-                        public boolean isBasic() {
-                            return true;
-                        }
-                    }, Collection {
-                        @Override
-                        public boolean isCollection() {
-                            return true;
-                        }
-                    }, Map {
-                        @Override
-                        public boolean isMap() {
-                            return true;
-                        }
-                    };
-
-            public boolean isBasic() {
-                return false;
-            }
-
-            public boolean isCollection() {
-                return false;
-            }
-
-            public boolean isMap() {
-                return false;
-            }
-        }
     }
 
 }

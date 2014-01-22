@@ -5,6 +5,8 @@
  */
 package bgu.dcr.az.anop.utils;
 
+import bgu.dcr.az.anop.conf.JavaDocInfo;
+import bgu.dcr.az.anop.conf.impl.JavaDocInfoImpl;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,29 +16,9 @@ import java.util.Map;
  */
 public class JavaDocParser {
 
-    /**
-     * return a map (annotation -> text) extracted from the given javadoc
-     * string, the "" annotation is used to describe the default text.
-     *
-     * for example, for the javadoc:
-     *
-     * {@code
-     * this is the default test
-     *
-     * @annotation1 hello world
-     * @annotation2 other value }
-     *
-     * the resulted map will contain:{@code
-     * "" -> "this is the default test",
-     * "annotation1" -> "hello \nworld",
-     * "annotation2" -> "other value" }
-     *
-     * @param javadoc
-     * @return
-     */
-    public static Map<String, String> parse(String javadoc) {
+    public static JavaDocInfo parse(String javadoc) {
         Map results = new HashMap();
         results.put("", javadoc);
-        return results;
+        return new JavaDocInfoImpl(results);
     }
 }

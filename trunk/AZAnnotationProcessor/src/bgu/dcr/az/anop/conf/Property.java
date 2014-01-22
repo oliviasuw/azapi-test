@@ -14,7 +14,7 @@ package bgu.dcr.az.anop.conf;
  *
  * @author User
  */
-public interface Property {
+public interface Property extends Documented{
 
     String name();
 

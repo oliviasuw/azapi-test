@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.anop.visitors;
 
+import bgu.dcr.az.anop.utils.ReflectionUtils;
 import javax.annotation.processing.Messager;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
@@ -19,6 +20,7 @@ import javax.lang.model.type.UnionType;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor7;
 import javax.tools.Diagnostic;
+import org.mvel2.util.ReflectionUtil;
 
 /**
  *
@@ -35,6 +37,11 @@ public class QualifiedUnparametrizedNameTypeVisitor extends SimpleTypeVisitor7<S
     @Override
     public String visitDeclared(DeclaredType t, Void p) {
         return t.asElement().toString();
+    }
+
+    @Override
+    public String visitPrimitive(PrimitiveType t, Void p) {
+        return ReflectionUtils.PRIMITIVE_TO_WRAPPER_CLASS.get(t.toString()).getCanonicalName();
     }
 
     @Override

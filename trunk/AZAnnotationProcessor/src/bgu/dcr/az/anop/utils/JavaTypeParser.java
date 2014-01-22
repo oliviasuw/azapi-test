@@ -16,16 +16,7 @@ import java.util.Map;
  * @author Zovadi
  */
 public class JavaTypeParser {
-    private static final Map<String, Class> primitives = new HashMap<String, Class>(){{
-        put("boolean", Boolean.class);
-        put("byte", Byte.class);
-        put("short", Short.class);
-        put("char", Character.class);
-        put("int", Integer.class);
-        put("long", Long.class);
-        put("float", Float.class);
-        put("double", Double.class);
-    }};
+    
     /**
      * @param args the command line arguments
      */
@@ -47,7 +38,7 @@ public class JavaTypeParser {
         int separator = str.indexOf("<");
 
         if (separator == -1) {
-            str = primitives.keySet().contains(str) ? primitives.get(str).getCanonicalName() : str;
+            str = ReflectionUtils.PRIMITIVE_TO_WRAPPER_CLASS.containsKey(str) ? ReflectionUtils.PRIMITIVE_TO_WRAPPER_CLASS.get(str).getCanonicalName() : str;
             return new ConfigurableTypeInfoImpl(str);
         }
         

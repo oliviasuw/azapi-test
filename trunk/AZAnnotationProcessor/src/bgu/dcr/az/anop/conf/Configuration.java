@@ -18,7 +18,7 @@ import java.util.Collection;
  *
  * @author Benny Lutati
  */
-public interface Configuration extends Iterable<Property> {
+public interface Configuration extends Iterable<Property> , Documented{
 
     Collection<Property> properties();
 

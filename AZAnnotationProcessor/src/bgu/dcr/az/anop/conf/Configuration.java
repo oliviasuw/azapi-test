@@ -26,7 +26,9 @@ public interface Configuration extends Iterable<Property> {
 
     VisualData visualData();
 
-    <T> T create();
+    <T> T create() throws ConfigurationException;
+    
+    void configure(Object o) throws ConfigurationException;
 
     Property get(String name);
 

@@ -13,7 +13,5 @@ package bgu.dcr.az.anop.conf;
  */
 public interface PropertyValue {
 
-    ConfigurableTypeInfo type();
-
-    <T> T create();
+    <T> T create(ConfigurableTypeInfo type) throws ConfigurationException;
 }

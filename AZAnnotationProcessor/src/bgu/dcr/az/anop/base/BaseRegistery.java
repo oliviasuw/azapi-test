@@ -7,7 +7,6 @@ package bgu.dcr.az.anop.base;
 
 import bgu.dcr.az.anop.RegisteryAnnotationProcessor;
 import bgu.dcr.az.anop.conf.Configuration;
-import bgu.dcr.az.anop.conf.impl.ConfigurationException;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.lang.reflect.Modifier;
@@ -98,12 +97,11 @@ public class BaseRegistery implements bgu.dcr.az.anop.Registery {
     }
 
     @Override
-    public Configuration getConfiguration(Class c) {
+    public Configuration getConfiguration(Class c) throws ClassNotFoundException {
         try {
-            System.out.println(RegisteryAnnotationProcessor.AUTOGEN_PACKAGE + "." + c.getCanonicalName().replace('.', '_'));
             return (Configuration) Class.forName(RegisteryAnnotationProcessor.AUTOGEN_PACKAGE + "." + c.getCanonicalName().replace('.', '_')).newInstance();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            throw new ConfigurationException("No configuration exist for class: " + c.getCanonicalName(), ex);
+        } catch (InstantiationException | IllegalAccessException ex) {
+            throw new ClassNotFoundException("class with the given name exsits but not satisfying the needed contract", ex);
         }
     }
 

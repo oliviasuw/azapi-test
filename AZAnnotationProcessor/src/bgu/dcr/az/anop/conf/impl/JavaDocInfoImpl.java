@@ -8,6 +8,7 @@ package bgu.dcr.az.anop.conf.impl;
 import bgu.dcr.az.anop.conf.JavaDocInfo;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,12 +17,12 @@ import java.util.Map;
  */
 public class JavaDocInfoImpl implements JavaDocInfo {
 
-    Map<String, String> data;
+    Map<String, List<String>> data;
     String description;
 
-    public JavaDocInfoImpl(Map<String, String> data) {
+    public JavaDocInfoImpl(Map<String, List<String>> data) {
         this.data = data;
-        description = data.remove("");
+        description = listToString(data.remove(""));
     }
 
     @Override
@@ -31,7 +32,7 @@ public class JavaDocInfoImpl implements JavaDocInfo {
 
     @Override
     public String tag(String tag) {
-        return data.get(tag);
+        return listToString(data.get(tag));
     }
 
     @Override
@@ -44,4 +45,13 @@ public class JavaDocInfoImpl implements JavaDocInfo {
         return data.keySet().iterator();
     }
 
+    private static String listToString(List<String> lst) {
+        StringBuilder sb = new StringBuilder();
+
+        for (String e : lst) {
+            sb.append(e).append("\n");
+        }
+        
+        return (sb.length() == 0 ? sb : sb.delete(sb.length() - "\n".length(), sb.length())).toString();
+    }
 }

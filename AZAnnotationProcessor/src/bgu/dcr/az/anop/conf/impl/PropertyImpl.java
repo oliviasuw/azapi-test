@@ -7,6 +7,7 @@ package bgu.dcr.az.anop.conf.impl;
 
 import bgu.dcr.az.anop.conf.ConfigurableTypeInfo;
 import bgu.dcr.az.anop.conf.Configuration;
+import bgu.dcr.az.anop.conf.JavaDocInfo;
 import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.conf.PropertyValue;
 import bgu.dcr.az.anop.conf.VisualData;
@@ -22,12 +23,17 @@ public class PropertyImpl implements Property {
     private ConfigurableTypeInfo type;
     private VisualData visualData;
     private PropertyValue propertyValue;
+    private JavaDocInfo javadoc;
 
     public PropertyImpl(String name, Configuration parent, ConfigurableTypeInfo type, VisualData visualData) {
         this.name = name;
         this.parent = parent;
         this.type = type;
         this.visualData = visualData;
+    }
+
+    public void setJavadoc(JavaDocInfo javadoc) {
+        this.javadoc = javadoc;
     }
 
     @Override
@@ -60,4 +66,9 @@ public class PropertyImpl implements Property {
         return this.propertyValue;
     }
 
+    @Override
+    public JavaDocInfo doc() {
+        return javadoc;
+    }
+    
 }

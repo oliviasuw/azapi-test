@@ -11,8 +11,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +32,17 @@ public class ReflectionUtils {
         HashSet.class
     };
 
+    public static final Map<String, Class> PRIMITIVE_TO_WRAPPER_CLASS = new HashMap<String, Class>(){{
+        put("boolean", Boolean.class);
+        put("byte", Byte.class);
+        put("short", Short.class);
+        put("char", Character.class);
+        put("int", Integer.class);
+        put("long", Long.class);
+        put("float", Float.class);
+        put("double", Double.class);
+    }};
+    
     public static <T> T valueOf(String s, Class<T> c) throws NoSuchMethodException {
         Method vof = valueOfCache.get(c);
         if (vof == null) {

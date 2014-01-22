@@ -7,6 +7,7 @@ package bgu.dcr.az.anop.conf.impl;
 
 import bgu.dcr.az.anop.conf.ConfigurableTypeInfo;
 import bgu.dcr.az.anop.conf.Configuration;
+import bgu.dcr.az.anop.conf.JavaDocInfo;
 import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.conf.VisualData;
 import java.util.Collection;
@@ -22,6 +23,7 @@ public abstract class AbstractConfiguration implements Configuration {
     protected Map<String, Property> properties;
     protected ConfigurableTypeInfo type;
     protected VisualData vdata;
+    protected JavaDocInfo javadoc;
 
     @Override
     public Collection<Property> properties() {
@@ -46,6 +48,11 @@ public abstract class AbstractConfiguration implements Configuration {
     @Override
     public Iterator<Property> iterator() {
         return properties.values().iterator();
+    }
+
+    @Override
+    public JavaDocInfo doc() {
+        return javadoc;
     }
 
 }

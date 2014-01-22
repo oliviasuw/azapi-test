@@ -22,5 +22,5 @@ public interface Registery {
     
     Collection<String> getAllRegisteredNames();
 
-    Configuration getConfiguration(Class c);
+    Configuration getConfiguration(Class c) throws ClassNotFoundException;
 }

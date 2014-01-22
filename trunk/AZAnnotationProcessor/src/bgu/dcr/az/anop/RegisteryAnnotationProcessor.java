@@ -1,11 +1,10 @@
 package bgu.dcr.az.anop;
 
 import bgu.dcr.az.anop.conf.ConfigurableTypeInfo;
-import bgu.dcr.az.anop.conf.impl.ConfigurableTypeInfoImpl;
 import bgu.dcr.az.anop.utils.CodeUtils;
 import bgu.dcr.az.anop.utils.JavaTypeParser;
+import bgu.dcr.az.anop.utils.MirrorUtils;
 import bgu.dcr.az.anop.utils.StringBuilderWriter;
-import bgu.dcr.az.anop.visitors.QualifiedUnparametrizedNameTypeVisitor;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -23,13 +22,8 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.util.SimpleElementVisitor7;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import org.mvel2.ParserContext;
@@ -125,60 +119,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         ctx.put("properties", properties);
         ctx.put("configuredClassName", te.getQualifiedName().toString());
 
-        final Map<String, ExecutableElement> methods = new HashMap<>();
-        for (Element e : te.getEnclosedElements()) {
-            if (e.getKind() == ElementKind.METHOD) {
-
-//                TypeMirror type = e.asType();
-                SimpleElementVisitor7<Void, Void> visitor = new SimpleElementVisitor7<Void, Void>() {
-
-                    @Override
-                    public Void visitVariable(VariableElement e, Void p) {
-                        note("var: " + e);
-                        return null;
-                    }
-
-                    @Override
-                    public Void visitExecutable(ExecutableElement e, Void p) {
-                        note("exec: " + e);
-                        note("return type: " + e.getReturnType() + ", params: " + e.getParameters() + ", simple name: " + e.getSimpleName());
-
-                        methods.put(e.getSimpleName().toString(), e);
-
-                        return null;
-                    }
-
-                    @Override
-                    public Void visitPackage(PackageElement e, Void p) {
-                        note("pack: " + e);
-                        return null;
-                    }
-
-                    @Override
-                    public Void visitType(TypeElement e, Void p) {
-                        note("type: " + e);
-                        return null;
-                    }
-
-                    @Override
-                    public Void visitTypeParameter(TypeParameterElement e, Void p) {
-                        note("typeparam: " + e);
-                        return null;
-                    }
-
-                    @Override
-                    public Void visitUnknown(Element e, Void p) {
-                        note("unknown: " + e);
-                        return null;
-                    }
-
-                };
-
-                e.accept(visitor, null);
-            }
-
-        }
-
+        Map<String, ExecutableElement> methods = MirrorUtils.extractMethods(te);
         for (Map.Entry<String, ExecutableElement> p : methods.entrySet()) {
 
             if (p.getKey().startsWith("get")) {
@@ -200,7 +141,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
                 final String setterName = "set" + p.getKey().substring("get".length());
                 if (!info.type.isBasic() || methods.containsKey(setterName)) {
                     info.setter = setterName;
-                    note("adding " + p.getKey());
+                    note("adding " + p.getKey() + " with doc: " + processingEnv.getElementUtils().getDocComment(p.getValue()));
                     properties.add(info);
                 }
             }

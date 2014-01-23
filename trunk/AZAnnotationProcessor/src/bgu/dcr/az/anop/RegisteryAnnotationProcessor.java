@@ -155,12 +155,12 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
                     info.setter = setterName;
                 }
 
-                note("adding " + p.getKey() + " with doc: " + processingEnv.getElementUtils().getDocComment(p.getValue()));
-                JavaDocInfo jd = JavaDocParser.parse(processingEnv.getElementUtils().getDocComment(p.getValue()));
-                note(jd.description());
-                for (String t : jd.tags()) {
-                    note(t + ":\n" + jd.tag(t));
-                }
+//                note("adding " + p.getKey() + " with doc: " + processingEnv.getElementUtils().getDocComment(p.getValue()));
+//                JavaDocInfo jd = JavaDocParser.parse(processingEnv.getElementUtils().getDocComment(p.getValue()));
+//                note(jd.description());
+//                for (String t : jd.tags()) {
+//                    note(t + ":\n" + jd.tag(t));
+//                }
                 
                 properties.add(info);
             }

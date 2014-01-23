@@ -20,7 +20,7 @@ public interface Property extends Documented{
 
     Configuration parent();
 
-    ConfigurableTypeInfo type();
+    ConfigurableTypeInfo typeInfo();
 
     VisualData visualData();
 

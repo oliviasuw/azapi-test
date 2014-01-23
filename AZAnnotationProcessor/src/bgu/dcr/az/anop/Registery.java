@@ -13,14 +13,16 @@ import java.util.Collection;
  * @author shl
  */
 public interface Registery {
-  
+
     Collection<Class> getImplementors(Class c);
 
     String getRegisteredClassName(Class c);
 
     Class getRegisteredClassByName(String registeredName);
-    
+
     Collection<String> getAllRegisteredNames();
 
     Configuration getConfiguration(Class c) throws ClassNotFoundException;
+
+    Configuration getConfiguration(String registeration) throws ClassNotFoundException;
 }

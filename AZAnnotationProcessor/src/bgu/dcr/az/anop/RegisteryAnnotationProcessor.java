@@ -23,6 +23,7 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
@@ -121,7 +122,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         final Map ctx = new HashMap();
         final List<PropertyInfo> properties = new LinkedList<>();
 
-        ctx.put("typeInfo", te.asType().toString());
+        ctx.put("typeInfo", ProcessorUtils.extractClassTypeName(te, true));
         ctx.put("className", fqnToConfigurationClassName(te.getQualifiedName().toString()));
         ctx.put("properties", properties);
         ctx.put("configuredClassName", te.getQualifiedName().toString());
@@ -147,7 +148,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
                 info.getter = p.getKey();
                 info.setter = "";
                 info.type = ProcessorUtils.extractTypeUnparametrizedFQN(p.getValue().getReturnType());
-                info.typeFQN = p.getValue().getReturnType().toString();
+                info.typeFQN = ProcessorUtils.extractClassTypeName(p.getValue().getReturnType(), true);
 
                 final String setterName = "set" + p.getKey().substring("get".length());
                 if (methods.containsKey(setterName)) {

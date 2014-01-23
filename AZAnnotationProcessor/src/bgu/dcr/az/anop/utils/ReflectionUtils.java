@@ -44,6 +44,8 @@ public class ReflectionUtils {
     }};
     
     public static <T> T valueOf(String s, Class<T> c) throws NoSuchMethodException {
+        if (c == String.class) return (T) s;
+        
         Method vof = valueOfCache.get(c);
         if (vof == null) {
             vof = c.getMethod("valueOf", String.class);

@@ -20,9 +20,25 @@ public class ConfigurableTypeInfoImpl implements ConfigurableTypeInfo {
     private final List<ConfigurableTypeInfoImpl> subtypes;
 
     public ConfigurableTypeInfoImpl(String className) {
+        char[] chars = className.toCharArray();
+        boolean foundClass = false;
+        
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] == '.' && i + 1 < chars.length && Character.isUpperCase(chars[i+1])){
+                if (foundClass){
+                    chars[i] = '$';
+                }else {
+                    foundClass = true;
+                }
+            }
+        }
+        
+        className = new String(chars);
+        
         try {
             this.clazz = Class.forName(className);
         } catch (Exception e) {
+            e.printStackTrace();
             this.clazz = Object.class;
         }
         subtypes = new LinkedList<>();

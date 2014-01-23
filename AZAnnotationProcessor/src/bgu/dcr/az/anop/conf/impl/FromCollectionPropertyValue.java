@@ -19,16 +19,21 @@ import java.util.List;
  *
  * @author User
  */
-public class CollectionPropertyValue implements PropertyValue, Iterable<PropertyValue> {
+public class FromCollectionPropertyValue implements PropertyValue, Iterable<PropertyValue> {
 
     private List<PropertyValue> values = new LinkedList<>();
 
-    public CollectionPropertyValue add(PropertyValue value) {
+    public FromCollectionPropertyValue add(PropertyValue value) {
         values.add(value);
         return this;
     }
+    
+    public FromCollectionPropertyValue addAll(Collection<PropertyValue> values) {
+        this.values.addAll(values);
+        return this;
+    }
 
-    public CollectionPropertyValue remove(PropertyValue value) {
+    public FromCollectionPropertyValue remove(PropertyValue value) {
         values.remove(value);
         return this;
     }

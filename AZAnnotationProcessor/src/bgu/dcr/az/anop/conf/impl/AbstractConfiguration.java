@@ -31,7 +31,7 @@ public abstract class AbstractConfiguration implements Configuration {
     }
 
     @Override
-    public ConfigurableTypeInfo type() {
+    public ConfigurableTypeInfo typeInfo() {
         return type;
     }
 

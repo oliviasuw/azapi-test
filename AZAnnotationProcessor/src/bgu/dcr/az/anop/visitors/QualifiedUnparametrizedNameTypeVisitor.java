@@ -5,8 +5,10 @@
  */
 package bgu.dcr.az.anop.visitors;
 
+import bgu.dcr.az.anop.utils.ProcessorUtils;
 import bgu.dcr.az.anop.utils.ReflectionUtils;
 import javax.annotation.processing.Messager;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ErrorType;
@@ -36,7 +38,7 @@ public class QualifiedUnparametrizedNameTypeVisitor extends SimpleTypeVisitor7<S
 
     @Override
     public String visitDeclared(DeclaredType t, Void p) {
-        return t.asElement().toString();
+        return ProcessorUtils.extractClassTypeName((TypeElement) t.asElement(), true);
     }
 
     @Override

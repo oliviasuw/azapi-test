@@ -28,10 +28,10 @@ public class FromConfigurationPropertyValue implements PropertyValue {
 
     @Override
     public <T> T create(ConfigurableTypeInfo type) throws ConfigurationException {
-        if (type.getType().isAssignableFrom(value.type().getType())) {
+        if (type.getType().isAssignableFrom(value.typeInfo().getType())) {
             return value.create();
         } else {
-            throw new ConfigurationException(String.format("configuration type: %s not match the type of the assigned property: $s", type.getType().getCanonicalName(), value.type().getType().getCanonicalName()));
+            throw new ConfigurationException(String.format("configuration type: %s not match the type of the assigned property: %s", type.getType().getCanonicalName(), value.typeInfo().getType().getCanonicalName()));
         }
     }
 

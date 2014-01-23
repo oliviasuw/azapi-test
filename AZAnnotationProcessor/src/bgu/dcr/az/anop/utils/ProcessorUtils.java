@@ -5,21 +5,20 @@
  */
 package bgu.dcr.az.anop.utils;
 
-import bgu.dcr.az.anop.visitors.PrintingTypeVisitor;
 import bgu.dcr.az.anop.visitors.QualifiedUnparametrizedNameTypeVisitor;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleElementVisitor7;
@@ -77,6 +76,49 @@ public class ProcessorUtils {
     }
 
     /**
+     * use this method in order to get the class name for the given type - do
+     * not call toString on the type as it is not always accurate.
+     *
+     * @param te
+     * @return
+     */
+    public static String extractClassTypeName(TypeElement te, boolean parametrized) {
+        boolean inner = te.getNestingKind() != NestingKind.TOP_LEVEL;
+        String type = te.asType().toString();
+        final int lastDot = type.lastIndexOf('.');
+        if (inner) {
+            type = type.substring(0, lastDot) + '$' + type.substring(lastDot + 1);
+        }
+
+        final int parametrizationIndex = type.indexOf("<");
+        if (!parametrized && parametrizationIndex >= 0) {
+            type = type.substring(0, parametrizationIndex);
+        }
+        return type;
+    }
+
+    /**
+     * @param parametrized
+     * @see
+     * ProcessorUtils#extractClassTypeName(javax.lang.model.element.TypeElement)
+     * @param te
+     * @return
+     */
+    public static String extractClassTypeName(TypeMirror te, boolean parametrized) {
+        final DeclaredType decte = toDeclaredType(te);
+        String result = extractClassTypeName((TypeElement) decte.asElement(), false);
+        if (parametrized) {
+            final String dectes = decte.toString();
+            int paramindex = dectes.indexOf("<");
+            if (paramindex >= 0) {
+                result = result + dectes.substring(paramindex);
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * extract the javadoc from the given element
      *
      * @param e
@@ -104,6 +146,11 @@ public class ProcessorUtils {
             @Override
             public DeclaredType visitDeclared(DeclaredType t, Void p) {
                 return t;
+            }
+
+            @Override
+            public DeclaredType visitPrimitive(PrimitiveType t, Void p) {
+                return toDeclaredType(typeUtils.boxedClass(t).asType());
             }
 
             @Override

@@ -21,6 +21,10 @@ import bgu.dcr.az.anop.utils.JavaDocParser;
     def lc(string) {
         CodeUtils.camelCaseToLowerLine(string).toUpperCase();
     }
+
+    def castify(type) {
+        type.replaceAll("\\$", ".");
+    }
 }
 public class @{className} extends AbstractConfiguration{
 
@@ -69,25 +73,29 @@ public class @{className} extends AbstractConfiguration{
         @foreach{p : properties}
         property = properties.get("@{p.name}");
         if (property.get() != null){
-            @if{p.setter != empty}
-            o.@{p.setter}( property.get().<@{p.type}>create(property.type()));
-            @else{}
-            if (o.@{p.getter}() == null) {
-                throw new ConfigurationException(String.format("property %s doesnt have setter and no default value to fill", "@{p.name}"));
-            }
+            try{          
+                @if{p.setter != empty}
+                o.@{p.setter}( property.get().<@{castify(p.type)}>create(property.typeInfo()));
+                @else{}
+                if (o.@{p.getter}() == null) {
+                    throw new ConfigurationException(String.format("property %s doesnt have setter and no default value to fill", "@{p.name}"));
+                }
 
-            if (Collection.class.isAssignableFrom(property.type().getType())){
-                Collection collection = ((Collection) (Object) o.@{p.getter}());
-                collection.clear();
-                collection.addAll( property.get().<Collection>create(property.type()));
-            } else if (Map.class.isAssignableFrom(property.type().getType())){
-                Map map = ((Map) (Object) o.@{p.getter}());
-                map.clear();
-                map.putAll( property.get().<Map>create(property.type()));
-            } else {
-                throw new ConfigurationException("does not know how to handle property @{p.name} (doesnt have setter)");
+                if (Collection.class.isAssignableFrom(property.typeInfo().getType())){
+                    Collection collection = ((Collection) (Object) o.@{p.getter}());
+                    collection.clear();
+                    collection.addAll( property.get().<Collection>create(property.typeInfo()));
+                } else if (Map.class.isAssignableFrom(property.typeInfo().getType())){
+                    Map map = ((Map) (Object) o.@{p.getter}());
+                    map.clear();
+                    map.putAll( property.get().<Map>create(property.typeInfo()));
+                } else {
+                    throw new ConfigurationException("does not know how to handle property");
+                }
+                @end{}
+            } catch (ConfigurationException ex){
+                throw new ConfigurationException("cannot configure property @{p.name}", ex);
             }
-            @end{}
         }
         @end{}
     }    

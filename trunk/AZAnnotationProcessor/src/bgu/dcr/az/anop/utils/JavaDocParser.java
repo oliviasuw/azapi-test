@@ -18,68 +18,13 @@ import java.util.Map;
  */
 public class JavaDocParser {
 
-    public static void main(String[] args) {
-        String javadoc = "   /**\n"
-                + "     * Allocates a new {@code String} that contains characters from a subarray\n"
-                + "     * of the <a href=\"Character.html#unicode\">Unicode code point</a> array\n"
-                + "     * argument.  The {@code offset} argument is the index of the first code\n"
-                + "     * point of the subarray and the {@code count} argument specifies the\n"
-                + "     * length of the subarray.  The contents of the subarray are converted to\n"
-                + "     * {@code char}s; subsequent modification of the {@code int} array does not\n"
-                + "     * affect the newly created string.\n"
-                + "     *\n"
-                + "     * @param  codePoints\n"
-                + "     *         Array that is the source of Unicode code points\n"
-                + "     *\n"
-                + "     * @param  offset\n"
-                + "     *         The initial offset\n"
-                + "     *\n"
-                + "     * @param  count\n"
-                + "     *         The length\n"
-                + "     *\n"
-                + "     * @throws  IllegalArgumentException\n"
-                + "     *          If any invalid Unicode code point is found in {@code\n"
-                + "     *          codePoints}\n"
-                + "     *\n"
-                + "     * @throws  IndexOutOfBoundsException\n"
-                + "     *          If the {@code offset} and {@code count} arguments index\n"
-                + "     *          characters outside the bounds of the {@code codePoints} array\n"
-                + "     *\n"
-                + "     * @since  1.5\n"
-                + "     */\n";
-        JavaDocInfo jd = parse(javadoc);
-        
-        System.out.println(jd.description());
-        System.out.println("---------------------------------------------");
-        
-        for (String t : jd.tags()) {
-            System.out.println(t + ":\n" + jd.tag(t));
-            System.out.println("---------------------------------------------");
-        }
-    }
-
-    private static String compileComments(String javadoc) {
+    private static String compileJavaDoc(String javadoc) {
         javadoc = javadoc.trim();
-        int startIndex = javadoc.indexOf("/*");
-        if (startIndex == -1) {
-            return null;
-        }
-        javadoc = javadoc.substring(startIndex + "/*".length());
-        javadoc = new StringBuilder().append(javadoc).reverse().toString();
-
-        int endIndex = javadoc.indexOf("/*");
-        if (startIndex == -1) {
-            return null;
-        }
-        javadoc = javadoc.substring(endIndex + "/*".length());
-        javadoc = new StringBuilder().append(javadoc).reverse().toString();
         String[] lines = javadoc.split("\n");
         StringBuilder sb = new StringBuilder();
+        
         for (String l : lines) {
-            int asterixIndex = l.indexOf('*');
-            if (asterixIndex != -1) {
-                sb.append(l.substring(asterixIndex + 1).trim()).append("\n");
-            }
+            sb.append(l.trim()).append("\n");
         }
 
         return sb.toString();
@@ -88,7 +33,7 @@ public class JavaDocParser {
     public static JavaDocInfo parse(String javadoc) {
         Map<String, List<String>> results = new HashMap();
 
-        javadoc = compileComments(javadoc);
+        javadoc = compileJavaDoc(javadoc);
 
         javadoc = "@ " + javadoc;
 

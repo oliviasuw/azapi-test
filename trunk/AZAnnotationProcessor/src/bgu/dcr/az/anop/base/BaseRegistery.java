@@ -105,4 +105,9 @@ public class BaseRegistery implements bgu.dcr.az.anop.Registery {
         }
     }
 
+    @Override
+    public Configuration getConfiguration(String registeration) throws ClassNotFoundException {
+        return getConfiguration(getRegisteredClassByName(registeration));
+    }
+
 }

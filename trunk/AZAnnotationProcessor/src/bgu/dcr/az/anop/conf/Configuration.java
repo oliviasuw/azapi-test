@@ -5,6 +5,8 @@
  */
 package bgu.dcr.az.anop.conf;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 
 /**
@@ -22,7 +24,7 @@ public interface Configuration extends Iterable<Property> , Documented{
 
     Collection<Property> properties();
 
-    ConfigurableTypeInfo type();
+    ConfigurableTypeInfo typeInfo();
 
     VisualData visualData();
 
@@ -31,5 +33,5 @@ public interface Configuration extends Iterable<Property> , Documented{
     void configure(Object o) throws ConfigurationException;
 
     Property get(String name);
-
+    
 }

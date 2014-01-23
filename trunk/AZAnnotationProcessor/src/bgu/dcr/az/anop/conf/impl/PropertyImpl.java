@@ -47,7 +47,7 @@ public class PropertyImpl implements Property {
     }
 
     @Override
-    public ConfigurableTypeInfo type() {
+    public ConfigurableTypeInfo typeInfo() {
         return this.type;
     }
 
@@ -70,5 +70,10 @@ public class PropertyImpl implements Property {
     public JavaDocInfo doc() {
         return javadoc;
     }
-    
+
+    @Override
+    public String toString() {
+        return "PropertyImpl{" + "name=" + name + ", type=" + type + '}';
+    }
+
 }

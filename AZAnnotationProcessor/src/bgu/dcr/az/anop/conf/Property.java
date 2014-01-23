@@ -22,8 +22,6 @@ public interface Property extends Documented{
 
     ConfigurableTypeInfo typeInfo();
 
-    VisualData visualData();
-
     void set(PropertyValue cv);
 
     PropertyValue get();

@@ -218,4 +218,9 @@ public class ConfigurationUtils {
         return new FromConfigurationPropertyValue(fromXML(e));
     }
 
+    public static Configuration createConfigurationFor(Object o) throws ClassNotFoundException {
+        Configuration conf = RegisteryUtils.getDefaultRegistery().getConfiguration(o.getClass());
+        return conf;
+    }
+
 }

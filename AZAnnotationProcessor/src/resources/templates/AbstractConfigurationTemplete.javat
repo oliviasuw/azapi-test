@@ -30,7 +30,8 @@ public class @{className} extends AbstractConfiguration{
 
     public static final ConfigurableTypeInfo TYPE_INFO = JavaTypeParser.parse("@{typeInfo}");
     @foreach{p : properties}
-    public static final ConfigurableTypeInfo @{lc(p.name)}_TYPE_INFO = JavaTypeParser.parse("@{p.typeFQN}");
+    public static final ConfigurableTypeInfo @{lc(p.declaredName)}_TYPE_INFO = JavaTypeParser.parse("@{p.typeFQN}");
+    public static final JavaDocInfo @{lc(p.declaredName)}_JAVADOC_INFO = JavaDocParser.parse("@{p.javadoc}");
     @end{}
     public static final JavaDocInfo JAVADOC = JavaDocParser.parse("@{escapedJavadoc}");
 
@@ -43,8 +44,7 @@ public class @{className} extends AbstractConfiguration{
         //fill properties
         VisualData vd = null;
         @foreach{p : properties}
-        vd = new VisualDataImpl("@{p.displayName}", "@{p.iconPath}", "@{p.description}");
-        properties.put("@{p.name}", new PropertyImpl("@{p.name}", this, @{lc(p.name)}_TYPE_INFO , vd));
+        properties.put("@{p.name}", new PropertyImpl("@{p.name}", this, @{lc(p.declaredName)}_TYPE_INFO , @{lc(p.declaredName)}_JAVADOC_INFO));
         @end{}
         @if{extension != null}
         parent = new @{extensionConfiurationClass}();

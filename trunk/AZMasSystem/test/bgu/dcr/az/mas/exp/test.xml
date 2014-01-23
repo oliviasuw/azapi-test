@@ -1,0 +1,7 @@
+<experiment>
+    <algorithm name="SBB"/>
+    <algorithm name="SBT"/>
+    <algorithm name="BNB"/>
+    
+    <stam-pgen/>
+</experiment>

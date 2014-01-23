@@ -139,16 +139,20 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
 
         Map<String, ExecutableElement> methods = ProcessorUtils.extractMethods(te);
         for (Map.Entry<String, ExecutableElement> p : methods.entrySet()) {
-            if (p.getKey().startsWith("get")) {
+            if (p.getKey().startsWith("get") && p.getValue().getParameters().isEmpty()) {
                 PropertyInfo info = new PropertyInfo();
-                info.description = "";
-                info.displayName = p.getValue().getSimpleName().toString().substring("get".length());
-                info.iconPath = "";
-                info.name = info.displayName;
+                info.javadoc = StringUtils.escapedString(ProcessorUtils.extractJavadoc(p.getValue()));
+                info.declaredName = p.getValue().getSimpleName().toString().substring("get".length());
+                info.name = info.declaredName;
                 info.getter = p.getKey();
                 info.setter = "";
                 info.type = ProcessorUtils.extractTypeUnparametrizedFQN(p.getValue().getReturnType());
                 info.typeFQN = ProcessorUtils.extractClassTypeName(p.getValue().getReturnType(), true);
+
+                JavaDocInfo jd = JavaDocParser.parse(ProcessorUtils.extractJavadoc(p.getValue()));
+                if (jd.first("propertyName") != null) {
+                    info.name = jd.first("propertyName");
+                }
 
                 final String setterName = "set" + p.getKey().substring("get".length());
                 if (methods.containsKey(setterName)) {
@@ -161,7 +165,6 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
 //                for (String t : jd.tags()) {
 //                    note(t + ":\n" + jd.tag(t));
 //                }
-                
                 properties.add(info);
             }
         }
@@ -192,12 +195,12 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
 
     public static class PropertyInfo {
 
-        public String name;
+        public String name,declaredName;
         public String type;
         public String typeFQN;
-        public String displayName, iconPath, description;
         public String setter;
         public String getter;
+        public String javadoc;
 
     }
 

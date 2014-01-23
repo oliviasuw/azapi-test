@@ -21,15 +21,14 @@ public class PropertyImpl implements Property {
     private String name;
     private Configuration parent;
     private ConfigurableTypeInfo type;
-    private VisualData visualData;
     private PropertyValue propertyValue;
     private JavaDocInfo javadoc;
 
-    public PropertyImpl(String name, Configuration parent, ConfigurableTypeInfo type, VisualData visualData) {
+    public PropertyImpl(String name, Configuration parent, ConfigurableTypeInfo type, JavaDocInfo javadoc) {
         this.name = name;
         this.parent = parent;
         this.type = type;
-        this.visualData = visualData;
+        this.javadoc = javadoc;
     }
 
     public void setJavadoc(JavaDocInfo javadoc) {
@@ -49,11 +48,6 @@ public class PropertyImpl implements Property {
     @Override
     public ConfigurableTypeInfo typeInfo() {
         return this.type;
-    }
-
-    @Override
-    public VisualData visualData() {
-        return this.visualData;
     }
 
     @Override

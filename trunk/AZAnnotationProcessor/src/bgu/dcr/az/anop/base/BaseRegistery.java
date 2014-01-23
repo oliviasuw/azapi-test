@@ -98,6 +98,9 @@ public class BaseRegistery implements bgu.dcr.az.anop.Registery {
 
     @Override
     public Configuration getConfiguration(Class c) throws ClassNotFoundException {
+        if (c == null) {
+            return null;
+        }
         try {
             return (Configuration) Class.forName(RegisteryAnnotationProcessor.AUTOGEN_PACKAGE + "." + c.getCanonicalName().replace('.', '_')).newInstance();
         } catch (InstantiationException | IllegalAccessException ex) {

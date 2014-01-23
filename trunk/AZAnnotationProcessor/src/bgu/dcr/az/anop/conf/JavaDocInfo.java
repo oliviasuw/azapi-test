@@ -20,9 +20,16 @@ public interface JavaDocInfo extends Iterable<String> {
 
     /**
      * @param tag
-     * @return the description provided in the annotated tag
+     * @return the descriptions provided in the annotated tag
      */
-    String tag(String tag);
+    Collection<String> tag(String tag);
+    
+    /**
+     * 
+     * @param tag
+     * @return the first occurence of the given tag or null if no such exists
+     */
+    String first(String tag);
 
     /**
      * @return list of all the annotated tag names in this javadoc

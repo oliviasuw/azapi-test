@@ -7,6 +7,7 @@ package bgu.dcr.az.anop.conf.impl;
 
 import bgu.dcr.az.anop.conf.JavaDocInfo;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +18,13 @@ import java.util.Map;
  */
 public class JavaDocInfoImpl implements JavaDocInfo {
 
-    Map<String, List<String>> data;
-    String description;
+    private final Map<String, List<String>> data;
+    private final String description;
 
     public JavaDocInfoImpl(Map<String, List<String>> data) {
         this.data = data;
-        description = listToString(data.remove(""));
+        final List<String> descTemp = data.remove("");
+        description = descTemp == null || descTemp.isEmpty() ? "" : descTemp.get(0);
     }
 
     @Override
@@ -31,8 +33,9 @@ public class JavaDocInfoImpl implements JavaDocInfo {
     }
 
     @Override
-    public String tag(String tag) {
-        return listToString(data.get(tag));
+    public Collection<String> tag(String tag) {
+        final List<String> got = data.get(tag);
+        return got == null ? Collections.EMPTY_LIST : got;
     }
 
     @Override
@@ -45,13 +48,12 @@ public class JavaDocInfoImpl implements JavaDocInfo {
         return data.keySet().iterator();
     }
 
-    private static String listToString(List<String> lst) {
-        StringBuilder sb = new StringBuilder();
-
-        for (String e : lst) {
-            sb.append(e).append("\n");
+    @Override
+    public String first(String tag) {
+        if (!data.containsKey(tag)) {
+            return null;
         }
-        
-        return (sb.length() == 0 ? sb : sb.delete(sb.length() - "\n".length(), sb.length())).toString();
+        return data.get(tag).get(0);
     }
+
 }

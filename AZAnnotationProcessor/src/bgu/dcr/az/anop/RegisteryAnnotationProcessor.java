@@ -1,6 +1,8 @@
 package bgu.dcr.az.anop;
 
+import bgu.dcr.az.anop.conf.JavaDocInfo;
 import bgu.dcr.az.anop.utils.CodeUtils;
+import bgu.dcr.az.anop.utils.JavaDocParser;
 import bgu.dcr.az.anop.utils.ProcessorUtils;
 import bgu.dcr.az.anop.utils.StringBuilderWriter;
 import bgu.dcr.az.anop.utils.StringUtils;
@@ -153,6 +155,12 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
                 }
 
                 note("adding " + p.getKey() + " with doc: " + processingEnv.getElementUtils().getDocComment(p.getValue()));
+                JavaDocInfo jd = JavaDocParser.parse(processingEnv.getElementUtils().getDocComment(p.getValue()));
+                note(jd.description());
+                for (String t : jd.tags()) {
+                    note(t + ":\n" + jd.tag(t));
+                }
+                
                 properties.add(info);
             }
         }

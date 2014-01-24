@@ -6,7 +6,7 @@
 
 package bgu.dcr.az.anop.conf.impl;
 
-import bgu.dcr.az.anop.conf.ConfigurableTypeInfo;
+import bgu.dcr.az.anop.conf.TypeInfo;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author User
  */
-public class ConfigurableTypeInfoImpl implements ConfigurableTypeInfo {
+public class ConfigurableTypeInfoImpl implements TypeInfo {
     private Class clazz;
     private final List<ConfigurableTypeInfoImpl> subtypes;
 

@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.anop.conf.impl;
 
-import bgu.dcr.az.anop.conf.ConfigurableTypeInfo;
+import bgu.dcr.az.anop.conf.TypeInfo;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.PropertyValue;
 import bgu.dcr.az.anop.utils.JavaTypeParser;
@@ -39,11 +39,11 @@ public class FromCollectionPropertyValue implements PropertyValue, Iterable<Prop
     }
 
     @Override
-    public <T> T create(ConfigurableTypeInfo type) throws ConfigurationException {
+    public <T> T create(TypeInfo type) throws ConfigurationException {
         try {
             Collection c = ReflectionUtils.createSuitableCollection(type.getType());
 
-            ConfigurableTypeInfo innerType = type.getGenericParameters().isEmpty() ? JavaTypeParser.parse("java.lang.Object") : type.getGenericParameters().get(0);
+            TypeInfo innerType = type.getGenericParameters().isEmpty() ? JavaTypeParser.parse("java.lang.Object") : type.getGenericParameters().get(0);
             for (PropertyValue e : this) {
                 c.add(e.create(innerType));
             }

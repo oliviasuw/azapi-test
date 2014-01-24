@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.anop.conf.impl;
 
-import bgu.dcr.az.anop.conf.ConfigurableTypeInfo;
+import bgu.dcr.az.anop.conf.TypeInfo;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.PropertyValue;
 import bgu.dcr.az.anop.utils.ReflectionUtils;
@@ -27,7 +27,7 @@ public class FromStringPropertyValue implements PropertyValue {
     }
 
     @Override
-    public <T> T create(ConfigurableTypeInfo type) throws ConfigurationException {
+    public <T> T create(TypeInfo type) throws ConfigurationException {
         try {
             return (T) ReflectionUtils.valueOf(value, type.getType());
         } catch (NoSuchMethodException ex) {

@@ -3,29 +3,27 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.mas.exp;
+package bgu.dcr.az.mas.cp;
 
 import bgu.dcr.az.anop.Register;
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.utils.ConfigurationUtils;
 import bgu.dcr.az.api.exen.mdef.ProblemGenerator;
-import bgu.dcr.az.mas.exp.executions.AbstractExecution;
+import bgu.dcr.az.mas.exp.AlgorithmDef;
+import bgu.dcr.az.mas.exp.ExperimentExecutionException;
+import bgu.dcr.az.mas.exp.Looper;
 import bgu.dcr.az.mas.exp.loopers.SingleExecutionLooper;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author User
  */
 @Register("experiment")
-public class DCRExperimentDef {
+public class CPExperiment {
 
     private ProblemGenerator pgen;
     private final List<AlgorithmDef> algorithms = new LinkedList<>();

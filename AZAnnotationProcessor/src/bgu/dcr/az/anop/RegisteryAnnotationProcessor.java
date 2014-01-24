@@ -1,21 +1,18 @@
 package bgu.dcr.az.anop;
 
+import bgu.dcr.az.anop.alg.Algorithm;
 import bgu.dcr.az.anop.conf.JavaDocInfo;
 import bgu.dcr.az.anop.utils.CodeUtils;
+import bgu.dcr.az.anop.utils.ConfigurationUtils;
 import bgu.dcr.az.anop.utils.JavaDocParser;
 import bgu.dcr.az.anop.utils.ProcessorUtils;
-import bgu.dcr.az.anop.utils.StringBuilderWriter;
 import bgu.dcr.az.anop.utils.StringUtils;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -23,15 +20,12 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
 import org.mvel2.ParserContext;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateCompiler;
-import org.mvel2.templates.TemplateRuntime;
 import resources.templates.ResourcesTemplatesAncor;
 
 /**
@@ -47,9 +41,9 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
     public static final String AUTOGEN_PACKAGE = "bgu.dcr.autogen";
     private Messager msg;
 
-    private final CompiledTemplate registeryTemplate;
-    private final CompiledTemplate configurationTemplate;
-    private final Map<String, TypeElement> configurableClasses = new HashMap<>();
+    private static CompiledTemplate registeryTemplate;
+    private static CompiledTemplate configurationTemplate;
+    private final static Map<String, TypeElement> configurableClasses = new HashMap<>();
 
     public RegisteryAnnotationProcessor() {
         ParserContext ctx = ParserContext.create();
@@ -80,7 +74,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         context.put("packageName", AUTOGEN_PACKAGE);
         context.put("registrations", registeredClasses);
 
-        writeClass(AUTOGEN_PACKAGE + ".CompiledRegistery", registeryTemplate, context);
+        ProcessorUtils.writeClass(AUTOGEN_PACKAGE + ".CompiledRegistery", registeryTemplate, context);
 
         return true;
     }
@@ -95,29 +89,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         }
     }
 
-    private void writeClass(String classFQN, CompiledTemplate codeTemplate, Map context) {
-        String out = (String) TemplateRuntime.execute(codeTemplate, context);
-        writeClass(classFQN, out);
-    }
-
-    private void writeClass(String classFQN, String code) {
-        Filer filler = processingEnv.getFiler();
-        try {
-            JavaFileObject source = filler.createSourceFile(classFQN);
-//            msg.printMessage(Diagnostic.Kind.NOTE, "creating "+ source.toUri());
-            try (Writer w = source.openWriter()) {
-                w.append(code);
-                w.flush();
-            }
-
-        } catch (IOException ex) {
-            StringBuilderWriter writer = new StringBuilderWriter();
-            ex.printStackTrace(new PrintWriter(writer));
-            msg.printMessage(Diagnostic.Kind.ERROR, "cannot generate source file:\n" + writer.toString());
-        }
-    }
-
-    private void createConfiguration(TypeElement te) {
+    public static void createConfiguration(TypeElement te) {
 
         final Map ctx = new HashMap();
         final List<PropertyInfo> properties = new LinkedList<>();
@@ -131,8 +103,12 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         ctx.put("extensionConfiurationClass", null);
 
         TypeMirror parent = te.getSuperclass();
-        String parentFQN = "" + parent;
-        if (configurableClasses.containsKey(parentFQN)) {
+        final Element parentTypeElement = ProcessorUtils.toDeclaredType(parent).asElement();
+
+//        if (configurableClasses.containsKey(parentFQN)) {
+        //very bad when more "configurable types" - need to fix it when i have the time
+        if (parentTypeElement.getAnnotation(Register.class) != null || parentTypeElement.getAnnotation(Algorithm.class) != null) {
+            String parentFQN = "" + parent;
             ctx.put("extension", parentFQN);
             ctx.put("extensionConfiurationClass", AUTOGEN_PACKAGE + "." + fqnToConfigurationClassName(parentFQN));
         }
@@ -159,17 +135,11 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
                     info.setter = setterName;
                 }
 
-//                note("adding " + p.getKey() + " with doc: " + processingEnv.getElementUtils().getDocComment(p.getValue()));
-//                JavaDocInfo jd = JavaDocParser.parse(processingEnv.getElementUtils().getDocComment(p.getValue()));
-//                note(jd.description());
-//                for (String t : jd.tags()) {
-//                    note(t + ":\n" + jd.tag(t));
-//                }
                 properties.add(info);
             }
         }
 
-        writeClass(AUTOGEN_PACKAGE + "." + ctx.get("className"), configurationTemplate, ctx);
+        ProcessorUtils.writeClass(AUTOGEN_PACKAGE + "." + ctx.get("className"), configurationTemplate, ctx);
 
     }
 
@@ -195,7 +165,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
 
     public static class PropertyInfo {
 
-        public String name,declaredName;
+        public String name, declaredName;
         public String type;
         public String typeFQN;
         public String setter;

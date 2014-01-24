@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.anop.conf.impl;
 
-import bgu.dcr.az.anop.conf.ConfigurableTypeInfo;
+import bgu.dcr.az.anop.conf.TypeInfo;
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.JavaDocInfo;
 import bgu.dcr.az.anop.conf.Property;
@@ -21,7 +21,7 @@ import java.util.Map;
 public abstract class AbstractConfiguration implements Configuration {
 
     protected Map<String, Property> properties;
-    protected ConfigurableTypeInfo type;
+    protected TypeInfo type;
     protected VisualData vdata;
     protected JavaDocInfo javadoc;
 
@@ -31,7 +31,7 @@ public abstract class AbstractConfiguration implements Configuration {
     }
 
     @Override
-    public ConfigurableTypeInfo typeInfo() {
+    public TypeInfo typeInfo() {
         return type;
     }
 

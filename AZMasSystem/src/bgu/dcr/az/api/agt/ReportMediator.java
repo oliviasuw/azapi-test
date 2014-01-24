@@ -5,7 +5,7 @@
 package bgu.dcr.az.api.agt;
 
 import bgu.dcr.az.api.Agent;
-import bgu.dcr.az.mas.DCRAgentController;
+import bgu.dcr.az.mas.cp.CPAgentController;
 
 /**
  *
@@ -15,9 +15,9 @@ public class ReportMediator {
 
     Object[] args;
     Agent a;
-    DCRAgentController controller;
+    CPAgentController controller;
 
-    public ReportMediator(Object[] args, Agent a, DCRAgentController controller) {
+    public ReportMediator(Object[] args, Agent a, CPAgentController controller) {
         this.args = args;
         this.a = a;
     }

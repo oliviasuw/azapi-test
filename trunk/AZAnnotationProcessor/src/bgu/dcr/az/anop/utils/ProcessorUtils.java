@@ -11,8 +11,11 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -30,7 +33,9 @@ import javax.lang.model.util.SimpleElementVisitor7;
 import javax.lang.model.util.SimpleTypeVisitor7;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
+import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateRuntime;
 
@@ -44,13 +49,29 @@ public class ProcessorUtils {
     private static Elements elementUtils;
     private static Messager msg;
     private static Types typeUtils;
+    private static Map<String, List<String>> registeredServices = new HashMap<String, List<String>>();
 
-    public static void initialize(ProcessingEnvironment penv) {
+    public static void setup(ProcessingEnvironment penv) {
         System.setProperty("mvel2.disable.jit", "true");
         ProcessorUtils.penv = penv;
         elementUtils = penv.getElementUtils();
         msg = penv.getMessager();
         typeUtils = penv.getTypeUtils();
+    }
+
+    public static void tearDown() {
+        for (Map.Entry<String, List<String>> r : registeredServices.entrySet()) {
+            try {
+                FileObject file = penv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", "META-INF/services/" + r.getKey());
+                try (PrintWriter out = new PrintWriter(file.openWriter())) {
+                    for (String l : r.getValue()) {
+                        out.println(l);
+                    }
+                }
+            } catch (IOException ex) {
+                error(ex);
+            }
+        }
     }
 
     /**
@@ -173,7 +194,7 @@ public class ProcessorUtils {
     public static void error(String error) {
         msg.printMessage(Diagnostic.Kind.ERROR, error);
     }
-    
+
     public static void error(Throwable error) {
         StringBuilderWriter w = new StringBuilderWriter();
         error.printStackTrace(new PrintWriter(w));
@@ -217,5 +238,21 @@ public class ProcessorUtils {
             ex.printStackTrace(new PrintWriter(writer));
             msg.printMessage(Diagnostic.Kind.ERROR, "cannot generate source file:\n" + writer.toString());
         }
+    }
+
+    /**
+     * adds a service definition to META-INF/services
+     *
+     * @param serviceClassFQN
+     * @param implementationClassFQN
+     */
+    public static void appendServiceDefinition(String serviceClassFQN, String implementationClassFQN) {
+        List<String> l = registeredServices.get(serviceClassFQN);
+        if (l == null) {
+            l = new LinkedList<>();
+            registeredServices.put(serviceClassFQN, l);
+        }
+
+        l.add(implementationClassFQN);
     }
 }

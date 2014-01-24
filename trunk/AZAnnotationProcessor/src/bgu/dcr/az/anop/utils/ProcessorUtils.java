@@ -7,6 +7,7 @@ package bgu.dcr.az.anop.utils;
 
 import bgu.dcr.az.anop.visitors.QualifiedUnparametrizedNameTypeVisitor;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.HashMap;
@@ -45,6 +46,7 @@ public class ProcessorUtils {
     private static Types typeUtils;
 
     public static void initialize(ProcessingEnvironment penv) {
+        System.setProperty("mvel2.disable.jit", "true");
         ProcessorUtils.penv = penv;
         elementUtils = penv.getElementUtils();
         msg = penv.getMessager();
@@ -170,6 +172,12 @@ public class ProcessorUtils {
 
     public static void error(String error) {
         msg.printMessage(Diagnostic.Kind.ERROR, error);
+    }
+    
+    public static void error(Throwable error) {
+        StringBuilderWriter w = new StringBuilderWriter();
+        error.printStackTrace(new PrintWriter(w));
+        msg.printMessage(Diagnostic.Kind.ERROR, w.toString());
     }
 
     public static void note(String note) {

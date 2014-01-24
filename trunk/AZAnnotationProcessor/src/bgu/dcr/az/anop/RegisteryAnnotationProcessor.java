@@ -3,7 +3,6 @@ package bgu.dcr.az.anop;
 import bgu.dcr.az.anop.alg.Algorithm;
 import bgu.dcr.az.anop.conf.JavaDocInfo;
 import bgu.dcr.az.anop.utils.CodeUtils;
-import bgu.dcr.az.anop.utils.ConfigurationUtils;
 import bgu.dcr.az.anop.utils.JavaDocParser;
 import bgu.dcr.az.anop.utils.ProcessorUtils;
 import bgu.dcr.az.anop.utils.StringUtils;

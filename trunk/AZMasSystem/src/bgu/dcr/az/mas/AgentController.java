@@ -6,13 +6,13 @@
 package bgu.dcr.az.mas;
 
 import bgu.dcr.az.api.Message;
-import bgu.dcr.az.api.tools.Assignment;
+import bgu.dcr.az.execs.api.Proc;
 
 /**
  *
  * @author User
  */
-public interface AgentController {
+public interface AgentController extends Proc{
 
     /**
      * send a message to the given recepient agent
@@ -30,13 +30,12 @@ public interface AgentController {
     void broadcast(Message m);
 
     /**
-     * provide the next message that is waiting for the requested agent or null
-     * if no such message found
+     * receive a message from the message router, this message should be
+     * distributed eventually to one of your agents
      *
-     * @param agentId
-     * @return
+     * @param message
      */
-    Message nextMessage(int agentId);
+    void receive(AZIPMessage message);
 
     /**
      * if we are running in a synchronous execution this method can provide the
@@ -54,6 +53,7 @@ public interface AgentController {
      * @param msg
      */
     void log(int agentId, String msg);
-    
-    
+
+    int getControllerId();
+
 }

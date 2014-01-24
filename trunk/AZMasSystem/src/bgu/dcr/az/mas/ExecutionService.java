@@ -3,15 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.mas.exp;
+
+package bgu.dcr.az.mas;
 
 /**
  *
  * @author User
  */
-public interface Execution {
-    
-    public void hook(Class hookType, Object hook);
-    
-    public void execute() throws ExperimentExecutionException, InterruptedException;
+public interface ExecutionService {
+    void initialize(Execution ex);
 }

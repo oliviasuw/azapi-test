@@ -6,6 +6,8 @@
 package bgu.dcr.az.anop.base;
 
 import bgu.dcr.az.anop.RegisteryAnnotationProcessor;
+import bgu.dcr.az.anop.alg.AlgorithmAnnotationProcessor;
+import bgu.dcr.az.anop.algo.AgentManipulator;
 import bgu.dcr.az.anop.conf.Configuration;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -29,7 +31,7 @@ public class RegisteryImpl implements bgu.dcr.az.anop.Registery {
 
     @SuppressWarnings("LeakingThisInConstructor")
     public RegisteryImpl() {
-        
+
         //load classes
         ServiceLoader<Registration> services = ServiceLoader.load(Registration.class);
         for (Registration service : services) {
@@ -123,6 +125,19 @@ public class RegisteryImpl implements bgu.dcr.az.anop.Registery {
     @Override
     public Configuration getConfiguration(String registeration) throws ClassNotFoundException {
         return getConfiguration(getRegisteredClassByName(registeration));
+    }
+
+    @Override
+    public AgentManipulator getAgentManipulator(Class c) throws ClassNotFoundException {
+        if (c == null) {
+            return null;
+        }
+
+        try {
+            return (AgentManipulator) Class.forName(AlgorithmAnnotationProcessor.AUTOGEN_PACKAGE + "." + c.getCanonicalName().replace('.', '_')).newInstance();
+        } catch (InstantiationException | IllegalAccessException ex) {
+            throw new ClassNotFoundException("class with the given name exsits but not satisfying the needed contract", ex);
+        }
     }
 
 }

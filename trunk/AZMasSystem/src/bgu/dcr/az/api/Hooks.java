@@ -4,7 +4,7 @@
  */
 package bgu.dcr.az.api;
 
-import bgu.dcr.az.mas.exp.Execution;
+import bgu.dcr.az.mas.Execution;
 
 /**
  * this collection of interfaces that the simple agent supports hooking via

@@ -9,7 +9,7 @@ package bgu.dcr.az.mas;
  *
  * @author User
  */
-public interface AgentDistributer {
+public interface AgentDistributer extends ExecutionService {
 
     int[] getControlledAgentsIds(int controllerId);
 }

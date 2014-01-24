@@ -21,7 +21,6 @@ import java.util.Collection;
 public class ForLooper implements Looper {
 
     private Integer count = null;
-    private Integer innerCount = 1;
     private Looper innerLooper = new SingleExecutionLooper();
     private String runVar = null;
     private Double startValue = null;
@@ -39,8 +38,6 @@ public class ForLooper implements Looper {
 
     public void setInnerLooper(Looper looper) throws ExperimentExecutionException {
         this.innerLooper = looper;
-        innerCount = looper.count();
-        count = null;
     }
 
     /**
@@ -97,28 +94,30 @@ public class ForLooper implements Looper {
             checkForLoopValues();
 
             count = 1 + (int) Math.round((endValue - startValue) / tickSizeValue);
-
-            count *= innerCount;
         }
 
-        return count;
+        return innerLooper == null ? count : count * innerLooper.count();
     }
 
     @Override
     public void configure(int i, Collection<Configuration> configurations) throws ExperimentExecutionException {
         checkForLoopValues();
-        
-        int currI = i / innerCount;
 
-        for (Configuration conf : configurations) {
-            Property property = conf.get(runVar);
-            if (property != null) {
-                Double value = currI >= endValue ? endValue : startValue + tickSizeValue * currI;
-                property.set(new FromStringPropertyValue(value.toString()));
+        int currI = innerLooper == null ? i : i / innerLooper.count();
+
+        if (runVar != null) {
+            Double value = (currI >= count ? endValue : startValue + tickSizeValue * (double) currI);
+            for (Configuration conf : configurations) {
+                Property property = conf.get(runVar);
+                if (property != null) {
+                    property.set(new FromStringPropertyValue(value.toString()));
+                }
             }
         }
 
-        innerLooper.configure(i % innerCount, configurations);
+        if (innerLooper != null) {
+            innerLooper.configure(i % innerLooper.count(), configurations);
+        }
     }
 
     private void checkForLoopValues() throws ExperimentExecutionException {

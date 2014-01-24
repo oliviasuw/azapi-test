@@ -1,12 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package resources.templates;
 
-import bgu.dcr.az.anop.algo.impl.*;
+import bgu.dcr.az.anop.algo.ParameterInfo;
+import bgu.dcr.az.anop.algo.impl.AbstractAgentManipulator;
+import bgu.dcr.az.anop.algo.impl.HanlerInfoImpl;
+import bgu.dcr.az.anop.algo.impl.ParameterInfoImpl;
+import bgu.dcr.az.anop.conf.JavaDocInfo;
+import bgu.dcr.az.anop.utils.JavaDocParser;
+import bgu.dcr.az.anop.utils.JavaTypeParser;
 import java.util.LinkedList;
 
 @code{  
@@ -23,7 +23,7 @@ public class @{className} extends AbstractAgentManipulator{
     @foreach{h : handlers}
     public static final ParameterInfo[] @{lc(h.declaredName)}_PARAM_INFO = {
         @foreach{param : h.params}
-        new ParameterInfoImpl("{param.name}", JavaTypeParser.parse("@{param.typeFQN}"))
+        new ParameterInfoImpl("@{param.name}", JavaTypeParser.parse("@{param.typeFQN}"))
         @end{","}
     };
     public static final JavaDocInfo @{lc(h.declaredName)}_JAVADOC_INFO = JavaDocParser.parse("@{h.javadoc}");    
@@ -35,13 +35,24 @@ public class @{className} extends AbstractAgentManipulator{
         super.handlers = new LinkedList<>();
         
         @foreach{h : handlers} 
-        handlers.add(new HanlerInfoImpl(@{lc(h.declaredName)}_JAVADOC_INFO, @{h.of}, @{lc(h.declaredName)}_PARAM_INFO));
+        handlers.add(new HanlerInfoImpl(@{lc(h.declaredName)}_JAVADOC_INFO, "@{h.of}", @{lc(h.declaredName)}_PARAM_INFO));
         @end{}
     }
 
     @Override
     public void callHandler(Object agentInstance, String name, Object[] arguments) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        @{classNameFQN} agent = (@{classNameFQN})agentInstance;
+        
+        switch(name) {
+            @foreach{h : handlers} 
+            case "@{h.of}":
+                agent.@{h.declaredName}(@foreach{p : h.params}(@{p.typeFQN})arguments[@{p.index}]@end{", "});
+                break;
+            @end{}
+            default:
+                throw new RuntimeException("Unsupported message: " + name + "received");
+        }
+
     }
     
 }

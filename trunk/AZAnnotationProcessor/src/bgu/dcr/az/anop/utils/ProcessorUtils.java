@@ -7,18 +7,17 @@ package bgu.dcr.az.anop.utils;
 
 import bgu.dcr.az.anop.visitors.QualifiedUnparametrizedNameTypeVisitor;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -57,6 +56,20 @@ public class ProcessorUtils {
         elementUtils = penv.getElementUtils();
         msg = penv.getMessager();
         typeUtils = penv.getTypeUtils();
+    }
+
+    public static Map<String, TypeElement> extractClassesAnnotatedWith(RoundEnvironment roundEnv, Class<? extends Annotation> annotation) {
+        Map<String, TypeElement> configurableClasses = new HashMap<>();
+
+        for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
+            note("Scanning: " + element);
+
+            if (element instanceof TypeElement) {
+                configurableClasses.put("" + element, (TypeElement) element);
+            }
+        }
+
+        return configurableClasses;
     }
 
     public static void tearDown() {
@@ -109,6 +122,7 @@ public class ProcessorUtils {
      * use this method in order to get the class name for the given type - do
      * not call toString on the type as it is not always accurate.
      *
+     * @param parametrized
      * @param te
      * @return
      */

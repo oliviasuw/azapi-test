@@ -5,6 +5,8 @@
  */
 package bgu.dcr.az.anop;
 
+import bgu.dcr.az.anop.base.RegisteryImpl;
+
 /**
  *
  * @author User
@@ -15,11 +17,7 @@ public class RegisteryUtils {
 
     public static Registery getDefaultRegistery() {
         if (defaultRegistery == null) {
-            try {
-                defaultRegistery = (Registery) Class.forName(RegisteryAnnotationProcessor.AUTOGEN_PACKAGE + ".CompiledRegistery").newInstance();
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-                throw new RuntimeException(ex);
-            }
+            defaultRegistery = new RegisteryImpl();
         }
 
         return defaultRegistery;

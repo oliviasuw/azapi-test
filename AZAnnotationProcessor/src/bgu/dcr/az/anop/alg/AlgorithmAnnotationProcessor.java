@@ -42,11 +42,12 @@ public class AlgorithmAnnotationProcessor extends AbstractProcessor {
             return false;
         }
 
-        ProcessorUtils.initialize(processingEnv);
+        ProcessorUtils.setup(processingEnv);
         run = true;
 
         for (Element element : roundEnv.getElementsAnnotatedWith(Algorithm.class)) {
             if (element instanceof TypeElement) {
+                ProcessorUtils.note("scanning " + element);
                 RegisteryAnnotationProcessor.createConfiguration((TypeElement) element);
             }
         }

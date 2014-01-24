@@ -15,18 +15,29 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 /**
  *
  * @author User
  */
-public class BaseRegistery implements bgu.dcr.az.anop.Registery {
+public class RegisteryImpl implements bgu.dcr.az.anop.Registery {
 
     private final BiMap<String, Class> registeredClassesByName = HashBiMap.create();
     private final Map<Class, Set<Class>> classExtenders = new HashMap<>();
 
-    protected void register(Class clazz, String registeredName) {
+    @SuppressWarnings("LeakingThisInConstructor")
+    public RegisteryImpl() {
+        
+        //load classes
+        ServiceLoader<Registration> services = ServiceLoader.load(Registration.class);
+        for (Registration service : services) {
+            service.register(this);
+        }
+    }
+
+    public void register(Class clazz, String registeredName) {
         if (registeredClassesByName.put(registeredName, clazz) != null) {
             throw new UnsupportedOperationException("Registered name must be unique: " + registeredName);
         }
@@ -101,6 +112,7 @@ public class BaseRegistery implements bgu.dcr.az.anop.Registery {
         if (c == null) {
             return null;
         }
+
         try {
             return (Configuration) Class.forName(RegisteryAnnotationProcessor.AUTOGEN_PACKAGE + "." + c.getCanonicalName().replace('.', '_')).newInstance();
         } catch (InstantiationException | IllegalAccessException ex) {

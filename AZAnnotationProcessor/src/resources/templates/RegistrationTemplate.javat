@@ -1,0 +1,13 @@
+package @{registrationPackage};
+
+import bgu.dcr.az.anop.base.RegisteryImpl;
+import bgu.dcr.az.anop.base.Registration;
+
+public class @{registrationClass} implements Registration {
+
+    @Override
+    public void register(RegisteryImpl registery) {
+        registery.register(@{classFQN}.class, "@{registration}");
+    }
+    
+}

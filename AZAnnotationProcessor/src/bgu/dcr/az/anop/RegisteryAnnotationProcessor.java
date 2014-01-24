@@ -1,6 +1,7 @@
 package bgu.dcr.az.anop;
 
 import bgu.dcr.az.anop.alg.Algorithm;
+import bgu.dcr.az.anop.base.Registration;
 import bgu.dcr.az.anop.conf.JavaDocInfo;
 import bgu.dcr.az.anop.utils.CodeUtils;
 import bgu.dcr.az.anop.utils.JavaDocParser;
@@ -38,16 +39,17 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
     private static boolean run = false;
 
     public static final String AUTOGEN_PACKAGE = "bgu.dcr.autogen";
+    public static final String REGISTRATION_AUTOGEN_PACKAGE = "bgu.dcr.autogen.registry";
     private Messager msg;
 
-    private static CompiledTemplate registeryTemplate;
+    private static CompiledTemplate registrationTemplate;
     private static CompiledTemplate configurationTemplate;
     private final static Map<String, TypeElement> configurableClasses = new HashMap<>();
 
     public RegisteryAnnotationProcessor() {
         ParserContext ctx = ParserContext.create();
         ctx.addImport(CodeUtils.class);
-        registeryTemplate = TemplateCompiler.compileTemplate(ResourcesTemplatesAncor.class.getResourceAsStream("CompiledRegistery.javat"));
+        registrationTemplate = TemplateCompiler.compileTemplate(ResourcesTemplatesAncor.class.getResourceAsStream("RegistrationTemplate.javat"));
         configurationTemplate = TemplateCompiler.compileTemplate(ResourcesTemplatesAncor.class.getResourceAsStream("AbstractConfigurationTemplete.javat"), ctx);
     }
 
@@ -56,25 +58,21 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         if (run) {
             return false;
         }
-        ProcessorUtils.initialize(processingEnv);
+
+        ProcessorUtils.setup(processingEnv);
+        
         run = true;
         msg = processingEnv.getMessager();
 
-        List<RegisteredClass> registeredClasses = new LinkedList<>();
         findConfigurableClasses(roundEnv);
 
         for (TypeElement te : configurableClasses.values()) {
             createConfiguration(te);
-            registeredClasses.add(new RegisteredClass(te.getQualifiedName().toString(), te.getAnnotation(Register.class).value()));
+            registerClass(te.getQualifiedName().toString(), te.getAnnotation(Register.class).value());
         }
 
-        //create context
-        Map context = new HashMap();
-        context.put("packageName", AUTOGEN_PACKAGE);
-        context.put("registrations", registeredClasses);
-
-        ProcessorUtils.writeClass(AUTOGEN_PACKAGE + ".CompiledRegistery", registeryTemplate, context);
-
+        ProcessorUtils.tearDown();
+        
         return true;
     }
 
@@ -150,16 +148,16 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         msg.printMessage(Diagnostic.Kind.NOTE, note);
     }
 
-    public static class RegisteredClass {
+    private void registerClass(String classFQN, String registration) {
+        Map registrationData = new HashMap();
+        registrationData.put("registrationPackage", REGISTRATION_AUTOGEN_PACKAGE);
+        registrationData.put("registrationClass", fqnToConfigurationClassName(classFQN));
+        registrationData.put("classFQN", classFQN);
+        registrationData.put("registration", registration);
 
-        public String clazz;
-        public String regName;
-
-        public RegisteredClass(String clazz, String regName) {
-            this.clazz = clazz;
-            this.regName = regName;
-        }
-
+        final String registrationFQN = registrationData.get("registrationPackage") + "." + registrationData.get("registrationClass");
+        ProcessorUtils.writeClass(registrationFQN, registrationTemplate, registrationData);
+        ProcessorUtils.appendServiceDefinition(Registration.class.getCanonicalName(), registrationFQN);
     }
 
     public static class PropertyInfo {

@@ -20,7 +20,7 @@ public interface Property extends Documented{
 
     Configuration parent();
 
-    ConfigurableTypeInfo typeInfo();
+    TypeInfo typeInfo();
 
     void set(PropertyValue cv);
 

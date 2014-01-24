@@ -12,7 +12,7 @@ import bgu.dcr.az.api.exp.RepeatedCallingException;
 import bgu.dcr.az.api.exp.UnsupportedMessageException;
 import bgu.dcr.az.api.prob.ConstraintCheckResult;
 import bgu.dcr.az.api.tools.Assignment;
-import bgu.dcr.az.mas.DCRAgentController;
+import bgu.dcr.az.mas.cp.CPAgentController;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -35,16 +35,8 @@ public abstract class Agent extends Agt0DSL {
      * message is getting sent only by the abstract agent
      */
     public static final String SYS_TERMINATION_MESSAGE = "__TERMINATE__";
-    /**
-     * the name for the system tick message the system tick message is getting
-     * sent only by the local search mailer when the system clock performs a
-     * 'tick' it wakes up the agent even if he doesn't have any messages - in
-     * order for him to re-tick the clock
-     */
-    public static final String SYS_TICK_MESSAGE = "__TICK__";
-    public static final String SYS_TIMEOUT_MESSAGE = "__TIMEOUT__";
     private int id; //The Agent ID
-    private DCRAgentController controller; //This Agent Controller
+    private CPAgentController controller; //This Agent Controller
     private ImmutableProblem prob; // The Agent Local Problem
     private boolean finished = false; //The Status of the current Agent - TODO: TRANSFORM INTO A STATUS ENUM SO WE CAN BE ABLE TO QUERY THE AGENT ABOUT IT CURRENT STATUS
     private Message currentMessage = null; //The Current Message (The Last Message That was taken from the mailbox)
@@ -481,12 +473,6 @@ public abstract class Agent extends Agt0DSL {
         finish();
     }
 
-    @WhenReceived(Agent.SYS_TIMEOUT_MESSAGE)
-    protected void handleTimeout() {
-        log("Got Timeout indication message");
-        finish();
-    }
-
     /**
      * Note: the concept 'system time' only exists in synchronized execution
      *
@@ -563,7 +549,7 @@ public abstract class Agent extends Agt0DSL {
          * @param id
          * @param controller
          */
-        public void initialize(int id, DCRAgentController controller) {
+        public void initialize(int id, CPAgentController controller) {
             numberOfSetIdCalls++;
             if (numberOfSetIdCalls != 1) {
                 throw new RepeatedCallingException("you can only call setId once.");

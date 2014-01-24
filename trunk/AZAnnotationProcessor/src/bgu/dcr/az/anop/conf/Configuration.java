@@ -22,7 +22,7 @@ public interface Configuration extends Iterable<Property> , Documented{
 
     Collection<Property> properties();
 
-    ConfigurableTypeInfo typeInfo();
+    TypeInfo typeInfo();
 
     VisualData visualData();
 

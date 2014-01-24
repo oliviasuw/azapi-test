@@ -1,7 +1,7 @@
 package bgu.dcr.az.api.agt;
 
 import bgu.dcr.az.api.Message;
-import bgu.dcr.az.mas.DCRAgentController;
+import bgu.dcr.az.mas.cp.CPAgentController;
 import java.util.Collection;
 import java.util.Set;
 
@@ -17,9 +17,9 @@ import java.util.Set;
 public class SendMediator {
 
     private Message msg;
-    private DCRAgentController controller;
+    private CPAgentController controller;
 
-    public SendMediator(Message msg, DCRAgentController controller) {
+    public SendMediator(Message msg, CPAgentController controller) {
         this.msg = msg;
         this.controller = controller;
     }

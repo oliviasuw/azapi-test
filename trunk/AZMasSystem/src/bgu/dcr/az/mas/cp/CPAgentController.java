@@ -3,17 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.mas;
+package bgu.dcr.az.mas.cp;
 
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.api.tools.Assignment;
+import bgu.dcr.az.mas.AgentController;
 
 /**
  *
  * @author User
  */
-public interface DCRAgentController extends AgentController {
+public interface CPAgentController extends AgentController {
 
     Problem getGlobalProblem();
 

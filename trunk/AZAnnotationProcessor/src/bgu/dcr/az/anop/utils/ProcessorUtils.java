@@ -6,9 +6,13 @@
 package bgu.dcr.az.anop.utils;
 
 import bgu.dcr.az.anop.visitors.QualifiedUnparametrizedNameTypeVisitor;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -25,6 +29,9 @@ import javax.lang.model.util.SimpleElementVisitor7;
 import javax.lang.model.util.SimpleTypeVisitor7;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
+import org.mvel2.templates.CompiledTemplate;
+import org.mvel2.templates.TemplateRuntime;
 
 /**
  *
@@ -167,5 +174,40 @@ public class ProcessorUtils {
 
     public static void note(String note) {
         msg.printMessage(Diagnostic.Kind.NOTE, note);
+    }
+
+    /**
+     * write a class with a given template and context of template execution
+     *
+     * @param classFQN
+     * @param codeTemplate
+     * @param context
+     */
+    public static void writeClass(String classFQN, CompiledTemplate codeTemplate, Map context) {
+        String out = (String) TemplateRuntime.execute(codeTemplate, context);
+        writeClass(classFQN, out);
+    }
+
+    /**
+     * write a class with a given code
+     *
+     * @param classFQN
+     * @param code
+     */
+    public static void writeClass(String classFQN, String code) {
+        Filer filler = penv.getFiler();
+
+        try {
+            JavaFileObject source = filler.createSourceFile(classFQN);
+            try (Writer w = source.openWriter()) {
+                w.append(code);
+                w.flush();
+            }
+
+        } catch (IOException ex) {
+            StringBuilderWriter writer = new StringBuilderWriter();
+            ex.printStackTrace(new PrintWriter(writer));
+            msg.printMessage(Diagnostic.Kind.ERROR, "cannot generate source file:\n" + writer.toString());
+        }
     }
 }

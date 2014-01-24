@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author User
  */
-public interface ConfigurableTypeInfo {
+public interface TypeInfo {
 
     List<ConfigurableTypeInfoImpl> getGenericParameters();
 

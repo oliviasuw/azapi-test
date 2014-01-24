@@ -12,7 +12,7 @@ import bgu.dcr.az.execs.MultithreadedScheduler;
 import bgu.dcr.az.mas.exp.DCRExperimentDef;
 import bgu.dcr.az.mas.exp.Execution;
 import bgu.dcr.az.mas.exp.Looper;
-import bgu.dcr.az.mas.exp.executions.BasicExecution;
+import bgu.dcr.az.mas.exp.executions.AbstractExecution;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.Executors;
@@ -29,7 +29,7 @@ public class SingleExecutionLooper implements Looper {
     }
 
     @Override
-    public void configure(int i, Collection<Configuration> experiment) {
+    public void configure(int i, Collection<Configuration> configurations) {
     }
 
 }

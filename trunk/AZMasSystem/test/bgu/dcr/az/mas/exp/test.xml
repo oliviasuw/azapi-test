@@ -3,5 +3,9 @@
     <algorithm name="SBT"/>
     <algorithm name="BNB"/>
     
+    <for-loop start="1" end="10" tick-size="1">
+        <for-loop start="0.1" end="1" tick-size="0.1" />
+    </for-loop>
+    
     <stam-pgen/>
 </experiment>

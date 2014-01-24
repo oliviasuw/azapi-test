@@ -23,7 +23,7 @@ public class Message implements Serializable {
      */
     public static final String RECEPIENT_TYPE_METADATA = "RECEPIENT TYPE";
     private String name; //the message name (= type)
-    private int from; //the sender of the message
+    private int sender; //the sender of the message
     /**
      * the attached metadata for the message 
      * you can use it to send any kind of data that is not part of the message fields 
@@ -39,11 +39,12 @@ public class Message implements Serializable {
     /**
      * @param name the message name / type
      * @param from the agent sending this message
+     * @param args
      */
     public Message(String name, int from, Object[] args) {
         this.name = name;
-        this.from = from;
-        this.metadata = new HashMap<String, Object>();
+        this.sender = from;
+        this.metadata = new HashMap<>();
         this.args = args;
     }
 
@@ -85,7 +86,7 @@ public class Message implements Serializable {
 
 
         Message ret = new Message(getName(), getSender(), cargs);
-        ret.metadata = new HashMap<String, Object>(metadata); //metadata is not deep-copyed as it should be immutable
+        ret.metadata = new HashMap<>(metadata); //metadata is not deep-copyed as it should be immutable
         return ret;
     }
 
@@ -110,21 +111,21 @@ public class Message implements Serializable {
      * @return who is sending this message
      */
     public int getSender() {
-        return from;
+        return sender;
     }
 
     /**
      * set the sender
      * @param from
      */
-    protected void setFrom(int from) {
-        this.from = from;
+    protected void setSender(int from) {
+        this.sender = from;
     }
 
     /**
      * messages can have metadata attached to them - metadata is collection of key to immutable value pairs
      * metadata values assume to be immutable and are not getting deep copied upon sending along with the normal message fields
-     * instaed it will get copied by reference to the new message object.
+     * instead it will get copied by reference to the new message object.
      * please take that into consideration if you going to use it
      * @return the metadata attached to this object (as a key value map)
      */

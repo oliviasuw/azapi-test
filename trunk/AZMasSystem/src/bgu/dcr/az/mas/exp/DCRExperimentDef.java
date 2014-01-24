@@ -10,7 +10,7 @@ import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.utils.ConfigurationUtils;
 import bgu.dcr.az.api.exen.mdef.ProblemGenerator;
-import bgu.dcr.az.mas.exp.executions.BasicExecution;
+import bgu.dcr.az.mas.exp.executions.AbstractExecution;
 import bgu.dcr.az.mas.exp.loopers.SingleExecutionLooper;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,8 +87,9 @@ public class DCRExperimentDef {
                 for (int j = 0; j < configurableElements.length; j++) {
                     configurationOfElements.get(j).configure(configurableElements[j]);
                 }
-            }
-
+                
+                System.out.println("Executing round: " + i);
+            }            
         } catch (ClassNotFoundException | ConfigurationException ex) {
             throw new ExperimentExecutionException("cannot execute experiment - configuration problem, see cause", ex);
         }

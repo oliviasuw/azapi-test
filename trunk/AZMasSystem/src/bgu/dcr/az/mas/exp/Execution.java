@@ -11,5 +11,7 @@ package bgu.dcr.az.mas.exp;
  */
 public interface Execution {
     
+    public void hook(Class hookType, Object hook);
+    
     public void execute() throws ExperimentExecutionException, InterruptedException;
 }

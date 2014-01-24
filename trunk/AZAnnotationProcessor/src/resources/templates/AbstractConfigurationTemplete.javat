@@ -93,7 +93,7 @@ public class @{className} extends AbstractConfiguration{
                     throw new ConfigurationException("does not know how to handle property");
                 }
                 @end{}
-            } catch (ConfigurationException ex){
+            } catch (Exception ex){
                 throw new ConfigurationException("cannot configure property @{p.name}", ex);
             }
         }

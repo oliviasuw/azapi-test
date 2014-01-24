@@ -6,17 +6,18 @@
 package bgu.dcr.az.mas.exp.executions;
 
 import bgu.dcr.az.api.Agent;
+import bgu.dcr.az.api.Message;
 import bgu.dcr.az.execs.AbstractProc;
 
 /**
  *
  * @author User
  */
-public class SingleAgentRunner extends AbstractProc {
+public class AgentControllerProc extends AbstractProc {
 
     private Agent a;
 
-    public SingleAgentRunner(Agent a) {
+    public AgentControllerProc(Agent a) {
         super(a.getId());
         this.a = a;
     }
@@ -32,4 +33,8 @@ public class SingleAgentRunner extends AbstractProc {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public void send(Message m, int to){
+        
+    }
+    
 }

@@ -1,10 +1,10 @@
 package bgu.dcr.az.api;
 
+import bgu.dcr.az.anop.alg.WhenReceived;
 import bgu.dcr.az.api.prob.ImmutableProblem;
 import bgu.dcr.az.api.prob.ProblemType;
 import bgu.dcr.az.api.agt.ReportMediator;
 import bgu.dcr.az.api.agt.SendMediator;
-import bgu.dcr.az.api.ano.WhenReceived;
 import bgu.dcr.az.api.ds.ImmutableSet;
 import bgu.dcr.az.api.exp.InternalErrorException;
 import bgu.dcr.az.api.exp.InvalidValueException;
@@ -501,6 +501,17 @@ public abstract class Agent extends Agt0DSL {
      */
     protected Message beforeMessageProcessing(Message msg) {
         return msg;
+    }
+
+    /**
+     * if this method return null the message is rejected and should be dumped.
+     *
+     * @param msg
+     * @return
+     */
+    public final Message setCurrentMessage(Message currentMessage) {
+        this.currentMessage = currentMessage;
+        return beforeMessageProcessing(currentMessage);
     }
 
     /**

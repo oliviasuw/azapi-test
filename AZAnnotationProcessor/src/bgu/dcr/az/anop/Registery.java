@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.anop;
 
+import bgu.dcr.az.anop.algo.AgentManipulator;
 import bgu.dcr.az.anop.conf.Configuration;
 import java.util.Collection;
 
@@ -25,4 +26,6 @@ public interface Registery {
     Configuration getConfiguration(Class c) throws ClassNotFoundException;
 
     Configuration getConfiguration(String registeration) throws ClassNotFoundException;
+
+    AgentManipulator getAgentManipulator(Class c) throws ClassNotFoundException;
 }

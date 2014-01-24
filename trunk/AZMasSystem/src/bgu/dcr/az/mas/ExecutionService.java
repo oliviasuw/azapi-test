@@ -6,10 +6,12 @@
 
 package bgu.dcr.az.mas;
 
+import bgu.dcr.az.mas.impl.InitializationException;
+
 /**
  *
  * @author User
  */
 public interface ExecutionService {
-    void initialize(Execution ex);
+    void initialize(Execution ex) throws InitializationException;
 }

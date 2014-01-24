@@ -66,7 +66,7 @@ public interface ImmutableProblem {
 
     /**
      * @param var
-     * @return all the variables that costrainted with the given var
+     * @return all the variables that constrained with the given variable
      */
     Set<Integer> getNeighbors(int var);
 

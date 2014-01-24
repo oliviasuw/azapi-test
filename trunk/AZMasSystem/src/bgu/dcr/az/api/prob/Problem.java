@@ -4,6 +4,7 @@ import bgu.dcr.az.api.prob.cpack.ConstraintsPackage;
 import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.ds.ImmutableSet;
 import bgu.dcr.az.api.tools.Assignment;
+import bgu.dcr.az.mas.impl.OneToManyDistributor;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,13 +19,40 @@ import java.util.Set;
  */
 public class Problem implements ImmutableProblem {
 
-    private HashMap<String, Object> metadata = new HashMap<>();
-    protected int numvars;
+    private final HashMap<String, Object> metadata = new HashMap<>();
+    private OneToManyDistributor distributer;
+    protected int numagents;
     protected ImmutableSetOfIntegers[] domain;
     protected ConstraintsPackage constraints;
     protected ProblemType type;
     protected int maxCost = 0;
     protected boolean singleDomain = true;
+
+    /**
+     *
+     * @param agentId
+     * @return the set of variables owned by a given agent
+     */
+    public int[] getVariablesOwnedByAgent(int agentId) {
+        return distributer.getControlledAgentsIds(agentId);
+    }
+
+    /**
+     * Changes current allocation of variables to agents. After performing this
+     * operation the agent with given id will own a given set of variables. In
+     * case that amount of variables equals the amount of agents (only
+     * one-to-one variable allocation allowed) an Exception will be thrown.
+     *
+     * @param agentId
+     * @param vars
+     */
+    public void setVariablesOwnedByAgent(int agentId, int... vars) {
+        if (getNumberOfAgents() == getNumberOfVariables()) {
+            throw new RuntimeException("Since the amount of agents equals to amount of variables, only ");
+        }
+
+        distributer.assignVariablesToAgent(agentId, vars);
+    }
 
     @Override
     public String toString() {
@@ -35,7 +63,7 @@ public class Problem implements ImmutableProblem {
      * @param var1
      * @param var2
      * @return true if there is a constraint between var1 and var2 operation
-     *         cost: o(d^2)cc
+     * cost: o(d^2)cc
      */
     @Override
     public boolean isConstrained(int var1, int var2) {
@@ -75,13 +103,12 @@ public class Problem implements ImmutableProblem {
 
     /**
      * @param var
-     * @return all the variables that costrainted with the given var
+     * @return all the variables that are constrained with the given variable
      */
     @Override
     public Set<Integer> getNeighbors(int var) {
         return constraints.getNeighbores(var);
     }
-
 
     public ImmutableSet<Integer> getDomain() {
         if (!singleDomain) {
@@ -92,24 +119,78 @@ public class Problem implements ImmutableProblem {
 
     @Override
     public int getNumberOfVariables() {
-        return numvars;
+        return domain.length;
     }
 
-    protected void initialize(ProblemType type, List<? extends Set<Integer>> domain, boolean singleDomain) {
-        this.singleDomain = singleDomain;
-        this.domain = ImmutableSetOfIntegers.arrayOf(domain);
-        this.numvars = domain.size();
-        this.type = type;
-        this.constraints = type.newConstraintPackage(numvars, domain.get(0).size());
+    public int getNumberOfAgents() {
+        return numagents;
+    }
+
+    protected void initialize(ProblemType type, List<? extends Set<Integer>> domain, boolean singleDomain, int numberOfAgents) {
+        if (domain.size() >= numberOfAgents) {
+            this.singleDomain = singleDomain;
+            this.domain = ImmutableSetOfIntegers.arrayOf(domain);
+            this.numagents = numberOfAgents;
+            this.type = type;
+            this.constraints = type.newConstraintPackage(numagents, domain.get(0).size());
+            this.distributer = new OneToManyDistributor(numagents, domain.size());
+        } else {
+            throw new RuntimeException("The amount of agents must be less/equal than the amount of variables");
+        }
     }
 
     /**
      * initialize the problem with multiple domains the number of variables is
      * the domain.size()
      *
-     * @param type    the type of the problem
+     * @param type the type of the problem
      * @param domains list of domains for each agent - this list also determines
-     *                the number of variables that will be domains.size
+     * @param numberOfAgents amount of agents (must be less\equal to amount of
+     * variables) otherwise an exception will be thrown the number of variables
+     * that will be domains.size
+     */
+    public void initialize(ProblemType type, List<? extends Set<Integer>> domains, int numberOfAgents) {
+        initialize(type, domains, false, numberOfAgents);
+    }
+
+    /**
+     * initialize the problem with a single domain
+     *
+     * @param type the problem type
+     * @param numberOfVariables number of variables in this problem
+     * @param domain the domain for all the variables.
+     * @param numberOfAgents amount of agents (must be less\equal to amount of
+     * variables) otherwise an exception will be thrown
+     */
+    public void initialize(ProblemType type, int numberOfVariables, Set<Integer> domain, int numberOfAgents) {
+        initialize(type, ImmutableSetOfIntegers.repeat(domain, numberOfVariables), true, numberOfAgents);
+    }
+
+    /**
+     * initialize the problem with a single domain that its values are
+     * 0..1-domainSize
+     *
+     * @param type
+     * @param numberOfVariables
+     * @param domainSize
+     * @param numberOfAgents amount of agents (must be less\equal to amount of
+     * variables) otherwise an exception will be thrown
+     */
+    public void initialize(ProblemType type, int numberOfVariables, int domainSize, int numberOfAgents) {
+        initialize(type, numberOfVariables, new HashSet<>(Agt0DSL.range(0, domainSize - 1)), numberOfAgents);
+    }
+
+    protected void initialize(ProblemType type, List<? extends Set<Integer>> domain, boolean singleDomain) {
+        initialize(type, domain, singleDomain, domain.size());
+    }
+
+    /**
+     * initialize the problem with multiple domains the number of variables is
+     * the domain.size()
+     *
+     * @param type the type of the problem
+     * @param domains list of domains for each agent - this list also determines
+     * the number of variables that will be domains.size
      */
     public void initialize(ProblemType type, List<? extends Set<Integer>> domains) {
         initialize(type, domains, false);
@@ -118,9 +199,9 @@ public class Problem implements ImmutableProblem {
     /**
      * initialize the problem with a single domain
      *
-     * @param type              the problem type
+     * @param type the problem type
      * @param numberOfVariables number of variables in this problem
-     * @param domain            the domain for all the variables.
+     * @param domain the domain for all the variables.
      */
     public void initialize(ProblemType type, int numberOfVariables, Set<Integer> domain) {
         initialize(type, ImmutableSetOfIntegers.repeat(domain, numberOfVariables), true);
@@ -135,7 +216,7 @@ public class Problem implements ImmutableProblem {
      * @param domainSize
      */
     public void initialize(ProblemType type, int numberOfVariables, int domainSize) {
-        initialize(type, numberOfVariables, new HashSet<Integer>(Agt0DSL.range(0, domainSize - 1)));
+        initialize(type, numberOfVariables, new HashSet<>(Agt0DSL.range(0, domainSize - 1)));
     }
 
     /**
@@ -313,7 +394,7 @@ public class Problem implements ImmutableProblem {
      *
      * @param owner
      * @param assignment
-     * @return
+     * @param result
      */
     public void calculateCost(int owner, Assignment assignment, ConstraintCheckResult result) {
         constraints.calculateCost(owner, assignment, result);

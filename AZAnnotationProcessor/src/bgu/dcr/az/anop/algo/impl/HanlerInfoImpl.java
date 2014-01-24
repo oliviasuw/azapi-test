@@ -8,7 +8,6 @@ package bgu.dcr.az.anop.algo.impl;
 import bgu.dcr.az.anop.algo.HandlerInfo;
 import bgu.dcr.az.anop.algo.ParameterInfo;
 import bgu.dcr.az.anop.conf.JavaDocInfo;
-import java.util.Collection;
 
 /**
  *

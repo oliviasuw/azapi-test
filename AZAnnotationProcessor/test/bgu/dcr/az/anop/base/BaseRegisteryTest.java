@@ -17,14 +17,14 @@ import org.junit.Before;
  */
 public class BaseRegisteryTest {
 
-    private BaseRegistery registery;
+    private RegisteryImpl registery;
 
     public BaseRegisteryTest() {
     }
 
     @Before
     public void initialize() {
-        registery = new BaseRegistery();
+        registery = new RegisteryImpl();
         registery.register(B.class, "CLASS B");
         registery.register(D.class, "CLASS D");
         registery.register(E.class, "CLASS E");

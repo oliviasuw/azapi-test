@@ -74,6 +74,7 @@ public class ProcessorUtils {
 
     public static void tearDown() {
         for (Map.Entry<String, List<String>> r : registeredServices.entrySet()) {
+            note("writing services to: " + r.getKey());
             try {
                 FileObject file = penv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", "META-INF/services/" + r.getKey());
                 try (PrintWriter out = new PrintWriter(file.openWriter())) {
@@ -85,6 +86,8 @@ public class ProcessorUtils {
                 error(ex);
             }
         }
+        
+        registeredServices.clear();
     }
 
     /**

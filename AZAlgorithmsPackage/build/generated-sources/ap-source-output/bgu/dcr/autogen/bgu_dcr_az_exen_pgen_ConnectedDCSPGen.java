@@ -17,19 +17,24 @@ import bgu.dcr.az.anop.utils.JavaDocParser;
 
 
 
-public class bgu_dcr_az_algos_SBBAgent extends AbstractConfiguration{
+public class bgu_dcr_az_exen_pgen_ConnectedDCSPGen extends AbstractConfiguration{
 
-    public static final TypeInfo TYPE_INFO = JavaTypeParser.parse("bgu.dcr.az.algos.SBBAgent");
+    public static final TypeInfo TYPE_INFO = JavaTypeParser.parse("bgu.dcr.az.exen.pgen.ConnectedDCSPGen");
     
-    public static final JavaDocInfo JAVADOC = JavaDocParser.parse("");
+    public static final JavaDocInfo JAVADOC = JavaDocParser.parse("\n @author bennyl\n");
 
     
-    public bgu_dcr_az_algos_SBBAgent() {
+    private bgu.dcr.autogen.bgu_dcr_az_exen_pgen_UnstructuredDCSPGen parent;
+    
+    public bgu_dcr_az_exen_pgen_ConnectedDCSPGen() {
         this.properties = new HashMap<>();
         
         //fill properties
         VisualData vd = null;
         
+        
+        parent = new bgu.dcr.autogen.bgu_dcr_az_exen_pgen_UnstructuredDCSPGen();
+        this.properties.putAll(parent.propertiesMap());
         
 
         this.type = TYPE_INFO;
@@ -38,7 +43,7 @@ public class bgu_dcr_az_algos_SBBAgent extends AbstractConfiguration{
 
     @Override
     public Object create() throws ConfigurationException {
-        bgu.dcr.az.algos.SBBAgent result = new bgu.dcr.az.algos.SBBAgent();
+        bgu.dcr.az.exen.pgen.ConnectedDCSPGen result = new bgu.dcr.az.exen.pgen.ConnectedDCSPGen();
 
         configure(result);
         
@@ -47,8 +52,10 @@ public class bgu_dcr_az_algos_SBBAgent extends AbstractConfiguration{
 
     @Override
     public void configure(Object obj) throws ConfigurationException {
-        bgu.dcr.az.algos.SBBAgent o = (bgu.dcr.az.algos.SBBAgent) obj;
+        bgu.dcr.az.exen.pgen.ConnectedDCSPGen o = (bgu.dcr.az.exen.pgen.ConnectedDCSPGen) obj;
         Property property = null;
+        
+        parent.configure(obj);
         
         
         configureVariables(o);

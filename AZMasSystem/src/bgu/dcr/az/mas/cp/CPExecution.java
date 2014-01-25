@@ -26,8 +26,8 @@ public class CPExecution extends BaseExecution {
     private final Solution solution;
     private final Problem problem;
 
-    public CPExecution(Scheduler scheduler, AgentSpawner spawner, Problem problem) {
-        super(scheduler, problem.getAgentDistributer(), spawner);
+    public CPExecution(Scheduler scheduler, AgentSpawner spawner, Problem problem, int numCores) {
+        super(scheduler, problem.getAgentDistributer(), spawner, numCores);
         
         this.problem = problem;
         this.solution = new Solution(problem);

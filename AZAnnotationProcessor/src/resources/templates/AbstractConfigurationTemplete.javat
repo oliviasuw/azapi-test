@@ -52,6 +52,9 @@ public class @{className} extends AbstractConfiguration{
         @end{}
 
         this.type = TYPE_INFO;
+        @if{haveVariables}
+        scanVariables();
+        @end{}
     }
 
     @Override

@@ -17,14 +17,14 @@ import bgu.dcr.az.anop.utils.JavaDocParser;
 
 
 
-public class bgu_dcr_az_algos_SBBAgent extends AbstractConfiguration{
+public class bgu_dcr_az_exen_pgen_UnstructuredDCOPGen extends AbstractConfiguration{
 
-    public static final TypeInfo TYPE_INFO = JavaTypeParser.parse("bgu.dcr.az.algos.SBBAgent");
+    public static final TypeInfo TYPE_INFO = JavaTypeParser.parse("bgu.dcr.az.exen.pgen.UnstructuredDCOPGen");
     
-    public static final JavaDocInfo JAVADOC = JavaDocParser.parse("");
+    public static final JavaDocInfo JAVADOC = JavaDocParser.parse("\n @author bennyl\n");
 
     
-    public bgu_dcr_az_algos_SBBAgent() {
+    public bgu_dcr_az_exen_pgen_UnstructuredDCOPGen() {
         this.properties = new HashMap<>();
         
         //fill properties
@@ -34,11 +34,13 @@ public class bgu_dcr_az_algos_SBBAgent extends AbstractConfiguration{
 
         this.type = TYPE_INFO;
         
+        scanVariables();
+        
     }
 
     @Override
     public Object create() throws ConfigurationException {
-        bgu.dcr.az.algos.SBBAgent result = new bgu.dcr.az.algos.SBBAgent();
+        bgu.dcr.az.exen.pgen.UnstructuredDCOPGen result = new bgu.dcr.az.exen.pgen.UnstructuredDCOPGen();
 
         configure(result);
         
@@ -47,7 +49,7 @@ public class bgu_dcr_az_algos_SBBAgent extends AbstractConfiguration{
 
     @Override
     public void configure(Object obj) throws ConfigurationException {
-        bgu.dcr.az.algos.SBBAgent o = (bgu.dcr.az.algos.SBBAgent) obj;
+        bgu.dcr.az.exen.pgen.UnstructuredDCOPGen o = (bgu.dcr.az.exen.pgen.UnstructuredDCOPGen) obj;
         Property property = null;
         
         

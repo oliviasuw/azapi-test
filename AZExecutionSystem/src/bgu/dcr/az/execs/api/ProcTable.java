@@ -103,5 +103,5 @@ public interface ProcTable {
     /**
      * @return all the existing process ids in this table
      */
-    Collection<Integer> allProcessIds();
+    Collection<Integer> allProcessIds();    
 }

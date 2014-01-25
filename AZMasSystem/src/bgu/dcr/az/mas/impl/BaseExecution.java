@@ -31,8 +31,10 @@ public abstract class BaseExecution implements Execution {
     private final Map<Class<? extends ExecutionService>, ExecutionServiceWithInitializationData> services = new HashMap<>();
 
     private final Scheduler scheduler;
+    private final int numCores;
 
-    public BaseExecution(Scheduler scheduler, AgentDistributer distributer, AgentSpawner spawner) {
+    public BaseExecution(Scheduler scheduler, AgentDistributer distributer, AgentSpawner spawner, int numCores) {
+        this.numCores = numCores;
         this.scheduler = scheduler;
         put(AgentDistributer.class, distributer);
         put(AgentSpawner.class, spawner);
@@ -64,8 +66,10 @@ public abstract class BaseExecution implements Execution {
         } catch (InitializationException ex) {
             throw new ExperimentExecutionException("error on experiment initialization, see cause", ex);
         }
-
-        return scheduler.schedule(table);
+        
+        TerminationReason result = scheduler.schedule(table, numCores);
+        System.out.println("Contention: " + scheduler.getContention());
+        return result;
     }
 
     @Override

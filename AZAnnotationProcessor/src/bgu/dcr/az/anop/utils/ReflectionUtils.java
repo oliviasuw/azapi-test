@@ -32,20 +32,28 @@ public class ReflectionUtils {
         HashSet.class
     };
 
-    public static final Map<String, Class> PRIMITIVE_TO_WRAPPER_CLASS = new HashMap<String, Class>(){{
-        put("boolean", Boolean.class);
-        put("byte", Byte.class);
-        put("short", Short.class);
-        put("char", Character.class);
-        put("int", Integer.class);
-        put("long", Long.class);
-        put("float", Float.class);
-        put("double", Double.class);
-    }};
-    
+    public static final Map<String, Class> PRIMITIVE_TO_WRAPPER_CLASS = new HashMap<String, Class>() {
+        {
+            put("boolean", Boolean.class);
+            put("byte", Byte.class);
+            put("short", Short.class);
+            put("char", Character.class);
+            put("int", Integer.class);
+            put("long", Long.class);
+            put("float", Float.class);
+            put("double", Double.class);
+        }
+    };
+
     public static <T> T valueOf(String s, Class<T> c) throws NoSuchMethodException {
-        if (c == String.class) return (T) s;
-        
+        if (c == String.class) {
+            return (T) s;
+        }
+
+        if (c.isPrimitive()) {
+            c = PRIMITIVE_TO_WRAPPER_CLASS.get(c.getName());
+        }
+
         Method vof = valueOfCache.get(c);
         if (vof == null) {
             vof = c.getMethod("valueOf", String.class);

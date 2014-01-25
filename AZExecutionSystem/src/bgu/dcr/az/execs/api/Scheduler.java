@@ -14,5 +14,7 @@ public interface Scheduler {
      * @return a result object describing the reason for the termination
      * @throws java.lang.InterruptedException
      */
-    TerminationReason schedule(ProcTable table) throws InterruptedException;
+    TerminationReason schedule(ProcTable table, int numCores) throws InterruptedException;
+    
+    double getContention();
 }

@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package bgu.dcr.az.anop.conf.impl;
 
 import bgu.dcr.az.anop.conf.TypeInfo;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,25 +16,31 @@ import java.util.List;
  * @author User
  */
 public class ConfigurableTypeInfoImpl implements TypeInfo {
+
     private Class clazz;
     private final List<ConfigurableTypeInfoImpl> subtypes;
+
+    public ConfigurableTypeInfoImpl(Class clazz) {
+        this.clazz = clazz;
+        subtypes = Collections.EMPTY_LIST;
+    }
 
     public ConfigurableTypeInfoImpl(String className) {
         char[] chars = className.toCharArray();
         boolean foundClass = false;
-        
+
         for (int i = 0; i < chars.length; i++) {
-            if (chars[i] == '.' && i + 1 < chars.length && Character.isUpperCase(chars[i+1])){
-                if (foundClass){
+            if (chars[i] == '.' && i + 1 < chars.length && Character.isUpperCase(chars[i + 1])) {
+                if (foundClass) {
                     chars[i] = '$';
-                }else {
+                } else {
                     foundClass = true;
                 }
             }
         }
-        
+
         className = new String(chars);
-        
+
         try {
             this.clazz = Class.forName(className);
         } catch (Exception e) {
@@ -75,5 +81,5 @@ public class ConfigurableTypeInfoImpl implements TypeInfo {
         }
         return sb.toString();
     }
-    
+
 }

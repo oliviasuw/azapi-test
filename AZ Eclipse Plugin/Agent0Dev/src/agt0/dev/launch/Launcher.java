@@ -114,7 +114,7 @@ public class Launcher extends AbstractJavaLaunchConfigurationDelegate {
 			
 			runConfig.setProgramArguments(programArgs.toArray(new String[0]));
 
-			String vmAttributes = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "-Xmx1024m -XX:MaxPermSize=128m");			
+			String vmAttributes = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "-Xmx1024m -XX:MaxPermSize=128m -server");			
 			runConfig.setVMArguments(vmAttributes.split("\\s+"));
 //			runConfig.setVMArguments(new String[] { "-Xmx1024m",
 //					"-XX:MaxPermSize=128m" });

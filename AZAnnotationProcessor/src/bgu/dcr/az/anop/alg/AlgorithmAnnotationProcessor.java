@@ -1,6 +1,6 @@
 package bgu.dcr.az.anop.alg;
 
-import bgu.dcr.az.anop.RegisteryAnnotationProcessor;
+import bgu.dcr.az.anop.reg.RegisteryAnnotationProcessor;
 import bgu.dcr.az.anop.utils.CodeUtils;
 import bgu.dcr.az.anop.utils.ProcessorUtils;
 import bgu.dcr.az.anop.utils.StringUtils;
@@ -52,49 +52,52 @@ public class AlgorithmAnnotationProcessor extends AbstractProcessor {
 
         Map<String, TypeElement> configurableClasses = ProcessorUtils.extractClassesAnnotatedWith(roundEnv, Algorithm.class);
         for (TypeElement te : configurableClasses.values()) {
-            RegisteryAnnotationProcessor.createConfiguration(te);
-            createAlgorithmConfiguration(te);
+            createAlgorithmManipulator(te);
         }
-        
+
         ProcessorUtils.tearDown();
 
-        return true;
+        return false;
     }
 
-    public static void createAlgorithmConfiguration(TypeElement te) {
+    public static void createAlgorithmManipulator(TypeElement te) {
 
         final Map ctx = new HashMap();
         final LinkedList<HandlerInfo> handlers = new LinkedList<>();
         final String autogenClassName = RegisteryAnnotationProcessor.fqnToConfigurationClassName(te.getQualifiedName().toString());
 
         ctx.put("className", autogenClassName);
+        ctx.put("package", AUTOGEN_PACKAGE);
         ctx.put("classNameFQN", te.getQualifiedName().toString());
         ctx.put("handlers", handlers);
         ctx.put("algorithmName", te.getAnnotation(Algorithm.class).name());
         ctx.put("configurationDelegateClassName", RegisteryAnnotationProcessor.AUTOGEN_PACKAGE + "." + autogenClassName);
 
-        Map<String, ExecutableElement> methods = ProcessorUtils.extractMethods(te);
-        for (Map.Entry<String, ExecutableElement> p : methods.entrySet()) {
-            final WhenReceived ano = p.getValue().getAnnotation(WhenReceived.class);
-            if (ano != null) {
-                HandlerInfo hInfo = new HandlerInfo();
-                hInfo.declaredName = p.getValue().getSimpleName().toString();
-                hInfo.javadoc = StringUtils.escapedString(ProcessorUtils.extractJavadoc(p.getValue()));
-                hInfo.of = ano.value();
-                int i = 0;
-                for (VariableElement param : p.getValue().getParameters()) {
-                    ParameterInfo pInfo = new ParameterInfo();
-                    pInfo.name = param.getSimpleName().toString();
-                    pInfo.typeFQN = ProcessorUtils.extractClassTypeName(param.asType(), true);
-                    pInfo.index = "" + i;
-                    hInfo.params.addLast(pInfo);
-                    i++;
+        TypeElement scanned = te;
+        while (!scanned.getQualifiedName().toString().equals(Object.class.getCanonicalName())) {
+            Map<String, ExecutableElement> methods = ProcessorUtils.extractMethods(scanned);
+            for (Map.Entry<String, ExecutableElement> p : methods.entrySet()) {
+                final WhenReceived ano = p.getValue().getAnnotation(WhenReceived.class);
+                if (ano != null) {
+                    HandlerInfo hInfo = new HandlerInfo();
+                    hInfo.declaredName = p.getValue().getSimpleName().toString();
+                    hInfo.javadoc = StringUtils.escapedString(ProcessorUtils.extractJavadoc(p.getValue()));
+                    hInfo.of = ano.value();
+                    int i = 0;
+                    for (VariableElement param : p.getValue().getParameters()) {
+                        ParameterInfo pInfo = new ParameterInfo();
+                        pInfo.name = param.getSimpleName().toString();
+                        pInfo.typeFQN = ProcessorUtils.extractClassTypeName(param.asType(), true);
+                        pInfo.index = "" + i;
+                        hInfo.params.addLast(pInfo);
+                        i++;
+                    }
+
+                    handlers.add(hInfo);
                 }
-
-                handlers.add(hInfo);
             }
+            scanned = (TypeElement) ProcessorUtils.toDeclaredType(scanned.getSuperclass()).asElement();
         }
-
         ProcessorUtils.writeClass(AUTOGEN_PACKAGE + "." + ctx.get("className"), agentManipulatorTemplate, ctx);
     }
 

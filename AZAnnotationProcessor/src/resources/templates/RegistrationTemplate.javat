@@ -1,7 +1,7 @@
 package @{registrationPackage};
 
-import bgu.dcr.az.anop.base.RegisteryImpl;
-import bgu.dcr.az.anop.base.Registration;
+import bgu.dcr.az.anop.reg.impl.RegisteryImpl;
+import bgu.dcr.az.anop.reg.impl.Registration;
 
 public class @{registrationClass} implements Registration {
 

@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.mas.exp.loopers;
 
-import bgu.dcr.az.anop.Register;
+import bgu.dcr.az.anop.reg.Register;
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;
@@ -26,6 +26,7 @@ public class ForLooper implements Looper {
     private Double startValue = null;
     private Double endValue = null;
     private Double tickSizeValue = null;
+    private Integer repeatCountValue = 1; 
 
     /**
      * @propertyName looper
@@ -61,6 +62,7 @@ public class ForLooper implements Looper {
     }
 
     public void setStartValue(Double initialValue) {
+        count = null;
         this.startValue = initialValue;
     }
 
@@ -73,6 +75,7 @@ public class ForLooper implements Looper {
     }
 
     public void setEndValue(Double finalValue) {
+        count = null;
         this.endValue = finalValue;
     }
 
@@ -85,15 +88,30 @@ public class ForLooper implements Looper {
     }
 
     public void setTickSizeValue(Double stepValue) {
+        count = null;
         this.tickSizeValue = stepValue;
     }
 
+    /**
+     * @propertyName repeat-count
+     * @return 
+     */
+    public Integer getRepeatCountValue() {
+        return repeatCountValue;
+    }
+
+    public void setRepeatCountValue(Integer repeatCountValue) {
+        count = null;
+        this.repeatCountValue = repeatCountValue == null ? 1 : repeatCountValue;
+    }
+    
     @Override
     public int count() throws ExperimentExecutionException {
         if (count == null) {
             checkForLoopValues();
 
-            count = 1 + (int) Math.round((endValue - startValue) / tickSizeValue);
+            count = 1 + (int) Math.round((endValue - startValue) / tickSizeValue) ;
+            count *= repeatCountValue;
         }
 
         return innerLooper == null ? count : count * innerLooper.count();
@@ -104,6 +122,7 @@ public class ForLooper implements Looper {
         checkForLoopValues();
 
         int currI = innerLooper == null ? i : i / innerLooper.count();
+        currI = currI / repeatCountValue;
 
         if (runVar != null) {
             Double value = (currI >= count ? endValue : startValue + tickSizeValue * (double) currI);

@@ -5,7 +5,10 @@
  */
 package bgu.dcr.az.mas;
 
+import bgu.dcr.az.execs.api.ProcTable;
+import bgu.dcr.az.execs.api.TerminationReason;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
+import bgu.dcr.az.mas.impl.InitializationException;
 
 /**
  *
@@ -15,9 +18,10 @@ public interface Execution {
 
     public void hook(Class hookType, Object hook);
 
-    public <T> T require(Class<T> service);
+    public <T extends ExecutionService> T require(Class<T> service) throws InitializationException;
 
     public void put(Class<? extends ExecutionService> serviceKey, ExecutionService service);
 
-    public void execute() throws ExperimentExecutionException, InterruptedException;
+    public TerminationReason execute() throws ExperimentExecutionException, InterruptedException;
+    
 }

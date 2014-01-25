@@ -17,9 +17,15 @@ import java.util.Map;
  * @author User
  */
 public class JavaDocInfoImpl implements JavaDocInfo {
+    public static final JavaDocInfo EMPTY_JAVADOC = new JavaDocInfoImpl();
 
     private final Map<String, List<String>> data;
     private final String description;
+
+    private JavaDocInfoImpl() {
+        this.data = Collections.EMPTY_MAP;
+        this.description = "";
+    }
 
     public JavaDocInfoImpl(Map<String, List<String>> data) {
         this.data = data;

@@ -12,4 +12,8 @@ package bgu.dcr.az.mas;
 public interface AgentDistributer extends ExecutionService {
 
     int[] getControlledAgentsIds(int controllerId);
+
+    int getNumberOfAgents();
+
+    int getNumberOfAgentControllers();
 }

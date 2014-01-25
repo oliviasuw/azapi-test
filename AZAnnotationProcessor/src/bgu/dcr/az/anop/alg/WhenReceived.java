@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * @author bennyl
  */
 @Target(ElementType.METHOD)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 @Inherited
 public @interface WhenReceived {
     /**

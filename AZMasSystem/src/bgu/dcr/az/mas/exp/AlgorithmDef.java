@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.mas.exp;
 
-import bgu.dcr.az.anop.Register;
+import bgu.dcr.az.anop.reg.Register;
 
 /**
  *

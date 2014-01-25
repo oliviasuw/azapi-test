@@ -2,7 +2,6 @@ package bgu.dcr.az.api.tools;
 
 import bgu.dcr.az.api.prob.ImmutableProblem;
 import bgu.dcr.az.api.*;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -12,7 +11,9 @@ import bgu.dcr.az.api.prob.Problem;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -28,7 +29,10 @@ public class Assignment implements Serializable, DeepCopyable {
      */
     public Assignment() {
         this.assignment = new LinkedHashMap<>();
+    }
 
+    public Assignment(Map<Integer, Integer> assignment) {
+        this.assignment = new LinkedHashMap<>(assignment);
     }
 
     public Assignment(int... of) {
@@ -120,12 +124,13 @@ public class Assignment implements Serializable, DeepCopyable {
      * @param var
      * @param val
      * @param p
-     * @return the cost that will be added (or all ready added) to this assignment by assigning  {@code var <- val} in the problem p
-     *             this includes binary and unary costs
-     * 
-     * means: 
-     * costOf(assignment + <var,val>) - costOf(assignment - <var, currentAssignmentOf(var)>)
-     * 
+     * @return the cost that will be added (or all ready added) to this
+     * assignment by assigning {@code var <- val} in the problem p this includes
+     * binary and unary costs
+     *
+     * means: costOf(assignment + <var,val>) - costOf(assignment - <var,
+     * currentAssignmentOf(var)>)
+     *
      * * (increase cc checks)
      */
     public int calcAddedCost(int var, int val, ImmutableProblem p) {
@@ -134,7 +139,7 @@ public class Assignment implements Serializable, DeepCopyable {
         int old = (assignend ? getAssignment(var) : 0);
         unassign(var);
         int withoutCost = calcCost(p);
-        
+
         assign(var, val);
         int ans = calcCost(p) - withoutCost;
         if (assignend) {
@@ -157,13 +162,13 @@ public class Assignment implements Serializable, DeepCopyable {
         int oldCache = cachedCost;
         boolean assignend = isAssigned(var);
         int old = (assignend ? getAssignment(var) : 0);
-        
+
         unassign(var);
         int ans = calcCost(p);
         if (assignend) {
             assign(var, old);
-        } 
-        
+        }
+
         cachedCost = oldCache; //fix cache
 
         return ans;
@@ -199,24 +204,26 @@ public class Assignment implements Serializable, DeepCopyable {
     }
 
     /**
-     * searches for the first value that is consistent with this assignment in the given domain of values
-     * if no such value found then this function will return the defaultValue
+     * searches for the first value that is consistent with this assignment in
+     * the given domain of values if no such value found then this function will
+     * return the defaultValue
+     *
      * @param var
      * @param domain
      * @param p
      * @param defaultValue
-     * @return 
+     * @return
      */
-    public int findConsistentValue(int var, Collection<Integer> domain, ImmutableProblem p, int defaultValue){
-        for (Integer d : domain){
-            if (isConsistentWith(var, d, p)){
+    public int findConsistentValue(int var, Collection<Integer> domain, ImmutableProblem p, int defaultValue) {
+        for (Integer d : domain) {
+            if (isConsistentWith(var, d, p)) {
                 return d;
             }
         }
-        
+
         return defaultValue;
     }
-    
+
     /**
      * find the first assignment to variable - var that keeps the assignment
      * under the given upperbound returns -1 if none found..
@@ -288,7 +295,7 @@ public class Assignment implements Serializable, DeepCopyable {
         boolean assignend = isAssigned(var);
         int old = (assignend ? getAssignment(var) : 0);
         int oldCache = cachedCost;
-        
+
         assign(var, val);
         boolean ans = calcCost(p) == 0;
         if (assignend) {
@@ -296,7 +303,7 @@ public class Assignment implements Serializable, DeepCopyable {
         } else {
             unassign(var);
         }
-        
+
         cachedCost = oldCache; //fix cache
         return ans;
     }
@@ -311,10 +318,10 @@ public class Assignment implements Serializable, DeepCopyable {
             return false;
         } else {
             Assignment otherAssignment = (Assignment) obj;
-            if (otherAssignment.assignment.size() != assignment.size()){
+            if (otherAssignment.assignment.size() != assignment.size()) {
                 return false;
             }
-            
+
             for (Entry<Integer, Integer> e : assignment.entrySet()) {
                 if (!otherAssignment.isAssigned(e.getKey()) || otherAssignment.getAssignment(e.getKey()) != e.getValue()) {
                     return false;

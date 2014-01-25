@@ -1,4 +1,4 @@
-package resources.templates;
+package @{package};
 
 import bgu.dcr.az.anop.algo.ParameterInfo;
 import bgu.dcr.az.anop.algo.impl.AbstractAgentManipulator;

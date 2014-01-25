@@ -6,15 +6,11 @@ import bgu.dcr.az.api.prob.ProblemType;
 import bgu.dcr.az.api.agt.ReportMediator;
 import bgu.dcr.az.api.agt.SendMediator;
 import bgu.dcr.az.api.ds.ImmutableSet;
-import bgu.dcr.az.api.exp.InternalErrorException;
 import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.exp.RepeatedCallingException;
-import bgu.dcr.az.api.exp.UnsupportedMessageException;
 import bgu.dcr.az.api.prob.ConstraintCheckResult;
 import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.mas.cp.CPAgentController;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -42,11 +38,6 @@ public abstract class Agent extends Agt0DSL {
     private Message currentMessage = null; //The Current Message (The Last Message That was taken from the mailbox)
     private PlatformOps pops; //Hidden Platform Operation 
 
-    /**
-     * METADATA
-     */
-    private HashMap<String, Method> msgToMethod;
-
     @Override
     public String toString() {
         final String prefix = "Agent " + (getId() < 10 ? "00" : getId() < 100 ? "0" : "") + getId();
@@ -62,20 +53,6 @@ public abstract class Agent extends Agt0DSL {
         this.id = -1;
         this.pops = new PlatformOps();
 
-        msgToMethod = new HashMap<>();
-        scanMethods();
-    }
-
-    /**
-     * will scan methods that should handle messages
-     */
-    private void scanMethods() {
-        for (Method m : getClass().getMethods()) {
-            if (m.isAnnotationPresent(WhenReceived.class)) {
-                m.setAccessible(true); // bypass the security manager rechecking - make reflected calls faster
-                msgToMethod.put(m.getAnnotation(WhenReceived.class).value(), m);
-            }
-        }
     }
 
     /**
@@ -161,35 +138,6 @@ public abstract class Agent extends Agt0DSL {
         return id;
     }
 
-    /**
-     * request the agent to process the next message
-     *
-     *
-     * @param msg
-     */
-    public final void processNextMessage(Message msg) {
-        msg = beforeMessageProcessing(msg);
-        if (msg == null) {
-            return; //DUMPING MESSAGE..
-        }
-
-        Method mtd = msgToMethod.get(msg.getName());
-        if (mtd == null) {
-            throw new UnsupportedMessageException("no method to handle message: '" + msg.getName() + "' was found (use @WhenReceived on PUBLIC functions only)");
-        }
-        try {
-            mtd.invoke(this, msg.getArgs());
-        } catch (IllegalArgumentException e) {
-            //e.printStackTrace();
-            throw new UnsupportedMessageException("wrong parameters passed with the message " + msg.getName());
-        } catch (IllegalAccessException e) {
-            //e.printStackTrace();
-            throw new InternalErrorException("internal error while processing message: '" + msg.getName() + "' in agent " + getId(), e);
-        } catch (InvocationTargetException e) {
-            //e.printStackTrace();
-            throw new InternalErrorException("internal error while processing message: '" + msg.getName() + "' in agent " + getId() + ": " + e.getCause().getMessage() + " (see cause)", e.getCause());
-        }
-    }
 
     /**
      * log something inside this agent log
@@ -530,14 +478,6 @@ public abstract class Agent extends Agt0DSL {
 
         private int numberOfSetIdCalls = 0;
         private Map metadata = new HashMap();
-
-        /**
-         * @return all the messages names that the algorithm that is represented
-         * by this agent can send can send
-         */
-        public Set<String> algorithmMessages() {
-            return msgToMethod.keySet();
-        }
 
         public ImmutableProblem getProblem() {
             return prob;

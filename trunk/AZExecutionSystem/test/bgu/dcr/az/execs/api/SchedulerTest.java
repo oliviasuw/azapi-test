@@ -7,7 +7,6 @@ package bgu.dcr.az.execs.api;
 
 import bgu.dcr.az.execs.MultithreadedScheduler;
 import bgu.dcr.az.execs.ThreadSafeProcTable;
-import bgu.dcr.az.execs.api.utils.CreazyWakingProc;
 import bgu.dcr.az.execs.api.utils.ForkingProcess;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,7 +28,7 @@ public class SchedulerTest {
         final ExecutorService newCachedThreadPool = Executors.newCachedThreadPool();
         for (int j = 0; j < 1; j++) {
 
-            MultithreadedScheduler sched = new MultithreadedScheduler(newCachedThreadPool, 8);
+            MultithreadedScheduler sched = new MultithreadedScheduler(newCachedThreadPool);
             final ProcTable table = new ThreadSafeProcTable();
             int nproc = 10;
             for (int i = 0; i < nproc; i++) {
@@ -39,7 +38,7 @@ public class SchedulerTest {
             }
 //            startQueryThread(table);
 
-            TerminationReason result = sched.schedule(table);
+            TerminationReason result = sched.schedule(table, 8);
             System.out.println("" + result);
             if (result.isError()) {
                 return;

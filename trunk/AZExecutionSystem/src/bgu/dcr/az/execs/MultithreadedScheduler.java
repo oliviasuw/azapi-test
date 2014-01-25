@@ -176,6 +176,8 @@ public class MultithreadedScheduler implements Scheduler {
                             return; //the table is empty - shutdown
                         }
                     }
+                    
+//                    System.out.println("" + coreId + " Is Free");
 
                 }
             } catch (Exception ex) {
@@ -195,7 +197,7 @@ public class MultithreadedScheduler implements Scheduler {
             int detectorNumber = 0;
 //            if (fastDetectionMode) {
             if (firstToDetectIdle.compareAndSet(true, false)) {
-                System.out.println("Resolve Idle " + (tick++));
+//                System.out.println("Resolve Idle " + (tick++));
                 table.resumeAll();
                 numberOfIdleReolversLeft.set(numCores);
             }

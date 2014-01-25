@@ -9,6 +9,7 @@ import bgu.dcr.az.anop.reg.RegisteryUtils;
 import bgu.dcr.az.anop.algo.AgentManipulator;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.api.Agent;
+import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.execs.AbstractProc;
 import bgu.dcr.az.mas.AZIPMessage;
@@ -19,8 +20,10 @@ import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.MessageRouter;
 import bgu.dcr.az.mas.impl.ds.FastSingletonMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -32,6 +35,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
     private final MessageRouter router;
     private int numAgents;
     private final Map<Integer, AgentWithManipulator> controlledAgents;
+    private final Set<Integer> finishedAgents;
     private final Queue<AZIPMessage> messageQueue;
 
     private int tick;
@@ -52,6 +56,8 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
         } else {
             controlledAgents = new HashMap<>();
         }
+        
+        finishedAgents = new HashSet<>();
 
         for (int aId : controlled) {
             AgentManipulator manipulator = RegisteryUtils.getDefaultRegistery().getAgentManipulator(spawner.getAgentType(aId));
@@ -79,9 +85,14 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
         AZIPMessage m = messageQueue.poll();
 
 //        System.out.println("Agent :" + pid() + " Is Awake");
-        
         if (m != null) {
             AgentWithManipulator a = controlledAgents.get(m.getAgentRecepient());
+            if (a == null) {
+                if (!finishedAgents.contains(m.getAgentRecepient())) {
+                    Agt0DSL.panic("AgentController: " + pid() + " got unexpected message for agent: " + m.getAgentRecepient());
+                }
+                return;
+            }
             Message newM = a.a.setCurrentMessage(m.getData());
             if (newM != null) {
                 a.am.callHandler(a.a, newM.getName(), newM.getArgs());
@@ -106,6 +117,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 
     protected void removeControlledAgent(AgentWithManipulator a) {
         controlledAgents.remove(a.a.getId());
+        finishedAgents.add(a.a.getId());
         if (controlledAgents.isEmpty()) {
             terminate();
         }

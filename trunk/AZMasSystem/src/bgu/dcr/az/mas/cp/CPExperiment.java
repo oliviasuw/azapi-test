@@ -36,6 +36,8 @@ import java.util.concurrent.Executors;
 @Register("experiment")
 public class CPExperiment implements Experiment {
 
+    private static final int ADAPTIVE_AVERAGE_AMOUNT = 3;
+
     private ProblemGenerator pgen;
     private final List<AlgorithmDef> algorithms = new LinkedList<>();
     private Looper looper = new SingleExecutionLooper();
@@ -79,12 +81,13 @@ public class CPExperiment implements Experiment {
         Scheduler scheduler = new MultithreadedScheduler(pool);
 
         int[] adaptiveNumberOfCores = new int[algorithms.size()];
-        double[] lastContentions = new double[algorithms.size()];
+        double[] lastContentionsAverages = new double[algorithms.size()];
+        double[][] lastContentions = new double[algorithms.size()][ADAPTIVE_AVERAGE_AMOUNT];
         boolean[] stabilized = new boolean[algorithms.size()];
         for (int i = 0; i < adaptiveNumberOfCores.length; i++) {
             adaptiveNumberOfCores[i] = numCores;
-            lastContentions[i] = 1;
             stabilized[i] = false;
+            lastContentionsAverages[i] = 1;
         }
 
         if (getProblemGenerator() == null) {
@@ -125,15 +128,17 @@ public class CPExperiment implements Experiment {
                     TerminationReason result = exec.execute();
 
                     if (!stabilized[numAlgo]) {
-                        if (lastContentions[numAlgo] > scheduler.getContention()) {
-                            adaptiveNumberOfCores[numAlgo]--;
-                            if (adaptiveNumberOfCores[numAlgo] == 1) {
+                        if (i % ADAPTIVE_AVERAGE_AMOUNT == 0 && i != 0) {
+                            Integer cpus = adaptNumberOfCores(i, lastContentionsAverages[numAlgo], adaptiveNumberOfCores[numAlgo], lastContentions[numAlgo], scheduler);
+                            if (cpus == null) {
                                 stabilized[numAlgo] = true;
+                            } else {
+                                adaptiveNumberOfCores[numAlgo] = cpus;
+                                final Double avg = calculateAvg(lastContentions[numAlgo]);
+                                lastContentionsAverages[numAlgo] = avg == null ? lastContentionsAverages[numAlgo] : avg;
                             }
-                        } else {
-                            stabilized[numAlgo] = true;
                         }
-                        lastContentions[numAlgo] = scheduler.getContention();
+                        lastContentions[numAlgo][i % ADAPTIVE_AVERAGE_AMOUNT] = scheduler.getContention();
                     }
 
                     if (result.isError()) {
@@ -150,6 +155,51 @@ public class CPExperiment implements Experiment {
         } finally {
             pool.shutdownNow();
         }
+    }
+
+    /**
+     *
+     * @param round
+     * @param lastAvg
+     * @param adaptedCPUCount
+     * @param lastContentions
+     * @param scheduler
+     * @return the updated amount of CPUs or -1 if adaptation is stabilized
+     */
+    private Integer adaptNumberOfCores(int round, double lastAvg, int adaptedCPUCount, double[] lastContentions, Scheduler scheduler) {
+        if (round % ADAPTIVE_AVERAGE_AMOUNT == 0 && round != 0) {
+            Double avg = calculateAvg(lastContentions);
+
+            if (avg != null) {
+                if (avg < lastAvg) {
+                    adaptedCPUCount--;
+                    if (adaptedCPUCount == 0) {
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
+            }
+        }
+
+        return adaptedCPUCount;
+    }
+
+    /**
+     * @param arr
+     * @return calculates the average of non-zero elements in a given array. if
+     * all elements in array are zero, returns null
+     */
+    private Double calculateAvg(double[] arr) {
+        double avg = 0;
+        int nonZero = 0;
+        for (int i = 0; i < arr.length; i++) {
+            avg += arr[i];
+            if (arr[i] != 0) {
+                nonZero++;
+            }
+        }
+        return nonZero == 0 ? null : avg / nonZero;
     }
 
     @Override

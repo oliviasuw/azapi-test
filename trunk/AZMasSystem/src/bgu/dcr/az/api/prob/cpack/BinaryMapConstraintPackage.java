@@ -8,7 +8,7 @@ import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.prob.ConstraintCheckResult;
 import bgu.dcr.az.api.prob.KAryConstraint;
 import bgu.dcr.az.api.tools.Assignment;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -114,7 +114,7 @@ public class BinaryMapConstraintPackage extends AbstractConstraintPackage {
         int c = 0;
         int cc = 0;
 
-        LinkedList<Map.Entry<Integer, Integer>> past = new LinkedList<Map.Entry<Integer, Integer>>();
+        ArrayList<Map.Entry<Integer, Integer>> past = new ArrayList<>(assignment.getNumberOfAssignedVariables());
         for (Map.Entry<Integer, Integer> e : assignment.getAssignments()) {
             int var = e.getKey();
             int val = e.getValue();

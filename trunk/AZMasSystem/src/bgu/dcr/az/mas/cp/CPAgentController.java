@@ -13,6 +13,7 @@ import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.mas.impl.BaseAgentController;
 import bgu.dcr.az.mas.impl.InitializationException;
+import java.util.LinkedList;
 
 /**
  *
@@ -61,4 +62,24 @@ public class CPAgentController extends BaseAgentController {
     protected void initializeAgent(Agent agent, AgentManipulator manipulator, int aId) {
         Agent.PlatformOperationsExtractor.extract(agent).initialize(aId, this);
     }
+
+    @Override
+    protected void onIdleDetected() {
+        LinkedList<AgentWithManipulator> killedAgents = new LinkedList<>();
+        for (AgentWithManipulator a : getControlledAgents().values()) {
+            a.a.onIdleDetected();
+            if (a.a.isFinished()) {
+                killedAgents.add(a);
+            }
+        }
+
+        for (AgentWithManipulator k : killedAgents) {
+            removeControlledAgent(k);
+        }
+    }
+
+    public void reportNoSolution() {
+        execution.getSolution().setStateNoSolution();
+    }
+
 }

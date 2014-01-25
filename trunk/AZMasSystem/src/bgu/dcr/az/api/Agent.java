@@ -138,7 +138,6 @@ public abstract class Agent extends Agt0DSL {
         return id;
     }
 
-
     /**
      * log something inside this agent log
      *
@@ -162,7 +161,11 @@ public abstract class Agent extends Agt0DSL {
      * @param ans
      */
     protected void finish(Assignment ans) {
-        controller.assignAll(ans);
+        if (ans == null) {
+            controller.reportNoSolution();
+        } else {
+            controller.assignAll(ans);
+        }
         terminate();
     }
 

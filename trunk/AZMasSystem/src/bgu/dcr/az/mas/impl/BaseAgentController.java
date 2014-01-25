@@ -62,6 +62,10 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
         }
     }
 
+    protected Map<Integer, AgentWithManipulator> getControlledAgents() {
+        return controlledAgents;
+    }
+
     @Override
     protected void start() {
         for (AgentWithManipulator a : controlledAgents.values()) {
@@ -74,6 +78,8 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 
         AZIPMessage m = messageQueue.poll();
 
+//        System.out.println("Agent :" + pid() + " Is Awake");
+        
         if (m != null) {
             AgentWithManipulator a = controlledAgents.get(m.getAgentRecepient());
             Message newM = a.a.setCurrentMessage(m.getData());
@@ -82,20 +88,26 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
             }
 
             if (a.a.isFinished()) {
-                controlledAgents.remove(a.a.getId());
 
-                if (controlledAgents.isEmpty()) {
-                    terminate();
-                    return;
-                }
+                removeControlledAgent(a);
+                return;
             }
-            
+
             if (messageQueue.isEmpty()) {
+//                System.out.println("Agent :" + pid() + " Is going to sleep");
                 sleep();
             }
 
         } else {
+//            System.out.println("Agent :" + pid() + " Is going to sleep");
             sleep();
+        }
+    }
+
+    protected void removeControlledAgent(AgentWithManipulator a) {
+        controlledAgents.remove(a.a.getId());
+        if (controlledAgents.isEmpty()) {
+            terminate();
         }
     }
 
@@ -137,10 +149,10 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 
     protected abstract void initializeAgent(Agent agent, AgentManipulator manipulator, int aId);
 
-    private static class AgentWithManipulator {
+    protected static class AgentWithManipulator {
 
-        Agent a;
-        AgentManipulator am;
+        public Agent a;
+        public AgentManipulator am;
 
         public AgentWithManipulator(Agent a, AgentManipulator am) {
             this.a = a;

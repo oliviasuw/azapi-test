@@ -36,8 +36,6 @@ import java.util.concurrent.Executors;
 @Register("experiment")
 public class CPExperiment implements Experiment {
 
-    private static final int ADAPTIVE_AVERAGE_AMOUNT = 3;
-
     private ProblemGenerator pgen;
     private final List<AlgorithmDef> algorithms = new LinkedList<>();
     private Looper looper = new SingleExecutionLooper();
@@ -80,14 +78,10 @@ public class CPExperiment implements Experiment {
         final ExecutorService pool = Executors.newFixedThreadPool(numCores);
         Scheduler scheduler = new MultithreadedScheduler(pool);
 
-        int[] adaptiveNumberOfCores = new int[algorithms.size()];
-        double[] lastContentionsAverages = new double[algorithms.size()];
-        double[][] lastContentions = new double[algorithms.size()][ADAPTIVE_AVERAGE_AMOUNT];
-        boolean[] stabilized = new boolean[algorithms.size()];
-        for (int i = 0; i < adaptiveNumberOfCores.length; i++) {
-            adaptiveNumberOfCores[i] = numCores;
-            stabilized[i] = false;
-            lastContentionsAverages[i] = 1;
+        RuntimeCoreAdapter[] coreAdapters = new RuntimeCoreAdapter[algorithms.size()];
+
+        for (int i = 0; i < coreAdapters.length; i++) {
+            coreAdapters[i] = new NaiveRuntimeCoreAdapter();
         }
 
         if (getProblemGenerator() == null) {
@@ -123,23 +117,10 @@ public class CPExperiment implements Experiment {
                 int numAlgo = 0;
                 for (AlgorithmDef adef : algorithms) {
                     AgentSpawner spawner = new SimpleAgentSpawner(RegisteryUtils.getDefaultRegistery().getRegisteredClassByName("ALGORITHM." + adef.getName()));
-                    CPExecution exec = new CPExecution(scheduler, spawner, p, adaptiveNumberOfCores[numAlgo]);
-                    System.out.println("Start Running Problem on " + adaptiveNumberOfCores[numAlgo] + " cores");
+                    CPExecution exec = new CPExecution(scheduler, spawner, p, coreAdapters[numAlgo].getAdaptedNumberOfCores());
+                    System.out.println("Start Running Problem on " + coreAdapters[numAlgo].getAdaptedNumberOfCores() + " cores");
                     TerminationReason result = exec.execute();
-
-                    if (!stabilized[numAlgo]) {
-                        if (i % ADAPTIVE_AVERAGE_AMOUNT == 0 && i != 0) {
-                            Integer cpus = adaptNumberOfCores(i, lastContentionsAverages[numAlgo], adaptiveNumberOfCores[numAlgo], lastContentions[numAlgo], scheduler);
-                            if (cpus == null) {
-                                stabilized[numAlgo] = true;
-                            } else {
-                                adaptiveNumberOfCores[numAlgo] = cpus;
-                                final Double avg = calculateAvg(lastContentions[numAlgo]);
-                                lastContentionsAverages[numAlgo] = avg == null ? lastContentionsAverages[numAlgo] : avg;
-                            }
-                        }
-                        lastContentions[numAlgo][i % ADAPTIVE_AVERAGE_AMOUNT] = scheduler.getContention();
-                    }
+                    coreAdapters[numAlgo].update(i, scheduler);
 
                     if (result.isError()) {
                         result.getErrorDescription().printStackTrace();
@@ -157,54 +138,81 @@ public class CPExperiment implements Experiment {
         }
     }
 
-    /**
-     *
-     * @param round
-     * @param lastAvg
-     * @param adaptedCPUCount
-     * @param lastContentions
-     * @param scheduler
-     * @return the updated amount of CPUs or -1 if adaptation is stabilized
-     */
-    private Integer adaptNumberOfCores(int round, double lastAvg, int adaptedCPUCount, double[] lastContentions, Scheduler scheduler) {
-        if (round % ADAPTIVE_AVERAGE_AMOUNT == 0 && round != 0) {
-            Double avg = calculateAvg(lastContentions);
-
-            if (avg != null) {
-                if (avg < lastAvg) {
-                    adaptedCPUCount--;
-                    if (adaptedCPUCount == 0) {
-                        return null;
-                    }
-                } else {
-                    return null;
-                }
-            }
-        }
-
-        return adaptedCPUCount;
-    }
-
-    /**
-     * @param arr
-     * @return calculates the average of non-zero elements in a given array. if
-     * all elements in array are zero, returns null
-     */
-    private Double calculateAvg(double[] arr) {
-        double avg = 0;
-        int nonZero = 0;
-        for (int i = 0; i < arr.length; i++) {
-            avg += arr[i];
-            if (arr[i] != 0) {
-                nonZero++;
-            }
-        }
-        return nonZero == 0 ? null : avg / nonZero;
-    }
-
     @Override
     public String toString() {
         return "DCRExperiment{" + "pgen=" + pgen + ", algorithms=" + algorithms + ", looper=" + looper + '}';
+    }
+
+    private static interface RuntimeCoreAdapter {
+
+        public static final int ADAPTIVE_AVERAGE_AMOUNT = 3;
+
+        void update(int round, Scheduler scheduler);
+
+        int getAdaptedNumberOfCores();
+    }
+
+    private static class NaiveRuntimeCoreAdapter implements RuntimeCoreAdapter {
+
+        private int adaptedNumberOfCores;
+        private double lastContentionAverage;
+        private final double[] lastContentions;
+        private boolean isStabilized;
+
+        public NaiveRuntimeCoreAdapter() {
+            adaptedNumberOfCores = Runtime.getRuntime().availableProcessors();
+            lastContentionAverage = 1;
+            lastContentions = new double[ADAPTIVE_AVERAGE_AMOUNT];
+            isStabilized = false;
+        }
+
+        @Override
+        public void update(int round, Scheduler scheduler) {
+            if (isStabilized) {
+                return;
+            }
+
+            if (round % ADAPTIVE_AVERAGE_AMOUNT == 0 && round != 0) {
+                Double avg = calculateAvg(lastContentions);
+
+                if (avg != null) {
+                    if (avg < lastContentionAverage) {
+                        adaptedNumberOfCores--;
+                        if (adaptedNumberOfCores == 1) {
+                            isStabilized = true;
+                        }
+                    }
+
+                    lastContentionAverage = Math.min(lastContentionAverage, avg);
+                }
+
+            }
+
+            lastContentions[round % ADAPTIVE_AVERAGE_AMOUNT] = scheduler.getContention();
+        }
+
+        @Override
+        public int getAdaptedNumberOfCores() {
+            return adaptedNumberOfCores;
+        }
+
+        /**
+         * @param arr
+         * @return the average of non-zero elements in a given array. if all
+         * elements in array are zero, returns null
+         */
+        private Double calculateAvg(double[] arr) {
+            double avg = 0;
+            int nonZero = 0;
+            for (int i = 0; i < arr.length; i++) {
+                if (arr[i] != 0) {
+                    avg += arr[i];
+                    nonZero++;
+                }
+            }
+            return nonZero == 0 ? null : avg / nonZero;
+        }
+
     }
 
 }

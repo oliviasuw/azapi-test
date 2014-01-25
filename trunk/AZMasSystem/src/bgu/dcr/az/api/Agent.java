@@ -534,7 +534,7 @@ public abstract class Agent extends Agt0DSL {
     }
 
     /**
-     * this is a wrap on the given problem - each agent posess a wrap like this
+     * this is a wrap on the given problem - each agent poses a wrap like this
      * instead of the actual problem
      */
     public class AgentProblem implements ImmutableProblem {

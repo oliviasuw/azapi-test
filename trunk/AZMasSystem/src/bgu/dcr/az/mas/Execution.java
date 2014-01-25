@@ -5,7 +5,6 @@
  */
 package bgu.dcr.az.mas;
 
-import bgu.dcr.az.execs.api.ProcTable;
 import bgu.dcr.az.execs.api.TerminationReason;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import bgu.dcr.az.mas.impl.InitializationException;

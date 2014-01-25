@@ -2,6 +2,6 @@
 <experiment>
     <for-loop repeat-count="50" start="0.1" end="0.1" tick-size="0.1" run-var="p1"/>
     
-    <dcsp-unstructured n="12" d="5" p2="0.64"/>        
+    <mv-dcsp-unstructured n="12" a-n="5" d="5" p2="0.64"/>        
     <algorithm name="SBB"/>
 </experiment>

@@ -74,8 +74,18 @@ public class CPExperiment implements Experiment {
 
     @Override
     public void execute() throws ExperimentExecutionException, InterruptedException {
-        final ExecutorService pool = Executors.newFixedThreadPool(8);
-        Scheduler scheduler = new MultithreadedScheduler(pool, 4);
+        int numCores = Runtime.getRuntime().availableProcessors();
+        final ExecutorService pool = Executors.newFixedThreadPool(numCores);
+        Scheduler scheduler = new MultithreadedScheduler(pool);
+
+        int[] adaptiveNumberOfCores = new int[algorithms.size()];
+        double[] lastContentions = new double[algorithms.size()];
+        boolean[] stabilized = new boolean[algorithms.size()];
+        for (int i = 0; i < adaptiveNumberOfCores.length; i++) {
+            adaptiveNumberOfCores[i] = numCores;
+            lastContentions[i] = 1;
+            stabilized[i] = false;
+        }
 
         if (getProblemGenerator() == null) {
             throw new ExperimentExecutionException("No problem generator is defined");
@@ -90,9 +100,9 @@ public class CPExperiment implements Experiment {
         };
 
         try {
-            
+
             Random seedGenerator = new Random(10);
-            
+
             List<Configuration> configurationOfElements = new ArrayList<>(configurableElements.length);
             for (Object o : configurableElements) {
                 configurationOfElements.add(ConfigurationUtils.createConfigurationFor(o));
@@ -107,17 +117,32 @@ public class CPExperiment implements Experiment {
                 System.out.println("Start Generating Problem");
                 Problem p = new Problem();
                 pgen.generate(p, new Random(seedGenerator.nextLong()));
+                int numAlgo = 0;
                 for (AlgorithmDef adef : algorithms) {
                     AgentSpawner spawner = new SimpleAgentSpawner(RegisteryUtils.getDefaultRegistery().getRegisteredClassByName("ALGORITHM." + adef.getName()));
-                    CPExecution exec = new CPExecution(scheduler, spawner, p);
-                    System.out.println("Start Running Problem");
+                    CPExecution exec = new CPExecution(scheduler, spawner, p, adaptiveNumberOfCores[numAlgo]);
+                    System.out.println("Start Running Problem on " + adaptiveNumberOfCores[numAlgo] + " cores");
                     TerminationReason result = exec.execute();
+
+                    if (!stabilized[numAlgo]) {
+                        if (lastContentions[numAlgo] > scheduler.getContention()) {
+                            adaptiveNumberOfCores[numAlgo]--;
+                            if (adaptiveNumberOfCores[numAlgo] == 1) {
+                                stabilized[numAlgo] = true;
+                            }
+                        } else {
+                            stabilized[numAlgo] = true;
+                        }
+                        lastContentions[numAlgo] = scheduler.getContention();
+                    }
+
                     if (result.isError()) {
                         result.getErrorDescription().printStackTrace();
                         return;
                     } else {
                         System.out.println("execution " + i + " done: " + exec.getSolution());
                     }
+                    numAlgo++;
                 }
             }
         } catch (ClassNotFoundException | ConfigurationException ex) {

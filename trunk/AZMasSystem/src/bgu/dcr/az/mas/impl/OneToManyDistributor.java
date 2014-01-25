@@ -71,6 +71,7 @@ public class OneToManyDistributor implements AgentDistributer {
      */
     @Override
     public void initialize(Execution ex) throws InitializationException {
+//        System.out.println("Checking distribution correctness");
         Set<Integer> variables = new HashSet<>();
 
         for (int i = 0; i < controlledVars.length; i++) {
@@ -90,6 +91,12 @@ public class OneToManyDistributor implements AgentDistributer {
 
         if (variables.size() != numberOfVars) {
             throw new InitializationException("Every variable must be controlled by an agent");
+        }
+        
+        for (int i = 0; i < numberOfVars; i++) {
+            if (!variables.contains(i)) {
+                throw new InitializationException("Every variable must be controlled by an agent");
+            }
         }
     }
 

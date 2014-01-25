@@ -16,11 +16,13 @@ import java.util.Random;
  *
  * @author bennyl
  */
-@Register("dcsp-unstructured")
-public class UnstructuredDCSPGen extends AbstractProblemGenerator {
+@Register("mv-dcsp-unstructured")
+public class MultiVarUnstructuredDCSPGen extends AbstractProblemGenerator {
 
     @Variable(name = "n", description = "number of variables", defaultValue = "2")
     public int n = 2;
+    @Variable(name = "a-n", description = "number of variables per agent", defaultValue = "2")
+    public int a_n = 2;
     @Variable(name = "d", description = "domain size", defaultValue = "2")
     public int d = 2;
     @Variable(name = "p1", description = "probablity of constraint between two variables", defaultValue = "0.6")
@@ -37,13 +39,24 @@ public class UnstructuredDCSPGen extends AbstractProblemGenerator {
 
     @Override
     public void generate(Problem p, Random rand) {
-        p.initialize(ProblemType.DCSP, n, new ImmutableSet<Integer>(Agt0DSL.range(0, d - 1)));
+        int numberOfAgents = n / a_n;
+        numberOfAgents = n % a_n == 0 ? numberOfAgents : numberOfAgents + 1;
+
+        p.initialize(ProblemType.DCSP, n, new ImmutableSet<>(Agt0DSL.range(0, d - 1)), numberOfAgents);
         for (int i = 0; i < p.getNumberOfVariables(); i++) {
             for (int j = 0; j < p.getNumberOfVariables(); j++) {
                 if (rand.nextDouble() < p1) {
                     buildConstraint(i, j, p, true, rand, p2);
                 }
             }
+        }
+
+        for (int i = 0; i < numberOfAgents; i++) {
+            int[] controlledVars = new int[(i + 1) * a_n > n ? n % a_n : a_n];
+            for (int j = 0; j < controlledVars.length; j++) {
+                controlledVars[j] = a_n * i + j;
+            }
+            p.setVariablesOwnedByAgent(i, controlledVars);
         }
     }
 

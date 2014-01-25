@@ -3,6 +3,7 @@ package bgu.dcr.az.anop.reg;
 import bgu.dcr.az.anop.alg.Algorithm;
 import bgu.dcr.az.anop.reg.impl.Registration;
 import bgu.dcr.az.anop.conf.JavaDocInfo;
+import bgu.dcr.az.anop.conf.Variable;
 import bgu.dcr.az.anop.utils.CodeUtils;
 import bgu.dcr.az.anop.utils.JavaDocParser;
 import bgu.dcr.az.anop.utils.ProcessorUtils;
@@ -19,8 +20,11 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import org.mvel2.ParserContext;
@@ -40,6 +44,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
 
     public static final String AUTOGEN_PACKAGE = "bgu.dcr.autogen";
     public static final String REGISTRATION_AUTOGEN_PACKAGE = "bgu.dcr.autogen.registry";
+
     private Messager msg;
 
     private static CompiledTemplate registrationTemplate;
@@ -106,6 +111,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         ctx.put("escapedJavadoc", StringUtils.escapedString(ProcessorUtils.extractJavadoc(te)));
         ctx.put("extension", null);
         ctx.put("extensionConfiurationClass", null);
+        ctx.put("haveVariables", haveVariables(te));
 
         TypeMirror parent = te.getSuperclass();
         final Element parentTypeElement = ProcessorUtils.toDeclaredType(parent).asElement();
@@ -154,6 +160,19 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
 
     public void note(String note) {
         msg.printMessage(Diagnostic.Kind.NOTE, note);
+    }
+
+    private static boolean haveVariables(TypeElement te) {
+        for (Element e : te.getEnclosedElements()) {
+            if (e.getKind() == ElementKind.FIELD) {
+                VariableElement ve = (VariableElement) e;
+                if (ve.getAnnotation(Variable.class) != null) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public static void registerClass(String classFQN, String registration) {

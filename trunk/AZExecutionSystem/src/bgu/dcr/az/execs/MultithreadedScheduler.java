@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -33,25 +32,24 @@ public class MultithreadedScheduler implements Scheduler {
     private ProcTable table;
     private SystemCalls systemCalls;
     private final ExecutorService execs;
-    private final int numCores;
+    private int numCores;
     private boolean allowIdle = true;
     private volatile Core failingCore = null;
 
-    //optimization for asynchronized idle resolvation
-    private final AtomicInteger numberOfIdleDetectors = new AtomicInteger(0);
-    private final Semaphore resumeLock = new Semaphore(0);
-    private final Semaphore detectionLeaveLock = new Semaphore(0);
-
+//    //optimization for asynchronized idle resolvation
+//    private final AtomicInteger numberOfIdleDetectors = new AtomicInteger(0);
+//    private final Semaphore resumeLock = new Semaphore(0);
+//    private final Semaphore detectionLeaveLock = new Semaphore(0);
     //better optimization for asynchronized idle resolvation
     private final AtomicBoolean firstToDetectIdle = new AtomicBoolean(true);
     private final AtomicInteger numberOfIdleReolversLeft = new AtomicInteger(0);
 
-    boolean fastDetectionMode = true;
-
     //for debugging
     volatile int tick = 0;
 
-    public MultithreadedScheduler(ExecutorService execs, int numCores) {
+    private double lastContention = 0;
+
+    public MultithreadedScheduler(ExecutorService execs) {
         this.execs = execs;
         this.numCores = numCores;
     }
@@ -73,7 +71,8 @@ public class MultithreadedScheduler implements Scheduler {
     }
 
     @Override
-    public TerminationReason schedule(ProcTable table) throws InterruptedException {
+    public TerminationReason schedule(ProcTable table, int numCores) throws InterruptedException {
+        this.numCores = numCores;
         this.table = table;
         cores = new Core[numCores];
         systemCalls = new SystemCallsImpl();
@@ -82,7 +81,16 @@ public class MultithreadedScheduler implements Scheduler {
             cores[i] = new Core(i);
         }
 
+        long timer = System.currentTimeMillis();
+
         executeAndWait(cores);
+
+        timer = System.currentTimeMillis() - timer;
+        long totalWaitingTime = 0;
+        for (Core c : cores) {
+            totalWaitingTime += c.getWaitingTime();
+        }
+        lastContention = ((double) totalWaitingTime) / ((double) (timer * numCores));
 
         if (failingCore != null) {
             return new TerminationReason(true, failingCore.exitError, failingCore.misbihavingProcess);
@@ -91,6 +99,11 @@ public class MultithreadedScheduler implements Scheduler {
         }
 
         return new TerminationReason(true, new UnexpectedTerminationException(), null);
+    }
+
+    @Override
+    public double getContention() {
+        return lastContention;
     }
 
     private void executeAndWait(Core[] cores) throws InterruptedException {
@@ -132,18 +145,26 @@ public class MultithreadedScheduler implements Scheduler {
         Proc misbihavingProcess = null;
         Thread currentThread;
         int coreId;
+        long waitingTime;
 
         public Core(int coreId) {
             this.coreId = coreId;
         }
 
+        public long getWaitingTime() {
+            return waitingTime;
+        }
+
         @Override
         public void run() {
+            waitingTime = 0;
             currentThread = Thread.currentThread();
             Proc proc = null;
             try {
                 while (!currentThread.isInterrupted()) {
+                    long time = System.currentTimeMillis();
                     proc = table.acquire();
+                    waitingTime += System.currentTimeMillis() - time;
                     if (proc != null) {
                         proc.quota(systemCalls, false);
                         table.release(proc.pid());
@@ -172,23 +193,23 @@ public class MultithreadedScheduler implements Scheduler {
 
             //atempt to perform resume all - but only if you are the last to detect idle
             int detectorNumber = 0;
-            if (fastDetectionMode) {
-                if (firstToDetectIdle.compareAndSet(true, false)) {
+//            if (fastDetectionMode) {
+            if (firstToDetectIdle.compareAndSet(true, false)) {
                 System.out.println("Resolve Idle " + (tick++));
-                    table.resumeAll();
-                    numberOfIdleReolversLeft.set(numCores);
-                }
-            } else {
-                detectorNumber = numberOfIdleDetectors.incrementAndGet();
-                if (detectorNumber == numCores) {
-//                    System.out.println("Resolve Idle " + (tick++));
-                    table.resumeAll();
-                    resumeLock.release(numCores - 1);
-                } else {
-                    resumeLock.acquire();
-                }
-
+                table.resumeAll();
+                numberOfIdleReolversLeft.set(numCores);
             }
+//            } else {
+//                detectorNumber = numberOfIdleDetectors.incrementAndGet();
+//                if (detectorNumber == numCores) {
+////                    System.out.println("Resolve Idle " + (tick++));
+//                    table.resumeAll();
+//                    resumeLock.release(numCores - 1);
+//                } else {
+//                    resumeLock.acquire();
+//                }
+//
+//            }
             Proc proc = null;
             List<Proc> takenProcesses = new LinkedList<>();
 
@@ -197,24 +218,24 @@ public class MultithreadedScheduler implements Scheduler {
                     takenProcesses.add(proc);
                     proc.quota(systemCalls, true);
                 }
-            }  finally {
+            } finally {
                 for (Proc t : takenProcesses) {
                     table.release(t.pid());
                 }
 
-                if (fastDetectionMode) {
+//                if (fastDetectionMode) {
                     //attempt to leave the idle detection process - but only if the last detector has entered
                     if (numberOfIdleReolversLeft.decrementAndGet() == 0) {
                         firstToDetectIdle.set(true);
                     }
-                } else {
-                    if (detectorNumber == numCores) {
-                        numberOfIdleDetectors.set(0);
-                        detectionLeaveLock.release(numCores - 1);
-                    } else {
-                        detectionLeaveLock.acquire();
-                    }
-                }
+//                } else {
+//                    if (detectorNumber == numCores) {
+//                        numberOfIdleDetectors.set(0);
+//                        detectionLeaveLock.release(numCores - 1);
+//                    } else {
+//                        detectionLeaveLock.acquire();
+//                    }
+//                }
 
             }
         }

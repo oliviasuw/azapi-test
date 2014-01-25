@@ -136,7 +136,7 @@ public class Problem implements ImmutableProblem {
             this.domain = ImmutableSetOfIntegers.arrayOf(domain);
             this.numagents = numberOfAgents;
             this.type = type;
-            this.constraints = type.newConstraintPackage(numagents, domain.get(0).size());
+            this.constraints = type.newConstraintPackage(domain.size(), domain.get(0).size());
             this.distributer = new OneToManyDistributor(numagents, domain.size());
         } else {
             throw new RuntimeException("The amount of agents must be less/equal than the amount of variables");

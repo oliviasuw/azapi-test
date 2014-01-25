@@ -30,9 +30,6 @@ public abstract class AbstractConfiguration implements Configuration {
     protected VisualData vdata;
     protected JavaDocInfo javadoc;
 
-    public AbstractConfiguration() {
-        scanVariables();
-    }
 
     @Override
     public Collection<Property> properties() {
@@ -68,12 +65,14 @@ public abstract class AbstractConfiguration implements Configuration {
         return javadoc;
     }
 
-    private void scanVariables() {
-        for (Field f : this.getClass().getDeclaredFields()) {
+    protected void scanVariables() {
+//        System.out.println("scanning variables");
+        for (Field f : typeInfo().getType().getDeclaredFields()) {
             f.setAccessible(true);
             final Variable ano = f.getAnnotation(Variable.class);
             if (ano != null) {
                 Property p = new VariablePropertyImpl(ano.name(), this, f);
+//                System.out.println("found variable property: " + ano.name());
                 properties.put(ano.name(), p);
             }
         }

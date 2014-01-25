@@ -38,22 +38,20 @@ public class ThreadSafeProcTable implements ProcTable {
 
     @Override
     public Proc acquire() throws InterruptedException {
-//        long time = System.currentTimeMillis();
-//        try {
         attemptProcessResume();
 
         while (true) {
             estimatedWaitingCores.incrementAndGet();
 
-//            System.out.println("Core found " + totalNumberOfProcesses.get());
             if (isInIdleState() || isEmpty()) {
                 pendingProcesses.add(currentIdleSignal); //to release the next agent
                 return null;
             }
 
+//            System.out.println("Acquire with: " + blockingProcesses.get() + " Blocked / " + totalNumberOfProcesses.get());
             ProcessInfo next = pendingProcesses.take();
             estimatedWaitingCores.decrementAndGet();
-            if (handleSpecialSignals(next)) {
+            if (isIdleSignal(next)) {
                 continue;
             }
 
@@ -61,14 +59,13 @@ public class ThreadSafeProcTable implements ProcTable {
             if (mine && next.process.state() != ProcState.TERMINATED) {
                 next.signaled.set(false);
                 return next.process;
+            } else {
+                System.out.println("Found process " + next.process.pid() + " But it is not mine");
             }
         }
-//        } finally {
-//            System.out.println("Thread Took new process within " + (System.currentTimeMillis() - time) + " Milliseconds.");
-//        }
     }
 
-    private boolean handleSpecialSignals(ProcessInfo next) {
+    private boolean isIdleSignal(ProcessInfo next) {
         if (next == currentIdleSignal) {
             return true;
         }
@@ -108,7 +105,7 @@ public class ThreadSafeProcTable implements ProcTable {
 
             ProcessInfo next = pendingProcesses.poll();
 
-            if (handleSpecialSignals(next)) {
+            if (isIdleSignal(next)) {
                 continue;
             }
 
@@ -119,11 +116,22 @@ public class ThreadSafeProcTable implements ProcTable {
                     next.signaled.set(false);
                     return next.process;
                 } else {
-                    System.out.println("Found one!");
+//                    System.out.println("Found one!");
                 }
             } else {
                 return null;
             }
+        }
+    }
+
+    private void wake(ProcessInfo procInfo) {
+
+        if (procInfo.inQueue.compareAndSet(false, true)) {
+            procInfo.signaled.set(true);
+            blockingProcesses.decrementAndGet();
+            pendingProcesses.add(procInfo);
+        } else {
+            procInfo.signaled.set(true);
         }
     }
 
@@ -142,8 +150,8 @@ public class ThreadSafeProcTable implements ProcTable {
             case BLOCKING:
                 proc.inQueue.set(false);
 
-                if (proc.signaled.compareAndSet(true, false)) {
-                    proc.inQueue.set(true);
+                if (proc.signaled.compareAndSet(true, false) && proc.inQueue.compareAndSet(false, true)) {
+//                    proc.inQueue.set(true);
                     pendingProcesses.add(proc);
                 } else {
                     blockingProcesses.incrementAndGet();
@@ -172,17 +180,6 @@ public class ThreadSafeProcTable implements ProcTable {
         }
 
         return false;
-    }
-
-    private void wake(ProcessInfo procInfo) {
-        procInfo.signaled.set(true);
-        boolean needWake = procInfo.inQueue.compareAndSet(false, true);
-
-        if (needWake) {
-//            System.out.println("Waking " + procInfo.process.pid());
-            blockingProcesses.decrementAndGet();
-            pendingProcesses.add(procInfo);
-        }
     }
 
     @Override

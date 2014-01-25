@@ -6,7 +6,7 @@
 
 package bgu.dcr.az.mas.exp.temp;
 
-import bgu.dcr.az.anop.Register;
+import bgu.dcr.az.anop.reg.Register;
 import bgu.dcr.az.api.exen.mdef.ProblemGenerator;
 import bgu.dcr.az.api.prob.Problem;
 import java.util.Random;

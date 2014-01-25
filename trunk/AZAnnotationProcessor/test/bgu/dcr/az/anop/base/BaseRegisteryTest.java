@@ -5,7 +5,8 @@
  */
 package bgu.dcr.az.anop.base;
 
-import bgu.dcr.az.anop.Register;
+import bgu.dcr.az.anop.reg.impl.RegisteryImpl;
+import bgu.dcr.az.anop.reg.Register;
 import java.util.Collection;
 import org.junit.Test;
 import static org.junit.Assert.*;

@@ -54,6 +54,11 @@ public interface AgentController extends Proc{
      */
     void log(int agentId, String msg);
 
+    /**
+     * 
+     * @return 
+     */
     int getControllerId();
+    
 
 }

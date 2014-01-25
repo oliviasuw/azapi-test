@@ -7,7 +7,7 @@ package bgu.dcr.az.mas.exp;
 
 import bgu.dcr.az.mas.cp.CPExperiment;
 import bgu.dcr.az.anop.conf.Configuration;
-import bgu.dcr.az.anop.utils.ConfigurationUtils;
+import bgu.dcr.az.anop.conf.ConfigurationUtils;
 import nu.xom.Builder;
 import nu.xom.Document;
 import org.junit.Test;

@@ -29,11 +29,11 @@ public class OneToManyDistributor implements AgentDistributer {
             for (int i = 0; i < controlledVars.length; i++) {
                 controlledVars[i] = new int[]{i};
             }
-        } 
+        }
     }
 
     /**
-     * 
+     *
      * @param controllerId
      * @return returns the set of variables owned by a given agent
      */
@@ -43,12 +43,13 @@ public class OneToManyDistributor implements AgentDistributer {
     }
 
     /**
-     * Changes the allocation of variables to the agents. After performing
-     * this operation the agent with given id will own given set of variables.
-     * IndexOutOfBoundsException exception will be thrown in the case that illegal
-     * agent id provided (agent id is grater/equal to number of agents).
+     * Changes the allocation of variables to the agents. After performing this
+     * operation the agent with given id will own given set of variables.
+     * IndexOutOfBoundsException exception will be thrown in the case that
+     * illegal agent id provided (agent id is grater/equal to number of agents).
+     *
      * @param agentId
-     * @param variableIds 
+     * @param variableIds
      */
     public void assignVariablesToAgent(int agentId, int... variableIds) {
         if (agentId >= numberOfAgents) {
@@ -59,14 +60,14 @@ public class OneToManyDistributor implements AgentDistributer {
 
     /**
      * Must be called after all variable to agent allocations are performed.
-     * Will ensure the legal allocation: 
-     *      -every agents owns at least one variable
-     *      -every variable must be owned by a single agent
-     *      -every variable must be owned by an agent
-     * In the case that current variables allocation does not meet the legality
-     * criteria InitializationException exception will be thrown.
+     * Will ensure the legal allocation: -every agents owns at least one
+     * variable -every variable must be owned by a single agent -every variable
+     * must be owned by an agent In the case that current variables allocation
+     * does not meet the legality criteria InitializationException exception
+     * will be thrown.
+     *
      * @param ex
-     * @throws InitializationException 
+     * @throws InitializationException
      */
     @Override
     public void initialize(Execution ex) throws InitializationException {
@@ -86,9 +87,19 @@ public class OneToManyDistributor implements AgentDistributer {
                 variables.add(controlledVars[i][j]);
             }
         }
-        
+
         if (variables.size() != numberOfVars) {
             throw new InitializationException("Every variable must be controlled by an agent");
         }
+    }
+
+    @Override
+    public int getNumberOfAgents() {
+        return numberOfVars;
+    }
+
+    @Override
+    public int getNumberOfAgentControllers() {
+        return numberOfAgents;
     }
 }

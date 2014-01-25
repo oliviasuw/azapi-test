@@ -5,26 +5,60 @@
  */
 package bgu.dcr.az.mas.cp;
 
+import bgu.dcr.az.anop.algo.AgentManipulator;
+import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.api.Agent;
+import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.api.tools.Assignment;
-import bgu.dcr.az.mas.AgentController;
+import bgu.dcr.az.mas.impl.BaseAgentController;
+import bgu.dcr.az.mas.impl.InitializationException;
 
 /**
  *
  * @author User
  */
-public interface CPAgentController extends AgentController {
+public class CPAgentController extends BaseAgentController {
 
-    Problem getGlobalProblem();
+    private final CPExecution execution;
 
-    void report(String who, Agent a, Object[] data); //should be replaced with a better approach
+    public CPAgentController(int id, CPExecution ex) throws ClassNotFoundException, ConfigurationException, InitializationException {
+        super(id, ex);
 
-    void assign(int id, int value);
+        this.execution = ex;
+    }
 
-    void unassign(int id);
-    
-    Integer getAssignment(int id);
-    
-    void assignAll(Assignment a);
+    public Problem getGlobalProblem() {
+        return execution.getGlobalProblem();
+    }
+
+    public void report(String who, Agent a, Object[] data) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void assign(int id, int value) {
+        execution.getSolution().assign(id, value);
+    }
+
+    public void unassign(int id) {
+        execution.getSolution().unassign(id);
+    }
+
+    public Integer getAssignment(int id) {
+        Integer result = execution.getSolution().assignmentOf(id);
+        if (result == null) {
+            Agt0DSL.panic("attempting to get assignment when no such exists ( agent: " + id + ")");
+        }
+
+        return result;
+    }
+
+    public void assignAll(Assignment a) {
+        execution.getSolution().assignAll(a);
+    }
+
+    @Override
+    protected void initializeAgent(Agent agent, AgentManipulator manipulator, int aId) {
+        Agent.PlatformOperationsExtractor.extract(agent).initialize(aId, this);
+    }
 }

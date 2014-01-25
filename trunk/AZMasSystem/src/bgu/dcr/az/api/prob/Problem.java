@@ -37,6 +37,10 @@ public class Problem implements ImmutableProblem {
         return distributer.getControlledAgentsIds(agentId);
     }
 
+    public OneToManyDistributor getAgentDistributer() {
+        return distributer;
+    }
+    
     /**
      * Changes current allocation of variables to agents. After performing this
      * operation the agent with given id will own a given set of variables. In
@@ -242,7 +246,7 @@ public class Problem implements ImmutableProblem {
 
     @Override
     public int calculateCost(Assignment a) {
-        throw new UnsupportedOperationException("Not supported when not accessed from inside of an agent code - please use getGlobalCost");
+        throw new UnsupportedOperationException("Not supported when not accessed from inside of an agent code - please use calculateGlobalCost");
     }
 
     /**

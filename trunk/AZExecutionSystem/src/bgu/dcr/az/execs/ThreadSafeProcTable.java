@@ -38,6 +38,8 @@ public class ThreadSafeProcTable implements ProcTable {
 
     @Override
     public Proc acquire() throws InterruptedException {
+//        long time = System.currentTimeMillis();
+//        try {
         attemptProcessResume();
 
         while (true) {
@@ -61,7 +63,9 @@ public class ThreadSafeProcTable implements ProcTable {
                 return next.process;
             }
         }
-
+//        } finally {
+//            System.out.println("Thread Took new process within " + (System.currentTimeMillis() - time) + " Milliseconds.");
+//        }
     }
 
     private boolean handleSpecialSignals(ProcessInfo next) {
@@ -161,7 +165,6 @@ public class ThreadSafeProcTable implements ProcTable {
 
     @Override
     public boolean wake(int pid) {
-//        System.out.println("signaling " + pid);
         ProcessInfo procInfo = retreiveProcessInfo(pid);
         if (procInfo != null && procInfo.process.state() != ProcState.TERMINATED) {
             wake(procInfo);

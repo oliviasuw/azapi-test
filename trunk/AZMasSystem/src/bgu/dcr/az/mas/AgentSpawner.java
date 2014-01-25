@@ -9,7 +9,7 @@ package bgu.dcr.az.mas;
  *
  * @author User
  */
-public interface AgentSpawner {
+public interface AgentSpawner extends ExecutionService{
 
     Class getAgentType(int id);
 }

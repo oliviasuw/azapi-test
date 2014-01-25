@@ -125,13 +125,10 @@ public class ThreadSafeProcTable implements ProcTable {
     }
 
     private void wake(ProcessInfo procInfo) {
-
+        procInfo.signaled.set(true);
         if (procInfo.inQueue.compareAndSet(false, true)) {
-            procInfo.signaled.set(true);
             blockingProcesses.decrementAndGet();
             pendingProcesses.add(procInfo);
-        } else {
-            procInfo.signaled.set(true);
         }
     }
 
@@ -148,19 +145,21 @@ public class ThreadSafeProcTable implements ProcTable {
                 pendingProcesses.add(proc);
                 break;
             case BLOCKING:
+
                 proc.inQueue.set(false);
 
                 if (proc.signaled.compareAndSet(true, false) && proc.inQueue.compareAndSet(false, true)) {
-//                    proc.inQueue.set(true);
                     pendingProcesses.add(proc);
                 } else {
                     blockingProcesses.incrementAndGet();
-//                    System.out.println("Process " + proc.process.pid() + " blocking");
+//                    System.out.println("Agent " + proc.process.pid() + " goes to sleep");
+                    if (isInIdleState()) {
+                        System.out.println("Idle detected after " + proc.process.pid() + " goes to sleep");
+                    }
                 }
 
                 break;
             case TERMINATED:
-//                System.out.println("process " + pid + " terminated");
                 totalNumberOfProcesses.decrementAndGet();
                 processInfos.remove(pid);
                 break;
@@ -177,8 +176,7 @@ public class ThreadSafeProcTable implements ProcTable {
         if (procInfo != null && procInfo.process.state() != ProcState.TERMINATED) {
             wake(procInfo);
             return true;
-        }
-
+        } 
         return false;
     }
 

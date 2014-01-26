@@ -17,7 +17,8 @@ import java.util.Queue;
  */
 public interface MessageRouter extends ExecutionService {
 
+    void register(AgentController controller, int... agentIds);
+
     void route(Message m, int agent);
 
-    Queue<AZIPMessage> getMessageQueue(int controllerId);
 }

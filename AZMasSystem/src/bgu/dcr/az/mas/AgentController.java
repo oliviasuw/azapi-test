@@ -60,5 +60,4 @@ public interface AgentController extends Proc{
      */
     int getControllerId();
     
-
 }

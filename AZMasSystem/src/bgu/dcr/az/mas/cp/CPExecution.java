@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.mas.cp;
 
+import bgu.dcr.az.mas.ExecutionEnvironment;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.execs.api.Scheduler;
@@ -26,8 +27,8 @@ public class CPExecution extends BaseExecution {
     private final Solution solution;
     private final Problem problem;
 
-    public CPExecution(Scheduler scheduler, AgentSpawner spawner, Problem problem, int numCores) {
-        super(scheduler, problem.getAgentDistributer(), spawner, numCores);
+    public CPExecution(Scheduler scheduler, AgentSpawner spawner, Problem problem, ExecutionEnvironment env, int numCores) {
+        super(scheduler, problem.getAgentDistributer(), spawner, env, numCores);
         
         this.problem = problem;
         this.solution = new Solution(problem);

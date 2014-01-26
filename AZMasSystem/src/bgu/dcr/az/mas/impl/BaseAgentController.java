@@ -17,6 +17,7 @@ import bgu.dcr.az.mas.AgentController;
 import bgu.dcr.az.mas.AgentDistributer;
 import bgu.dcr.az.mas.AgentSpawner;
 import bgu.dcr.az.mas.Execution;
+import bgu.dcr.az.mas.ExecutionEnvironment;
 import bgu.dcr.az.mas.MessageRouter;
 import bgu.dcr.az.mas.impl.ds.FastSingletonMap;
 import java.util.HashMap;
@@ -36,14 +37,27 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
     private int numAgents;
     private final Map<Integer, AgentWithManipulator> controlledAgents;
     private final Set<Integer> finishedAgents;
-    private final Queue<AZIPMessage> messageQueue;
+    private final Queue<AZIPMessage>[] messageQueue;
+    protected final Execution execution;
 
     private int tick;
 
     public BaseAgentController(int id, Execution ex) throws ClassNotFoundException, ConfigurationException, InitializationException {
         super(id);
+        this.execution = ex;
         this.router = ex.require(MessageRouter.class);
-        this.messageQueue = router.getMessageQueue(id);
+
+        switch (ex.getEnvironment()) {
+            case async:
+                this.messageQueue = new Queue[]{new ConcurrentLinkedQueue()};
+                break;
+            case sync:
+                this.messageQueue = new Queue[]{new ConcurrentLinkedQueue(), new ConcurrentLinkedQueue()};
+                break;
+            default:
+                throw new AssertionError(ex.getEnvironment().name());
+
+        }
 
         AgentDistributer distributor = ex.require(AgentDistributer.class);
         AgentSpawner spawner = ex.require(AgentSpawner.class);
@@ -56,7 +70,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
         } else {
             controlledAgents = new HashMap<>();
         }
-        
+
         finishedAgents = new HashSet<>();
 
         for (int aId : controlled) {
@@ -66,6 +80,9 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
             AgentWithManipulator awm = new AgentWithManipulator(agent, manipulator);
             controlledAgents.put(aId, awm);
         }
+
+        router.register(this, controlled);
+        this.tick = 0;
     }
 
     protected Map<Integer, AgentWithManipulator> getControlledAgents() {
@@ -80,11 +97,38 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
     }
 
     @Override
+    protected final void onIdleDetected() {
+        switch (execution.getEnvironment()) {
+            case async:
+                handleIdle();
+                break;
+            case sync:
+                beforeNextTick();
+                tick++;
+                break;
+            default:
+                throw new AssertionError(execution.getEnvironment().name());
+
+        }
+
+        if (!currentMessageQueue().isEmpty()) {
+//            System.out.println("Agent " + pid() + " found message in its queue");
+            wakeup(pid());
+        }else {
+            sleep();
+        }
+    }
+
+    protected abstract void handleIdle();
+
+    protected abstract void beforeNextTick();
+
+    @Override
     protected void quota() {
+        final Queue<AZIPMessage> mq = currentMessageQueue();
 
-        AZIPMessage m = messageQueue.poll();
+        AZIPMessage m = mq.poll();
 
-//        System.out.println("Agent :" + pid() + " Is Awake");
         if (m != null) {
             AgentWithManipulator a = controlledAgents.get(m.getAgentRecepient());
             if (a == null) {
@@ -104,15 +148,21 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
                 return;
             }
 
-            if (messageQueue.isEmpty()) {
-//                System.out.println("Agent :" + pid() + " Is going to sleep");
+            if (mq.isEmpty()) {
                 sleep();
             }
 
         } else {
-//            System.out.println("Agent :" + pid() + " Is going to sleep");
             sleep();
         }
+    }
+
+    private Queue<AZIPMessage> currentMessageQueue() {
+        return messageQueue[tick % messageQueue.length];
+    }
+
+    private Queue<AZIPMessage> nextMessageQueue() {
+        return messageQueue[(tick + 1) % messageQueue.length];
     }
 
     protected void removeControlledAgent(AgentWithManipulator a) {
@@ -126,7 +176,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
     @Override
     public void send(Message m, int recepientAgent) {
         if (controlledAgents.containsKey(recepientAgent)) {
-            messageQueue.add(new AZIPMessage(m.copy(), pid(), recepientAgent));
+            nextMessageQueue().add(new AZIPMessage(m.copy(), pid(), recepientAgent));
         } else {
             router.route(m, recepientAgent);
         }
@@ -151,7 +201,10 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 
     @Override
     public void receive(AZIPMessage message) {
-        messageQueue.add(message);
+        nextMessageQueue().add(message);
+        if (execution.getEnvironment() == ExecutionEnvironment.async) {
+            wakeup(pid());
+        }
     }
 
     @Override

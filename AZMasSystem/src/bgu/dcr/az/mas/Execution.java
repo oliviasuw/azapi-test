@@ -23,4 +23,6 @@ public interface Execution {
 
     public TerminationReason execute() throws ExperimentExecutionException, InterruptedException;
     
+    public ExecutionEnvironment getEnvironment();
+    
 }

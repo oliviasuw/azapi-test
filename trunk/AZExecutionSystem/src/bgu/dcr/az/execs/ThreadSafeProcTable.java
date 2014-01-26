@@ -117,6 +117,7 @@ public class ThreadSafeProcTable implements ProcTable {
 
                 break;
             case TERMINATED:
+//                System.out.println("process " + pid + " terminated");
                 listeners.fire().onProcessRemoved(this, proc.process.pid());
                 totalNumberOfProcesses.decrementAndGet();
                 processInfos.remove(proc.process.pid());
@@ -134,7 +135,8 @@ public class ThreadSafeProcTable implements ProcTable {
         if (procInfo != null && procInfo.process.state() != ProcState.TERMINATED) {
             wake(procInfo);
             return true;
-        } 
+        }
+
         return false;
     }
 

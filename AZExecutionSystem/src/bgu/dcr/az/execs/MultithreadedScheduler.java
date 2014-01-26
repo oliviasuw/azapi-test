@@ -87,7 +87,7 @@ public class MultithreadedScheduler implements Scheduler {
         for (Core c : cores) {
             totalWaitingTime += c.getWaitingTime();
         }
-        lastContention = timer == 0 ? 0 : ((double) totalWaitingTime) / ((double) (timer * numCores));
+        lastContention = ((double) totalWaitingTime) / ((double) (timer * numCores));
 
         if (failingCore != null) {
             return new TerminationReason(true, failingCore.exitError, failingCore.misbihavingProcess);

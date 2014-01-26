@@ -1,5 +1,6 @@
 package bgu.dcr.az.execs.api;
 
+import bgu.dcr.az.anop.utils.EventListeners;
 import java.util.Collection;
 
 /**
@@ -28,17 +29,6 @@ public interface ProcTable {
     Proc acquire() throws InterruptedException;
 
     /**
-     * behave the same as {@link ProcTable#acquire()} but in the case where
-     * there are no available processes to acquire it will return null instead
-     * of blocking
-     *
-     * @see ProcTable#acquire()
-     * @return the same as {@link ProcTable#acquire()} but in the case where
-     * there are no available processes to acquire it will return null.
-     */
-    Proc acquireNonBlocking();
-
-    /**
      * release a process with the given pid, the core that attempt to release a
      * process should have this process acquired via the aquire method. when
      * releasing a process the process state is queried, and appropriate actions
@@ -60,15 +50,6 @@ public interface ProcTable {
      * false if the given process is already terminated or not started
      */
     boolean wake(int pid);
-
-    /**
-     * wake all the blocking processes - this method should be called only if
-     * the system is on idle state and it is assumed that the caller is not a
-     * process (or else we are not in an idle state)
-     *
-     * @see bgu.dcr.az.execs.api.ProcTable#wake(int) wake(int)
-     */
-    void resumeAll();
 
     /**
      * add a process to this ProcTable, note that the process id must be unique
@@ -101,7 +82,29 @@ public interface ProcTable {
     int nextProcessId();
 
     /**
-     * @return all the existing process ids in this table
+     * @return all the existing processes in this table
      */
-    Collection<Integer> allProcessIds();    
+    Collection<Integer> allProcessIds();
+
+    /**
+     * will loop all the processes that are blocking and give them to the
+     * resolver to attempt to change their status
+     *
+     * @param resolver
+     */
+    void startIdleDetectionResolving(IdleDetectionResolver resolver);
+
+    EventListeners<ProcTableListener> listeners();
+
+    public interface ProcTableListener {
+
+        void onProcessAdded(ProcTable source, Integer addedId);
+
+        void onProcessRemoved(ProcTable source, Integer removedId);
+    }
+
+    public interface IdleDetectionResolver {
+
+        void resolve(Proc p);
+    }
 }

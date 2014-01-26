@@ -5,17 +5,19 @@
  */
 package bgu.dcr.az.execs;
 
+import bgu.dcr.az.anop.utils.EventListeners;
 import bgu.dcr.az.execs.api.Proc;
 import bgu.dcr.az.execs.api.ProcState;
 import bgu.dcr.az.execs.api.ProcTable;
-import java.lang.ref.WeakReference;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -32,14 +34,15 @@ public class ThreadSafeProcTable implements ProcTable {
     private final ProcessInfo currentIdleSignal = new ProcessInfo(null);
     private final AtomicInteger estimatedWaitingCores = new AtomicInteger(0);
 
-    //fast resume optimization
-    private ConcurrentLinkedQueue<WeakReference<ProcessInfo>> resumeQueue = new ConcurrentLinkedQueue<>(),
-            nextResumeQueue = new ConcurrentLinkedQueue<>();
+    EventListeners<ProcTableListener> listeners = EventListeners.create(ProcTableListener.class);
+
+    @Override
+    public EventListeners<ProcTableListener> listeners() {
+        return listeners;
+    }
 
     @Override
     public Proc acquire() throws InterruptedException {
-        attemptProcessResume();
-
         while (true) {
             estimatedWaitingCores.incrementAndGet();
 
@@ -57,6 +60,7 @@ public class ThreadSafeProcTable implements ProcTable {
 
             boolean mine = next.acquired.compareAndSet(false, true);
             if (mine && next.process.state() != ProcState.TERMINATED) {
+//                System.out.println("Taken: " + next.process.pid());
                 next.signaled.set(false);
                 return next.process;
             } else {
@@ -66,31 +70,7 @@ public class ThreadSafeProcTable implements ProcTable {
     }
 
     private boolean isIdleSignal(ProcessInfo next) {
-        if (next == currentIdleSignal) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @return true if any process was seccessfully resumed
-     */
-    private boolean attemptProcessResume() {
-        while (!resumeQueue.isEmpty()) {
-            WeakReference<ProcessInfo> result = resumeQueue.poll();
-            if (result != null) {
-                ProcessInfo p = result.get();
-                if (p != null && p.process.state() != ProcState.TERMINATED) {
-                    nextResumeQueue.add(result);
-                    wake(p);
-                    return true;
-                }
-            } else {
-                return false;
-            }
-        }
-
-        return false;
+        return next == currentIdleSignal;
     }
 
     private ProcessInfo retreiveProcessInfo(int pid) {
@@ -98,43 +78,25 @@ public class ThreadSafeProcTable implements ProcTable {
     }
 
     @Override
-    public Proc acquireNonBlocking() {
-        attemptProcessResume();
-
-        while (true) {
-
-            ProcessInfo next = pendingProcesses.poll();
-
-            if (isIdleSignal(next)) {
-                continue;
-            }
-
-            if (next != null) {
-                boolean mine = next.acquired.compareAndSet(false, true);
-
-                if (mine && next.process.state() != ProcState.TERMINATED) {
-                    next.signaled.set(false);
-                    return next.process;
-                } else {
-//                    System.out.println("Found one!");
-                }
-            } else {
-                return null;
-            }
-        }
+    public void release(int pid) {
+        ProcessInfo proc = retreiveProcessInfo(pid);
+        release(proc);
     }
 
     private void wake(ProcessInfo procInfo) {
         procInfo.signaled.set(true);
+
         if (procInfo.inQueue.compareAndSet(false, true)) {
-            blockingProcesses.decrementAndGet();
+            final int blocking = blockingProcesses.decrementAndGet();
+            if (blocking < 0) {
+                throw new RuntimeException("BAD IMPLEMENTATION OF PROC-TABLE.");
+            }
+
             pendingProcesses.add(procInfo);
         }
     }
 
-    @Override
-    public void release(int pid) {
-        ProcessInfo proc = retreiveProcessInfo(pid);
+    private void release(ProcessInfo proc) {
         ProcState state = proc.process.state();
 
         proc.acquired.set(false);
@@ -146,22 +108,18 @@ public class ThreadSafeProcTable implements ProcTable {
                 break;
             case BLOCKING:
 
-                proc.inQueue.set(false);
-
-                if (proc.signaled.compareAndSet(true, false) && proc.inQueue.compareAndSet(false, true)) {
+                if (proc.signaled.compareAndSet(true, false)) {
                     pendingProcesses.add(proc);
                 } else {
                     blockingProcesses.incrementAndGet();
-//                    System.out.println("Agent " + proc.process.pid() + " goes to sleep");
-                    if (isInIdleState()) {
-                        System.out.println("Idle detected after " + proc.process.pid() + " goes to sleep");
-                    }
+                    proc.inQueue.set(false);
                 }
 
                 break;
             case TERMINATED:
+                listeners.fire().onProcessRemoved(this, proc.process.pid());
                 totalNumberOfProcesses.decrementAndGet();
-                processInfos.remove(pid);
+                processInfos.remove(proc.process.pid());
                 break;
             default:
                 throw new AssertionError(state.name());
@@ -181,38 +139,17 @@ public class ThreadSafeProcTable implements ProcTable {
     }
 
     @Override
-    public void resumeAll() {
-        if (!isInIdleState()) {
-            throw new UnsupportedOperationException("you cannot call resume all if there is no idle state");
-        }
-
-        ConcurrentLinkedQueue<WeakReference<ProcessInfo>> temp = resumeQueue;
-        resumeQueue = nextResumeQueue;
-        nextResumeQueue = temp;
-
-        for (int i = 0; i < estimatedWaitingCores.get(); i++) {
-            attemptProcessResume();
-        }
-
-    }
-
-    @Override
     public void add(Proc p) {
         ProcessInfo pinfo = new ProcessInfo(p);
 
-        //infoLock.writeLock().lock();
-        //try {
         processInfos.put(p.pid(), pinfo);
-        //} finally {
-        //    infoLock.writeLock().unlock();
-        //}
 
         pinfo.inQueue.set(true);
         pinfo.acquired.set(false);
         totalNumberOfProcesses.incrementAndGet();
 
-        nextResumeQueue.add(new WeakReference<>(pinfo));
         pendingProcesses.add(pinfo);
+        listeners.fire().onProcessAdded(this, p.pid());
     }
 
     @Override
@@ -221,7 +158,7 @@ public class ThreadSafeProcTable implements ProcTable {
         //since additions of processes are assumed to be only performed by a process once the execution started
         //it is safe to say that if in any point in time the number of blocking processes reach the number of processes
         //(by this order) then we reached to an idle.
-        return totalNumberOfProcesses.get() == blockingProcesses.get();
+        return totalNumberOfProcesses.get() == blockingProcesses.get() && !processInfos.isEmpty();
     }
 
     @Override
@@ -235,8 +172,34 @@ public class ThreadSafeProcTable implements ProcTable {
     }
 
     @Override
+    public void startIdleDetectionResolving(IdleDetectionResolver resolver) {
+//        blockingProcesses.set(0);
+        int numWake = totalNumberOfProcesses.get();
+
+        for (ProcessInfo p : processInfos.values()) {
+            wake(p);
+        }
+
+        try {
+            for (int i = 0; i < numWake; i++) {
+                Proc p = acquire();
+                resolver.resolve(p);
+                release(p.pid());
+            }
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ThreadSafeProcTable.class.getName()).log(Level.SEVERE, null, ex);
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    @Override
     public Collection<Integer> allProcessIds() {
-        return processInfos.keySet();
+        LinkedList<Integer> all = new LinkedList<>();
+        for (ProcessInfo a : processInfos.values()) {
+            all.add(a.process.pid());
+        }
+
+        return all;
     }
 
     private static class ProcessInfo {

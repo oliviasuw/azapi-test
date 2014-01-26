@@ -12,11 +12,12 @@ import bgu.dcr.az.execs.api.SystemCalls;
 import bgu.dcr.az.execs.api.TerminationReason;
 import bgu.dcr.az.execs.api.UnexpectedTerminationException;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -36,13 +37,8 @@ public class MultithreadedScheduler implements Scheduler {
     private boolean allowIdle = true;
     private volatile Core failingCore = null;
 
-//    //optimization for asynchronized idle resolvation
-//    private final AtomicInteger numberOfIdleDetectors = new AtomicInteger(0);
-//    private final Semaphore resumeLock = new Semaphore(0);
-//    private final Semaphore detectionLeaveLock = new Semaphore(0);
-    //better optimization for asynchronized idle resolvation
-    private final AtomicBoolean firstToDetectIdle = new AtomicBoolean(true);
-    private final AtomicInteger numberOfIdleReolversLeft = new AtomicInteger(0);
+    private Semaphore idleDetectionEnterenceLock = new Semaphore(0);
+    private AtomicInteger idleDetectionEnterenceCount = new AtomicInteger(0);
 
     //for debugging
     volatile int tick = 0;
@@ -72,6 +68,7 @@ public class MultithreadedScheduler implements Scheduler {
 
     @Override
     public TerminationReason schedule(ProcTable table, int numCores) throws InterruptedException {
+
         this.numCores = numCores;
         this.table = table;
         cores = new Core[numCores];
@@ -176,9 +173,6 @@ public class MultithreadedScheduler implements Scheduler {
                             return; //the table is empty - shutdown
                         }
                     }
-                    
-//                    System.out.println("" + coreId + " Is Free");
-
                 }
             } catch (Exception ex) {
                 exitError = ex;
@@ -193,53 +187,29 @@ public class MultithreadedScheduler implements Scheduler {
 
         public void resolveIdle() throws InterruptedException {
 
-            //atempt to perform resume all - but only if you are the last to detect idle
-            int detectorNumber = 0;
-//            if (fastDetectionMode) {
-            if (firstToDetectIdle.compareAndSet(true, false)) {
-//                System.out.println("Resolve Idle " + (tick++));
-                table.resumeAll();
-                numberOfIdleReolversLeft.set(numCores);
-            }
-//            } else {
-//                detectorNumber = numberOfIdleDetectors.incrementAndGet();
-//                if (detectorNumber == numCores) {
-////                    System.out.println("Resolve Idle " + (tick++));
-//                    table.resumeAll();
-//                    resumeLock.release(numCores - 1);
-//                } else {
-//                    resumeLock.acquire();
-//                }
-//
-//            }
-            Proc proc = null;
-            List<Proc> takenProcesses = new LinkedList<>();
+            if (idleDetectionEnterenceCount.incrementAndGet() == numCores) {
+                idleDetectionEnterenceCount.set(0);
 
-            try {
-                while ((proc = table.acquireNonBlocking()) != null) {
-                    takenProcesses.add(proc);
-                    proc.quota(systemCalls, true);
-                }
-            } finally {
-                for (Proc t : takenProcesses) {
-                    table.release(t.pid());
-                }
+                table.startIdleDetectionResolving(new ProcTable.IdleDetectionResolver() {
 
-//                if (fastDetectionMode) {
-                    //attempt to leave the idle detection process - but only if the last detector has entered
-                    if (numberOfIdleReolversLeft.decrementAndGet() == 0) {
-                        firstToDetectIdle.set(true);
+                    @Override
+                    public void resolve(Proc p) {
+                        p.quota(systemCalls, true);
                     }
-//                } else {
-//                    if (detectorNumber == numCores) {
-//                        numberOfIdleDetectors.set(0);
-//                        detectionLeaveLock.release(numCores - 1);
-//                    } else {
-//                        detectionLeaveLock.acquire();
-//                    }
-//                }
+                });
 
+//                for (Integer p : procCollection) {
+////                    if (p.state() != ProcState.TERMINATED) {
+////                    p.quota(systemCalls, true);
+////                    }
+//                }
+                idleDetectionEnterenceLock.release(numCores - 1);
+            } else {
+                long time = System.currentTimeMillis();
+                idleDetectionEnterenceLock.acquire();
+                waitingTime += System.currentTimeMillis() - time;
             }
+
         }
 
         public void interrupt() {

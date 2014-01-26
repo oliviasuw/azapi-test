@@ -65,19 +65,24 @@ public abstract class AbstractProc implements Proc {
      * something)
      */
     protected boolean wakeup(int pid) {
+        if (systemCalls == null) {
+            return false;
+        }
         return systemCalls.wake(pid);
     }
 
     protected void exec(Proc p) {
         systemCalls.exec(p);
     }
-    
-    protected int nextProcessId(){
+
+    protected int nextProcessId() {
         return systemCalls.nextProcessId();
     }
 
     protected void sleep() {
-        state = ProcState.BLOCKING;
+        if (state != ProcState.TERMINATED) {
+            state = ProcState.BLOCKING;
+        }
     }
 
     protected void onIdleDetected() {

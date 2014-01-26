@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.mas.exp;
 
-import bgu.dcr.az.mas.cp.CPExperiment;
+import bgu.dcr.az.mas.cp.CPExperimentTest;
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
 import nu.xom.Builder;
@@ -28,7 +28,7 @@ public class DCRExperimentTest {
         Document d = b.build(DCRExperimentTest.class.getResourceAsStream("test.xml"));
         Configuration conf = ConfigurationUtils.fromXML(d.getRootElement());
         
-        final CPExperiment exp = conf.create();
+        final CPExperimentTest exp = conf.create();
         System.out.println("Got: " + exp);
         exp.execute();
     }

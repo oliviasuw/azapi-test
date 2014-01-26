@@ -33,8 +33,8 @@ import java.util.concurrent.Executors;
  *
  * @author User
  */
-@Register("experiment")
-public class CPExperiment implements Experiment {
+@Register("test")
+public class CPExperimentTest implements Experiment {
 
     private ProblemGenerator pgen;
     private final List<AlgorithmDef> algorithms = new LinkedList<>();

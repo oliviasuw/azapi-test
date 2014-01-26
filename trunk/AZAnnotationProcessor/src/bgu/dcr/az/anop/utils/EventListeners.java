@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.utils;
+package bgu.dcr.az.anop.utils;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentLinkedQueue;

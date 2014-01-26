@@ -17,6 +17,7 @@ import bgu.dcr.az.mas.UnmetRequirementException;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import bgu.dcr.az.mas.HookProvider;
 import bgu.dcr.az.mas.MessageRouter;
+import bgu.dcr.az.mas.ExecutionEnvironment;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,12 +33,14 @@ public abstract class BaseExecution implements Execution {
 
     private final Scheduler scheduler;
     private final int numCores;
+    private final ExecutionEnvironment env;
 
-    public BaseExecution(Scheduler scheduler, AgentDistributer distributer, AgentSpawner spawner, int numCores) {
+    public BaseExecution(Scheduler scheduler, AgentDistributer distributer, AgentSpawner spawner, ExecutionEnvironment env, int numCores) {
         this.numCores = numCores;
         this.scheduler = scheduler;
         put(AgentDistributer.class, distributer);
         put(AgentSpawner.class, spawner);
+        this.env = env;
     }
 
     protected void registerHookProvider(Class c, HookProvider provider) {
@@ -47,7 +50,7 @@ public abstract class BaseExecution implements Execution {
     @Override
     public TerminationReason execute() throws ExperimentExecutionException, InterruptedException {
         ThreadSafeProcTable table = new ThreadSafeProcTable();
-        put(MessageRouter.class, new BaseMessageRouter(table));
+        put(MessageRouter.class, new BaseMessageRouter());
 
         try {
 
@@ -66,7 +69,7 @@ public abstract class BaseExecution implements Execution {
         } catch (InitializationException ex) {
             throw new ExperimentExecutionException("error on experiment initialization, see cause", ex);
         }
-        
+
         TerminationReason result = scheduler.schedule(table, numCores);
         System.out.println("Contention: " + scheduler.getContention());
         return result;
@@ -142,6 +145,11 @@ public abstract class BaseExecution implements Execution {
 
             return sb.toString();
         }
+    }
+
+    @Override
+    public ExecutionEnvironment getEnvironment() {
+        return env;
     }
 
 }

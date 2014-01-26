@@ -63,8 +63,12 @@ public class CPAgentController extends BaseAgentController {
         Agent.PlatformOperationsExtractor.extract(agent).initialize(aId, this);
     }
 
+    public void reportNoSolution() {
+        execution.getSolution().setStateNoSolution();
+    }
+
     @Override
-    protected void onIdleDetected() {
+    protected void handleIdle() {
         LinkedList<AgentWithManipulator> killedAgents = new LinkedList<>();
         for (AgentWithManipulator a : getControlledAgents().values()) {
             a.a.onIdleDetected();
@@ -76,10 +80,23 @@ public class CPAgentController extends BaseAgentController {
         for (AgentWithManipulator k : killedAgents) {
             removeControlledAgent(k);
         }
+
     }
 
-    public void reportNoSolution() {
-        execution.getSolution().setStateNoSolution();
+    @Override
+    protected void beforeNextTick() {
+        LinkedList<AgentWithManipulator> killedAgents = new LinkedList<>();
+        for (AgentWithManipulator a : getControlledAgents().values()) {
+            a.a.onMailBoxEmpty();
+            if (a.a.isFinished()) {
+                killedAgents.add(a);
+            }
+        }
+
+        for (AgentWithManipulator k : killedAgents) {
+            removeControlledAgent(k);
+        }
+
     }
 
 }

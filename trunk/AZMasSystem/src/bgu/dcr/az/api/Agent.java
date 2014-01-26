@@ -402,7 +402,7 @@ public abstract class Agent extends Agt0DSL {
      * before the next tick (when the agent finish handling all its messages)
      */
     public void onMailBoxEmpty() {
-//        throw new UnsupportedOperationException("if you are running a Synchronized Search you must implements Agent.onMailBoxEmpty method");
+        throw new UnsupportedOperationException("if you are running a Synchronized Search you must implements Agent.onMailBoxEmpty method");
     }
 
     /**

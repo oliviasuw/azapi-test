@@ -16,7 +16,7 @@ import bgu.dcr.az.execs.MultithreadedScheduler;
 import bgu.dcr.az.execs.api.Scheduler;
 import bgu.dcr.az.execs.api.TerminationReason;
 import bgu.dcr.az.mas.AgentSpawner;
-import bgu.dcr.az.mas.Execution;
+import bgu.dcr.az.mas.ExecutionEnvironment;
 import bgu.dcr.az.mas.exp.AlgorithmDef;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
@@ -39,6 +39,7 @@ public class CPExperiment implements Experiment {
     private ProblemGenerator pgen;
     private final List<AlgorithmDef> algorithms = new LinkedList<>();
     private Looper looper = new SingleExecutionLooper();
+    private ExecutionEnvironment executionEnvironment;
 
     /**
      * @propertyName algorithms
@@ -46,6 +47,18 @@ public class CPExperiment implements Experiment {
      */
     public List<AlgorithmDef> getAlgorithms() {
         return algorithms;
+    }
+
+    /**
+     * @propertyName env
+     * @return
+     */
+    public ExecutionEnvironment getExecutionEnvironment() {
+        return executionEnvironment;
+    }
+
+    public void setExecutionEnvironment(ExecutionEnvironment executionEnvironment) {
+        this.executionEnvironment = executionEnvironment;
     }
 
     /**
@@ -117,8 +130,9 @@ public class CPExperiment implements Experiment {
                 int numAlgo = 0;
                 for (AlgorithmDef adef : algorithms) {
                     AgentSpawner spawner = new SimpleAgentSpawner(RegisteryUtils.getDefaultRegistery().getRegisteredClassByName("ALGORITHM." + adef.getName()));
-                    CPExecution exec = new CPExecution(scheduler, spawner, p, coreAdapters[numAlgo].getAdaptedNumberOfCores());
+                    CPExecution exec = new CPExecution(scheduler, spawner, p, executionEnvironment, coreAdapters[numAlgo].getAdaptedNumberOfCores());
                     System.out.println("Start Running Problem on " + coreAdapters[numAlgo].getAdaptedNumberOfCores() + " cores");
+
                     TerminationReason result = exec.execute();
                     coreAdapters[numAlgo].update(i, scheduler);
 

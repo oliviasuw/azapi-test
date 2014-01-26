@@ -159,7 +159,8 @@ public class CPExperimentTest implements Experiment {
 
     private static interface RuntimeCoreAdapter {
 
-        public static final int ADAPTIVE_AVERAGE_AMOUNT = 3;
+        public static final int ADAPTIVE_AVERAGE_AMOUNT = 4;
+        public static final double DISCOUNT_FACTOR = 0.75;
 
         void update(int round, Scheduler scheduler);
 
@@ -169,14 +170,14 @@ public class CPExperimentTest implements Experiment {
     private static class NaiveRuntimeCoreAdapter implements RuntimeCoreAdapter {
 
         private int adaptedNumberOfCores;
-        private double lastContentionAverage;
-        private final double[] lastContentions;
+        private double contentionExpAverage;
         private boolean isStabilized;
+        private final int maximumCores;
 
         public NaiveRuntimeCoreAdapter() {
-            adaptedNumberOfCores = Runtime.getRuntime().availableProcessors();
-            lastContentionAverage = 1;
-            lastContentions = new double[ADAPTIVE_AVERAGE_AMOUNT];
+            maximumCores = Runtime.getRuntime().availableProcessors();
+            adaptedNumberOfCores = maximumCores;
+            contentionExpAverage = 0;
             isStabilized = false;
         }
 
@@ -186,45 +187,28 @@ public class CPExperimentTest implements Experiment {
                 return;
             }
 
-            if (round % ADAPTIVE_AVERAGE_AMOUNT == 0 && round != 0) {
-                Double avg = calculateAvg(lastContentions);
+            contentionExpAverage = contentionExpAverage * DISCOUNT_FACTOR + (1 - DISCOUNT_FACTOR) * scheduler.getContention();
 
-                if (avg != null) {
-                    if (avg < lastContentionAverage) {
+            System.out.println("contention avarage: " + contentionExpAverage);
+
+            if (round % ADAPTIVE_AVERAGE_AMOUNT == 0) {
+                if (contentionExpAverage > 0.25) {
+                    if (adaptedNumberOfCores > 1) {
                         adaptedNumberOfCores--;
-                        if (adaptedNumberOfCores == 1) {
-                            isStabilized = true;
-                        }
                     }
-
-                    lastContentionAverage = Math.min(lastContentionAverage, avg);
                 }
 
+                if (contentionExpAverage < 0.18) {
+                    if (adaptedNumberOfCores < maximumCores) {
+                        adaptedNumberOfCores++;
+                    }
+                }
             }
-
-            lastContentions[round % ADAPTIVE_AVERAGE_AMOUNT] = scheduler.getContention();
         }
 
         @Override
         public int getAdaptedNumberOfCores() {
             return adaptedNumberOfCores;
-        }
-
-        /**
-         * @param arr
-         * @return the average of non-zero elements in a given array. if all
-         * elements in array are zero, returns null
-         */
-        private Double calculateAvg(double[] arr) {
-            double avg = 0;
-            int nonZero = 0;
-            for (int i = 0; i < arr.length; i++) {
-                if (arr[i] != 0) {
-                    avg += arr[i];
-                    nonZero++;
-                }
-            }
-            return nonZero == 0 ? null : avg / nonZero;
         }
 
     }

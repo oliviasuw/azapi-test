@@ -8,13 +8,12 @@ package bgu.dcr.az.mas.cp;
 import bgu.dcr.az.anop.reg.Register;
 import bgu.dcr.az.anop.reg.RegisteryUtils;
 import bgu.dcr.az.anop.conf.Configuration;
-import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
+import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.api.exen.mdef.ProblemGenerator;
 import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.execs.MultithreadedScheduler;
 import bgu.dcr.az.execs.api.Scheduler;
-import bgu.dcr.az.execs.api.TerminationReason;
 import bgu.dcr.az.mas.AgentSpawner;
 import bgu.dcr.az.mas.ExecutionEnvironment;
 import bgu.dcr.az.mas.exp.AlgorithmDef;
@@ -39,7 +38,8 @@ public class CPExperimentTest implements Experiment {
     private ProblemGenerator pgen;
     private final List<AlgorithmDef> algorithms = new LinkedList<>();
     private Looper looper = new SingleExecutionLooper();
-    private ExecutionEnvironment executionEnvironment;
+    private ExecutionEnvironment executionEnvironment = ExecutionEnvironment.async;
+    private CPCorrectnessTester correctnessTester;
 
     /**
      * @propertyName algorithms
@@ -85,8 +85,20 @@ public class CPExperimentTest implements Experiment {
         this.pgen = pgen;
     }
 
+    /**
+     * @propertyName correctness-tester
+     * @return
+     */
+    public CPCorrectnessTester getCorrectnessTester() {
+        return correctnessTester;
+    }
+
+    public void setCorrectnessTester(CPCorrectnessTester correctnessTester) {
+        this.correctnessTester = correctnessTester;
+    }
+
     @Override
-    public void execute() throws ExperimentExecutionException, InterruptedException {
+    public ExecutionResult execute() {
         int numCores = Runtime.getRuntime().availableProcessors();
         final ExecutorService pool = Executors.newFixedThreadPool(numCores);
         Scheduler scheduler = new MultithreadedScheduler(pool);
@@ -98,11 +110,11 @@ public class CPExperimentTest implements Experiment {
         }
 
         if (getProblemGenerator() == null) {
-            throw new ExperimentExecutionException("No problem generator is defined");
+            return new ExecutionResult().toCrushState(new ExperimentExecutionException("No problem generator is defined"));
         }
 
         if (getAlgorithms().isEmpty()) {
-            throw new ExperimentExecutionException("At least one algorithm should be defined in order to execute an experiment");
+            return new ExecutionResult().toCrushState(new ExperimentExecutionException("At least one algorithm should be defined in order to execute an experiment"));
         }
 
         Object[] configurableElements = {
@@ -131,25 +143,30 @@ public class CPExperimentTest implements Experiment {
                 for (AlgorithmDef adef : algorithms) {
                     AgentSpawner spawner = new SimpleAgentSpawner(RegisteryUtils.getDefaultRegistery().getRegisteredClassByName("ALGORITHM." + adef.getName()));
                     CPExecution exec = new CPExecution(scheduler, spawner, p, executionEnvironment, coreAdapters[numAlgo].getAdaptedNumberOfCores());
+                    
+                    if (correctnessTester != null) {
+                        exec.put(CPCorrectnessTester.class, correctnessTester);
+                    }
+                    
                     System.out.println("Start Running Problem on " + coreAdapters[numAlgo].getAdaptedNumberOfCores() + " cores");
 
-                    TerminationReason result = exec.execute();
-                    coreAdapters[numAlgo].update(i, scheduler);
+                    ExecutionResult result = exec.execute();
 
-                    if (result.isError()) {
-                        result.getErrorDescription().printStackTrace();
-                        return;
-                    } else {
-                        System.out.println("execution " + i + " done: " + exec.getSolution());
+                    if (result.getState() != ExecutionResult.State.SUCCESS) {
+                        return result;
                     }
+
+                    coreAdapters[numAlgo].update(i, scheduler);
                     numAlgo++;
                 }
             }
-        } catch (ClassNotFoundException | ConfigurationException ex) {
-            throw new ExperimentExecutionException("cannot execute experiment - configuration problem, see cause", ex);
+        } catch (Exception ex) {
+            return new ExecutionResult().toCrushState(new ExperimentExecutionException("cannot execute experiment - configuration problem, see cause", ex));
         } finally {
             pool.shutdownNow();
         }
+
+        return new ExecutionResult().toSucceefulState(null);
     }
 
     @Override

@@ -5,11 +5,13 @@
  */
 package bgu.dcr.az.mas.exp;
 
+import bgu.dcr.az.api.exen.ExecutionResult;
+
 /**
  *
  * @author User
  */
 public interface Experiment {
 
-    public void execute() throws ExperimentExecutionException, InterruptedException;
+    public ExecutionResult execute();
 }

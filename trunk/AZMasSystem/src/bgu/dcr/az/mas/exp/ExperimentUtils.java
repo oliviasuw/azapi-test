@@ -7,6 +7,7 @@ package bgu.dcr.az.mas.exp;
 
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
+import bgu.dcr.az.api.exen.ExecutionResult;
 import java.io.File;
 import java.io.InputStream;
 import nu.xom.Builder;
@@ -34,7 +35,24 @@ public class ExperimentUtils {
         Configuration expConf = ConfigurationUtils.fromXML(doc.getRootElement());
         Experiment exp = expConf.create();
         long time = System.currentTimeMillis();
-        exp.execute();
+        ExecutionResult result = exp.execute();
         System.out.println("Took: " + (System.currentTimeMillis() - time) + " millis");
+        switch (result.getState()) {
+            case WRONG:
+                System.out.println("WRONG SOLUTION!!!!, got: " + result.getSolution() + ", while the real solution should be: " + result.getCorrectSolution());
+                break;
+            case CRUSHED:
+                System.out.println("EXECUTION ERROR, printing stacktrace:");
+                result.getCrushReason().printStackTrace();
+                break;
+            case LIMITED:
+                break;
+            case SUCCESS:
+                System.out.println("EVERY THING WENT OK WHOOPY!");
+                break;
+            default:
+                throw new AssertionError(result.getState().name());
+
+        }
     }
 }

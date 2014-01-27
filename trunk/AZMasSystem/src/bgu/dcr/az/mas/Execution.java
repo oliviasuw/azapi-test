@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.mas;
 
+import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.execs.api.TerminationReason;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import bgu.dcr.az.mas.impl.InitializationException;
@@ -21,7 +22,7 @@ public interface Execution {
 
     public void put(Class<? extends ExecutionService> serviceKey, ExecutionService service);
 
-    public TerminationReason execute() throws ExperimentExecutionException, InterruptedException;
+    public ExecutionResult execute() throws ExperimentExecutionException, InterruptedException;
     
     public ExecutionEnvironment getEnvironment();
     

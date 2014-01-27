@@ -22,16 +22,16 @@ import java.util.List;
  *
  * @author User
  */
-public class CPExecution extends BaseExecution {
+public class CPExecution extends BaseExecution<CPSolution> {
 
-    private final Solution solution;
+    private final CPSolution solution;
     private final Problem problem;
 
     public CPExecution(Scheduler scheduler, AgentSpawner spawner, Problem problem, ExecutionEnvironment env, int numCores) {
         super(scheduler, problem.getAgentDistributer(), spawner, env, numCores);
-        
+
         this.problem = problem;
-        this.solution = new Solution(problem);
+        this.solution = new CPSolution(problem);
     }
 
     @Override
@@ -50,8 +50,13 @@ public class CPExecution extends BaseExecution {
         return controllers;
     }
 
-    public Solution getSolution() {
+    @Override
+    public CPSolution getSolution() {
         return solution;
+    }
+
+    public Problem getProblem() {
+        return problem;
     }
 
     @Override

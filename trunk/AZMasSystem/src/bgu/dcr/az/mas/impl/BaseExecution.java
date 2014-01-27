@@ -5,6 +5,9 @@
  */
 package bgu.dcr.az.mas.impl;
 
+import bgu.dcr.az.anop.utils.EventListeners;
+import bgu.dcr.az.api.DeepCopyable;
+import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.execs.ThreadSafeProcTable;
 import bgu.dcr.az.execs.api.Scheduler;
 import bgu.dcr.az.execs.api.TerminationReason;
@@ -18,6 +21,7 @@ import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import bgu.dcr.az.mas.HookProvider;
 import bgu.dcr.az.mas.MessageRouter;
 import bgu.dcr.az.mas.ExecutionEnvironment;
+import bgu.dcr.az.mas.Hooks;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +30,7 @@ import java.util.Map;
  *
  * @author User
  */
-public abstract class BaseExecution implements Execution {
+public abstract class BaseExecution<SOLUTION_TYPE extends DeepCopyable> implements Execution, HookProvider {
 
     private final Map<Class, HookProvider> hookProviders = new HashMap<>();
     private final Map<Class<? extends ExecutionService>, ExecutionServiceWithInitializationData> services = new HashMap<>();
@@ -34,6 +38,7 @@ public abstract class BaseExecution implements Execution {
     private final Scheduler scheduler;
     private final int numCores;
     private final ExecutionEnvironment env;
+    private final EventListeners<Hooks.TerminationHook> terminationHooks = EventListeners.create(Hooks.TerminationHook.class);
 
     public BaseExecution(Scheduler scheduler, AgentDistributer distributer, AgentSpawner spawner, ExecutionEnvironment env, int numCores) {
         this.numCores = numCores;
@@ -41,14 +46,18 @@ public abstract class BaseExecution implements Execution {
         put(AgentDistributer.class, distributer);
         put(AgentSpawner.class, spawner);
         this.env = env;
+
+        registerHookProvider(Hooks.TerminationHook.class, this);
     }
 
     protected void registerHookProvider(Class c, HookProvider provider) {
         hookProviders.put(c, provider);
     }
 
+    protected abstract SOLUTION_TYPE getSolution();
+    
     @Override
-    public TerminationReason execute() throws ExperimentExecutionException, InterruptedException {
+    public ExecutionResult execute() throws ExperimentExecutionException, InterruptedException {
         ThreadSafeProcTable table = new ThreadSafeProcTable();
         put(MessageRouter.class, new BaseMessageRouter());
 
@@ -70,7 +79,17 @@ public abstract class BaseExecution implements Execution {
             throw new ExperimentExecutionException("error on experiment initialization, see cause", ex);
         }
 
-        TerminationReason result = scheduler.schedule(table, numCores);
+        TerminationReason terminationResult = scheduler.schedule(table, numCores);
+        
+        ExecutionResult<SOLUTION_TYPE> result = new ExecutionResult<>();
+        if (terminationResult.isError()){
+            result.toCrushState(terminationResult.getErrorDescription());
+        }else {
+            result.toSucceefulState(getSolution());
+        }
+        
+        terminationHooks.fire().hook(this, result);
+        
         System.out.println("Contention: " + scheduler.getContention());
         return result;
     }
@@ -103,6 +122,17 @@ public abstract class BaseExecution implements Execution {
     protected abstract Collection<AgentController> createControllers() throws InitializationException;
 
     protected abstract void initialize() throws InitializationException;
+
+
+    @Override
+    public ExecutionEnvironment getEnvironment() {
+        return env;
+    }
+
+    @Override
+    public void register(Object hook) {
+        terminationHooks.add((Hooks.TerminationHook) hook);
+    }
 
     private enum InitializatinState {
 
@@ -146,10 +176,4 @@ public abstract class BaseExecution implements Execution {
             return sb.toString();
         }
     }
-
-    @Override
-    public ExecutionEnvironment getEnvironment() {
-        return env;
-    }
-
 }

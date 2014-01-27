@@ -2,9 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.api;
+package bgu.dcr.az.mas;
 
+import bgu.dcr.az.api.Agent;
+import bgu.dcr.az.api.Message;
+import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.mas.Execution;
+import bgu.dcr.az.mas.cp.CPSolution;
 
 /**
  * this collection of interfaces that the simple agent supports hooking via
@@ -31,7 +35,7 @@ public class Hooks {
 
         @Override
         public void hookInto(Execution ex) {
-            ex.hook(BeforeMessageSentHook.class, ex);
+            ex.hook(BeforeMessageSentHook.class, this);
         }
     }
 
@@ -50,7 +54,7 @@ public class Hooks {
 
         @Override
         public void hookInto(Execution ex) {
-            ex.hook(BeforeMessageProcessingHook.class, ex);
+            ex.hook(BeforeMessageProcessingHook.class, this);
         }
     }
 
@@ -65,7 +69,7 @@ public class Hooks {
 
         @Override
         public void hookInto(Execution ex) {
-            ex.hook(AfterMessageProcessingHook.class, ex);
+            ex.hook(AfterMessageProcessingHook.class, this);
         }
     }
 
@@ -75,7 +79,7 @@ public class Hooks {
 
         @Override
         public void hookInto(Execution ex) {
-            ex.hook(BeforeCallingFinishHook.class, ex);
+            ex.hook(BeforeCallingFinishHook.class, this);
         }
     }
 
@@ -95,7 +99,7 @@ public class Hooks {
 
         @Override
         public void hookInto(Execution ex) {
-            ex.hook(ReportHook.class, ex);
+            ex.hook(ReportHook.class, this);
         }
     }
 
@@ -105,17 +109,17 @@ public class Hooks {
 
         @Override
         public void hookInto(Execution ex) {
-            ex.hook(TickHook.class, ex);
+            ex.hook(TickHook.class, this);
         }
     }
 
     public static abstract class TerminationHook implements HookDefinition {
 
-        public abstract void hook();
+        public abstract void hook(Execution ex, ExecutionResult result);
 
         @Override
         public void hookInto(Execution ex) {
-            ex.hook(TerminationHook.class, ex);
+            ex.hook(TerminationHook.class, this);
         }
     }
 }

@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.mas.cp;
 
+import bgu.dcr.az.api.DeepCopyable;
 import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.api.tools.Assignment;
 import java.util.Map;
@@ -14,26 +15,23 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author User
  */
-public class Solution {
+public class CPSolution implements DeepCopyable {
 
     private final ConcurrentHashMap<Integer, Integer> assignment;
     private State state;
     private final Problem globalProblem;
-    private Exception crushReason;
 
-    public Solution(Problem problem) {
+    public CPSolution(Problem problem) {
         state = State.SOLUTION;
         assignment = new ConcurrentHashMap<>();
         this.globalProblem = problem;
     }
 
-    public Exception getCrushReason() {
-        return crushReason;
-    }
-
-    public void setStateCrushed(Exception crushReason) {
-        this.crushReason = crushReason;
-        this.state = State.CRUSHED;
+    public CPSolution(Problem problem, Assignment assignment) {
+        this(problem);
+        for (Map.Entry<Integer, Integer> a : assignment.getAssignments()) {
+            this.assignment.put(a.getKey(), a.getValue());
+        }
     }
 
     public void setStateNoSolution() {
@@ -80,9 +78,6 @@ public class Solution {
             case SOLUTION:
                 sb.append("Solution Found With Assignment: ").append(assignment).append(" Cost:").append(getCost());
                 break;
-            case CRUSHED:
-                sb.append("Execution Crushed With reason: ").append(crushReason.getMessage());
-                break;
             default:
                 throw new AssertionError(state.name());
         }
@@ -90,10 +85,24 @@ public class Solution {
         return sb.toString();
     }
 
+    @Override
+    public Object deepCopy() {
+        CPSolution res = new CPSolution(this.globalProblem);
+        res.assignment.putAll(this.assignment);
+        res.state = state;
+
+        return res;
+    }
+
+    public static CPSolution newNoSolution(Problem p){
+        CPSolution solution = new CPSolution(p);
+        solution.setStateNoSolution();
+        return solution;
+    }
+    
     public enum State {
 
         NO_SOLUTION,
         SOLUTION,
-        CRUSHED;
     }
 }

@@ -6,8 +6,8 @@
 package bgu.dcr.az.mas.cp;
 
 import bgu.dcr.az.anop.reg.Register;
+import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.mas.exp.Experiment;
-import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import java.util.LinkedList;
 
 /**
@@ -28,10 +28,15 @@ public class CPExperimentsContainer implements Experiment {
     }
 
     @Override
-    public void execute() throws ExperimentExecutionException, InterruptedException {
+    public ExecutionResult execute() {
         for (CPExperimentTest t : tests) {
-            t.execute();
+            ExecutionResult result = t.execute();
+            
+            if (result.getState() != ExecutionResult.State.SUCCESS) {
+                return result;
+            }
         }
+        return new ExecutionResult().toSucceefulState(null);
     }
 
 }

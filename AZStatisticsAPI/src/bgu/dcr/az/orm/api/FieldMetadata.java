@@ -11,8 +11,6 @@ package bgu.dcr.az.orm.api;
  */
 public interface FieldMetadata {
 
-    TableMetadata table();
-
     String name();
 
     Class type();

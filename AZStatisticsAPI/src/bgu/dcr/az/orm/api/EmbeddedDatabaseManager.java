@@ -7,6 +7,8 @@ package bgu.dcr.az.orm.api;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -23,7 +25,7 @@ public interface EmbeddedDatabaseManager extends Closeable {
      * @param append if this is set to false then any existing data that may be
      * already contained in the database will be deleted
      */
-    void start(File databasePath, boolean append);
+    void start(File databasePath, boolean append) throws SQLException;
 
     /**
      * define a new table with the given name, if this table already exists in
@@ -42,7 +44,7 @@ public interface EmbeddedDatabaseManager extends Closeable {
      * @see QueryDatabase#query(java.lang.String, java.lang.Object...)
      * @return
      */
-    Data query(String sql, Object[] parameters);
+    Data query(String sql, Object[] parameters) throws SQLException;
 
     /**
      * insert a new record into the database
@@ -55,16 +57,19 @@ public interface EmbeddedDatabaseManager extends Closeable {
      * get tables metadata which is a map {@code tableName -> tableMetadata}
      *
      * @return
+     * @throws java.sql.SQLException
      */
-    Map<String, TableMetadata> tables();
+    Map<String, TableMetadata> tables() throws SQLException;
 
     /**
      * dump the database content into a set of csv files and store them in the
      * given folder
      *
      * @param folder
+     * @throws java.sql.SQLException
+     * @throws java.io.IOException
      */
-    void dumpCSV(File folder);
+    void dumpCSV(File folder) throws SQLException, IOException;
 
     /**
      * create and return a new object that can be used in order to query the
@@ -80,6 +85,6 @@ public interface EmbeddedDatabaseManager extends Closeable {
      *
      * @return
      */
-    QueryDatabase createDefinitionDatabase();
+    DefinitionDatabase createDefinitionDatabase();
 
 }

@@ -32,8 +32,6 @@ public class DefaultCorrectnessTester extends CPCorrectnessTester {
         final MACSolver solver = new MACSolver();
         switch (exec.getProblem().type()) {
             case ADCOP:
-                break;
-//                return new CorrectnessTestResult(null, true);
             case DCOP:
                 ass = BranchAndBound.solve(globalProblem);
                 if (ass.calcCost(globalProblem) != result.getSolution().getCost()) {

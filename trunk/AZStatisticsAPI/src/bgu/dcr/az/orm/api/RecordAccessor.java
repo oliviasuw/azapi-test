@@ -11,41 +11,35 @@ package bgu.dcr.az.orm.api;
  */
 public interface RecordAccessor {
 
-    int getInt(int columnIndex);
+    Integer getInt(int columnIndex);
 
-    long getLong(int columnIndex);
+    Long getLong(int columnIndex);
 
-    double getDouble(int columnIndex);
+    Double getDouble(int columnIndex);
 
-    float getFloat(int columnIndex);
-
-    char getCharacter(int columnIndex);
+    Float getFloat(int columnIndex);
 
     String getString(int columnIndex);
 
-    byte getByte(int columnIndex);
+    Byte getByte(int columnIndex);
 
-    boolean getBoolean(int columnIndex);
+    Boolean getBoolean(int columnIndex);
 
-    short getShort(int columnIndex);
+    Integer getInt(String columnName);
 
-    int getInt(String columnName);
+    Long getLong(String columnName);
 
-    long getLong(String columnName);
+    Double getDouble(String columnName);
 
-    double getDouble(String columnName);
-
-    float getFloat(String columnName);
-
-    char getCharacter(String columnName);
+    Float getFloat(String columnName);
 
     String getString(String columnName);
 
-    byte getByte(String columnName);
+    Byte getByte(String columnName);
 
-    boolean getBoolean(String columnName);
-
-    short getShort(String columnName);
+    Boolean getBoolean(String columnName);
 
     <T extends Record> T as(Class<T> recordType);
+    
+    int numColumns();
 }

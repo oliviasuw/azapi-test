@@ -19,5 +19,5 @@ public interface DefinitionDatabase {
      * @param tableName
      * @param recordType
      */
-    void defineTable(String tableName, Class recordType);
+    void defineTable(String tableName, Class<? extends Record> recordType);
 }

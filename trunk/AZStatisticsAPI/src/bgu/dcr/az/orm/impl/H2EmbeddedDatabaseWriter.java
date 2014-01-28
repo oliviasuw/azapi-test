@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.orm.impl;
 
+import bgu.dcr.az.orm.api.Record;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,6 +16,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +32,7 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
     BlockingQueue q = new LinkedBlockingQueue(); //accessed from producer threads
     Map<Class, RecordManipulator> recordManipulators = new IdentityHashMap<>(); // accessed from this thread only
     H2EmbeddedDatabaseManager manager;
+    Semaphore synchronizationLock = new Semaphore(0);
 
     public H2EmbeddedDatabaseWriter(H2EmbeddedDatabaseManager manager) {
         this.manager = manager;
@@ -47,10 +50,9 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
                     Object item = batch.removeFirst();
                     if (item == TERMINATION_SIGNAL) {
                         terminate();
-                        manager.onWriterThreadTermination();
                         return;
                     } else if (item == CALLBACK_SIGNAL) {
-                        manager.onWriterThreadCallback();
+                        synchronizationLock.release();
                     } else if (item instanceof DefineTableCommand) {
                         defineTable((DefineTableCommand) item);
                     } else {
@@ -99,6 +101,24 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
         for (RecordManipulator m : recordManipulators.values()) {
             m.insertStatement.close();
         }
+    }
+
+    void close() throws InterruptedException {
+        q.add(TERMINATION_SIGNAL);
+        synchronize();
+    }
+
+    void appendDefineTableCommand(String name, Class<? extends Record> recordType) {
+        q.add(new DefineTableCommand(name, recordType));
+    }
+
+    void synchronize() throws InterruptedException {
+        q.add(CALLBACK_SIGNAL);
+        synchronizationLock.acquire();
+    }
+
+    void appendInsertionCommand(Object o) {
+        q.add(o);
     }
 
     private static class DefineTableCommand {

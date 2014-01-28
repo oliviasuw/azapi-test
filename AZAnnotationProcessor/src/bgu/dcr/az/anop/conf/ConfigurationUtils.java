@@ -6,10 +6,6 @@
 package bgu.dcr.az.anop.conf;
 
 import bgu.dcr.az.anop.reg.RegisteryUtils;
-import bgu.dcr.az.anop.conf.Configuration;
-import bgu.dcr.az.anop.conf.ConfigurationException;
-import bgu.dcr.az.anop.conf.Property;
-import bgu.dcr.az.anop.conf.PropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromCollectionPropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromConfigurationPropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;

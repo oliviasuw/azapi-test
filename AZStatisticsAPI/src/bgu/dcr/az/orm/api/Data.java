@@ -5,14 +5,12 @@
  */
 package bgu.dcr.az.orm.api;
 
-import java.util.Iterator;
-
 /**
  * represents a collection of records
  *
  * @author Benny Lutati
  */
-public interface Data extends Iterator<RecordAccessor> {
+public interface Data extends Iterable<RecordAccessor> {
 
     /**
      * @return the amount of records that is stored in this data

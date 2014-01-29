@@ -20,6 +20,7 @@ import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.ExecutionEnvironment;
 import bgu.dcr.az.mas.MessageRouter;
 import bgu.dcr.az.mas.impl.ds.FastSingletonMap;
+import bgu.dcr.az.mas.misc.Logger;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -39,11 +40,14 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
     private final Set<Integer> finishedAgents;
     private final Queue<AZIPMessage>[] messageQueue;
     protected final Execution execution;
+    protected final Logger logger;
 
     private int tick;
 
     public BaseAgentController(int id, Execution ex) throws ClassNotFoundException, ConfigurationException, InitializationException {
         super(id);
+        logger = ex.require(Logger.class);
+
         this.execution = ex;
         this.router = ex.require(MessageRouter.class);
 
@@ -114,7 +118,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
         if (!currentMessageQueue().isEmpty()) {
 //            System.out.println("Agent " + pid() + " found message in its queue");
             wakeup(pid());
-        }else {
+        } else {
             sleep();
         }
     }
@@ -196,7 +200,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 
     @Override
     public void log(int agentId, String msg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        logger.log("Agent " + agentId, msg);
     }
 
     @Override

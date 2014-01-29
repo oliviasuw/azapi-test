@@ -9,12 +9,16 @@ import bgu.dcr.az.anop.reg.RegisteryUtils;
 import bgu.dcr.az.anop.conf.impl.FromCollectionPropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromConfigurationPropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import nu.xom.Attribute;
+import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
+import nu.xom.Serializer;
 import nu.xom.Text;
 
 /**
@@ -39,8 +43,10 @@ public class ConfigurationUtils {
 
     public static Configuration fromXML(Element e) throws ClassNotFoundException {
         Configuration c = RegisteryUtils.getDefaultRegistery().getConfiguration(e.getLocalName());
-        
-        if (c == null) throw new ClassNotFoundException("cannot find class registration for element " + e.getLocalName());
+
+        if (c == null) {
+            throw new ClassNotFoundException("cannot find class registration for element " + e.getLocalName());
+        }
 
         fillPropertiesFromAttributes(c, e);
 
@@ -219,6 +225,18 @@ public class ConfigurationUtils {
     public static Configuration createConfigurationFor(Object o) throws ClassNotFoundException {
         Configuration conf = RegisteryUtils.getDefaultRegistery().getConfiguration(o.getClass());
         return conf;
+    }
+
+    public static void write(Object configurable, File problemFile) throws IOException {
+        throw new UnsupportedOperationException("Not Supported yet, need to have Configuration.loadFrom(Object)");
+//        Configuration conf = createConfigurationFor(configurable);
+//        //need to load configuration form object...
+//        
+//        Serializer serializer = new Serializer(System.out, "UTF-8");
+//        serializer.setIndent(4);
+//        serializer.write(new Document(toXML()));
+//        serializer.flush();
+
     }
 
 }

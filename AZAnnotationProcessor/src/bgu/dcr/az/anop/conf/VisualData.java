@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package bgu.dcr.az.anop.conf;
 
 /**
@@ -11,7 +10,10 @@ package bgu.dcr.az.anop.conf;
  * @author User
  */
 public interface VisualData {
-    String displayName();
-    String iconPath();
-    String description();
+
+    public String displayName();
+
+    public String iconPath();
+
+    public String description();
 }

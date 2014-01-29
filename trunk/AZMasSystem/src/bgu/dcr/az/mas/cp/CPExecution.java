@@ -14,6 +14,8 @@ import bgu.dcr.az.mas.AgentDistributer;
 import bgu.dcr.az.mas.AgentSpawner;
 import bgu.dcr.az.mas.impl.BaseExecution;
 import bgu.dcr.az.mas.impl.InitializationException;
+import bgu.dcr.az.mas.impl.misc.StdoutLogger;
+import bgu.dcr.az.mas.misc.Logger;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,7 +63,7 @@ public class CPExecution extends BaseExecution<CPSolution> {
 
     @Override
     protected void initialize() {
-        //???
+        put(Logger.class, new StdoutLogger());
     }
 
     Problem getGlobalProblem() {

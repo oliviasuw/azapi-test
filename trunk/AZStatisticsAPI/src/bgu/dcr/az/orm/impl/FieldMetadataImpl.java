@@ -8,6 +8,9 @@ package bgu.dcr.az.orm.impl;
 import bgu.dcr.az.orm.api.FieldMetadata;
 import bgu.dcr.az.orm.api.TableMetadata;
 import bgu.dcr.az.stat.util.SQLUtils;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 /**
  *
@@ -36,4 +39,16 @@ public class FieldMetadataImpl implements FieldMetadata {
     public static FieldMetadataImpl fromSQLData(String name, int dataType) {
         return new FieldMetadataImpl(name, SQLUtils.sqlTypeToClass(dataType));
     }
+
+    public static FieldMetadataImpl[] fromResultSet(ResultSet rs) throws SQLException {
+        ResultSetMetaData metadata = rs.getMetaData();
+
+        FieldMetadataImpl[] results = new FieldMetadataImpl[metadata.getColumnCount()];
+        for (int i = 0; i < results.length; i++) {
+            results[i] = fromSQLData(metadata.getColumnLabel(i + 1), metadata.getColumnType(i + 1));
+        }
+
+        return results;
+    }
+
 }

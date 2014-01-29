@@ -3,11 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package bgu.dcr.az.orm.impl;
 
 import bgu.dcr.az.orm.api.Data;
+import bgu.dcr.az.orm.api.FieldMetadata;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  *
@@ -15,8 +17,21 @@ import java.sql.ResultSet;
  */
 public class DataUtils {
 
-    static Data fromResultSet(ResultSet results) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public static Data fromResultSet(ResultSet results) throws SQLException {
+
+        FieldMetadata[] fields = FieldMetadataImpl.fromResultSet(results);
+        ArrayList<Object[]> records = new ArrayList<>();
+
+        while (results.next()) {
+            Object[] data = new Object[fields.length];
+            for (int i = 0; i < fields.length; i++) {
+                data[i] = results.getObject(i);
+            }
+
+            records.add(data);
+        }
+
+        return new SimpleData(records, fields);
     }
-    
+
 }

@@ -8,11 +8,15 @@ import bgu.dcr.az.anop.utils.CodeUtils;
 import bgu.dcr.az.anop.utils.JavaDocParser;
 import bgu.dcr.az.anop.utils.ProcessorUtils;
 import bgu.dcr.az.anop.utils.StringUtils;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
@@ -21,12 +25,13 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
 import org.mvel2.ParserContext;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateCompiler;
@@ -75,9 +80,9 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
             createConfiguration(te);
 
             if (te.getAnnotation(Register.class) != null) {
-                registerClass(te.getQualifiedName().toString(), te.getAnnotation(Register.class).value());
+                registerClass(te.getQualifiedName().toString(), te.getAnnotation(Register.class).value(), te);
             } else {
-                registerClass(te.getQualifiedName().toString(), "ALGORITHM." + te.getAnnotation(Algorithm.class).name());
+                registerClass(te.getQualifiedName().toString(), "ALGORITHM." + te.getAnnotation(Algorithm.class).name(), te);
             }
         }
 
@@ -99,7 +104,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         }
     }
 
-    public static void createConfiguration(TypeElement te) {
+    public void createConfiguration(TypeElement te) {
 
         final Map ctx = new HashMap();
         final List<PropertyInfo> properties = new LinkedList<>();
@@ -150,7 +155,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
             }
         }
 
-        ProcessorUtils.writeClass(AUTOGEN_PACKAGE + "." + ctx.get("className"), configurationTemplate, ctx);
+        ProcessorUtils.writeClass(AUTOGEN_PACKAGE + "." + ctx.get("className"), configurationTemplate, ctx, te);
 
     }
 
@@ -175,7 +180,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         return false;
     }
 
-    public static void registerClass(String classFQN, String registration) {
+    public static void registerClass(String classFQN, String registration, Element... originatingElements) {
         Map registrationData = new HashMap();
         registrationData.put("registrationPackage", REGISTRATION_AUTOGEN_PACKAGE);
         registrationData.put("registrationClass", fqnToConfigurationClassName(classFQN));
@@ -183,7 +188,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
         registrationData.put("registration", registration);
 
         final String registrationFQN = registrationData.get("registrationPackage") + "." + registrationData.get("registrationClass");
-        ProcessorUtils.writeClass(registrationFQN, registrationTemplate, registrationData);
+        ProcessorUtils.writeClass(registrationFQN, registrationTemplate, registrationData, originatingElements);
         ProcessorUtils.appendServiceDefinition(Registration.class.getCanonicalName(), registrationFQN);
     }
 

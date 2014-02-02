@@ -167,7 +167,7 @@ public class JFreeChartPlotter implements Plotter {
     }
 
     @Override
-    public void plotPieChart(Data data, String lableField, String valueField, String seriesField, String title, String xAxisLabel, String yAxisLabel) {
+    public void plotPieChart(Data data, String lableField, String valueField, String title, String xAxisLabel, String yAxisLabel) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

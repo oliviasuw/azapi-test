@@ -33,4 +33,8 @@ public class AlgorithmDef {
         return "AlgorithmDef{" + "name=" + name + '}';
     }
 
+    public String getInstanceName() {
+        return getName();
+    }
+
 }

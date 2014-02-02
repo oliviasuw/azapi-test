@@ -5,7 +5,6 @@
 package bgu.dcr.az.api.exen;
 
 import bgu.dcr.az.api.DeepCopyable;
-import bgu.dcr.az.mas.cp.ExecutionSelector;
 
 /**
  * TODO: hide all the to* so that correctness testers will not have the power to
@@ -19,7 +18,7 @@ public class ExecutionResult<SOLUTION_TYPE extends DeepCopyable> implements Deep
     private SOLUTION_TYPE correctSolution = null;
     private Exception crushReason = null;
     private State state = State.SUCCESS;
-    private ExecutionSelector lastRunExecution;
+    private int lastRunExecution;
 
     @Override
     public String toString() {
@@ -30,11 +29,11 @@ public class ExecutionResult<SOLUTION_TYPE extends DeepCopyable> implements Deep
         return state;
     }
 
-    public ExecutionSelector getLastRunExecution() {
+    public int getLastRunExecution() {
         return lastRunExecution;
     }
 
-    public ExecutionResult<SOLUTION_TYPE> setLastRunExecution(ExecutionSelector lastRunExecution) {
+    public ExecutionResult<SOLUTION_TYPE> setLastRunExecution(int lastRunExecution) {
         this.lastRunExecution = lastRunExecution;
         return this;
     }

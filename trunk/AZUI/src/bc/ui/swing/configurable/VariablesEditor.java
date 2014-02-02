@@ -5,7 +5,7 @@
 package bc.ui.swing.configurable;
 
 import bc.ui.swing.lists.ComponentList;
-import bgu.dcr.az.api.exen.escan.VariableMetadata;
+import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.dev.ui.MessageDialog;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,13 +21,13 @@ public class VariablesEditor extends ComponentList{
     @Override
     public JComponent createComponentFor(Object item) {
         final SingleVariableEditor sv = new SingleVariableEditor();
-        sv.setModel((VariableMetadata)item);
+        sv.setModel((Property)item);
         return sv;
     }
     
-    public void setModel(VariableMetadata[] vars){
+    public void setModel(Property[] vars){
         clear();
-        for (VariableMetadata v : vars){
+        for (Property v : vars){
             add(v);
         }
         
@@ -39,10 +39,10 @@ public class VariablesEditor extends ComponentList{
         Map<String, Object> ret = new HashMap<String, Object>();
         for (Entry<Object, JComponent> v : this.items.entrySet()){
             final Object value = ((SingleVariableEditor)v.getValue()).getValue();
-            VariableMetadata var = (VariableMetadata) v.getKey();
+            Property var = (Property) v.getKey();
             //TODO - IF VALUE IS NULL => provide feedback to the user.
             if (value == null){
-                MessageDialog.showFail("cannot convert input to value", "the given input for the variable " + var.getName() + " cannot be converted to a legal value\n"
+                MessageDialog.showFail("cannot convert input to value", "the given input for the variable " + var.name() + " cannot be converted to a legal value\n"
                         + "there can be number of reasons for that\n"
                         + "- the input format is not recognizeable by the variable class valueOf function\n"
                         + "- there is no static valueOf function defined in the given variable class\n\n"

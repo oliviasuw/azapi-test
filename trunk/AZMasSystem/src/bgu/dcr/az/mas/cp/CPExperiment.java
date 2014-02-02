@@ -5,12 +5,22 @@
  */
 package bgu.dcr.az.mas.cp;
 
+import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
 import bgu.dcr.az.anop.reg.Register;
 import bgu.dcr.az.api.exen.ExecutionResult;
+import bgu.dcr.az.execs.MultithreadedScheduler;
+import bgu.dcr.az.execs.api.Scheduler;
+import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.exp.Experiment;
+import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -18,10 +28,11 @@ import java.util.LinkedList;
  */
 @Register("experiment")
 public class CPExperiment implements Experiment {
+
     private final String failingProblemSavePath = "failing-problems";
 
     private LinkedList<CPExperimentTest> tests = new LinkedList<>();
-    private ExecutionSelector selector = null;
+    private int singleExecutionMode = -1;
 
     /**
      * @propertyName tests
@@ -32,20 +43,20 @@ public class CPExperiment implements Experiment {
     }
 
     /**
-     * @propertyName single-execution-selector
+     * @propertyName single-execution-mode
      * @return
      */
-    public ExecutionSelector getExecutionSelector() {
-        return selector;
+    public int getSingleExecutionMode() {
+        return singleExecutionMode;
     }
 
-    public void setExecutionSelector(ExecutionSelector selector) {
-        this.selector = selector;
+    public void setSingleExecutionMode(int singleExecutionMode) {
+        this.singleExecutionMode = singleExecutionMode;
     }
 
     @Override
     public ExecutionResult execute() {
-        if (selector != null) {
+        if (singleExecutionMode != -1) {
             return executeSelection();
         }
 
@@ -53,7 +64,11 @@ public class CPExperiment implements Experiment {
             ExecutionResult result = t.execute();
 
             if (result.getState() != ExecutionResult.State.SUCCESS) {
-                saveProblem(result.getLastRunExecution());
+                try {
+                    saveProblem(result.getLastRunExecution());
+                } catch (IOException ex) {
+                    Logger.getLogger(CPExperiment.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 return result;
             }
         }
@@ -61,31 +76,72 @@ public class CPExperiment implements Experiment {
     }
 
     private ExecutionResult executeSelection() {
-        for (CPExperimentTest t : tests) {
-            if (t.getName().equals(selector.getSelectedTest())) {
-                ExecutionResult result = t.executeSelection(selector);
+        ExecutorService pool = Executors.newCachedThreadPool();
+        Scheduler sched = new MultithreadedScheduler(pool);
 
-                if (result.getState() != ExecutionResult.State.SUCCESS) {
-                    return result;
-                }
+        try {
+            ExecutionResult result = getExecution(getSingleExecutionMode()).execute(sched, Runtime.getRuntime().availableProcessors());
 
-                break;
+            if (result.getState() != ExecutionResult.State.SUCCESS) {
+                return result;
             }
-        }
 
-        return new ExecutionResult().toSucceefulState(null);
+            return new ExecutionResult().toSucceefulState(null);
+        } catch (ExperimentExecutionException | InterruptedException | ConfigurationException ex) {
+            return new ExecutionResult().toCrushState(ex).setLastRunExecution(singleExecutionMode);
+        } finally {
+            pool.shutdownNow();
+        }
     }
 
-    private void saveProblem(ExecutionSelector lastRunExecution) {
+    private void saveProblem(int i) throws IOException {
         File problemsPath = new File(failingProblemSavePath);
         problemsPath.mkdirs();
         File problemFile = new File(problemsPath, "" + System.currentTimeMillis() + ".xml");
-        
-        ExecutionSelector prevSelector = this.selector;
-        this.selector = lastRunExecution;
-        
+
+        int prevMode = this.singleExecutionMode;
+        this.singleExecutionMode = i;
+
         ConfigurationUtils.write(this, problemFile);
-        this.selector = prevSelector;
+        this.singleExecutionMode = prevMode;
+    }
+
+    @Override
+    public int numberOfExecutions() {
+        int amount = 0;
+        for (CPExperimentTest t : tests) {
+            amount += t.numberOfExecutions();
+        }
+
+        return amount;
+    }
+
+    public CPExperimentTest getTestForExectution(int i) {
+        int amount = 0;
+
+        for (CPExperimentTest t : tests) {
+            int num = t.numberOfExecutions();
+            if (amount + num >= i) {
+                return t;
+            }
+            amount += num;
+        }
+
+        return null;
+    }
+
+    @Override
+    public Execution getExecution(int i) throws ConfigurationException {
+        int amount = 0;
+        for (CPExperimentTest t : tests) {
+            int num = t.numberOfExecutions();
+            if (amount + num >= i) {
+                return t.getExecution(i - amount);
+            }
+            amount += num;
+        }
+
+        return null;
     }
 
 }

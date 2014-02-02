@@ -7,6 +7,7 @@ package bgu.dcr.az.mas.exp.loopers;
 
 import bgu.dcr.az.anop.reg.Register;
 import bgu.dcr.az.anop.conf.Configuration;
+import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
@@ -26,7 +27,7 @@ public class ForLooper implements Looper {
     private Double startValue = null;
     private Double endValue = null;
     private Double tickSizeValue = null;
-    private Integer repeatCountValue = 1; 
+    private Integer repeatCountValue = 1;
 
     /**
      * @propertyName looper
@@ -94,7 +95,7 @@ public class ForLooper implements Looper {
 
     /**
      * @propertyName repeat-count
-     * @return 
+     * @return
      */
     public Integer getRepeatCountValue() {
         return repeatCountValue;
@@ -104,13 +105,13 @@ public class ForLooper implements Looper {
         count = null;
         this.repeatCountValue = repeatCountValue == null ? 1 : repeatCountValue;
     }
-    
+
     @Override
-    public int count() throws ExperimentExecutionException {
+    public int count() throws ConfigurationException {
         if (count == null) {
             checkForLoopValues();
 
-            count = 1 + (int) Math.round((endValue - startValue) / tickSizeValue) ;
+            count = 1 + (int) Math.round((endValue - startValue) / tickSizeValue);
             count *= repeatCountValue;
         }
 
@@ -118,7 +119,7 @@ public class ForLooper implements Looper {
     }
 
     @Override
-    public void configure(int i, Collection<Configuration> configurations) throws ExperimentExecutionException {
+    public void configure(int i, Configuration[] configurations) throws ConfigurationException {
         checkForLoopValues();
 
         int currI = innerLooper == null ? i : i / innerLooper.count();
@@ -139,25 +140,25 @@ public class ForLooper implements Looper {
         }
     }
 
-    private void checkForLoopValues() throws ExperimentExecutionException {
+    private void checkForLoopValues() throws ConfigurationException {
         if (startValue == null) {
-            throw new ExperimentExecutionException("start property must be declared in order to perform for-loop");
+            throw new ConfigurationException("start property must be declared in order to perform for-loop");
         }
 
         if (endValue == null) {
-            throw new ExperimentExecutionException("end property must be declared in order to perform for-loop");
+            throw new ConfigurationException("end property must be declared in order to perform for-loop");
         }
 
         if (tickSizeValue == null) {
-            throw new ExperimentExecutionException("tick-size property must be declared in order to perform for-loop");
+            throw new ConfigurationException("tick-size property must be declared in order to perform for-loop");
         }
 
         if (endValue < startValue) {
-            throw new ExperimentExecutionException("end must be greater than start in order to perform for-loop");
+            throw new ConfigurationException("end must be greater than start in order to perform for-loop");
         }
 
         if (tickSizeValue <= 0) {
-            throw new ExperimentExecutionException("tick-size must be greater 0 in order to perform for-loop");
+            throw new ConfigurationException("tick-size must be greater 0 in order to perform for-loop");
         }
     }
 

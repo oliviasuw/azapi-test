@@ -29,12 +29,13 @@ public class CPExecution extends BaseExecution<CPSolution> {
     private final CPSolution solution;
     private final Problem problem;
 
-    public CPExecution(Scheduler scheduler, AgentSpawner spawner, Problem problem, ExecutionEnvironment env, int numCores) {
-        super(scheduler, problem.getAgentDistributer(), spawner, env, numCores);
+    public CPExecution(AgentSpawner spawner, Problem problem, ExecutionEnvironment env) {
+        super(problem.getAgentDistributer(), spawner, env);
 
         this.problem = problem;
         this.solution = new CPSolution(problem);
     }
+    
 
     @Override
     protected Collection<AgentController> createControllers() throws InitializationException {
@@ -63,7 +64,7 @@ public class CPExecution extends BaseExecution<CPSolution> {
 
     @Override
     protected void initialize() {
-        put(Logger.class, new StdoutLogger());
+        supply(Logger.class, new StdoutLogger());
     }
 
     Problem getGlobalProblem() {

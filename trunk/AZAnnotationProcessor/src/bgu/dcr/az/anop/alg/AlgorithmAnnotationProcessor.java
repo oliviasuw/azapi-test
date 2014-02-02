@@ -98,7 +98,7 @@ public class AlgorithmAnnotationProcessor extends AbstractProcessor {
             }
             scanned = (TypeElement) ProcessorUtils.toDeclaredType(scanned.getSuperclass()).asElement();
         }
-        ProcessorUtils.writeClass(AUTOGEN_PACKAGE + "." + ctx.get("className"), agentManipulatorTemplate, ctx);
+        ProcessorUtils.writeClass(AUTOGEN_PACKAGE + "." + ctx.get("className"), agentManipulatorTemplate, ctx, te);
     }
 
     public static class HandlerInfo {

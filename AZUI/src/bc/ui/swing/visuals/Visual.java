@@ -4,6 +4,7 @@
  */
 package bc.ui.swing.visuals;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
@@ -106,7 +107,7 @@ public class Visual {
         return ret;
     }
 
-    public static LinkedList<Visual> adapt(List items, VisualGen func) {
+    public static LinkedList<Visual> adapt(Iterable items, VisualGen func) {
         LinkedList<Visual> ret = new LinkedList<Visual>();
         for (Object i : items) {
             ret.add(func.gen(i));

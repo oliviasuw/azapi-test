@@ -78,4 +78,9 @@ public abstract class AbstractAgentManipulator implements AgentManipulator, Conf
         return configurationDelegate.doc();
     }
 
+    @Override
+    public Configuration loadFrom(Object o) throws ConfigurationException {
+        return configurationDelegate.loadFrom(o);
+    }
+
 }

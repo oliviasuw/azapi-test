@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  *
@@ -131,33 +132,42 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
     protected void quota() {
         final Queue<AZIPMessage> mq = currentMessageQueue();
 
-        AZIPMessage m = mq.poll();
+        while (true) {
+            AZIPMessage m = mq.poll();
 
-        if (m != null) {
-            AgentWithManipulator a = controlledAgents.get(m.getAgentRecepient());
-            if (a == null) {
-                if (!finishedAgents.contains(m.getAgentRecepient())) {
-                    Agt0DSL.panic("AgentController: " + pid() + " got unexpected message for agent: " + m.getAgentRecepient());
+            if (m != null) {
+                AgentWithManipulator a = controlledAgents.get(m.getAgentRecepient());
+                if (a == null) {
+                    if (!finishedAgents.contains(m.getAgentRecepient())) {
+                        Agt0DSL.panic("AgentController: " + pid() + " got unexpected message for agent: " + m.getAgentRecepient());
+                    }
+                    return;
                 }
-                return;
-            }
-            Message newM = a.a.setCurrentMessage(m.getData());
-            if (newM != null) {
-                a.am.callHandler(a.a, newM.getName(), newM.getArgs());
-            }
+                Message newM = a.a.setCurrentMessage(m.getData());
+                if (newM != null) {
+                    a.am.callHandler(a.a, newM.getName(), newM.getArgs());
+                }
 
-            if (a.a.isFinished()) {
+                if (a.a.isFinished()) {
 
-                removeControlledAgent(a);
-                return;
-            }
+                    removeControlledAgent(a);
+                    return;
+                }
 
-            if (mq.isEmpty()) {
+                if (mq.isEmpty()) {
+                    sleep();
+                    return;
+                }
+
+            } else {
                 sleep();
+                return;
             }
-
-        } else {
-            sleep();
+            
+            //Half eager implementation
+            if (!mq.isEmpty() && ThreadLocalRandom.current().nextBoolean()){
+                return;
+            }
         }
     }
 

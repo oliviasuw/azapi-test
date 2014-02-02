@@ -8,6 +8,7 @@ package bgu.dcr.az.mas.cp;
 import bgu.dcr.az.anop.reg.Register;
 import bgu.dcr.az.anop.reg.RegisteryUtils;
 import bgu.dcr.az.anop.conf.Configuration;
+import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
 import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.api.exen.mdef.ProblemGenerator;
@@ -15,14 +16,15 @@ import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.execs.MultithreadedScheduler;
 import bgu.dcr.az.execs.api.Scheduler;
 import bgu.dcr.az.mas.AgentSpawner;
+import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.ExecutionEnvironment;
 import bgu.dcr.az.mas.exp.AlgorithmDef;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import bgu.dcr.az.mas.exp.Looper;
 import bgu.dcr.az.mas.exp.loopers.SingleExecutionLooper;
+import bgu.dcr.az.utils.RandomSequance;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
@@ -38,7 +40,7 @@ public class CPExperimentTest implements Experiment {
     private static int creationNumber = 0;
 
     private ProblemGenerator pgen;
-    private final List<AlgorithmDef> algorithms = new LinkedList<>();
+    private final List<AlgorithmDef> algorithms = new ArrayList<>();
     private Looper looper = new SingleExecutionLooper();
     private ExecutionEnvironment executionEnvironment = ExecutionEnvironment.async;
     private CPCorrectnessTester correctnessTester;
@@ -127,14 +129,20 @@ public class CPExperimentTest implements Experiment {
 
     @Override
     public ExecutionResult execute() {
-        return execute(null);
+        return execute(-1);
     }
 
-    private ExecutionResult execute(ExecutionSelector selector) {
+    /**
+     *
+     * @param executionNumber -1 to run all
+     * @return
+     */
+    private ExecutionResult execute(int executionNumber) {
 
         int numCores = Runtime.getRuntime().availableProcessors();
         final ExecutorService pool = Executors.newFixedThreadPool(numCores);
         Scheduler scheduler = new MultithreadedScheduler(pool);
+        RandomSequance randomSeq = new RandomSequance(seed);
 
         RuntimeCoreAdapter[] coreAdapters = new RuntimeCoreAdapter[algorithms.size()];
 
@@ -150,78 +158,33 @@ public class CPExperimentTest implements Experiment {
             return new ExecutionResult().toCrushState(new ExperimentExecutionException("At least one algorithm should be defined in order to execute an experiment"));
         }
 
-        Object[] configurableElements = {
-            getProblemGenerator()
-        };
-
-        //for generating debugging information
-        String lastExecutedAlgorithmName = "?";
-        int lastRunExecutionNumber = 0;
-
+        int i = 0;
         try {
-            Random seedGenerator = new Random(seed);
+            ConfigurationOfElements conf = new ConfigurationOfElements();
+            for (i = executionNumber == -1 ? 0 : executionNumber; i < looper.count(); i++) {
 
-            List<Configuration> configurationOfElements = new ArrayList<>(configurableElements.length);
-            for (Object o : configurableElements) {
-                configurationOfElements.add(ConfigurationUtils.createConfigurationFor(o));
-            }
+                CPExecution exec = createExecutionWithSeed(i, conf, randomSeq.getIthLong(i));
+                System.out.println("Start Running Problem on " + coreAdapters[i % algorithms.size()].getAdaptedNumberOfCores() + " cores");
 
-            for (int i = 0; i < looper.count(); i++) {
-                lastRunExecutionNumber = i;
+                ExecutionResult result = exec.execute(scheduler, coreAdapters[i % algorithms.size()].getAdaptedNumberOfCores());
 
-                if (selector != null && selector.getExecutionNumber() != i) {
-                    seedGenerator.nextLong();
-                    continue;
+                if (result.getState() != ExecutionResult.State.SUCCESS) {
+                    return result.setLastRunExecution(i);
                 }
 
-                //prepare problem
-                looper.configure(i, configurationOfElements);
-                for (int j = 0; j < configurableElements.length; j++) {
-                    configurationOfElements.get(j).configure(configurableElements[j]);
-                }
-                System.out.println("Start Generating Problem " + i);
-                Problem p = new Problem();
-                pgen.generate(p, new Random(seedGenerator.nextLong()));
-
-                //running algorithms
-                int numAlgo = 0;
-                for (AlgorithmDef adef : algorithms) {
-                    lastExecutedAlgorithmName = adef.getName();
-
-                    if (selector != null && !selector.getSelectedAlgorithmInstanceName().equals(adef.getName())) {
-                        continue;
-                    }
-
-                    AgentSpawner spawner = new SimpleAgentSpawner(RegisteryUtils.getDefaultRegistery().getRegisteredClassByName("ALGORITHM." + adef.getName()));
-                    CPExecution exec = new CPExecution(scheduler, spawner, p, executionEnvironment, coreAdapters[numAlgo].getAdaptedNumberOfCores());
-
-                    if (correctnessTester != null) {
-                        exec.put(CPCorrectnessTester.class, correctnessTester);
-                    }
-
-                    System.out.println("Start Running Problem on " + coreAdapters[numAlgo].getAdaptedNumberOfCores() + " cores");
-
-                    ExecutionResult result = exec.execute();
-
-                    if (result.getState() != ExecutionResult.State.SUCCESS) {
-                        return result.setLastRunExecution(new ExecutionSelector(getName(), lastExecutedAlgorithmName, lastRunExecutionNumber));
-                    }
-
-                    if (selector != null) {
-                        return result;
-                    }
-
-                    coreAdapters[numAlgo].update(i, scheduler);
-                    numAlgo++;
+                coreAdapters[i % algorithms.size()].update(i, scheduler);
+                if (executionNumber != -1) {
+                    return result;
                 }
             }
         } catch (Exception ex) {
-            return new ExecutionResult().toCrushState(new ExperimentExecutionException("cannot execute experiment - configuration problem, see cause", ex)).setLastRunExecution(new ExecutionSelector(getName(), lastExecutedAlgorithmName, lastRunExecutionNumber));
+            return new ExecutionResult().toCrushState(new ExperimentExecutionException("cannot execute experiment - configuration problem, see cause", ex)).setLastRunExecution(i);
         } finally {
             pool.shutdownNow();
         }
 
-        return new ExecutionResult().toSucceefulState(null);
+        return new ExecutionResult()
+                .toSucceefulState(null);
     }
 
     @Override
@@ -229,8 +192,48 @@ public class CPExperimentTest implements Experiment {
         return "DCRExperiment{" + "pgen=" + pgen + ", algorithms=" + algorithms + ", looper=" + looper + '}';
     }
 
-    ExecutionResult executeSelection(ExecutionSelector selector) {
-        return execute(selector);
+    @Override
+    public int numberOfExecutions() {
+        try {
+            return looper.count() * algorithms.size();
+        } catch (ConfigurationException ex) {
+            throw new RuntimeException("cannot calculate number of executions, see cause", ex);
+        }
+    }
+
+    @Override
+    public Execution getExecution(int i) throws ConfigurationException {
+        try {
+            ConfigurationOfElements conf = new ConfigurationOfElements();
+            for (int j = 0; j < conf.configurableElements.length; j++) {
+                conf.configurableElements[j] = conf.configurationsOfElements[j].create();
+            }
+            
+            RandomSequance seq = new RandomSequance(seed);
+            return createExecutionWithSeed(i, conf, seq.getIthLong(i));
+        } catch (ClassNotFoundException ex) {
+            throw new ConfigurationException("cannot create configuration, see cause", ex);
+        } 
+    }
+
+    public CPExecution createExecutionWithSeed(int i, ConfigurationOfElements conf, long seed) throws ConfigurationException {
+        looper.configure(i, conf.configurationsOfElements);
+
+        conf.apply();
+        System.out.println("Start Generating Problem " + i);
+        Problem p = new Problem();
+        pgen.generate(p, new Random(seed));
+
+        AlgorithmDef adef = algorithms.get(i % algorithms.size());
+        AgentSpawner spawner = new SimpleAgentSpawner(RegisteryUtils.getDefaultRegistery().getRegisteredClassByName("ALGORITHM." + adef.getName()));
+        CPExecution exec = new CPExecution(spawner, p, executionEnvironment);
+
+        if (correctnessTester != null) {
+            exec.supply(CPCorrectnessTester.class, correctnessTester);
+        }
+
+        return exec;
+
     }
 
     private static interface RuntimeCoreAdapter {
@@ -241,6 +244,28 @@ public class CPExperimentTest implements Experiment {
         void update(int round, Scheduler scheduler);
 
         int getAdaptedNumberOfCores();
+    }
+
+    private class ConfigurationOfElements {
+
+        Object[] configurableElements;
+        Configuration[] configurationsOfElements;
+
+        public ConfigurationOfElements() throws ClassNotFoundException {
+            configurableElements = new Object[]{pgen};
+
+            configurationsOfElements = new Configuration[configurableElements.length];
+            for (int i = 0; i < configurableElements.length; i++) {
+                configurationsOfElements[i] = ConfigurationUtils.createConfigurationFor(configurableElements[i]);
+            }
+        }
+
+        public void apply() throws ConfigurationException {
+            for (int j = 0; j < configurableElements.length; j++) {
+                configurationsOfElements[j].configure(configurableElements[j]);
+            }
+
+        }
     }
 
     private static class NaiveRuntimeCoreAdapter implements RuntimeCoreAdapter {

@@ -6,6 +6,7 @@
 package bgu.dcr.az.mas;
 
 import bgu.dcr.az.api.exen.ExecutionResult;
+import bgu.dcr.az.execs.api.Scheduler;
 import bgu.dcr.az.execs.api.TerminationReason;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import bgu.dcr.az.mas.impl.InitializationException;
@@ -20,9 +21,9 @@ public interface Execution {
 
     public <T extends ExecutionService> T require(Class<T> service) throws InitializationException;
 
-    public void put(Class<? extends ExecutionService> serviceKey, ExecutionService service);
+    public void supply(Class<? extends ExecutionService> serviceKey, ExecutionService service);
 
-    public ExecutionResult execute() throws ExperimentExecutionException, InterruptedException;
+    public ExecutionResult execute(Scheduler sched, int numCores) throws ExperimentExecutionException, InterruptedException;
     
     public ExecutionEnvironment getEnvironment();
     

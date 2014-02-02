@@ -31,5 +31,6 @@ public interface Configuration extends Iterable<Property> , Documented{
     void configure(Object o) throws ConfigurationException;
 
     Property get(String name);
-    
+
+    Configuration loadFrom(Object o) throws ConfigurationException;
 }

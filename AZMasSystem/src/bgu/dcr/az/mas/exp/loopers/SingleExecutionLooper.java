@@ -21,7 +21,7 @@ public class SingleExecutionLooper implements Looper {
     }
 
     @Override
-    public void configure(int i, Collection<Configuration> configurations) {
+    public void configure(int i, Configuration[] configurations) {
     }
 
 }

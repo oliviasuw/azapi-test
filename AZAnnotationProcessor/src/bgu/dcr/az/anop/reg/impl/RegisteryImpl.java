@@ -56,7 +56,7 @@ public class RegisteryImpl implements bgu.dcr.az.anop.reg.Registery {
     public void register(Class clazz, String registeredName) {
         System.err.println("Class " + clazz.getCanonicalName() + " is registered with name: " + registeredName);
         if (registeredClassesByName.put(registeredName, clazz) != null) {
-            throw new UnsupportedOperationException("Registered name must be unique: " + registeredName);
+            throw new UnsupportedOperationException("Registered name must be unique: " + registeredName + " (try running clean and build)");
         }
 
         LinkedList<Class> openList = new LinkedList<>();

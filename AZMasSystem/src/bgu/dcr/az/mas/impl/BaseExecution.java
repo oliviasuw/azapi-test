@@ -35,16 +35,12 @@ public abstract class BaseExecution<SOLUTION_TYPE extends DeepCopyable> implemen
     private final Map<Class, HookProvider> hookProviders = new HashMap<>();
     private final Map<Class<? extends ExecutionService>, ExecutionServiceWithInitializationData> services = new HashMap<>();
 
-    private final Scheduler scheduler;
-    private final int numCores;
     private final ExecutionEnvironment env;
     private final EventListeners<Hooks.TerminationHook> terminationHooks = EventListeners.create(Hooks.TerminationHook.class);
 
-    public BaseExecution(Scheduler scheduler, AgentDistributer distributer, AgentSpawner spawner, ExecutionEnvironment env, int numCores) {
-        this.numCores = numCores;
-        this.scheduler = scheduler;
-        put(AgentDistributer.class, distributer);
-        put(AgentSpawner.class, spawner);
+    public BaseExecution(AgentDistributer distributer, AgentSpawner spawner, ExecutionEnvironment env) {
+        supply(AgentDistributer.class, distributer);
+        supply(AgentSpawner.class, spawner);
         this.env = env;
 
         registerHookProvider(Hooks.TerminationHook.class, this);
@@ -55,11 +51,11 @@ public abstract class BaseExecution<SOLUTION_TYPE extends DeepCopyable> implemen
     }
 
     protected abstract SOLUTION_TYPE getSolution();
-    
+
     @Override
-    public ExecutionResult execute() throws ExperimentExecutionException, InterruptedException {
+    public ExecutionResult execute(Scheduler sched, int numCores) throws ExperimentExecutionException, InterruptedException {
         ThreadSafeProcTable table = new ThreadSafeProcTable();
-        put(MessageRouter.class, new BaseMessageRouter());
+        supply(MessageRouter.class, new BaseMessageRouter());
 
         try {
 
@@ -79,18 +75,18 @@ public abstract class BaseExecution<SOLUTION_TYPE extends DeepCopyable> implemen
             throw new ExperimentExecutionException("error on experiment initialization, see cause", ex);
         }
 
-        TerminationReason terminationResult = scheduler.schedule(table, numCores);
-        
+        TerminationReason terminationResult = sched.schedule(table, numCores);
+
         ExecutionResult<SOLUTION_TYPE> result = new ExecutionResult<>();
-        if (terminationResult.isError()){
+        if (terminationResult.isError()) {
             result.toCrushState(terminationResult.getErrorDescription());
-        }else {
+        } else {
             result.toSucceefulState(getSolution());
         }
-        
+
         terminationHooks.fire().hook(this, result);
-        
-        System.out.println("Contention: " + scheduler.getContention());
+
+        System.out.println("Contention: " + sched.getContention());
         return result;
     }
 
@@ -115,14 +111,13 @@ public abstract class BaseExecution<SOLUTION_TYPE extends DeepCopyable> implemen
     }
 
     @Override
-    public final void put(Class<? extends ExecutionService> serviceKey, ExecutionService service) {
+    public final void supply(Class<? extends ExecutionService> serviceKey, ExecutionService service) {
         services.put(serviceKey, new ExecutionServiceWithInitializationData(service));
     }
 
     protected abstract Collection<AgentController> createControllers() throws InitializationException;
 
     protected abstract void initialize() throws InitializationException;
-
 
     @Override
     public ExecutionEnvironment getEnvironment() {

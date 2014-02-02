@@ -6,6 +6,7 @@
 package bgu.dcr.az.mas.exp;
 
 import bgu.dcr.az.anop.conf.Configuration;
+import bgu.dcr.az.anop.conf.ConfigurationException;
 import java.util.Collection;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Collection;
  */
 public interface Looper {
 
-    int count() throws ExperimentExecutionException;
+    int count() throws ConfigurationException;
 
-    void configure(int i, Collection<Configuration> configurations) throws ExperimentExecutionException;
+    void configure(int i, Configuration[] configurations) throws ConfigurationException;
 }

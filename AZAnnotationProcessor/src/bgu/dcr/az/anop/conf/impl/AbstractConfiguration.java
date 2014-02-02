@@ -8,8 +8,10 @@ package bgu.dcr.az.anop.conf.impl;
 import bgu.dcr.az.anop.conf.TypeInfo;
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.ConfigurationException;
+import bgu.dcr.az.anop.conf.ConfigurationUtils;
 import bgu.dcr.az.anop.conf.JavaDocInfo;
 import bgu.dcr.az.anop.conf.Property;
+import bgu.dcr.az.anop.conf.PropertyValue;
 import bgu.dcr.az.anop.conf.Variable;
 import bgu.dcr.az.anop.conf.VisualData;
 import java.lang.reflect.Field;
@@ -29,7 +31,6 @@ public abstract class AbstractConfiguration implements Configuration {
     protected TypeInfo type;
     protected VisualData vdata;
     protected JavaDocInfo javadoc;
-
 
     @Override
     public Collection<Property> properties() {
@@ -74,6 +75,19 @@ public abstract class AbstractConfiguration implements Configuration {
                 Property p = new VariablePropertyImpl(ano.name(), this, f);
 //                System.out.println("found variable property: " + ano.name());
                 properties.put(ano.name(), p);
+            }
+        }
+    }
+
+    protected void loadFromVariables(Object o) throws ConfigurationException {
+        for (Property p : properties.values()) {
+            if (p instanceof VariablePropertyImpl) {
+                try {
+                    VariablePropertyImpl vp = (VariablePropertyImpl) p;
+                    vp.set(ConfigurationUtils.toPropertyValue(vp.getField().get(o)));
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    throw new ConfigurationException("cannot configure property for variable: " + p.name(), ex);
+                }
             }
         }
     }

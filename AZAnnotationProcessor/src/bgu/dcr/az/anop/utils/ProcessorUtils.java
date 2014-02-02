@@ -229,9 +229,9 @@ public class ProcessorUtils {
      * @param codeTemplate
      * @param context
      */
-    public static void writeClass(String classFQN, CompiledTemplate codeTemplate, Map context) {
+    public static void writeClass(String classFQN, CompiledTemplate codeTemplate, Map context, Element... originatingElements) {
         String out = (String) TemplateRuntime.execute(codeTemplate, context);
-        writeClass(classFQN, out);
+        writeClass(classFQN, out, originatingElements);
     }
 
     /**
@@ -240,11 +240,11 @@ public class ProcessorUtils {
      * @param classFQN
      * @param code
      */
-    public static void writeClass(String classFQN, String code) {
+    public static void writeClass(String classFQN, String code, Element... originatingElements) {
         Filer filler = penv.getFiler();
 
         try {
-            JavaFileObject source = filler.createSourceFile(classFQN);
+            JavaFileObject source = filler.createSourceFile(classFQN, originatingElements);
             try (Writer w = source.openWriter()) {
                 w.append(code);
                 w.flush();

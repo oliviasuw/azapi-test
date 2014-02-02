@@ -11,13 +11,19 @@ import bgu.dcr.az.anop.conf.impl.FromConfigurationPropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.IIOException;
 import nu.xom.Attribute;
+import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
+import nu.xom.ParsingException;
 import nu.xom.Serializer;
 import nu.xom.Text;
 
@@ -226,17 +232,93 @@ public class ConfigurationUtils {
         Configuration conf = RegisteryUtils.getDefaultRegistery().getConfiguration(o.getClass());
         return conf;
     }
+    
+    public static Configuration load(Object o) throws ClassNotFoundException, ConfigurationException{
+        return createConfigurationFor(o).loadFrom(o);
+    }
 
     public static void write(Object configurable, File problemFile) throws IOException {
-        throw new UnsupportedOperationException("Not Supported yet, need to have Configuration.loadFrom(Object)");
-//        Configuration conf = createConfigurationFor(configurable);
-//        //need to load configuration form object...
-//        
-//        Serializer serializer = new Serializer(System.out, "UTF-8");
-//        serializer.setIndent(4);
-//        serializer.write(new Document(toXML()));
-//        serializer.flush();
+        try (PrintStream pw = new PrintStream(problemFile)) {
+            Configuration conf = createConfigurationFor(configurable).loadFrom(configurable);
 
+            Serializer serializer = new Serializer(pw, "UTF-8");
+            serializer.setIndent(4);
+            serializer.write(new Document(toXML(conf)));
+            serializer.flush();
+        } catch (ClassNotFoundException | ConfigurationException ex) {
+            throw new IOException("cannot write configuration", ex);
+        }
+
+    }
+
+    public static boolean isConfigurable(Class c) {
+        return RegisteryUtils.getDefaultRegistery().getRegisteredClassName(c) != null;
+    }
+
+    public static PropertyValue toPropertyValue(Object o) throws ConfigurationException {
+        if (o == null) {
+            return null;
+        }
+
+        if (o instanceof Collection) {
+            FromCollectionPropertyValue value = new FromCollectionPropertyValue();
+            Collection co = (Collection) o;
+
+            for (Object i : co) {
+                value.add(toPropertyValue(i));
+            }
+            return value;
+        } else if (isConfigurable(o.getClass())) {
+            FromConfigurationPropertyValue value = null;
+            try {
+                value = new FromConfigurationPropertyValue(createConfigurationFor(o).loadFrom(o));
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(ConfigurationUtils.class.getName()).log(Level.SEVERE, null, ex);
+                //cannot happen
+            }
+            return value;
+        } else {
+            return new FromStringPropertyValue(o.toString());
+        }
+    }
+
+    /**
+     * read an object configuration from the given file
+     *
+     * @param <T>
+     * @param f
+     * @return
+     */
+    public static Configuration read(File f) throws IOException {
+        try {
+            Builder builder = new Builder();
+            Document doc = builder.build(f);
+
+            return ConfigurationUtils.fromXML(doc.getRootElement());
+        } catch (ParsingException ex) {
+            throw new IIOException("improper formated file", ex);
+        } catch (ClassNotFoundException ex) {
+            throw new IIOException("cannot create configuration from given file", ex);
+        }
+    }
+
+    /**
+     * an attributes of configuration is all the properties which have a type
+     * that is not a complex vale (configurable, collection, etc.)
+     *
+     * @param rconf
+     * @return
+     */
+    public static List<Property> getAttributesOf(Configuration rconf) {
+        LinkedList<Property> results = new LinkedList<>();
+        for (Property p : rconf){
+            final Class type = p.typeInfo().getType();
+            if (!Collection.class.isAssignableFrom(type) && !isConfigurable(type)){
+                results.add(p);
+            }
+        }
+        
+        return results;
     }
 
 }

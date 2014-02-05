@@ -4,83 +4,69 @@
  */
 package bgu.dcr.az.pivot.model;
 
-import bgu.dcr.az.anop.utils.EventListeners;
-import bgu.dcr.az.pivot.model.impl.UnavailableFieldException;
-import bgu.dcr.az.utils.ImmutableCollectionView;
+import bgu.dcr.az.orm.api.Data;
 import java.util.Set;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 
 /**
  *
  * @author User
- * @param <T>
  */
-public interface Pivot<T> {
-    
-    void beforeFieldNameChanged(Field field, String newName);
-    
-    void afterFieldNameChanged(Field field, String oldName);
-    
+public interface Pivot {
+
     /**
-     * <b>Series</b> represented as <b>Legend</b> at the <i>graph view</i> and as 
-     * <b>Columns</b> labels at the <i>table view</i>. The each value of Series 
-     * calculated by enumerating all possible combinations of the selected 
+     * <b>Series</b> represented as <b>Legend</b> at the <i>graph view</i> and
+     * as
+     * <b>Columns</b> labels at the <i>table view</i>. The each value of Series
+     * calculated by enumerating all possible combinations of the selected
      * fields data values.
+     *
      * @return the collection of selected Series fields
      */
-    ImmutableCollectionView<Field> getSelectedSeriesFields();    
+    ObservableList<Field> getSelectedSeriesFields();
 
     /**
-     * <b>Values</b> represented as <b>internal data</b> at the <i>table view</i>
+     * <b>Values</b> represented as <b>internal data</b> at the <i>table
+     * view</i>
      * and as <b>height</b> of the data points at the <i>graph view</i>. The
-     * values computed by the partitioning of the initial data into sets according
-     * to {@see getSelectedSeriesFields()} and {@see getSelectedAxisFields()} values. 
-     * Then filtering is applied using predefined values of {@see getSelectedFilterFields()}
-     * fields. Finally the value calculated by applying {@see AggregationFunction}
-     * on the calculated sets.
+     * values computed by the partitioning of the initial data into sets
+     * according to {
+     *
+     * @see getSelectedSeriesFields()} and {
+     * @see getSelectedAxisFields()} values. Then filtering is applied using
+     * predefined values of {
+     * @see getSelectedFilterFields()} fields. Finally the value calculated by
+     * applying {
+     * @see AggregationFunction} on the calculated sets.
      * @return the collection of selected Values aggregated fields
      */
-    ImmutableCollectionView<AggregatedField> getSelectedValuesFields();
+    ObservableList<AggregatedField> getSelectedValuesFields();
 
     /**
-     * <b>Axis</b> represented as <b>Categories</b> at the <i>graph view</i> and as 
-     * <b>Rows</b> labels at the <i>table view</i>. The each value of Axis 
-     * calculated by enumerating all possible combinations of the selected 
+     * <b>Axis</b> represented as <b>Categories</b> at the <i>graph view</i> and
+     * as
+     * <b>Rows</b> labels at the <i>table view</i>. The each value of Axis
+     * calculated by enumerating all possible combinations of the selected
      * fields data values.
+     *
      * @return the collection of selected Axis fields
      */
-    ImmutableCollectionView<Field> getSelectedAxisFields();
+    ObservableList<Field> getSelectedAxisFields();
 
     /**
-     * <b>Filter</b> fields allows to filter {@see getSelectedValuesFields()} data 
-     * according to the selected Fields with restricted values.
+     * <b>Filter</b> fields allows to filter {
+     *
+     * @see getSelectedValuesFields()} data according to the selected Fields
+     * with restricted values.
      * @return the collection of Filter fields
      */
-    ImmutableCollectionView<FilterField> getSelectedFilterFields();
-    
-    Field selectSeriesField(Field<?, T> field) throws UnavailableFieldException;    
-    
-    AggregatedField selectValuesField(Field<?, T> field) throws UnavailableFieldException;    
-    
-    Field selectAxisField(Field<?, T> field) throws UnavailableFieldException;    
-    
-    FilterField selectFilterField(Field<?, T> field) throws UnavailableFieldException;    
+    ObservableList<FilterField> getSelectedFilterFields();
 
     Set<Field> getAvailableRawFields();
 
-    ImmutableCollectionView<T> getDataRecords();
-    
-    Set<AggregationFunction> getAggregationFunctions();
-    
-    Table getPivotTable();
+    Data getData();
 
-    boolean isInUse(Field element);
+    TableData getPivotedData();
 
-    void removeUseOf(Field element);
-    
-    EventListeners<PivotListener> getListeners();
-    
-    public static interface PivotListener {
-        
-        void pivotChanged(Pivot pivot);
-    }
 }

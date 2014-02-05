@@ -4,20 +4,17 @@
  */
 package bgu.dcr.az.pivot.model;
 
-import bgu.dcr.az.pivot.model.impl.UnavailableValueException;
 import bgu.dcr.az.utils.ImmutableSetView;
+import javafx.collections.ObservableSet;
 
 /**
  *
  * @author User
+ * @param <T>
  */
-public interface FilterField<T, F> extends Field<T, F> {
+public interface FilterField<T> extends Field<T> {
 
-    ImmutableSetView<T> getRestrictedValues();
-    
+    ObservableSet<T> getRestrictedValues();
+
     ImmutableSetView<T> getAllValues();
-
-    void restrictValue(T value) throws UnavailableValueException;
-    
-    void allowValue(T value) throws UnavailableValueException;
 }

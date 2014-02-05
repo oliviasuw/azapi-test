@@ -183,6 +183,16 @@ public class SimpleRecordAccessor implements RecordAccessor {
         return nameToIndex.get(columnName);
     }
 
+    @Override
+    public Object get(int columnIndex) {
+        return record[columnIndex];
+    }
+
+    @Override
+    public Object get(String columnName) {
+        return get(findIndexOf(columnName));
+    }
+
     private static class FieldWithUppercaseName {
 
         Field f;

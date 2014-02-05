@@ -40,6 +40,10 @@ public interface RecordAccessor {
     Boolean getBoolean(String columnName);
 
     <T extends Record> T as(Class<T> recordType);
-    
+
     int numColumns();
+
+    public Object get(int id);
+
+    public Object get(String columnName);
 }

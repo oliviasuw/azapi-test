@@ -4,15 +4,16 @@
  */
 package bgu.dcr.az.pivot.model;
 
+import javafx.beans.property.ObjectProperty;
+
 /**
  *
  * @author User
+ * @param <T>
  */
-public interface AggregatedField<T, F> extends Field<T, F> {
+public interface AggregatedField<T> extends Field<T> {
 
     int getAggregatedFieldId();
 
-    AggregationFunction<T> getAggregationFunction();
-
-    void setAggregationFunction(AggregationFunction<T> function);
+    ObjectProperty<AggregationFunction<T>> aggregationFunctionProperty();    
 }

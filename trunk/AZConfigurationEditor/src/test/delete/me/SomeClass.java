@@ -6,6 +6,8 @@
 package test.delete.me;
 
 import bgu.dcr.az.anop.reg.Register;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -15,6 +17,8 @@ import bgu.dcr.az.anop.reg.Register;
 public class SomeClass {
 
     int i;
+    private List<String> names = new LinkedList<>();
+    private List<SomeType> complexes = new LinkedList<>();
 
     public enum E {
 
@@ -121,7 +125,19 @@ public class SomeClass {
         this.b = b;
     }
 
-    
+    /**
+     * this is my first simple collection
+     *
+     * @return
+     */
+    public List<String> getNames() {
+        return names;
+    }
+
+    public List<Boolean> getBooleans() {
+        return null;
+    }
+
     @Register("some-type-base")
     public static class SomeType {
 
@@ -150,6 +166,14 @@ public class SomeClass {
             this.j = j;
         }
 
+    }
+
+    public List<SomeType> getComplexes() {
+        return complexes;
+    }
+
+    public void setComplexes(List<SomeType> complexes) {
+        this.complexes = complexes;
     }
 
     @Register("some-type-ext2")

@@ -4,21 +4,26 @@
  */
 package bgu.dcr.az.pivot.model;
 
+import bgu.dcr.az.orm.api.FieldMetadata;
+import bgu.dcr.az.orm.api.RecordAccessor;
+import javafx.beans.property.StringProperty;
+
 /**
  *
  * @author User
+ * @param <T>
  */
-public interface Field<T, F> {
+public interface Field<T> {
 
-    Pivot<F> getParent();
-    
     String getFieldName();
-
+    
     void setFieldName(String name);
 
-    Class<T> getFieldType();
+    FieldMetadata getMetadata();
 
     int getFieldId();
 
-    T getValue(F o);
+    T getValue(RecordAccessor r);
+    
+    Field getField();
 }

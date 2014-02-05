@@ -18,12 +18,25 @@ import java.util.Iterator;
 public class SimpleData implements Data {
 
     private final ArrayList<Object[]> data;
-    private final FieldMetadata[] fields;
+    private FieldMetadata[] fields;
     private SimpleRecordAccessor recordAccessorPrototype = null;
+
+    protected SimpleData() {
+        this.data = new ArrayList<>();
+        this.fields = null;
+    }
 
     public SimpleData(ArrayList<Object[]> data, FieldMetadata[] fields) {
         this.data = data;
         this.fields = fields;
+    }
+
+    protected void setFields(FieldMetadata[] fields) {
+        this.fields = fields;
+    }
+
+    protected ArrayList<Object[]> getInnerData() {
+        return data;
     }
 
     @Override

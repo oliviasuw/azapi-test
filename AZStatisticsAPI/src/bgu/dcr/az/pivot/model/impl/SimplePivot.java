@@ -4,22 +4,22 @@
  */
 package bgu.dcr.az.pivot.model.impl;
 
-import bgu.dcr.az.pivot.model.Table;
-import java.util.Collection;
+import bgu.dcr.az.orm.api.Data;
+import bgu.dcr.az.pivot.model.TableData;
 
 /**
  *
  * @author User
- * @param <T>
  */
-public class SimplePivot<T> extends AbstractPivot<T> {
+public class SimplePivot extends AbstractPivot {
 
-    public SimplePivot(Collection<T> dataRecords) {
-        super(dataRecords);
+    public SimplePivot(Data data) {
+        super(data);
     }
-    
+
     @Override
-    public Table getPivotTable() {
+    public TableData getPivotedData() {
         return new InMemoryPivotTable(this);
     }
+
 }

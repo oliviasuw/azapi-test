@@ -5,54 +5,142 @@
 package bgu.dcr.az.pivot.model.impl;
 
 import bgu.dcr.az.utils.ImmutableSetView;
-import bgu.dcr.az.utils.ImmutableCollectionView;
-import bgu.dcr.az.anop.utils.EventListeners;
+import bgu.dcr.az.orm.api.Data;
+import bgu.dcr.az.orm.api.FieldMetadata;
+import bgu.dcr.az.orm.api.RecordAccessor;
 import bgu.dcr.az.pivot.model.AggregatedField;
 import bgu.dcr.az.pivot.model.AggregationFunction;
 import bgu.dcr.az.pivot.model.Field;
 import bgu.dcr.az.pivot.model.FilterField;
 import bgu.dcr.az.pivot.model.Pivot;
-import java.util.Collection;
+import bgu.dcr.az.pivot.model.TableData;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Set;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
 
 /**
  *
  * @author vadim
- * @param <T>
  */
-public abstract class AbstractPivot<T> implements Pivot<T> {
+public abstract class AbstractPivot implements Pivot {
 
-    private final LinkedList<Field<?, T>> selectedAxis;
-    private final Set<FilterField<?, T>> selectedFilters;
-    private final LinkedList<Field<?, T>> selectedSeries;
-    private final LinkedList<AggregatedField<? extends Object, T>> selectedValues;
-    private Set<Field<?, T>> availableRawFields;
-    private final Collection<T> dataRecords;
-    private Set<AggregationFunction> aggregationFunctions;
-    private int aggregationIdGenerator = 0;
-    private final EventListeners<PivotListener> listeners = EventListeners.create(PivotListener.class);
+    private final ObservableList<Field> selectedAxis = FXCollections.observableArrayList();
+    private final ObservableList<FilterField> selectedFilters = FXCollections.observableArrayList();
+    private final ObservableList<Field> selectedSeries = FXCollections.observableArrayList();
+    private final ObservableList<AggregatedField> selectedValues = FXCollections.observableArrayList();
+    private Set<Field> availableRawFields;
+    private final Data data;
 
-    public AbstractPivot(Collection<T> dataRecords) {
-        this.selectedAxis = new LinkedList<>();
-        this.selectedFilters = new HashSet<>();
-        this.selectedSeries = new LinkedList<>();
-        this.selectedValues = new LinkedList<>();
-        this.dataRecords = dataRecords;
-    }
+    public AbstractPivot(Data data) {
+        this.data = data;
 
-    public void setAvailableRawFields(Set<Field<?, T>> availableRawFields) {
-        this.availableRawFields = availableRawFields;
-    }
+        initializeAvailableRawFields();
 
-    public void setAggregationFunctions(Set<AggregationFunction> aggregationFunctions) {
-        this.aggregationFunctions = aggregationFunctions;
+        selectedAxis.addListener(new ListChangeListener<Field>() {
+            @Override
+            public void onChanged(Change<? extends Field> c) {
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        for (Field f : c.getAddedSubList()) {
+                            try {
+                                validateAxisField(f);
+                            } catch (UnavailableFieldException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        selectedFilters.addListener(new ListChangeListener<FilterField>() {
+            @Override
+            public void onChanged(Change<? extends FilterField> c) {
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        for (FilterField f : c.getAddedSubList()) {
+                            try {
+                                validateFilterField(f);
+                            } catch (UnavailableFieldException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        selectedSeries.addListener(new ListChangeListener<Field>() {
+            @Override
+            public void onChanged(Change<? extends Field> c) {
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        for (Field f : c.getAddedSubList()) {
+                            try {
+                                validateSeriesField(f);
+                            } catch (UnavailableFieldException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        selectedValues.addListener(new ListChangeListener<AggregatedField>() {
+            @Override
+            public void onChanged(Change<? extends AggregatedField> c) {
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        for (AggregatedField f : c.getAddedSubList()) {
+                            try {
+                                validateValuesField(f);
+                            } catch (UnavailableFieldException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @Override
-    public void beforeFieldNameChanged(Field field, String newName) {
+    public ObservableList<Field> getSelectedSeriesFields() {
+        return selectedSeries;
+    }
+
+    @Override
+    public ObservableList<AggregatedField> getSelectedValuesFields() {
+        return selectedValues;
+    }
+
+    @Override
+    public ObservableList<Field> getSelectedAxisFields() {
+        return selectedAxis;
+    }
+
+    @Override
+    public ObservableList<FilterField> getSelectedFilterFields() {
+        return selectedFilters;
+    }
+
+    @Override
+    public Data getData() {
+        return data;
+    }
+
+    public void validateFieldName(Field field, String newName) {
         if (newName.isEmpty()) {
             throw new RuntimeException("Each field must have a name.");
         }
@@ -64,33 +152,7 @@ public abstract class AbstractPivot<T> implements Pivot<T> {
         }
     }
 
-    @Override
-    public void afterFieldNameChanged(Field field, String oldName) {
-        listeners.fire().pivotChanged(this);
-    }
-
-    @Override
-    public ImmutableCollectionView<Field> getSelectedSeriesFields() {
-        return new ImmutableCollectionView(selectedSeries);
-    }
-
-    @Override
-    public ImmutableCollectionView<AggregatedField> getSelectedValuesFields() {
-        return new ImmutableCollectionView(selectedValues);
-    }
-
-    @Override
-    public ImmutableCollectionView<Field> getSelectedAxisFields() {
-        return new ImmutableCollectionView(selectedAxis);
-    }
-
-    @Override
-    public ImmutableCollectionView<FilterField> getSelectedFilterFields() {
-        return new ImmutableCollectionView(selectedFilters);
-    }
-
-    @Override
-    public Field<?, T> selectSeriesField(Field<?, T> field) throws UnavailableFieldException {
+    public Field validateSeriesField(Field field) throws UnavailableFieldException {
         if (!availableRawFields.contains(field)) {
             throw new UnavailableFieldException("The field: " + field + " does not exest at pivot's available fields list.");
         }
@@ -99,24 +161,19 @@ public abstract class AbstractPivot<T> implements Pivot<T> {
             throw new UnavailableFieldException("The field: " + field + " is already selected as an axis field.");
         }
 
-        if (isInValueFields(field)) {
+        if (PivotUtils.isInValueFields(this, field)) {
             throw new UnavailableFieldException("The field: " + field + " is already selected as an value field.");
         }
-
-        selectedSeries.add(field);
-
-        listeners.fire().pivotChanged(this);
 
         return field;
     }
 
-    @Override
-    public AggregatedField<?, T> selectValuesField(final Field<?, T> field) throws UnavailableFieldException {
-        if (!availableRawFields.contains(field)) {
+    public AggregatedField validateValuesField(final AggregatedField field) throws UnavailableFieldException {
+        if (!availableRawFields.contains(field.getField())) {
             throw new UnavailableFieldException("The field: " + field + " does not exest at pivot's available fields list.");
         }
 
-        if (!Number.class.isAssignableFrom(field.getFieldType())) {
+        if (!Number.class.isAssignableFrom(field.getMetadata().type())) {
             throw new UnavailableFieldException("The value field must have a numeric type.");
         }
 
@@ -128,17 +185,10 @@ public abstract class AbstractPivot<T> implements Pivot<T> {
             throw new UnavailableFieldException("The field: " + field + " is already selected as an series field.");
         }
 
-        AggregatedField aggregatedField = new SimpleAggregatedField(this, field);
-
-        selectedValues.add(aggregatedField);
-
-        listeners.fire().pivotChanged(this);
-
-        return aggregatedField;
+        return field;
     }
 
-    @Override
-    public Field<?, T> selectAxisField(Field<?, T> field) throws UnavailableFieldException {
+    public Field validateAxisField(Field field) throws UnavailableFieldException {
         if (!availableRawFields.contains(field)) {
             throw new UnavailableFieldException("The field: " + field + " does not exest at pivot's available fields list.");
         }
@@ -147,30 +197,19 @@ public abstract class AbstractPivot<T> implements Pivot<T> {
             throw new UnavailableFieldException("The field: " + field + " is already selected as an series field.");
         }
 
-        if (isInValueFields(field)) {
+        if (PivotUtils.isInValueFields(this, field)) {
             throw new UnavailableFieldException("The field: " + field + " is already selected as an value field.");
         }
-
-        selectedAxis.add(field);
-
-        listeners.fire().pivotChanged(this);
 
         return field;
     }
 
-    @Override
-    public FilterField<?, T> selectFilterField(final Field<?, T> field) throws UnavailableFieldException {
+    public FilterField validateFilterField(final FilterField field) throws UnavailableFieldException {
         if (!availableRawFields.contains(field)) {
             throw new UnavailableFieldException("The field: " + field + " does not exest at pivot's available fields list.");
         }
 
-        FilterField filterField = new SimpleFilterField(this, field);
-
-        selectedFilters.add(filterField);
-
-        listeners.fire().pivotChanged(this);
-
-        return filterField;
+        return field;
     }
 
     @Override
@@ -178,104 +217,47 @@ public abstract class AbstractPivot<T> implements Pivot<T> {
         return (Set) availableRawFields;
     }
 
-    @Override
-    public ImmutableCollectionView<T> getDataRecords() {
-        return new ImmutableCollectionView(dataRecords);
-    }
+    private void initializeAvailableRawFields() {
+        availableRawFields = new HashSet<>();
 
-    @Override
-    public Set<AggregationFunction> getAggregationFunctions() {
-        return aggregationFunctions;
-    }
-
-    @Override
-    public boolean isInUse(Field element) {
-        if (this.selectedAxis.contains(element) || this.selectedSeries.contains(element)) {
-            return true;
-        }
-
-        return isInValueFields(element);
-    }
-
-    private boolean isInValueFields(Field element) {
-        for (AggregatedField<?, T> e : this.selectedValues) {
-            if (e.getFieldId() == element.getFieldId()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean removeUseOfNonValueField(Field<?, T> field) {
-        Iterator<FilterField<?, T>> it = selectedFilters.iterator();
-
-        while (it.hasNext()) {
-            if (it.next().getFieldId() == field.getFieldId()) {
-                it.remove();
-                return true;
-            }
-        }
-
-        return this.selectedAxis.remove(field) || this.selectedSeries.remove(field);
-    }
-
-    @Override
-    public void removeUseOf(Field element) {
-
-        if (element instanceof AggregatedField) {
-            AggregatedField field = (AggregatedField) element;
-
-            for (Iterator<AggregatedField<?, T>> it = this.selectedValues.iterator(); it.hasNext();) {
-                AggregatedField<?, T> e = it.next();
-                if (e.getAggregatedFieldId() == field.getAggregatedFieldId()) {
-                    it.remove();
-                    listeners.fire().pivotChanged(this);
-                    return;
-                }
-            }
-            return;
-        }
-
-        if (removeUseOfNonValueField(element)) {
-            listeners.fire().pivotChanged(this);
-            return;
-        }
-
-        boolean removed = false;
-
-        for (Iterator<AggregatedField<?, T>> it = this.selectedValues.iterator(); it.hasNext();) {
-            AggregatedField<?, T> e = it.next();
-            if (e.getFieldId() == element.getFieldId()) {
-                it.remove();
-                removed = true;
-            }
-        }
-
-        if (removed) {
-            listeners.fire().pivotChanged(this);
+        for (int i = 0; i < data.columns().length; i++) {
+            FieldMetadata md = data.columns()[i];
+            final SimpleField field = new SimpleField(this, i, md.name(), md);
+            availableRawFields.add(field);
         }
     }
 
-    @Override
-    public EventListeners<PivotListener> getListeners() {
-        return listeners;
-    }
+    public static class SimpleFilterField<T> extends FieldWrapper<T> implements FilterField<T> {
 
-    private class SimpleFilterField implements FilterField {
+        private final ObservableSet<T> restricted = FXCollections.observableSet();
+        private final HashSet<T> all;
 
-        private final Set<Object> restricted;
-        private final Pivot<T> pivot;
-        private final Field<?, T> field;
-        private final HashSet<Object> all;
-
-        public SimpleFilterField(Pivot<T> pivot, Field<?, T> field) {
-            this.pivot = pivot;
-            this.field = field;
+        public SimpleFilterField(Pivot pivot, Field<T> field) {
+            super(field);
             all = new HashSet<>();
-            restricted = new HashSet<>();
-            for (T r : dataRecords) {
+            for (RecordAccessor r : pivot.getData()) {
                 all.add(field.getValue(r));
             }
+
+            restricted.addListener(new SetChangeListener<T>() {
+                @Override
+                public void onChanged(SetChangeListener.Change<? extends T> c) {
+                    if (c.wasAdded()) {
+                        try {
+                            restrictValue(c.getElementAdded());
+                        } catch (UnavailableValueException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                    if (c.wasRemoved()) {
+                        try {
+                            allowValue(c.getElementRemoved());
+                        } catch (UnavailableValueException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                }
+            });
         }
 
         @Override
@@ -284,60 +266,20 @@ public abstract class AbstractPivot<T> implements Pivot<T> {
         }
 
         @Override
-        public ImmutableSetView getRestrictedValues() {
-            return new ImmutableSetView<>(restricted);
+        public ObservableSet<T> getRestrictedValues() {
+            return restricted;
         }
 
-        @Override
-        public void restrictValue(Object value) throws UnavailableValueException {
+        private void restrictValue(T value) throws UnavailableValueException {
             if (!all.contains(value)) {
-                throw new UnavailableValueException("The value: " + value + " is not a legal value of field: " + field.getFieldName());
+                throw new UnavailableValueException("The value: " + value + " is not a legal value of field: " + getFieldName());
             }
-
-            restricted.add(value);
-
-            listeners.fire().pivotChanged(pivot);
         }
 
-        @Override
-        public void allowValue(Object value) throws UnavailableValueException {
+        private void allowValue(T value) throws UnavailableValueException {
             if (!all.contains(value)) {
-                throw new UnavailableValueException("The value: " + value + " is not a legal value of field: " + field.getFieldName());
+                throw new UnavailableValueException("The value: " + value + " is not a legal value of field: " + getFieldName());
             }
-
-            if (restricted.remove(value)) {
-                listeners.fire().pivotChanged(pivot);
-            }
-        }
-
-        @Override
-        public Pivot getParent() {
-            return field.getParent();
-        }
-
-        @Override
-        public String getFieldName() {
-            return field.getFieldName();
-        }
-
-        @Override
-        public void setFieldName(String name) {
-            field.setFieldName(name);
-        }
-
-        @Override
-        public Class getFieldType() {
-            return field.getClass();
-        }
-
-        @Override
-        public int getFieldId() {
-            return field.getFieldId();
-        }
-
-        @Override
-        public Object getValue(Object o) {
-            return field.getValue((T) o);
         }
 
         @Override
@@ -346,20 +288,42 @@ public abstract class AbstractPivot<T> implements Pivot<T> {
         }
     }
 
-    private class SimpleAggregatedField implements AggregatedField {
+    public static class SimpleAggregatedField<T> extends FieldWrapper<T> implements AggregatedField<T> {
 
         private final int aggregatedFieldId;
-        private AggregationFunction<T> aggregationFunction;
-        private final Pivot<T> pivot;
-        private final Field<?, T> field;
+        private final ObjectProperty<AggregationFunction<T>> aggregationFunction = new SimpleObjectProperty<>();
         private String fieldName;
+        private final AbstractPivot pivot;
 
-        public SimpleAggregatedField(Pivot<T> pivot, Field<?, T> field) {
-            aggregatedFieldId = aggregationIdGenerator++;
-            aggregationFunction = getAggregationFunctions().iterator().next();
+        public SimpleAggregatedField(AbstractPivot pivot, Field<T> field, int aggregatedId) {
+            super(field);
             this.pivot = pivot;
-            this.field = field;
-            fieldName = "" + aggregationFunction.getName() + " of " + field.getFieldName();
+            aggregatedFieldId = aggregatedId;
+            aggregationFunction.set(FieldUtils.getDefaultAggregationFunctions().iterator().next());
+            updateAggregatedName(aggregationFunction.get());
+
+            aggregationFunction.addListener(new ChangeListener<AggregationFunction<T>>() {
+                @Override
+                public void changed(ObservableValue<? extends AggregationFunction<T>> ov, AggregationFunction<T> pv, AggregationFunction<T> nv) {
+                    updateAggregatedName(nv);
+                }
+            });
+        }
+
+        private void updateAggregatedName(AggregationFunction nv) {
+            String init = "" + aggregationFunction.get().getName() + " of " + getField().getFieldName();
+            try {
+                pivot.validateFieldName(this, init);
+                setFieldName(init);
+            } catch (Exception e) {
+                for (int i = 0; i < pivot.getAvailableRawFields().size() + 1; i++) {
+                    try {
+                        pivot.validateFieldName(this, init + " #" + i);
+                        setFieldName(init + " #" + i);
+                        break;
+                    } catch (Exception ex) {}
+                }
+            }
         }
 
         @Override
@@ -368,24 +332,8 @@ public abstract class AbstractPivot<T> implements Pivot<T> {
         }
 
         @Override
-        public AggregationFunction getAggregationFunction() {
+        public ObjectProperty<AggregationFunction<T>> aggregationFunctionProperty() {
             return aggregationFunction;
-        }
-
-        @Override
-        public void setAggregationFunction(AggregationFunction function) {
-            if (fieldName.equals("" + aggregationFunction.getName() + " of " + field.getFieldName())) {
-                fieldName = "" + function.getName() + " of " + field.getFieldName();
-            }
-
-            aggregationFunction = function;
-
-            listeners.fire().pivotChanged(pivot);
-        }
-
-        @Override
-        public Pivot getParent() {
-            return pivot;
         }
 
         @Override
@@ -394,26 +342,9 @@ public abstract class AbstractPivot<T> implements Pivot<T> {
         }
 
         @Override
-        public void setFieldName(String name) {
-            beforeFieldNameChanged(this, name);
-            String oldName = fieldName;
+        public final void setFieldName(String name) {
+            pivot.validateFieldName(this, name);
             fieldName = name;
-            afterFieldNameChanged(field, oldName);
-        }
-
-        @Override
-        public Class getFieldType() {
-            return field.getFieldType();
-        }
-
-        @Override
-        public int getFieldId() {
-            return field.getFieldId();
-        }
-
-        @Override
-        public Object getValue(Object o) {
-            return field.getValue((T) o);
         }
 
         @Override

@@ -30,7 +30,7 @@ public class CPAgentController extends BaseAgentController {
     }
 
     public Problem getGlobalProblem() {
-        return execution.getGlobalProblem();
+        return execution.data().getProblem();
     }
 
     public void report(String who, Agent a, Object[] data) {
@@ -38,15 +38,15 @@ public class CPAgentController extends BaseAgentController {
     }
 
     public void assign(int id, int value) {
-        execution.getSolution().assign(id, value);
+        execution.data().getSolution().assign(id, value);
     }
 
     public void unassign(int id) {
-        execution.getSolution().unassign(id);
+        execution.data().getSolution().unassign(id);
     }
 
     public Integer getAssignment(int id) {
-        Integer result = execution.getSolution().assignmentOf(id);
+        Integer result = execution.data().getSolution().assignmentOf(id);
         if (result == null) {
             Agt0DSL.panic("attempting to get assignment when no such exists ( agent: " + id + ")");
         }
@@ -55,7 +55,7 @@ public class CPAgentController extends BaseAgentController {
     }
 
     public void assignAll(Assignment a) {
-        execution.getSolution().assignAll(a);
+        execution.data().getSolution().assignAll(a);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class CPAgentController extends BaseAgentController {
     }
 
     public void reportNoSolution() {
-        execution.getSolution().setStateNoSolution();
+        execution.data().getSolution().setStateNoSolution();
     }
 
     @Override

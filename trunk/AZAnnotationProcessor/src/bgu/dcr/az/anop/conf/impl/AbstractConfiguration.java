@@ -14,6 +14,7 @@ import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.conf.PropertyValue;
 import bgu.dcr.az.anop.conf.Variable;
 import bgu.dcr.az.anop.conf.VisualData;
+import bgu.dcr.az.anop.reg.RegisteryUtils;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Iterator;
@@ -40,6 +41,11 @@ public abstract class AbstractConfiguration implements Configuration {
     @Override
     public TypeInfo typeInfo() {
         return type;
+    }
+
+    @Override
+    public String registeredName() {
+        return RegisteryUtils.getDefaultRegistery().getRegisteredClassName(type.getType());
     }
 
     public Map<String, Property> propertiesMap() {

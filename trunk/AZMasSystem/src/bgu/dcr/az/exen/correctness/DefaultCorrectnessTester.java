@@ -27,10 +27,10 @@ public class DefaultCorrectnessTester extends CPCorrectnessTester {
     @Override
     public void test(CPExecution exec, ExecutionResult<CPSolution> result) {
         Assignment ass;
-        final Problem globalProblem = exec.getProblem();
+        final Problem globalProblem = exec.data().getProblem();
         Status stat;
         final MACSolver solver = new MACSolver();
-        switch (exec.getProblem().type()) {
+        switch (exec.data().getProblem().type()) {
             case ADCOP:
             case DCOP:
                 ass = BranchAndBound.solve(globalProblem);

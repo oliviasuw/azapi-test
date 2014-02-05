@@ -4,7 +4,9 @@
  */
 package bgu.dcr.az.api.exen;
 
+import bgu.dcr.az.anop.utils.StringBuilderWriter;
 import bgu.dcr.az.api.DeepCopyable;
+import java.io.PrintWriter;
 
 /**
  * TODO: hide all the to* so that correctness testers will not have the power to
@@ -100,7 +102,9 @@ public class ExecutionResult<SOLUTION_TYPE extends DeepCopyable> implements Deep
 
                     @Override
                     public String toString(ExecutionResult er) {
-                        return "The Execution crushed with the exception: " + (er.crushReason != null ? er.crushReason.getMessage() : "no-exception");
+                        StringBuilderWriter w = new StringBuilderWriter();
+                        if (er.crushReason != null) er.crushReason.printStackTrace(new PrintWriter(w));
+                        return "The Execution crushed with the exception: " + (er.crushReason != null ? w.toString() : "no-exception");
                     }
                 },
         LIMITED {

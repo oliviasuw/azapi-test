@@ -105,7 +105,7 @@ public class ThreadSafeProcTable implements ProcTable {
                 }
                 
             } catch (InterruptedException ex) {
-                Logger.getLogger(ThreadSafeProcTable.class.getName()).log(Level.SEVERE, null, ex);
+//                Logger.getLogger(ThreadSafeProcTable.class.getName()).log(Level.SEVERE, null, ex);
                 Thread.currentThread().interrupt();
             }
         }

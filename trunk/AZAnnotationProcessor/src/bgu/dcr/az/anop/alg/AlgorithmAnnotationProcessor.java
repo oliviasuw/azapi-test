@@ -14,6 +14,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import org.mvel2.ParserContext;
@@ -87,7 +88,12 @@ public class AlgorithmAnnotationProcessor extends AbstractProcessor {
                     for (VariableElement param : p.getValue().getParameters()) {
                         ParameterInfo pInfo = new ParameterInfo();
                         pInfo.name = param.getSimpleName().toString();
-                        pInfo.typeFQN = ProcessorUtils.extractClassTypeName(param.asType(), true);
+                        
+//                        ProcessorUtils.note("modifier of type of " + param + "( " + param.asType() + ") are: " + ProcessorUtils.toDeclaredType(param.asType()).asElement().getModifiers());
+                        if (ProcessorUtils.toDeclaredType(param.asType()).asElement().getModifiers().contains(Modifier.PRIVATE)){
+                            ProcessorUtils.error("Exposing private class in public API", param);
+                        }
+                        pInfo.typeFQN = ProcessorUtils.extractClassTypeName(param.asType(), true).replaceAll("\\$", ".");
                         pInfo.index = "" + i;
                         hInfo.params.addLast(pInfo);
                         i++;

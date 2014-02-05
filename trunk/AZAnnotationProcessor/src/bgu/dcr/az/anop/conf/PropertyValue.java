@@ -14,4 +14,6 @@ package bgu.dcr.az.anop.conf;
 public interface PropertyValue {
 
     <T> T create(TypeInfo type) throws ConfigurationException;
+
+    public String stringValue();
 }

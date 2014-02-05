@@ -21,12 +21,22 @@ import bgu.dcr.az.mas.ExecutionEnvironment;
 import bgu.dcr.az.mas.exp.AlgorithmDef;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
+import bgu.dcr.az.mas.exp.ExperimentStatusSnapshot;
 import bgu.dcr.az.mas.exp.Looper;
 import bgu.dcr.az.mas.exp.loopers.SingleExecutionLooper;
+import bgu.dcr.az.mas.impl.ExperimentStatusSnapshotImpl;
+import bgu.dcr.az.mas.impl.stat.StatisticsManagerImpl;
+import bgu.dcr.az.mas.stat.StatisticCollector;
+import bgu.dcr.az.mas.stat.StatisticsManager;
 import bgu.dcr.az.utils.RandomSequance;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -46,6 +56,8 @@ public class CPExperimentTest implements Experiment {
     private CPCorrectnessTester correctnessTester;
     private String name = "" + (creationNumber++);
     private long seed = System.currentTimeMillis();
+    private final ExperimentStatusSnapshotImpl status = new ExperimentStatusSnapshotImpl();
+    private final HashSet<StatisticCollector> statistics = new HashSet<>();
 
     /**
      * @propertyName seed
@@ -63,6 +75,7 @@ public class CPExperimentTest implements Experiment {
      * @propertyName name
      * @return
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -160,9 +173,11 @@ public class CPExperimentTest implements Experiment {
 
         int i = 0;
         try {
-            ConfigurationOfElements conf = new ConfigurationOfElements();
-            for (i = executionNumber == -1 ? 0 : executionNumber; i < looper.count(); i++) {
+            status.start();
 
+            ConfigurationOfElements conf = new ConfigurationOfElements();
+            final int count = looper.count() * algorithms.size();
+            for (i = executionNumber == -1 ? 0 : executionNumber; i < count; i++) {
                 CPExecution exec = createExecutionWithSeed(i, conf, randomSeq.getIthLong(i));
                 System.out.println("Start Running Problem on " + coreAdapters[i % algorithms.size()].getAdaptedNumberOfCores() + " cores");
 
@@ -172,15 +187,18 @@ public class CPExperimentTest implements Experiment {
                     return result.setLastRunExecution(i);
                 }
 
-                coreAdapters[i % algorithms.size()].update(i, scheduler);
+                coreAdapters[i % algorithms.size()].update(i / algorithms.size(), scheduler);
                 if (executionNumber != -1) {
                     return result;
                 }
+
+                status.finishedExecutions++;
             }
         } catch (Exception ex) {
             return new ExecutionResult().toCrushState(new ExperimentExecutionException("cannot execute experiment - configuration problem, see cause", ex)).setLastRunExecution(i);
         } finally {
             pool.shutdownNow();
+            status.end();
         }
 
         return new ExecutionResult()
@@ -201,22 +219,21 @@ public class CPExperimentTest implements Experiment {
         }
     }
 
-    @Override
     public Execution getExecution(int i) throws ConfigurationException {
         try {
             ConfigurationOfElements conf = new ConfigurationOfElements();
             for (int j = 0; j < conf.configurableElements.length; j++) {
                 conf.configurableElements[j] = conf.configurationsOfElements[j].create();
             }
-            
+
             RandomSequance seq = new RandomSequance(seed);
             return createExecutionWithSeed(i, conf, seq.getIthLong(i));
         } catch (ClassNotFoundException ex) {
             throw new ConfigurationException("cannot create configuration, see cause", ex);
-        } 
+        }
     }
 
-    public CPExecution createExecutionWithSeed(int i, ConfigurationOfElements conf, long seed) throws ConfigurationException {
+    private CPExecution createExecutionWithSeed(int i, ConfigurationOfElements conf, long seed) throws ConfigurationException {
         looper.configure(i, conf.configurationsOfElements);
 
         conf.apply();
@@ -226,7 +243,17 @@ public class CPExperimentTest implements Experiment {
 
         AlgorithmDef adef = algorithms.get(i % algorithms.size());
         AgentSpawner spawner = new SimpleAgentSpawner(RegisteryUtils.getDefaultRegistery().getRegisteredClassByName("ALGORITHM." + adef.getName()));
-        CPExecution exec = new CPExecution(spawner, p, executionEnvironment);
+        CPExecution exec = new CPExecution(this, adef, spawner, p, executionEnvironment);
+
+        final StatisticsManagerImpl statm = StatisticsManagerImpl.getInstance();
+        statm.clearRegistrations();
+        for (StatisticCollector stat : statistics) {
+            statm.register(stat);
+        }
+
+        exec.supply(StatisticsManager.class, statm);
+
+        System.out.println("Algorithm: " + adef);
 
         if (correctnessTester != null) {
             exec.supply(CPCorrectnessTester.class, correctnessTester);
@@ -234,6 +261,20 @@ public class CPExperimentTest implements Experiment {
 
         return exec;
 
+    }
+
+    public String getExecutedAlgorithmName(int i) {
+        return algorithms.get(i % algorithms.size()).getName();
+    }
+
+    @Override
+    public Collection<? extends Experiment> subExperiments() {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public ExperimentStatusSnapshot status() {
+        return status;
     }
 
     private static interface RuntimeCoreAdapter {
@@ -272,21 +313,16 @@ public class CPExperimentTest implements Experiment {
 
         private int adaptedNumberOfCores;
         private double contentionExpAverage;
-        private boolean isStabilized;
         private final int maximumCores;
 
         public NaiveRuntimeCoreAdapter() {
             maximumCores = Runtime.getRuntime().availableProcessors();
             adaptedNumberOfCores = maximumCores;
             contentionExpAverage = 0;
-            isStabilized = false;
         }
 
         @Override
         public void update(int round, Scheduler scheduler) {
-            if (isStabilized) {
-                return;
-            }
 
             contentionExpAverage = contentionExpAverage * DISCOUNT_FACTOR + (1 - DISCOUNT_FACTOR) * scheduler.getContention();
 
@@ -312,6 +348,14 @@ public class CPExperimentTest implements Experiment {
             return adaptedNumberOfCores;
         }
 
+    }
+
+    /**
+     * @propertyName statistics
+     * @return
+     */
+    public HashSet<StatisticCollector> getStatistics() {
+        return statistics;
     }
 
 }

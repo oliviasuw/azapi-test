@@ -115,7 +115,7 @@ public class Hooks {
 
     public static abstract class TerminationHook implements HookDefinition {
 
-        public abstract void hook(Execution ex, ExecutionResult result);
+        public abstract void hook(ExecutionResult result);
 
         @Override
         public void hookInto(Execution ex) {

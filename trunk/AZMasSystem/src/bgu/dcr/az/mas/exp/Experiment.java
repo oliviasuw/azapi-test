@@ -1,18 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package bgu.dcr.az.mas.exp;
 
-import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.api.exen.ExecutionResult;
-import bgu.dcr.az.mas.Execution;
-import bgu.dcr.az.mas.impl.InitializationException;
+import bgu.dcr.az.mas.stat.StatisticCollector;
+import bgu.dcr.az.mas.stat.StatisticsManager;
+import java.util.Collection;
 
 /**
+ * describe common MAS experiment
  *
- * @author User
+ * @author Benny Lutati
  */
 public interface Experiment {
 
@@ -23,16 +19,25 @@ public interface Experiment {
     public int numberOfExecutions();
 
     /**
-     * return the i'th execution, this execution is not the object that will
-     * actually be executed by the experiment but just a copy of it - so changes
-     * will not propagate to the experiment
+     * execute this experiment
      *
-     * @param i
-     * @return
-     * @throws bgu.dcr.az.anop.conf.ConfigurationException
-     * @throws bgu.dcr.az.mas.impl.InitializationException
+     * @return result of this experiment
      */
-    public Execution getExecution(int i) throws ConfigurationException, InitializationException;
-
     public ExecutionResult execute();
+
+    /**
+     * @return collection of sub experiments
+     */
+    public Collection<? extends Experiment> subExperiments();
+
+    /**
+     * @return snapshot of the current status of the experiment execution
+     */
+    ExperimentStatusSnapshot status();
+
+    /**
+     * @return the experiment name
+     */
+    public String getName();
+    
 }

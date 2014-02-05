@@ -7,6 +7,7 @@ package bgu.dcr.az.mas.impl.stat;
 
 import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.impl.InitializationException;
+import bgu.dcr.az.mas.stat.AdditionalBarChartProperties;
 import bgu.dcr.az.mas.stat.Plotter;
 import bgu.dcr.az.mas.stat.StatisticCollector;
 import bgu.dcr.az.mas.stat.StatisticsManager;
@@ -25,20 +26,19 @@ import java.util.LinkedList;
  */
 public class StatisticsManagerImpl implements StatisticsManager {
 
-    Plotter plotter = new NOPlotter();
-    H2EmbeddedDatabaseManager db = null;
-    Collection<StatisticCollector> registered = new LinkedList<>();
+    private static StatisticsManagerImpl instance = null;
     public static String DATA_BASE_NAME = "agentzero";
 
-    @Override
-    public Plotter plotter() {
-        return plotter;
-    }
+    private H2EmbeddedDatabaseManager db = null;
+    private Collection<StatisticCollector> registered = new LinkedList<>();
 
-    public void setPlotter(Plotter plotter) {
-        this.plotter = plotter;
+    public static StatisticsManagerImpl getInstance() {
+        if (instance == null) {
+            instance = new StatisticsManagerImpl();
+        }
+        return instance;
     }
-
+    
     @Override
     public EmbeddedDatabaseManager database() {
         return db;
@@ -64,11 +64,15 @@ public class StatisticsManagerImpl implements StatisticsManager {
                 throw new InitializationException("cannot initialize database, see cause", ex1);
             }
         }
-        
+
         DefinitionDatabase ddb = db.createDefinitionDatabase();
-        for (StatisticCollector r : registered){
+        for (StatisticCollector r : registered) {
             r.initialize(this, ex, ddb);
         }
+    }
+
+    public void clearRegistrations() {
+        registered.clear();
     }
 
     private static class NOPlotter implements Plotter {
@@ -78,12 +82,17 @@ public class StatisticsManagerImpl implements StatisticsManager {
         }
 
         @Override
-        public void plotBarChart(Data data, String lableField, String valueField, String seriesField, String title, String xAxisLabel, String yAxisLabel) {
+        public void plotPieChart(Data data, String lableField, String valueField, String title, String xAxisLabel, String yAxisLabel) {
         }
 
         @Override
-        public void plotPieChart(Data data, String lableField, String valueField, String title, String xAxisLabel, String yAxisLabel) {
+        public void plotBarChart(Data data, String categoryField, String valueField) {
         }
+
+        @Override
+        public void plotBarChart(Data data, String categoryField, String valueField, AdditionalBarChartProperties properties) {
+        }
+
 
     }
 }

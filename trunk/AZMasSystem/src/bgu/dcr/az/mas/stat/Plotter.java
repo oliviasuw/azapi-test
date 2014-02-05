@@ -15,7 +15,9 @@ public interface Plotter {
 
     void plotLineChart(Data data, String xField, String yField, String seriesField, String title, String xAxisLabel, String yAxisLabel);
 
-    void plotBarChart(Data data, String lableField, String valueField, String seriesField, String title, String xAxisLabel, String yAxisLabel);
+    void plotBarChart(Data data, String categoryField, String valueField);
 
-    void plotPieChart(Data data, String lableField, String seriesField, String title, String lableFieldLabel, String seriesFieldLabel);
+    void plotBarChart(Data data, String categoryField, String valueField, AdditionalBarChartProperties properties);
+
+    void plotPieChart(Data data, String valueField, String seriesField, String title, String valueFieldLabel, String seriesFieldLabel);
 }

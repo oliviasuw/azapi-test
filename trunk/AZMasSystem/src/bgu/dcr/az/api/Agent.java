@@ -318,7 +318,7 @@ public abstract class Agent extends Agt0DSL {
      *
      * @return
      */
-    protected int getDomainSize() {
+    public int getDomainSize() {
         return getDomainOf(getId()).size();
     }
 

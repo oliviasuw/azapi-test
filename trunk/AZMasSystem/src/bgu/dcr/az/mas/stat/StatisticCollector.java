@@ -12,12 +12,13 @@ import bgu.dcr.az.orm.api.QueryDatabase;
 /**
  *
  * @author User
+ * @param <T>
  */
-public interface StatisticCollector {
+public interface StatisticCollector<T> {
 
-    void initialize(StatisticsManager manager, Execution execution, DefinitionDatabase database);
+    void initialize(StatisticsManager manager, Execution<T> execution, DefinitionDatabase database);
 
     String getName();
 
-    void plot(QueryDatabase database);
+    void plot(Plotter ploter);
 }

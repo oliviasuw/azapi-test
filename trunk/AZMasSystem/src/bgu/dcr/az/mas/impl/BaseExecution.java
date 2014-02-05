@@ -6,7 +6,6 @@
 package bgu.dcr.az.mas.impl;
 
 import bgu.dcr.az.anop.utils.EventListeners;
-import bgu.dcr.az.api.DeepCopyable;
 import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.execs.ThreadSafeProcTable;
 import bgu.dcr.az.execs.api.Scheduler;
@@ -22,6 +21,7 @@ import bgu.dcr.az.mas.HookProvider;
 import bgu.dcr.az.mas.MessageRouter;
 import bgu.dcr.az.mas.ExecutionEnvironment;
 import bgu.dcr.az.mas.Hooks;
+import bgu.dcr.az.mas.exp.Experiment;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,18 +30,24 @@ import java.util.Map;
  *
  * @author User
  */
-public abstract class BaseExecution<SOLUTION_TYPE extends DeepCopyable> implements Execution, HookProvider {
+public abstract class BaseExecution<T extends HasSolution> implements Execution<T>, HookProvider {
 
     private final Map<Class, HookProvider> hookProviders = new HashMap<>();
     private final Map<Class<? extends ExecutionService>, ExecutionServiceWithInitializationData> services = new HashMap<>();
 
     private final ExecutionEnvironment env;
     private final EventListeners<Hooks.TerminationHook> terminationHooks = EventListeners.create(Hooks.TerminationHook.class);
+    private final T data;
+    private final Experiment containingExperiment;
+    private int numCoresInUse = 0;
 
-    public BaseExecution(AgentDistributer distributer, AgentSpawner spawner, ExecutionEnvironment env) {
+    public BaseExecution(T data, Experiment containingExperiment, AgentDistributer distributer, AgentSpawner spawner, ExecutionEnvironment env) {
+        this.env = env;
+        this.data = data;
+        this.containingExperiment = containingExperiment;
+
         supply(AgentDistributer.class, distributer);
         supply(AgentSpawner.class, spawner);
-        this.env = env;
 
         registerHookProvider(Hooks.TerminationHook.class, this);
     }
@@ -50,10 +56,14 @@ public abstract class BaseExecution<SOLUTION_TYPE extends DeepCopyable> implemen
         hookProviders.put(c, provider);
     }
 
-    protected abstract SOLUTION_TYPE getSolution();
+    @Override
+    public int getNumberOfCoresInUse() {
+        return numCoresInUse;
+    }
 
     @Override
     public ExecutionResult execute(Scheduler sched, int numCores) throws ExperimentExecutionException, InterruptedException {
+        this.numCoresInUse = numCores;
         ThreadSafeProcTable table = new ThreadSafeProcTable();
         supply(MessageRouter.class, new BaseMessageRouter());
 
@@ -77,14 +87,14 @@ public abstract class BaseExecution<SOLUTION_TYPE extends DeepCopyable> implemen
 
         TerminationReason terminationResult = sched.schedule(table, numCores);
 
-        ExecutionResult<SOLUTION_TYPE> result = new ExecutionResult<>();
+        ExecutionResult result = new ExecutionResult<>();
         if (terminationResult.isError()) {
             result.toCrushState(terminationResult.getErrorDescription());
         } else {
-            result.toSucceefulState(getSolution());
+            result.toSucceefulState(data().solution());
         }
 
-        terminationHooks.fire().hook(this, result);
+        terminationHooks.fire().hook(result);
 
         System.out.println("Contention: " + sched.getContention());
         return result;
@@ -134,6 +144,11 @@ public abstract class BaseExecution<SOLUTION_TYPE extends DeepCopyable> implemen
         INITIALIZED, INITIALIZING, UNINITIALIZED;
     }
 
+    @Override
+    public T data() {
+        return data;
+    }
+
     private class ExecutionServiceWithInitializationData {
 
         ExecutionService service;
@@ -171,4 +186,10 @@ public abstract class BaseExecution<SOLUTION_TYPE extends DeepCopyable> implemen
             return sb.toString();
         }
     }
+
+    @Override
+    public Experiment getContainingExperiment() {
+        return this.containingExperiment;
+    }
+
 }

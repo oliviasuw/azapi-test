@@ -15,13 +15,13 @@ import bgu.dcr.az.mas.impl.InitializationException;
  *
  * @author User
  */
-public abstract class CPCorrectnessTester implements ExecutionService {
+public abstract class CPCorrectnessTester implements ExecutionService<CPData> {
 
     @Override
-    public void initialize(Execution ex) throws InitializationException {
+    public void initialize(final Execution<CPData> ex) throws InitializationException {
         new Hooks.TerminationHook() {
             @Override
-            public void hook(Execution ex, ExecutionResult result) {
+            public void hook(ExecutionResult result) {
                 switch (result.getState()) {
                     case CRUSHED:
                         break;

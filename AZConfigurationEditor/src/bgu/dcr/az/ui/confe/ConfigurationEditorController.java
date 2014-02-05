@@ -7,6 +7,7 @@ package bgu.dcr.az.ui.confe;
 
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.Property;
+import bgu.dcr.az.anop.utils.PropertyUtils;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
@@ -42,7 +43,7 @@ public class ConfigurationEditorController implements Initializable {
 
     public void setModel(Configuration conf) {
         vbox.getChildren().clear();
-        
+
         vbox.setSpacing(3);
         vbox.setPadding(new Insets(5));
 
@@ -54,7 +55,7 @@ public class ConfigurationEditorController implements Initializable {
         LinkedList<TerminalPropertyEditorController> controllerList = new LinkedList<>();
 
         for (Property property : properties) {
-            if (isPrimitive(property)) {
+            if (PropertyUtils.isPrimitive(property)) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("TerminalPropertyEditor.fxml"));
                     Node node = (Node) loader.load();
@@ -75,9 +76,9 @@ public class ConfigurationEditorController implements Initializable {
         for (TerminalPropertyEditorController controller : controllerList) {
             controller.setLabelWidth(max);
         }
-        
+
         for (Property property : properties) {
-         if (!isPrimitive(property)) {
+            if (!PropertyUtils.isPrimitive(property) && !PropertyUtils.isCollection(property)) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("ConfigurationPropertyEditor.fxml"));
                     Node node = (Node) loader.load();
@@ -89,21 +90,20 @@ public class ConfigurationEditorController implements Initializable {
                 }
             }
         }
-        
-    }
 
-    public boolean isPrimitive(Property property) {
-        Class pType = property.typeInfo().getType();
-        return String.class.isAssignableFrom(pType)
-                || Integer.class.isAssignableFrom(pType)
-                || Boolean.class.isAssignableFrom(pType)
-                || Double.class.isAssignableFrom(pType)
-                || Float.class.isAssignableFrom(pType)
-                || pType.isEnum()
-                || Character.class.isAssignableFrom(pType)
-                || Byte.class.isAssignableFrom(pType)
-                || Short.class.isAssignableFrom(pType)
-                || Long.class.isAssignableFrom(pType);
+        for (Property property : properties) {
+            if (PropertyUtils.isCollection(property)) {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("CollectionPropertyEditor2.fxml"));
+                    Node node = (Node) loader.load();
+                    CollectionPropertyEditorController controller = (CollectionPropertyEditorController) loader.getController();
+                    controller.setModel(property);
+                    vbox.getChildren().add(node);
+                } catch (IOException ex) {
+                    Logger.getLogger(ConfigurationEditorController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
 
     }
 

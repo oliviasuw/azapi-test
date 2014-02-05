@@ -6,11 +6,7 @@
 package bgu.dcr.az.ui.confe;
 
 import bgu.dcr.az.anop.conf.Configuration;
-import bgu.dcr.az.anop.conf.ConfigurationException;
-import bgu.dcr.az.anop.conf.ConfigurationUtils;
 import bgu.dcr.az.anop.conf.Property;
-import bgu.dcr.az.anop.conf.PropertyValue;
-import bgu.dcr.az.anop.conf.TypeInfo;
 import bgu.dcr.az.anop.conf.impl.ConfigurableTypeInfoImpl;
 import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;
 import bgu.dcr.az.ui.confe.util.FXUtils;
@@ -34,15 +30,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
-import javax.swing.event.DocumentEvent;
-import test.delete.me.SomeClass;
 
 /**
  * FXML Controller class
  *
  * @author Shl
  */
-public class TerminalPropertyEditorController implements Initializable {
+public class TerminalPropertyEditorController implements Initializable, PropertyController {
 
     @FXML
     private BorderPane valueEditor;
@@ -76,8 +70,11 @@ public class TerminalPropertyEditorController implements Initializable {
     public void setModel(Property property) {
 
         label.setText(property.name());
-        Tooltip tooltip = new Tooltip(property.doc().description());
-        label.setTooltip(tooltip);
+        String description = property.doc().description();
+        if (description!=null && !description.isEmpty()) {
+            Tooltip tooltip = new Tooltip(description);
+            label.setTooltip(tooltip);
+        }
 
         Class pType = property.typeInfo().getType();
         if (String.class.isAssignableFrom(pType)) {
@@ -351,6 +348,11 @@ public class TerminalPropertyEditorController implements Initializable {
         label.setPrefWidth(width);
         label.setMaxWidth(width);
         label.setMinWidth(width);
+    }
+
+    @Override
+    public void setModel(Configuration conf) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

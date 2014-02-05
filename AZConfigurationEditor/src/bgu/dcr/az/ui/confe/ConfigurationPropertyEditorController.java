@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.ui.confe;
 
+import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.conf.impl.FromConfigurationPropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;
@@ -30,7 +31,7 @@ import javax.swing.event.DocumentEvent;
  *
  * @author Shl
  */
-public class ConfigurationPropertyEditorController implements Initializable {
+public class ConfigurationPropertyEditorController implements Initializable, PropertyController {
 
     @FXML
     ConfigurationEditorController confEditorController;
@@ -46,14 +47,16 @@ public class ConfigurationPropertyEditorController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        System.out.println("ConfEditor is : " + confEditorController);
+//        System.out.println("ConfEditor is : " + confEditorController);
     }
 
     public void setModel(final Property property) {
         titledPane.setText(property.name());
-        Tooltip tooltip = new Tooltip(property.doc().description());
-        titledPane.setTooltip(tooltip);
-
+        String description = property.doc().description();
+        if (description!=null && !description.isEmpty()) {
+            Tooltip tooltip = new Tooltip(description);
+            titledPane.setTooltip(tooltip);
+        }
         Class pType = property.typeInfo().getType();
         Collection<Class> implementors = RegisteryUtils.getDefaultRegistery().getImplementors(pType);
         choiceBox.getItems().clear();
@@ -75,6 +78,11 @@ public class ConfigurationPropertyEditorController implements Initializable {
 
         });
 
+    }
+
+    @Override
+    public void setModel(Configuration conf) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

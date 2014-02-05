@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<experiment>
+    <test seed="42">
+        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100">
+            <!--<for-loop start="0.1" end="0.9" tick-size="0.1" run-var="p2" repeat-count="10" />-->
+        </for-loop>
+    
+        <dcsp-unstructured n="5" d="3" p2="0.64"/>        
+        <!--<default-tester/>-->
+        <algorithm name="ABT"/>
+        <algorithm name="SBB"/>
+    </test>
+    
+    <test seed="100">
+        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100">
+            <!--<for-loop start="0.1" end="0.9" tick-size="0.1" run-var="p2" repeat-count="10" />-->
+        </for-loop>
+    
+        <dcsp-unstructured n="20" d="10" p2="0.64"/>        
+        <!--<default-tester/>-->
+        <algorithm name="ABT"/>
+    </test>
+</experiment>

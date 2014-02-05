@@ -22,7 +22,8 @@ public class StdoutLogger implements Logger {
 
     @Override
     public void initialize(Execution ex) throws InitializationException {
-        log("AgentZero", "New Execution started.");
+        
+        log("AgentZero", "New Execution started");
     }
 
 }

@@ -83,4 +83,9 @@ public abstract class AbstractAgentManipulator implements AgentManipulator, Conf
         return configurationDelegate.loadFrom(o);
     }
 
+    @Override
+    public String registeredName() {
+        return configurationDelegate.registeredName();
+    }
+
 }

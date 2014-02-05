@@ -1,0 +1,199 @@
+/*
+style for the titled panes - to make them more like sections
+*/
+.section-pane {
+    -fx-border-color: transparent;
+    -fx-border-width: 1px;
+}
+
+.section-pane > .title{
+    -fx-background-color: rgb(100, 100, 100);
+    -fx-background-radius: 0 0 0 0, 0 0 0 0, 0 0 0 0;
+}
+
+.section-pane > .title .text{
+    -fx-fill:#f3f3f3;
+}
+
+.section-pane > .content{
+    -fx-background-color: rgb(220, 220, 220);
+}
+
+/*
+style the view grid which is the grid where all the 3 components of the charts and xml are in
+*/
+.screen-content {
+    -fx-background-color: rgb(100, 100, 100);
+}
+
+/*
+style list views - i need them to be a little darker to fit well in the dark background
+*/
+.list-cell {
+    -fx-background-color: rgb(240,240,240);
+    -fx-padding: 8;
+}
+
+.list-cell:odd {
+    -fx-background-color: rgb(220,220,220);
+    -fx-padding: 8;
+}
+
+.list-view .list-cell:selected {
+    /*-fx-background-color: #7bbeea;*/
+    -fx-border-width: 0 3 0 3;
+    /*-fx-border-style: solid;*/
+    /*-fx-border-color: #ffcc00;*/
+    /*-fx-border-color: #4a91ff;*/
+    /*-fx-border-color: #ffcc00;*/
+    -fx-background-color: #4a91ff;
+
+    -fx-text-fill: white;
+    -fx-padding: 8;
+    -fx-background-insets: 0, 0, 0;
+    -fx-background-radius: 0, 0, 0;
+}
+
+.list-view .list-cell:focused {
+    -fx-background-insets: 0, 0, 0;
+}
+
+.list-view .list-cell:selected .label{
+    -fx-text-fill: white;
+}
+
+.list-view:focused {
+    -fx-background-color: -fx-focus-color,-fx-box-border,-fx-control-inner-background;
+    -fx-background-insets: 0, 0, 0;
+    -fx-background-radius: 0, 0, 0;
+
+    /* There is some oddness if padding is in em values rather than pixels,
+       in particular, the left border of the control doesn't show. */
+    -fx-padding: 0; /* 0.083333em; */
+}
+
+/*
+style the progress bar to see more vintage like
+*/
+
+.progress-bar {
+    -fx-background-color: transparent;
+}
+
+.progress-bar .bar {
+    -fx-background-color: #b4c9d7;
+}
+
+.progress-bar .track {
+    -fx-border-width: 2px;
+    -fx-border-color: rgb(80,80,80);
+    -fx-background-color: transparent;
+    -fx-background-insets:  0, 1;
+
+}
+
+/*
+style the mini progress bar that appear inside the tests list
+*/
+
+.mini-progress-bar .track {
+    -fx-border-width: 0px;
+    -fx-background-color: rgb(200,200,200);
+}
+
+.mini-progress-bar .bar {
+    -fx-background-color:rgb(100,100,100);
+    -fx-background-insets: 0 0 0 0;
+}
+
+/* 
+style the pie chart (cpu time per algorithm
+*/
+
+.chart-container {
+    -fx-background-color: rgb(51,51,51);
+}
+
+.chart-container .chart-pie {
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
+}
+
+.chart-legend {
+    -fx-background-color:  transparent;
+    -fx-padding: 20px;
+}
+
+.chart-container .chart-legend-item {
+    -fx-text-fill: black;
+}
+
+.chart-container > * > * > .chart-pie-label {
+    -fx-fill: white;
+}
+
+/*
+cpu usage bar chart
+
+-fx-bar-fill: #b4c9d7;
+*/
+
+.default-color0.chart-bar { 
+
+    -fx-bar-fill: #fba71b;
+}
+
+.axis {
+    -fx-tick-label-fill: rgb(200,200,200);
+}
+
+.axis-label {
+    -fx-text-fill: white;
+}
+
+.axis-tick-mark {
+    -fx-stroke: rgb(200,200,200);
+}
+.axis-minor-tick-mark {
+    -fx-stroke: rgb(200,200,200);
+}
+
+/*
+container style - mainly making it transparent..
+*/
+.container {
+    -fx-background-color: transparent;
+
+}
+
+.container .caption {
+    -fx-background-color: transparent;
+}
+
+/*
+making the scroll bars a little more appealing
+*/
+.scroll-bar:horizontal {
+    -fx-background-color: rgb(100, 100, 100);
+}
+.scroll-bar:vertical {
+    -fx-background-color: rgb(100, 100, 100);
+}
+
+.track-background {
+    -fx-background-color: rgb(100, 100, 100);   
+}
+
+/*
+.scroll-pane {
+    -fx-background-color: red;
+}
+
+.scroll-pane > .corner {
+    -fx-background-color: red;
+}*/
+
+.dark {
+    -fx-background-color: rgb(120, 120, 120);
+}

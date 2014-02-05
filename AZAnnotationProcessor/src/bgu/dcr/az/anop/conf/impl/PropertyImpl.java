@@ -70,4 +70,10 @@ public class PropertyImpl implements Property {
         return "PropertyImpl{" + "name=" + name + ", type=" + type + '}';
     }
 
+    @Override
+    public String stringValue() {
+        if (this.propertyValue == null) return "null";
+        return this.propertyValue.stringValue();
+    }
+
 }

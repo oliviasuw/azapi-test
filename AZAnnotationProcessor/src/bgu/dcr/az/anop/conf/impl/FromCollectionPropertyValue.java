@@ -27,7 +27,7 @@ public class FromCollectionPropertyValue implements PropertyValue, Iterable<Prop
         values.add(value);
         return this;
     }
-    
+
     public FromCollectionPropertyValue addAll(Collection<PropertyValue> values) {
         this.values.addAll(values);
         return this;
@@ -57,6 +57,16 @@ public class FromCollectionPropertyValue implements PropertyValue, Iterable<Prop
     @Override
     public Iterator<PropertyValue> iterator() {
         return values.iterator();
+    }
+
+    @Override
+    public String stringValue() {
+        StringBuilder sb = new StringBuilder("(");
+        for (PropertyValue v : values) {
+            sb.append(v.stringValue()).append(", ");
+        }
+
+        return sb.deleteCharAt(sb.length()).deleteCharAt(sb.length()).append(")").toString();
     }
 
 }

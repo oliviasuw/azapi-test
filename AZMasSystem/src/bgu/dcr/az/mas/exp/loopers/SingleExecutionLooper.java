@@ -6,6 +6,7 @@
 package bgu.dcr.az.mas.exp.loopers;
 
 import bgu.dcr.az.anop.conf.Configuration;
+import bgu.dcr.az.anop.reg.Register;
 import bgu.dcr.az.mas.exp.Looper;
 import java.util.Collection;
 
@@ -13,6 +14,7 @@ import java.util.Collection;
  *
  * @author User
  */
+@Register("do-once")
 public class SingleExecutionLooper implements Looper {
 
     @Override

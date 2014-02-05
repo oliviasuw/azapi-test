@@ -7,7 +7,7 @@ package bgu.dcr.az.mas;
 
 import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.execs.api.Scheduler;
-import bgu.dcr.az.execs.api.TerminationReason;
+import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import bgu.dcr.az.mas.impl.InitializationException;
 
@@ -15,7 +15,7 @@ import bgu.dcr.az.mas.impl.InitializationException;
  *
  * @author User
  */
-public interface Execution {
+public interface Execution<T> {
 
     public void hook(Class hookType, Object hook);
 
@@ -27,4 +27,9 @@ public interface Execution {
     
     public ExecutionEnvironment getEnvironment();
     
+    public T data();
+    
+    int getNumberOfCoresInUse();
+    
+    Experiment getContainingExperiment();
 }

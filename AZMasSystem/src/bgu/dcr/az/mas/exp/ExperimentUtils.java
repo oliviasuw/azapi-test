@@ -6,12 +6,15 @@
 package bgu.dcr.az.mas.exp;
 
 import bgu.dcr.az.anop.conf.Configuration;
+import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
 import bgu.dcr.az.api.exen.ExecutionResult;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import nu.xom.Builder;
 import nu.xom.Document;
+import nu.xom.ParsingException;
 
 /**
  *
@@ -20,12 +23,24 @@ import nu.xom.Document;
 public class ExperimentUtils {
 
     public static void executeExperiment(File experimentFile) throws Exception {
+        Experiment exp = loadExperiment(experimentFile);
+        exp.execute();
+    }
+
+    public static Experiment loadExperiment(File experimentFile) throws ConfigurationException, IOException, ParsingException, ClassNotFoundException {
         Builder builder = new Builder();
         Document doc = builder.build(experimentFile);
-
         Configuration expConf = ConfigurationUtils.fromXML(doc.getRootElement());
         Experiment exp = expConf.create();
-        exp.execute();
+        return exp;
+    }
+
+    public static Experiment loadExperiment(InputStream experimentStream) throws ConfigurationException, IOException, ParsingException, ClassNotFoundException {
+        Builder builder = new Builder();
+        Document doc = builder.build(experimentStream);
+        Configuration expConf = ConfigurationUtils.fromXML(doc.getRootElement());
+        Experiment exp = expConf.create();
+        return exp;
     }
 
     public static void executeExperiment(InputStream experimentInput) throws Exception {

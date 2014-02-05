@@ -18,11 +18,6 @@ import java.util.Collection;
 public interface StatisticsManager extends ExecutionService {
 
     /**
-     * @return the plotter that is registered for this statistic collector
-     */
-    Plotter plotter();
-
-    /**
      * @return the statistic database
      */
     EmbeddedDatabaseManager database();

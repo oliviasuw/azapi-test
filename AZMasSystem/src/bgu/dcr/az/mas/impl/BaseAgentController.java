@@ -45,7 +45,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 
     private int tick;
 
-    public BaseAgentController(int id, Execution ex) throws ClassNotFoundException, ConfigurationException, InitializationException {
+    public BaseAgentController(int id, Execution<?> ex) throws ClassNotFoundException, ConfigurationException, InitializationException {
         super(id);
         logger = ex.require(Logger.class);
 

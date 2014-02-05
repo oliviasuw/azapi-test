@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="AZPivotUI.jnlp">
+  <information>
+    <title>AZPivotUI</title>
+    <vendor>bennyl</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <jfx:javafx-runtime version="2.2+" href="http://javadl.sun.com/webapps/download/GetFile/javafx-latest/windows-i586/javafx2.jnlp"/>
+  </resources>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="AZPivotUI.jar" size="81848" download="eager" />
+    <jar href="lib/AZAnnotationProcessor.jar" size="144015" download="eager" />
+    <jar href="lib/AZStatisticsAPI.jar" size="57861" download="eager" />
+    <jar href="lib/cglib-nodep-2.2.3.jar" size="322553" download="eager" />
+    <jar href="lib/commons-proxy-1.0.jar" size="73169" download="eager" />
+    <jar href="lib/guava-16.0.jar" size="2225441" download="eager" />
+    <jar href="lib/h2-1.3.175.jar" size="1638482" download="eager" />
+    <jar href="lib/javassist-3.8.0.GA.jar" size="593959" download="eager" />
+    <jar href="lib/mvel2-2.1.3.Final.jar" size="741232" download="eager" />
+    <jar href="lib/reflectasm-1.08-all.jar" size="60247" download="eager" />
+    <jar href="lib/reflections-0.9.9-RC1-uberjar.jar" size="2779317" download="eager" />
+    <jar href="lib/slf4j-api-1.6.4.jar" size="25962" download="eager" />
+    <jar href="lib/xom-1.2.10.jar" size="313253" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="AZPivotUI" >
+    <param name="requiredFXVersion" value="2.2+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="bgu.dcr.az.pivot.ui.PivotView"  name="AZPivotUI" />
+  <update check="always"/>
+</jnlp>

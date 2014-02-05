@@ -86,7 +86,7 @@ public class ProcessorUtils {
                 error(ex);
             }
         }
-        
+
         registeredServices.clear();
     }
 
@@ -210,6 +210,10 @@ public class ProcessorUtils {
 
     public static void error(String error) {
         msg.printMessage(Diagnostic.Kind.ERROR, error);
+    }
+
+    public static void error(String error, Element e) {
+        msg.printMessage(Diagnostic.Kind.ERROR, error, e);
     }
 
     public static void error(Throwable error) {

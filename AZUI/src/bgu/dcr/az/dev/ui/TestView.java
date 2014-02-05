@@ -20,6 +20,7 @@ import bgu.dcr.az.anop.conf.PropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromCollectionPropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromConfigurationPropertyValue;
 import bgu.dcr.az.mas.cp.CPExperimentTest;
+import bgu.dcr.az.mas.cp.FailureDescription;
 import bgu.dcr.az.mas.exp.AlgorithmDef;
 import java.util.LinkedList;
 import java.util.List;
@@ -461,7 +462,7 @@ public class TestView extends javax.swing.JPanel {
     private bc.ui.swing.lists.TransparentList testVars;
     // End of variables declaration//GEN-END:variables
 
-    public void addFailureData(ExecutionSelector di) {
+    public void addFailureData(FailureDescription di) {
         this.failurePan.setVisible(true);
         this.debugProblemButtonPan.setVisible(true);
 

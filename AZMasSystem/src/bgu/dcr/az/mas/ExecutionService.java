@@ -12,6 +12,6 @@ import bgu.dcr.az.mas.impl.InitializationException;
  *
  * @author User
  */
-public interface ExecutionService {
-    void initialize(Execution ex) throws InitializationException;
+public interface ExecutionService<T> {
+    void initialize(Execution<T> ex) throws InitializationException;
 }

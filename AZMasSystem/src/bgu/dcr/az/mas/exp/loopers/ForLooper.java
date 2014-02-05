@@ -162,4 +162,9 @@ public class ForLooper implements Looper {
         }
     }
 
+    @Override
+    public String toString() {
+        return "for (" + runVar + "=" + startValue + "; " + runVar + " <= " + endValue + "; " + runVar + " += " + tickSizeValue + ") do " + repeatCountValue + " times.";
+    }
+
 }

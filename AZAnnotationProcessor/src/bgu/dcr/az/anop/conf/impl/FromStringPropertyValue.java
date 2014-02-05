@@ -35,4 +35,9 @@ public class FromStringPropertyValue implements PropertyValue {
         }
     }
 
+    @Override
+    public String stringValue() {
+        return value;
+    }
+
 }

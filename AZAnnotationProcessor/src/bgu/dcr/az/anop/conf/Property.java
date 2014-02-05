@@ -25,4 +25,6 @@ public interface Property extends Documented{
     void set(PropertyValue cv);
 
     PropertyValue get();
+    
+    String stringValue();
 }

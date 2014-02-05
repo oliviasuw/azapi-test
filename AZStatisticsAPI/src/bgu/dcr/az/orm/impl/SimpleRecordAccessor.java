@@ -177,6 +177,7 @@ public class SimpleRecordAccessor implements RecordAccessor {
 
             for (int i = 0; i < fields.length; i++) {
                 nameToIndex.put(fields[i].name().toUpperCase(), i);
+                nameToIndex.put(fields[i].name(), i);
             }
         }
 

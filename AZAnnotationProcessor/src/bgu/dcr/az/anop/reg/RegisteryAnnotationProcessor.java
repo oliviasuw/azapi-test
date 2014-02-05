@@ -26,6 +26,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
@@ -131,7 +132,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
 
         Map<String, ExecutableElement> methods = ProcessorUtils.extractMethods(te);
         for (Map.Entry<String, ExecutableElement> p : methods.entrySet()) {
-            if (p.getKey().startsWith("get") && p.getValue().getParameters().isEmpty()) {
+            if (p.getKey().startsWith("get") && p.getValue().getParameters().isEmpty() && p.getValue().getModifiers().contains(Modifier.PUBLIC)) {
                 PropertyInfo info = new PropertyInfo();
                 info.javadoc = StringUtils.escapedString(ProcessorUtils.extractJavadoc(p.getValue()));
                 info.declaredName = p.getValue().getSimpleName().toString().substring("get".length());

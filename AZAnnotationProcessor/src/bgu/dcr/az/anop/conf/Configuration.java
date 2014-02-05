@@ -18,7 +18,9 @@ import java.util.Collection;
  *
  * @author Benny Lutati
  */
-public interface Configuration extends Iterable<Property> , Documented{
+public interface Configuration extends Iterable<Property>, Documented {
+
+    String registeredName();
 
     Collection<Property> properties();
 
@@ -27,7 +29,7 @@ public interface Configuration extends Iterable<Property> , Documented{
     VisualData visualData();
 
     <T> T create() throws ConfigurationException;
-    
+
     void configure(Object o) throws ConfigurationException;
 
     Property get(String name);

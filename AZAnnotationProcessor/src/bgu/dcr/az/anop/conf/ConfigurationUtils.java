@@ -9,6 +9,7 @@ import bgu.dcr.az.anop.reg.RegisteryUtils;
 import bgu.dcr.az.anop.conf.impl.FromCollectionPropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromConfigurationPropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;
+import bgu.dcr.az.anop.utils.StringBuilderStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -32,6 +33,30 @@ import nu.xom.Text;
  * @author User
  */
 public class ConfigurationUtils {
+
+    public static Element toConfigurationXML(Object o) throws ConfigurationException {
+        try {
+            return toXML(load(o));
+        } catch (ClassNotFoundException ex) {
+            throw new ConfigurationException("cannot load configuration", ex);
+        }
+    }
+
+    public static String toConfigurationXMLString(Object o) throws ConfigurationException {
+        StringBuilderStream writter = new StringBuilderStream();
+        try (PrintStream pw = new PrintStream(writter)) {
+            Element conf = toConfigurationXML(o);
+
+            Serializer serializer = new Serializer(pw, "UTF-8");
+            serializer.setIndent(4);
+            serializer.write(new Document(conf));
+            serializer.flush();
+        } catch (IOException ex) {
+            throw new ConfigurationException("cannot write configuration");
+        }
+
+        return writter.toString();
+    }
 
     public static Element toXML(Configuration conf) throws ConfigurationException {
         final String registeredClassName = RegisteryUtils.getDefaultRegistery().getRegisteredClassName(conf.typeInfo().getType());
@@ -99,10 +124,15 @@ public class ConfigurationUtils {
         Element innerElement = new Element(property);
 
         for (PropertyValue c : value) {
-            putProperty("item", c, innerElement, false);
+            if (!(c instanceof FromConfigurationPropertyValue)) {
+                putProperty("item", c, innerElement, false);
+            } else {
+                Element inner = toXML(((FromConfigurationPropertyValue) c).getValue());
+                innerElement.appendChild(inner);
+            }
         }
-
         e.appendChild(innerElement);
+
     }
 
     private static void fillPropertiesFromAttributes(Configuration c, Element e) {
@@ -232,8 +262,8 @@ public class ConfigurationUtils {
         Configuration conf = RegisteryUtils.getDefaultRegistery().getConfiguration(o.getClass());
         return conf;
     }
-    
-    public static Configuration load(Object o) throws ClassNotFoundException, ConfigurationException{
+
+    public static Configuration load(Object o) throws ClassNotFoundException, ConfigurationException {
         return createConfigurationFor(o).loadFrom(o);
     }
 
@@ -252,7 +282,7 @@ public class ConfigurationUtils {
     }
 
     public static boolean isConfigurable(Class c) {
-        return RegisteryUtils.getDefaultRegistery().getRegisteredClassName(c) != null;
+        return !RegisteryUtils.getDefaultRegistery().getImplementors(c).isEmpty();
     }
 
     public static PropertyValue toPropertyValue(Object o) throws ConfigurationException {
@@ -311,13 +341,13 @@ public class ConfigurationUtils {
      */
     public static List<Property> getAttributesOf(Configuration rconf) {
         LinkedList<Property> results = new LinkedList<>();
-        for (Property p : rconf){
+        for (Property p : rconf) {
             final Class type = p.typeInfo().getType();
-            if (!Collection.class.isAssignableFrom(type) && !isConfigurable(type)){
+            if (!Collection.class.isAssignableFrom(type) && !isConfigurable(type)) {
                 results.add(p);
             }
         }
-        
+
         return results;
     }
 

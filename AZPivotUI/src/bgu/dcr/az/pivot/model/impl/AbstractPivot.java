@@ -13,13 +13,12 @@ import bgu.dcr.az.pivot.model.AggregationFunction;
 import bgu.dcr.az.pivot.model.Field;
 import bgu.dcr.az.pivot.model.FilterField;
 import bgu.dcr.az.pivot.model.Pivot;
-import bgu.dcr.az.pivot.model.TableData;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -38,7 +37,7 @@ public abstract class AbstractPivot implements Pivot {
     private final ObservableList<FilterField> selectedFilters = FXCollections.observableArrayList();
     private final ObservableList<Field> selectedSeries = FXCollections.observableArrayList();
     private final ObservableList<AggregatedField> selectedValues = FXCollections.observableArrayList();
-    private Set<Field> availableRawFields;
+    private List<Field> availableRawFields;
     private final Data data;
 
     public AbstractPivot(Data data) {
@@ -55,6 +54,7 @@ public abstract class AbstractPivot implements Pivot {
                             try {
                                 validateAxisField(f);
                             } catch (UnavailableFieldException ex) {
+                                selectedAxis.remove(f);
                                 throw new RuntimeException(ex);
                             }
                         }
@@ -72,6 +72,7 @@ public abstract class AbstractPivot implements Pivot {
                             try {
                                 validateFilterField(f.getField());
                             } catch (UnavailableFieldException ex) {
+                                selectedFilters.remove(f);
                                 throw new RuntimeException(ex);
                             }
                         }
@@ -89,6 +90,7 @@ public abstract class AbstractPivot implements Pivot {
                             try {
                                 validateSeriesField(f);
                             } catch (UnavailableFieldException ex) {
+                                selectedSeries.remove(f);
                                 throw new RuntimeException(ex);
                             }
                         }
@@ -106,6 +108,7 @@ public abstract class AbstractPivot implements Pivot {
                             try {
                                 validateValuesField(f);
                             } catch (UnavailableFieldException ex) {
+                                selectedValues.remove(f);
                                 throw new RuntimeException(ex);
                             }
                         }
@@ -205,12 +208,12 @@ public abstract class AbstractPivot implements Pivot {
     }
 
     @Override
-    public Set<Field> getAvailableRawFields() {
-        return (Set) availableRawFields;
+    public List<Field> getAvailableRawFields() {
+        return availableRawFields;
     }
 
     private void initializeAvailableRawFields() {
-        availableRawFields = new HashSet<>();
+        availableRawFields = new LinkedList<>();
 
         for (int i = 0; i < data.columns().length; i++) {
             FieldMetadata md = data.columns()[i];

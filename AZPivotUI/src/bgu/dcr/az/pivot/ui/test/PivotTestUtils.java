@@ -101,11 +101,10 @@ public class PivotTestUtils {
 
         SimplePivot p = new SimplePivot(new SimpleData(data, meta));
 
-        try {
-            p.getSelectedAxisFields().add(p.getAvailableRawFields().iterator().next());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        p.getSelectedValuesFields().add(new AbstractPivot.SimpleAggregatedField(p, p.getAvailableRawFields().get(0), 11));
+        p.getSelectedValuesFields().add(new AbstractPivot.SimpleAggregatedField(p, p.getAvailableRawFields().get(2), 12));
+        p.getSelectedAxisFields().add(p.getAvailableRawFields().get(1));
+        p.getSelectedSeriesFields().add(p.getAvailableRawFields().get(3));
 //        p.selectAxisField(f3);
 //        p.selectFilterField(f4);
 //        p.getSelectedFilterFields().iterator().next().restrictValue("y");

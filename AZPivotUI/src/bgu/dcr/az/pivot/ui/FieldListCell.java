@@ -5,6 +5,8 @@
  */
 package bgu.dcr.az.pivot.ui;
 
+import bgu.dcr.az.pivot.ui.test.PivotView;
+import bgu.dcr.az.pivot.ui.alert.AlertDialog;
 import bgu.dcr.az.pivot.model.AggregatedField;
 import bgu.dcr.az.pivot.model.Field;
 import bgu.dcr.az.pivot.model.Pivot;
@@ -48,6 +50,10 @@ public class FieldListCell extends ListCell<Field> {
         updateItem(getItem(), false);
     }
 
+    public PivotViewController.ListCellFactory getFactory() {
+        return factory;
+    }
+    
     @Override
     public void startEdit() {
         super.startEdit();
@@ -66,7 +72,7 @@ public class FieldListCell extends ListCell<Field> {
                         getItem().setFieldName(text.getText());
                         commitEdit(getItem());
                     } catch (Throwable ex) {
-                        AlertDialog.showAndWait(PivotView.stage, ex.getMessage(), AlertDialog.ICON_ERROR);
+                        AlertDialog.showAndWait(getFactory().getScene(), ex.getMessage(), AlertDialog.ICON_ERROR);
                         cancelEdit();
                         update();
                     }

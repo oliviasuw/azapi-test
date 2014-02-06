@@ -215,7 +215,7 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
                     res.put(index, new LinkedList<>());
                 }
 
-                res.get(index).add(v.getValue(r));
+                res.get(index).add(((Number) v.getValue(r)).doubleValue());
             }
         }
 
@@ -256,22 +256,21 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
      * @param lookupRows
      */
     private void fillValues(Pivot pivot, Map<Integer, Collection<Object>> values, Map<ObjectArray, Integer> lookupColumns, Map<ObjectArray, Integer> lookupRows) {
+        for (int j = 0; j < rows.numberOfHeaders(); j++) {
+            Object[] data = new Object[columns.numberOfHeaders()];
+            for (int i = 0; i < columns.numberOfHeaders(); i++) {
 
-        for (int i = 0; i < columns.numberOfHeaders(); i++) {
-            Object[] data = new Object[rows.numberOfHeaders()];
-
-            for (int j = 0; j < rows.numberOfHeaders(); j++) {
                 int column = lookupColumns.get(new ObjectArray(columns.getHeader(i)));
                 int row = lookupRows.get(new ObjectArray(rows.getHeader(j)));
                 int index = column * rows.numberOfHeaders() + row;
                 final Collection<Object> value = values.get(index);
 
                 if (value == null) {
-                    data[j] = null;
+                    data[i] = 0;
                 } else {
                     final Object[] columnHeader = columns.getHeader(i);
                     final AggregatedField af = (AggregatedField) columnHeader[columnHeader.length - 1];
-                    data[j] = ((AggregationFunction) af.aggregationFunctionProperty().get()).aggregate(value);
+                    data[i] = ((AggregationFunction) af.aggregationFunctionProperty().get()).aggregate(value);
                 }
             }
             getInnerData().add(data);

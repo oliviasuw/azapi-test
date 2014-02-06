@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.pivot.ui;
 
+import bgu.dcr.az.pivot.ui.alert.AlertDialog;
 import bgu.dcr.az.pivot.model.AggregatedField;
 import bgu.dcr.az.pivot.model.Field;
 import bgu.dcr.az.pivot.model.FilterField;
@@ -14,11 +15,16 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
@@ -58,10 +64,6 @@ public class PivotViewController implements Initializable {
     private TreeView filterFieldsTreeView;
     private CheckBoxTreeItem treeRoot;
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
     public void setModel(AbstractPivot pivot) {
         this.pivot = pivot;
         factory = new ListCellFactory();
@@ -82,13 +84,25 @@ public class PivotViewController implements Initializable {
         treeRoot = new CheckBoxTreeItem("Dummy");
         filterFieldsTreeView.setRoot(treeRoot);
         filterFieldsTreeView.setCellFactory(CheckBoxTreeCell.<String>forTreeView());
+        pivot.getSelectedFilterFields().addListener(new ListChangeListener<FilterField>() {
+            @Override
+            public void onChanged(Change<? extends FilterField> c) {
+                while (c.next()) {
+                    if (c.wasRemoved()) {
+                        for (FilterField ff : c.getRemoved()) {
+                            treeRoot.getChildren().removeIf(e -> ((CheckBoxTreeItem)e).getValue().equals(ff));
+                        }
+                    }
+                }
+            }
+        });
 
         filterFieldsTreeView.setOnDragDetected(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent t) {
                 Object item = filterFieldsTreeView.getSelectionModel().getSelectedItem();
-                if (item != null && item instanceof Field) {
-                    Field _item = (Field) item;
+                if (item != null && ((CheckBoxTreeItem)item).getValue() instanceof FilterField) {
+                    Field _item = ((FilterField) ((CheckBoxTreeItem)item).getValue()).getField();
                     Dragboard db = filterFieldsTreeView.startDragAndDrop(TransferMode.COPY);
                     ClipboardContent content = new ClipboardContent();
                     content.put(DataFormat.RTF, _item);
@@ -126,18 +140,32 @@ public class PivotViewController implements Initializable {
                     success = true;
                     try {
                         FilterField ff = new AbstractPivot.SimpleFilterField(pivot, field);
+                        PivotUtils.removeUseOf(pivot, ff.getField());
                         pivot.validateFilterField(ff.getField());
                         pivot.getSelectedFilterFields().add(ff);
-                        
-                        CheckBoxTreeItem item = new CheckBoxTreeItem(ff);
+
+                        CheckBoxTreeItem item = new CheckBoxTreeItem(ff, null, true);
                         treeRoot.getChildren().add(item);
-                        
-                        ff.getAllValues().stream().forEach(v ->  item.getChildren().add(new CheckBoxTreeItem(v)));
+
+                        for (Object v : ff.getAllValues()) {
+                            final CheckBoxTreeItem value = new CheckBoxTreeItem(v, null, true);
+                            value.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                                @Override
+                                public void changed(ObservableValue<? extends Boolean> pv, Boolean ov, Boolean nv) {
+                                    if (nv) {
+                                        ff.getRestrictedValues().remove(v);
+                                    } else {
+                                        ff.getRestrictedValues().add(v);
+                                    }
+                                }
+                            });
+                            item.getChildren().add(value);
+                        }
 
                         draggedItem = null;
                         factory.refreshCells();
                     } catch (Exception ex) {
-                        AlertDialog.showAndWait(stage, ex.getMessage(), AlertDialog.ICON_ERROR);
+                        AlertDialog.showAndWait(allFieldsListView.getParent().getScene(), ex.getMessage(), AlertDialog.ICON_ERROR);
                     }
                 }
                 t.setDropCompleted(success);
@@ -222,7 +250,7 @@ public class PivotViewController implements Initializable {
                                 draggedItem = null;
                                 factory.refreshCells();
                             } catch (Exception ex) {
-                                AlertDialog.showAndWait(stage, ex.getMessage(), AlertDialog.ICON_ERROR);
+                                AlertDialog.showAndWait(allFieldsListView.getParent().getScene(), ex.getMessage(), AlertDialog.ICON_ERROR);
                             }
                         }
                     }
@@ -237,6 +265,10 @@ public class PivotViewController implements Initializable {
     class ListCellFactory implements Callback {
 
         List<FieldListCell> existingCells = new LinkedList<>();
+        
+        public Scene getScene() {
+            return allFieldsListView.getParent().getScene();
+        }
 
         @Override
         public Object call(Object p) {
@@ -246,9 +278,7 @@ public class PivotViewController implements Initializable {
         }
 
         public void refreshCells() {
-            for (FieldListCell l : existingCells) {
-                l.update();
-            }
+            existingCells.stream().forEach((l) -> l.update());
         }
     };
 }

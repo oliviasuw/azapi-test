@@ -21,4 +21,8 @@ public interface TableData extends Data {
         
         int numberOfHeaders();
     }
+    
+    public static interface HeaderExtractor {
+        String extract(Object[] o);
+    }
 }

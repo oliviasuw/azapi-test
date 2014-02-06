@@ -54,6 +54,14 @@ public class PivotDataTableViewController implements Initializable {
         }
 
         LinkedList result = new LinkedList();
+        final TableColumn rowLabelsColumn = new TableColumn("Row labels");
+        rowLabelsColumn.setCellValueFactory(new PropertyValueFactory<RecordAccessor, Object>("") {
+            @Override
+            public ObservableValue<Object> call(TableColumn.CellDataFeatures<RecordAccessor, Object> cdf) {
+                return new SimpleObjectProperty<>(cdf.getValue().get(0));
+            }
+        });
+        result.add(rowLabelsColumn);
 
         TableColumn[] columns = new TableColumn[data.getColumnHeaders().getHeader(0).length];
         int id = 0;
@@ -68,11 +76,10 @@ public class PivotDataTableViewController implements Initializable {
                     }
                     if (i == ch.length - 1) {
                         final int fid = id;
-                        columns[i].setCellValueFactory(new PropertyValueFactory<RecordAccessor, Object>(""){
-
+                        columns[i].setCellValueFactory(new PropertyValueFactory<RecordAccessor, Object>("") {
                             @Override
                             public ObservableValue<Object> call(TableColumn.CellDataFeatures<RecordAccessor, Object> cdf) {
-                                return new SimpleObjectProperty<>(cdf.getValue().get(fid));
+                                return new SimpleObjectProperty<>(cdf.getValue().get(fid + 1));
                             }
                         });
                     }

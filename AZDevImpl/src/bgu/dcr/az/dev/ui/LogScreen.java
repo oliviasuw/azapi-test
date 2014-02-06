@@ -211,21 +211,6 @@ private void nextMatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
 //    @Override
     public void setModel(Experiment experiment) {
         doc = new AgentLogDocument(output);
-//        doc.addDocumentListener(new DocumentListener() {
-//
-//            @Override
-//            public void insertUpdate(DocumentEvent e) {
-//                output.setCaretPosition(doc.getLength());
-//            }
-//
-//            @Override
-//            public void removeUpdate(DocumentEvent e) {
-//            }
-//
-//            @Override
-//            public void changedUpdate(DocumentEvent e) {
-//            }
-//        });
         output.setDocument(doc);
         ExperimentExecutionController.UNIT.setLogListener(this);
         pw = new PokedWorker(250) {

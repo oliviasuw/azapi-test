@@ -12,6 +12,7 @@ import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.execs.MultithreadedScheduler;
 import bgu.dcr.az.execs.api.Scheduler;
 import bgu.dcr.az.mas.Execution;
+import bgu.dcr.az.mas.ExecutionService;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import bgu.dcr.az.mas.exp.ExperimentStatusSnapshot;
@@ -19,7 +20,9 @@ import bgu.dcr.az.mas.impl.ExperimentStatusSnapshotImpl;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -38,6 +41,8 @@ public class CPExperiment implements Experiment {
     private FailureDescription failureDescription = null;
     private final ExperimentStatusSnapshotImpl status = new ExperimentStatusSnapshotImpl();
     private String name;
+    private Map<Class, ExecutionService> suppliedServices = new HashMap<>();
+    private ExecutionResult result;
 
     /**
      * @propertyName tests
@@ -45,6 +50,11 @@ public class CPExperiment implements Experiment {
      */
     public LinkedList<CPExperimentTest> getTests() {
         return tests;
+    }
+
+    @Override
+    public ExecutionResult lastResult() {
+        return result;
     }
 
     /**
@@ -74,7 +84,11 @@ public class CPExperiment implements Experiment {
                 status.currentExecutedSubExperimentName = t.getName();
                 status.currentExecutedSubExperimentStatus = t.status();
 
-                ExecutionResult result = t.execute();
+                for (Map.Entry<Class, ExecutionService> e : suppliedServices.entrySet()) {
+                    t.supply(e.getKey(), e.getValue());
+                }
+
+                result = t.execute();
 
                 if (result.getState() != ExecutionResult.State.SUCCESS) {
                     try {
@@ -98,15 +112,15 @@ public class CPExperiment implements Experiment {
         Scheduler sched = new MultithreadedScheduler(pool);
 
         try {
-            ExecutionResult result = getExecution(failureDescription.getFailingExecutionNumber()).execute(sched, Runtime.getRuntime().availableProcessors());
+            result = getExecution(failureDescription.getFailingExecutionNumber()).execute(sched, Runtime.getRuntime().availableProcessors());
 
             if (result.getState() != ExecutionResult.State.SUCCESS) {
                 return result;
             }
 
-            return new ExecutionResult().toSucceefulState(null);
+            return result = new ExecutionResult().toSucceefulState(null);
         } catch (ExperimentExecutionException | InterruptedException | ConfigurationException ex) {
-            return new ExecutionResult().toCrushState(ex).setLastRunExecution(failureDescription.getFailingExecutionNumber());
+            return result = new ExecutionResult().toCrushState(ex).setLastRunExecution(failureDescription.getFailingExecutionNumber());
         } finally {
             pool.shutdownNow();
         }
@@ -187,6 +201,11 @@ public class CPExperiment implements Experiment {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public void supply(Class<? extends ExecutionService> serviceType, ExecutionService service) {
+        suppliedServices.put(serviceType, service);
     }
 
 }

@@ -6,12 +6,13 @@
 package bgu.dcr.az.mas.misc;
 
 import bgu.dcr.az.mas.ExecutionService;
+import bgu.dcr.az.mas.cp.CPData;
 
 /**
  *
  * @author User
  */
-public interface Logger extends ExecutionService {
+public interface Logger extends ExecutionService<CPData> {
 
     void log(String logger, String msg);
 }

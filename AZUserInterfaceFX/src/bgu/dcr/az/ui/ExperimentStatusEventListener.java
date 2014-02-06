@@ -11,13 +11,18 @@ package bgu.dcr.az.ui;
  */
 public interface ExperimentStatusEventListener {
 
-    void onExperimentStarted();
+    default void onExperimentStarted() {
+    }
 
-    void onSubExperimentStarted(String name);
+    default void onSubExperimentStarted(String name) {
+    }
 
-    void onSubExperimentEnded(String name);
+    default void onSubExperimentEnded(String name) {
+    }
 
-    void onExperimentEnded();
+    default void onExperimentEnded() {
+    }
 
-    void onNumberOfFinishedExecutionsChanged(int numberOfFinishedExecutions);
+    default void onNumberOfFinishedExecutionsChanged(int numberOfFinishedExecutions) {
+    }
 }

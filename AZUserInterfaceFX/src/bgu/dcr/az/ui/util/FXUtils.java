@@ -5,7 +5,6 @@
  */
 package bgu.dcr.az.ui.util;
 
-import bgu.dcr.az.ui.screens.status.StatusScreenCtl;
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
@@ -14,6 +13,7 @@ import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import org.scenicview.ScenicView;
@@ -46,7 +46,6 @@ public class FXUtils {
                     Scene scene = new Scene(pane);
 
 //                    ScenicView.show(scene);
-
                     scene.setFill(Paint.valueOf("transparent"));
                     result.setScene(scene);
                 } catch (IOException ex) {
@@ -84,6 +83,14 @@ public class FXUtils {
             Thread.currentThread().interrupt();
             return null;
         }
+    }
+
+    public static float requiredWidthOfLabel(Label gc) {
+        return com.sun.javafx.tk.Toolkit.getToolkit().getFontLoader().computeStringWidth(gc.getText(), gc.getFont());
+    }
+
+    public static float requiredHeightOfLabel(Label gc) {
+        return com.sun.javafx.tk.Toolkit.getToolkit().getFontLoader().getFontMetrics(gc.getFont()).getLineHeight();
     }
 
 }

@@ -13,15 +13,15 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group name="Misc">
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPExperimentTest.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/BaseExecution.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/misc/StdoutLogger.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPCorrectnessTester.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/exen/ExecutionResult.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPExecution.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/Hooks.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/stat/AbstractStatisticCollector.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/BaseAgentController.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/misc/Logger.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/ExperimentStatusSnapshotImpl.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/stat/StatisticsManagerImpl.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPData.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPAgentController.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPSolution.java</file>

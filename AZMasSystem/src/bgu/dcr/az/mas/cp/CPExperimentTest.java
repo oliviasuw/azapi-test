@@ -18,6 +18,7 @@ import bgu.dcr.az.execs.api.Scheduler;
 import bgu.dcr.az.mas.AgentSpawner;
 import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.ExecutionEnvironment;
+import bgu.dcr.az.mas.ExecutionService;
 import bgu.dcr.az.mas.exp.AlgorithmDef;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
@@ -32,9 +33,11 @@ import bgu.dcr.az.utils.RandomSequance;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -58,6 +61,13 @@ public class CPExperimentTest implements Experiment {
     private long seed = System.currentTimeMillis();
     private final ExperimentStatusSnapshotImpl status = new ExperimentStatusSnapshotImpl();
     private final HashSet<StatisticCollector> statistics = new HashSet<>();
+    private final Map<Class, ExecutionService> suppliedServices = new HashMap<>();
+    private ExecutionResult result;
+
+    @Override
+    public ExecutionResult lastResult() {
+        return result;
+    }
 
     /**
      * @propertyName seed
@@ -179,9 +189,9 @@ public class CPExperimentTest implements Experiment {
             final int count = looper.count() * algorithms.size();
             for (i = executionNumber == -1 ? 0 : executionNumber; i < count; i++) {
                 CPExecution exec = createExecutionWithSeed(i, conf, randomSeq.getIthLong(i));
-                System.out.println("Start Running Problem on " + coreAdapters[i % algorithms.size()].getAdaptedNumberOfCores() + " cores");
+//                System.out.println("Start Running Problem on " + coreAdapters[i % algorithms.size()].getAdaptedNumberOfCores() + " cores");
 
-                ExecutionResult result = exec.execute(scheduler, coreAdapters[i % algorithms.size()].getAdaptedNumberOfCores());
+                result = exec.execute(scheduler, coreAdapters[i % algorithms.size()].getAdaptedNumberOfCores());
 
                 if (result.getState() != ExecutionResult.State.SUCCESS) {
                     return result.setLastRunExecution(i);
@@ -195,7 +205,7 @@ public class CPExperimentTest implements Experiment {
                 status.finishedExecutions++;
             }
         } catch (Exception ex) {
-            return new ExecutionResult().toCrushState(new ExperimentExecutionException("cannot execute experiment - configuration problem, see cause", ex)).setLastRunExecution(i);
+            return result = new ExecutionResult().toCrushState(new ExperimentExecutionException("cannot execute experiment - configuration problem, see cause", ex)).setLastRunExecution(i);
         } finally {
             pool.shutdownNow();
             status.end();
@@ -237,7 +247,7 @@ public class CPExperimentTest implements Experiment {
         looper.configure(i, conf.configurationsOfElements);
 
         conf.apply();
-        System.out.println("Start Generating Problem " + i);
+//        System.out.println("Start Generating Problem " + i);
         Problem p = new Problem();
         pgen.generate(p, new Random(seed));
 
@@ -252,9 +262,11 @@ public class CPExperimentTest implements Experiment {
         }
 
         exec.supply(StatisticsManager.class, statm);
+        for (Map.Entry<Class, ExecutionService> e : suppliedServices.entrySet()) {
+            exec.supply(e.getKey(), e.getValue());
+        }
 
-        System.out.println("Algorithm: " + adef);
-
+//        System.out.println("Algorithm: " + adef);
         if (correctnessTester != null) {
             exec.supply(CPCorrectnessTester.class, correctnessTester);
         }
@@ -275,6 +287,11 @@ public class CPExperimentTest implements Experiment {
     @Override
     public ExperimentStatusSnapshot status() {
         return status;
+    }
+
+    @Override
+    public void supply(Class<? extends ExecutionService> serviceType, ExecutionService service) {
+        suppliedServices.put(serviceType, service);
     }
 
     private static interface RuntimeCoreAdapter {
@@ -326,8 +343,7 @@ public class CPExperimentTest implements Experiment {
 
             contentionExpAverage = contentionExpAverage * DISCOUNT_FACTOR + (1 - DISCOUNT_FACTOR) * scheduler.getContention();
 
-            System.out.println("contention avarage: " + contentionExpAverage);
-
+//            System.out.println("contention avarage: " + contentionExpAverage);
             if (round % ADAPTIVE_AVERAGE_AMOUNT == 0) {
                 if (contentionExpAverage > 0.25) {
                     if (adaptedNumberOfCores > 1) {

@@ -21,6 +21,8 @@ public interface Execution<T> {
 
     public <T extends ExecutionService> T require(Class<T> service) throws InitializationException;
 
+    public boolean hasRequirement(Class<? extends ExecutionService> service);
+    
     public void supply(Class<? extends ExecutionService> serviceKey, ExecutionService service);
 
     public ExecutionResult execute(Scheduler sched, int numCores) throws ExperimentExecutionException, InterruptedException;

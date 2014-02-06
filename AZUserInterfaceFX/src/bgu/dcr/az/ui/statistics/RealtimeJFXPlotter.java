@@ -43,6 +43,10 @@ public class RealtimeJFXPlotter implements Plotter {
             pie = (PieChart) innerChart;
 
             int idx = 0;
+            if (data.numRecords() <= 1) {
+                return;
+            }
+
             for (RecordAccessor r : data) {
                 if (pie.getData().size() > idx) {
                     pie.getData().get(idx++).setPieValue(r.getDouble(valueField));
@@ -54,14 +58,16 @@ public class RealtimeJFXPlotter implements Plotter {
 
         } else {
             pie = new PieChart();
-            
+
             innerChart = pie;
             for (RecordAccessor r : data) {
                 pie.getData().add(new PieChart.Data(r.getString(seriesField), r.getDouble(valueField)));
             }
-            
+
             pie.setLabelsVisible(true);
+            pie.setLegendVisible(false);
             plotContainer.setCenter(innerChart);
+
         }
 
     }
@@ -116,14 +122,13 @@ public class RealtimeJFXPlotter implements Plotter {
             for (RecordAccessor r : data) {
                 if (properties.isHorizontal()) {
                     series.getData().add(new XYChart.Data(r.getDouble(valueField), r.getString(categoryField)));
-
                 } else {
                     series.getData().add(new XYChart.Data(r.getString(categoryField), r.getDouble(valueField)));
-
                 }
             }
 
             innerChart = bar;
+            bar.setLegendVisible(false);
             plotContainer.setCenter(innerChart);
         }
     }

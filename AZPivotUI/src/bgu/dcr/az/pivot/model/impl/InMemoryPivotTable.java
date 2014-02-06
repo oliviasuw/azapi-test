@@ -4,7 +4,9 @@
  */
 package bgu.dcr.az.pivot.model.impl;
 
+import bgu.dcr.az.orm.api.FieldMetadata;
 import bgu.dcr.az.orm.api.RecordAccessor;
+import bgu.dcr.az.orm.impl.FieldMetadataImpl;
 import bgu.dcr.az.orm.impl.SimpleData;
 import bgu.dcr.az.pivot.model.AggregatedField;
 import bgu.dcr.az.pivot.model.AggregationFunction;
@@ -38,6 +40,8 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
 
     private Headers columns;
     private Headers rows;
+    private final HeaderExtractor columnsHeaderExtractor;
+    private final HeaderExtractor rowsHeaderExtractor;
 
     /**
      * creates a pivot table (evaluated and stored in memory) according to
@@ -46,6 +50,8 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
      * @param pivot
      */
     public InMemoryPivotTable(Pivot pivot) {
+        columnsHeaderExtractor = new SimpleHeaderExtractor();
+        rowsHeaderExtractor = new SimpleHeaderExtractor();
         generatePivotTableData(pivot);
     }
 
@@ -93,6 +99,8 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
         Map<Integer, Collection<Object>> values = extractValues(pivot, lookupColumns, lookupRows);
 
         fillValues(pivot, values, lookupColumns, lookupRows);
+        
+        fillFieldMetadata();
     }
 
     /**
@@ -257,7 +265,8 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
      */
     private void fillValues(Pivot pivot, Map<Integer, Collection<Object>> values, Map<ObjectArray, Integer> lookupColumns, Map<ObjectArray, Integer> lookupRows) {
         for (int j = 0; j < rows.numberOfHeaders(); j++) {
-            Object[] data = new Object[columns.numberOfHeaders()];
+            Object[] data = new Object[columns.numberOfHeaders() + 1];
+            data[0] = rowsHeaderExtractor.extract(rows.getHeader(j));
             for (int i = 0; i < columns.numberOfHeaders(); i++) {
 
                 int column = lookupColumns.get(new ObjectArray(columns.getHeader(i)));
@@ -266,11 +275,11 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
                 final Collection<Object> value = values.get(index);
 
                 if (value == null) {
-                    data[i] = 0;
+                    data[i + 1] = 0;
                 } else {
                     final Object[] columnHeader = columns.getHeader(i);
                     final AggregatedField af = (AggregatedField) columnHeader[columnHeader.length - 1];
-                    data[i] = ((AggregationFunction) af.aggregationFunctionProperty().get()).aggregate(value);
+                    data[i + 1] = ((AggregationFunction) af.aggregationFunctionProperty().get()).aggregate(value);
                 }
             }
             getInnerData().add(data);
@@ -327,12 +336,19 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
     }
 
     private boolean isRestrictedRecord(Pivot pivot, RecordAccessor r) {
-        for (FilterField ff : pivot.getSelectedFilterFields()) {
-            if (ff.getRestrictedValues().contains(ff.getValue(r))) {
-                return true;
-            }
+        return pivot.getSelectedFilterFields().stream().anyMatch(ff -> ff.getRestrictedValues().contains(ff.getValue(r)));
+    }
+
+    private void fillFieldMetadata() {
+        FieldMetadata[] meta = new FieldMetadata[columns.numberOfHeaders() + 1];
+        
+        meta[0] = new FieldMetadataImpl("Row headers", String.class);
+        
+        for (int i = 0; i < columns.numberOfHeaders(); i++) {
+            meta[i + 1] = new FieldMetadataImpl(columnsHeaderExtractor.extract(columns.getHeader(i)), Double.class);
         }
-        return false;
+        
+        setFields(meta);
     }
 
     private class ObjectArray {

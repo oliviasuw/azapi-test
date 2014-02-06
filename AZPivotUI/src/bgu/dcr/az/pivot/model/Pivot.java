@@ -6,7 +6,6 @@ package bgu.dcr.az.pivot.model;
 
 import bgu.dcr.az.orm.api.Data;
 import java.util.List;
-import java.util.Set;
 import javafx.collections.ObservableList;
 
 /**
@@ -68,5 +67,5 @@ public interface Pivot {
     Data getData();
 
     TableData getPivotedData();
-
+    
 }

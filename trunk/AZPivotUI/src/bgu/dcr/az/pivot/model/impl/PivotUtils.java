@@ -10,6 +10,7 @@ import bgu.dcr.az.pivot.model.Field;
 import bgu.dcr.az.pivot.model.FilterField;
 import bgu.dcr.az.pivot.model.Pivot;
 import java.util.Iterator;
+import java.util.function.Predicate;
 
 /**
  *
@@ -22,7 +23,7 @@ public class PivotUtils {
             return true;
         }
 
-        return isInValueFields(p, element);
+        return isInValueFields(p, element) || p.getSelectedFilterFields().contains(element);
     }
 
     public static boolean isInValueFields(Pivot p, Field element) {
@@ -35,15 +36,8 @@ public class PivotUtils {
     }
 
     public static boolean removeUseOfNonValueField(Pivot p, Field field) {
-        Iterator<FilterField> it = p.getSelectedFilterFields().iterator();
-
-        while (it.hasNext()) {
-            if (it.next().getFieldId() == field.getFieldId()) {
-                it.remove();
-                return true;
-            }
-        }
-
+        p.getSelectedFilterFields().removeIf((Field t) -> t.getFieldId() == field.getFieldId());
+        
         return p.getSelectedAxisFields().remove(field) || p.getSelectedSeriesFields().remove(field);
     }
 
@@ -56,10 +50,10 @@ public class PivotUtils {
                 AggregatedField e = it.next();
                 if (e.getAggregatedFieldId() == field.getAggregatedFieldId()) {
                     it.remove();
-                    return;
+//                    return;
                 }
             }
-            return;
+//            return;
         }
 
         removeUseOfNonValueField(p, element);

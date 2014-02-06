@@ -1,4 +1,4 @@
-package bgu.dcr.az.pivot.ui;
+package bgu.dcr.az.pivot.ui.alert;
 
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -23,11 +23,11 @@ public class AlertDialog extends Stage {
     public static final int ICON_INFO = 0;
     public static final int ICON_ERROR = 1;
     
-    public static void showAndWait(Stage owner, String msg, int type) {
+    public static void showAndWait(Scene owner, String msg, int type) {
         new AlertDialog(owner, msg, type).showAndWait();
     }
 
-    public AlertDialog(Stage owner, String msg, int type) {
+    public AlertDialog(Scene owner, String msg, int type) {
         setResizable(false);
         initModality(Modality.APPLICATION_MODAL);
         initStyle(StageStyle.TRANSPARENT);
@@ -38,6 +38,7 @@ public class AlertDialog extends Stage {
         label.setGraphic(new ImageView(getImage(type)));
 
         Button button = new Button("OK");
+        button.requestFocus();
         button.setOnAction(new EventHandler() {
             @Override
             public void handle(Event arg0) {
@@ -70,8 +71,8 @@ public class AlertDialog extends Stage {
         setScene(scene);
 
         // make sure this stage is centered on top of its owner
-        setX(owner.getX() + (owner.getWidth() / 2 - width / 2));
-        setY(owner.getY() + (owner.getHeight() / 2 - height / 2));
+        setX(owner.getWindow().getX() + (owner.getWindow().getWidth() / 2 - width / 2));
+        setY(owner.getWindow().getY() + (owner.getWindow().getHeight() / 2 - height / 2));
     }
 
     private Image getImage(int type) {

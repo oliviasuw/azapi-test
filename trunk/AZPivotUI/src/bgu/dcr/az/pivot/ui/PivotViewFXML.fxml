@@ -14,7 +14,7 @@
           <children>
             <BorderPane prefHeight="417.0" prefWidth="318.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <center>
-                <ListView fx:id="allFieldsListView" prefHeight="200.0" prefWidth="200.0" />
+                <ListView fx:id="allFieldsListView" prefHeight="-1.0" prefWidth="-1.0" />
               </center>
             </BorderPane>
           </children>
@@ -25,7 +25,7 @@
               <children>
                 <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
                   <center>
-                    <ListView fx:id="columnsFieldsListView" editable="true" prefHeight="200.0" prefWidth="200.0" />
+                    <ListView fx:id="columnsFieldsListView" editable="true" prefHeight="-1.0" prefWidth="-1.0" />
                   </center>
                   <top>
                     <Label text="Column Labels" />
@@ -33,16 +33,16 @@
                 </BorderPane>
                 <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
                   <center>
-                    <TreeView fx:id="filterFieldsTreeView" prefHeight="200.0" prefWidth="200.0" showRoot="false" />
+                    <TreeView fx:id="filterFieldsTreeView" prefHeight="-1.0" prefWidth="-1.0" showRoot="false" />
                   </center>
                   <top>
                     <Label text="Report Filter" />
                   </top>
                 </BorderPane>
                 <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                  <right>
-                    <ListView id="columnsFieldsListView" fx:id="valuesFieldsListView" prefHeight="200.0" prefWidth="200.0" />
-                  </right>
+                  <center>
+                    <ListView id="columnsFieldsListView" fx:id="valuesFieldsListView" prefHeight="-1.0" prefWidth="-1.0" />
+                  </center>
                   <top>
                     <Label text="Values" />
                   </top>

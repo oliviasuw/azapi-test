@@ -5,9 +5,9 @@
 package bgu.dcr.az.pivot.model;
 
 import bgu.dcr.az.orm.api.Data;
+import java.util.List;
 import java.util.Set;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
 
 /**
  *
@@ -63,7 +63,7 @@ public interface Pivot {
      */
     ObservableList<FilterField> getSelectedFilterFields();
 
-    Set<Field> getAvailableRawFields();
+    List<Field> getAvailableRawFields();
 
     Data getData();
 

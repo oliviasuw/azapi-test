@@ -1,12 +1,14 @@
+package bgu.dcr.az.pivot.ui.test;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 
-package bgu.dcr.az.pivot.ui;
 
-import bgu.dcr.az.pivot.ui.test.PivotTestUtils;
+import bgu.dcr.az.pivot.ui.PivotDataTableViewController;
+import bgu.dcr.az.pivot.ui.PivotViewController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,12 +25,15 @@ public class PivotView extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         PivotView.stage = stage;
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("PivotViewFXML.fxml"));
-        Parent root = (Parent)loader.load();
-        PivotViewController controller = (PivotViewController)loader.getController();
-        controller.setModel(PivotTestUtils.generateSimplePivot1());
-        controller.setStage(stage);
+//        FXMLLoader loader = new FXMLLoader(PivotViewController.class.getResource("PivotViewFXML.fxml"));
+//        Parent root = (Parent)loader.load();
+//        PivotViewController controller = (PivotViewController)loader.getController();
+//        controller.setModel(PivotTestUtils.generateSimplePivot1());
         
+        FXMLLoader loader = new FXMLLoader(PivotDataTableViewController.class.getResource("PivotDataTableView.fxml"));
+        Parent root = (Parent)loader.load();
+        PivotDataTableViewController controller = (PivotDataTableViewController)loader.getController();
+        controller.setModel(PivotTestUtils.generateSimplePivot1().getPivotedData());
         Scene scene = new Scene(root);
         
         stage.setScene(scene);

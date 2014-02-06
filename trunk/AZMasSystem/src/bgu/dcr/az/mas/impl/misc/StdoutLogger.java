@@ -6,6 +6,7 @@
 package bgu.dcr.az.mas.impl.misc;
 
 import bgu.dcr.az.mas.Execution;
+import bgu.dcr.az.mas.cp.CPData;
 import bgu.dcr.az.mas.impl.InitializationException;
 import bgu.dcr.az.mas.misc.Logger;
 

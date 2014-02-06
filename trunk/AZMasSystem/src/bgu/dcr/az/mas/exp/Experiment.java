@@ -1,8 +1,7 @@
 package bgu.dcr.az.mas.exp;
 
 import bgu.dcr.az.api.exen.ExecutionResult;
-import bgu.dcr.az.mas.stat.StatisticCollector;
-import bgu.dcr.az.mas.stat.StatisticsManager;
+import bgu.dcr.az.mas.ExecutionService;
 import java.util.Collection;
 
 /**
@@ -26,6 +25,11 @@ public interface Experiment {
     public ExecutionResult execute();
 
     /**
+     * @return the last execution result
+     */
+    public ExecutionResult lastResult();
+
+    /**
      * @return collection of sub experiments
      */
     public Collection<? extends Experiment> subExperiments();
@@ -39,5 +43,14 @@ public interface Experiment {
      * @return the experiment name
      */
     public String getName();
-    
+
+    /**
+     * supply the given execution service to all executions that are created by
+     * this experiment or sub experiments
+     *
+     * @param serviceType
+     * @param service
+     */
+    public void supply(Class<? extends ExecutionService> serviceType, ExecutionService service);
+
 }

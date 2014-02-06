@@ -1,0 +1,99 @@
+/*
+style for the titled panes - to make them more like sections
+*/
+.section-pane {
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+
+.section-pane > .title{
+    -fx-background-color: rgb(100, 100, 100);
+    -fx-background-radius: 0 0 0 0, 0 0 0 0, 0 0 0 0;
+    -fx-padding: 0;
+}
+
+.section-pane > .title .text{
+    -fx-fill:#f3f3f3;
+}
+
+.section-pane > .content{
+    -fx-background-color: rgb(220, 220, 220);
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+}
+
+.section-pane > .title .dark-pane {
+    -fx-background-color: rgb(100, 100, 100);
+    -fx-background-radius: 0 0 0 0, 0 0 0 0, 0 0 0 0;
+    -fx-padding: 0;
+}
+
+.section-pane > .title .dark-pane .button {
+    -fx-padding: 4 10 6 10;
+}
+
+/*
+style the statistics tree chooser
+*/
+
+.statistical-tree {
+    -fx-background-color: rgb(70, 70, 70);
+}
+
+.statistical-tree .tree-cell {
+    -fx-background-color: rgb(70, 70, 70);
+    -fx-padding: 0.25em; /* 3 */
+    -fx-text-fill: -fx-text-inner-color;
+    -fx-indent: 80;
+}
+
+/*
+dark panels
+*/
+.dark-pane {
+    -fx-background-color: rgb(70, 70, 70);
+}
+
+.dark-pane .label {
+    -fx-text-fill : white;
+}
+
+.dark-pane .button {
+    /*-fx-background-color: transparent;*/
+    /*    -fx-background-color: linear-gradient(to bottom, 
+            derive(-fx-accent, -7%),
+            derive(-fx-accent, 0%),
+            derive(-fx-accent, -3%),
+            derive(-fx-accent, -9%)
+            );*/
+    -fx-background-insets: 3 3 4 3;
+    -fx-background-color: rgb(150,150,150);
+    -fx-background-radius: 0.25em; /* 3px */
+    -fx-padding: 8; /* 12 */
+}
+
+/*
+for some reason border pane contains padding of 9.6 - this will disable it
+*/
+.padless-border-pane {
+    -fx-padding: 0;
+}
+
+/*
+styling the center piece
+*/
+
+.center-piece .content{ 
+    -fx-background-color: rgb(70 ,70, 70 );
+
+}
+
+.viewer {
+    -fx-background-color: rgb(200,200,200);
+    -fx-background-insets: 0 5 5 5;
+    -fx-background-radius: 6;
+    -fx-padding: 8;
+}

@@ -125,6 +125,11 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
         services.put(serviceKey, new ExecutionServiceWithInitializationData(service));
     }
 
+    @Override
+    public boolean hasRequirement(Class<? extends ExecutionService> service) {
+        return services.containsKey(service);
+    }
+
     protected abstract Collection<AgentController> createControllers() throws InitializationException;
 
     protected abstract void initialize() throws InitializationException;

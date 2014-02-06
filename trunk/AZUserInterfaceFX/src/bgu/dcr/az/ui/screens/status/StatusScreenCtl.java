@@ -12,7 +12,7 @@ import bgu.dcr.az.ui.ExperimentStatusEventListener;
 import bgu.dcr.az.ui.statistics.AlgorithmCPUTimeStatisticCollector;
 import bgu.dcr.az.ui.statistics.NumberOfCoresInUseStatisticCollector;
 import bgu.dcr.az.ui.statistics.RealtimeJFXPlotter;
-import bgu.dcr.az.ui.util.FXPoke;
+import bgu.dcr.az.ui.util.UIPoke;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,7 +65,7 @@ public class StatusScreenCtl implements Initializable {
     RealtimeJFXPlotter pieChartPlotter;
     RealtimeJFXPlotter barChartPlotter;
 
-    FXPoke pieChartPlotterPoke;
+    UIPoke pieChartPlotterPoke;
 
     /**
      * Initializes the controller class.
@@ -75,7 +75,7 @@ public class StatusScreenCtl implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        pieChartPlotterPoke = new FXPoke(this::updateStatistics, 1000);
+        pieChartPlotterPoke = new UIPoke(this::updateStatistics, 1000);
 
         final WebEngine engine = experimentXMLView.getEngine();
         engine.getHistory().setMaxSize(0);
@@ -101,8 +101,8 @@ public class StatusScreenCtl implements Initializable {
 
     public void setModel(final Experiment exp) {
 
+        loadListOfSubExperiments(exp);
         Platform.runLater(() -> {
-            loadListOfSubExperiments(exp);
             createProgressUpdater(exp);
             createListSelectionUpdater();
             updateSelectedExperimentXML(exp);
@@ -154,8 +154,12 @@ public class StatusScreenCtl implements Initializable {
                 Platform.runLater(() -> {
                     if (!testsList.getItems().isEmpty()) {
 
-                        testsList.getSelectionModel().select(testsList.getItems().stream()
-                                .filter(e -> ((Experiment) e).getName().equals(name)).findFirst().get());
+                        for (Object e : testsList.getItems()) {
+                            if (((Experiment) e).getName().equals(name)) {
+                                testsList.getSelectionModel().select(e);
+                                break;
+                            }
+                        }
                     }
                 });
             }

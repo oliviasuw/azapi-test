@@ -25,11 +25,6 @@ public class ExperimentStatusEventObserver implements ExperimentStatusUpdatesLis
             knownStatus.started = true;
         }
 
-        if (snapshot.isEnded() && !knownStatus.isEnded()) {
-            listeners.fire().onExperimentEnded();
-            knownStatus.ended = true;
-        }
-
         if (snapshot.finishedExecutions() != knownStatus.finishedExecutions()) {
             listeners.fire().onNumberOfFinishedExecutionsChanged(snapshot.finishedExecutions());
             knownStatus.finishedExecutions = snapshot.finishedExecutions();
@@ -49,6 +44,11 @@ public class ExperimentStatusEventObserver implements ExperimentStatusUpdatesLis
             knownStatus.currentExecutedSubExperimentName = currentExecutedSubExperimentName;
             knownStatus.currentExecutedSubExperimentStatus = snapshot.currentExecutedSubExperimentStatus();
             listeners.fire().onSubExperimentStarted(currentExecutedSubExperimentName);
+        }
+
+        if (snapshot.isEnded() && !knownStatus.isEnded()) {
+            listeners.fire().onExperimentEnded();
+            knownStatus.ended = true;
         }
     }
 

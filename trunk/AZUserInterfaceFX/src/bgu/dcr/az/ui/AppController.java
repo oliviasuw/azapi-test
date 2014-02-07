@@ -119,6 +119,7 @@ public class AppController {
         runningExperiment.supply(Logger.class, lscreen);
 
         FXUtils.JFXPanelWithCTL<BasicStatisticsScreenCtl> statisticsScreen = FXUtils.load(BasicStatisticsScreenCtl.class, "BasicStatisticsScreen.fxml");
+        statisticsScreen.getController().setModel(runningExperiment);
         main.addScreen("Statistics", "statistics", statisticsScreen);
 
         java.awt.EventQueue.invokeLater(() -> main.setVisible(true));

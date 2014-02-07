@@ -3,25 +3,37 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group name="Misc">
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/log/AgentLogDocument.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/AppController.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/BasicStatisticsScreenCtl.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/ExperimentStatusEventListener.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/BasicStatisticsScreen.fxml</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/util/FXUtils.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/statistics/RealtimeJFXPlotter.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/dialogs/notifier.css</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/log/LogScreen.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/ExperimentStatusEventObserver.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/status/statusscreen.css</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bc/ui/swing/models/GenericTableModel.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/StatusScreen.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/StatisticsQueryScreen.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/basicstatisticsscreen.css</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/StatisticsScreen.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bc/ui/swing/configurable/SingleVariableEditor.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/statistics/NumberOfCoresInUseStatisticCollector.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/AZUserInterfaceFX.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/test.xml</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/components/onoffswitch/OnOffSwitch.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/log/AgentLogDocument.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/components/onoffswitch/IconSwitch.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/statistics/AlgorithmCPUTimeStatisticCollector.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bc/ui/swing/models/GenericTableModel.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/nbproject/build-impl.xml</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/statistics/NumberOfCoresInUseStatisticCollector.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bc/ui/swing/configurable/VariablesEditor.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/test.xml</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/components/onoffswitch/SelectionEvent.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/DataJTableModel.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/AZUserInterfaceFX.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/components/onoffswitch/OnOffSwitchBuilder.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/statistics/RealtimeJFXPlotter.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/components/onoffswitch/iconswitch.css</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bc/ui/swing/configurable/SingleVariableEditor.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/status/SubExperimentListCell.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/StatusScreen.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/log/LogScreen.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/StatisticsQueryScreen.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/status/statusscreen.css</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/dialogs/Notification.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/components/common/AngleConicalGradient.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/status/StatusScreenCtl.java</file>
         </group>
     </open-files>
 </project-private>

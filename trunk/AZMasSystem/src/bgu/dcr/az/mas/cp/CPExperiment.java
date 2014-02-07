@@ -17,11 +17,14 @@ import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import bgu.dcr.az.mas.exp.ExperimentStatusSnapshot;
 import bgu.dcr.az.mas.impl.ExperimentStatusSnapshotImpl;
+import bgu.dcr.az.mas.stat.StatisticCollector;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,6 +46,7 @@ public class CPExperiment implements Experiment {
     private String name;
     private Map<Class, ExecutionService> suppliedServices = new HashMap<>();
     private ExecutionResult result;
+    private List<StatisticCollector> statistics = new LinkedList<>();
 
     /**
      * @propertyName tests
@@ -206,6 +210,16 @@ public class CPExperiment implements Experiment {
     @Override
     public void supply(Class<? extends ExecutionService> serviceType, ExecutionService service) {
         suppliedServices.put(serviceType, service);
+    }
+
+    @Override
+    public Iterator<Experiment> iterator() {
+        return (Iterator) getTests().iterator();
+    }
+
+    @Override
+    public Collection<StatisticCollector> getStatistics() {
+        return statistics;
     }
 
 }

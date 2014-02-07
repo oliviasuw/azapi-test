@@ -67,4 +67,9 @@ public abstract class AbstractStatisticCollector implements StatisticCollector<C
         plotter.plotPieChart(data, lableField, seriesField, title, lableFieldLabel, seriesFieldLabel);
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
+
 }

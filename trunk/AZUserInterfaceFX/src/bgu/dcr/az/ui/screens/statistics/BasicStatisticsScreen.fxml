@@ -10,9 +10,9 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane id="AnchorPane" prefHeight="537.0" prefWidth="834.0" styleClass="dark-pane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="bgu.dcr.az.ui.screens.statistics.BasicStatisticsScreenCtl">
+<BorderPane id="AnchorPane" prefHeight="537.0" prefWidth="834.0" styleClass="main-pane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="bgu.dcr.az.ui.screens.statistics.BasicStatisticsScreenCtl">
   <center>
-    <BorderPane prefHeight="200.0" prefWidth="200.0" styleClass="viewer" />
+    <BorderPane fx:id="resultsContainer" prefHeight="200.0" prefWidth="200.0" styleClass="viewer" />
   </center>
   <left>
     <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" BorderPane.alignment="CENTER">
@@ -21,21 +21,21 @@
           <content>
             <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="padless-border-pane">
               <center>
-                <TreeView maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="statistical-tree" />
+                <TreeView fx:id="testsTree" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="statistical-tree" />
               </center>
             </BorderPane>
           </content>
           <graphic>
-            <HBox alignment="BOTTOM_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-1.0" minWidth="-1.0" prefHeight="27.0" prefWidth="230.0">
+            <HBox alignment="BOTTOM_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="248.0">
               <children>
                 <StackPane prefHeight="-1.0" prefWidth="-1.0">
                   <children>
-                    <Circle radius="10.0" stroke="BLACK" strokeType="INSIDE">
+                    <Circle radius="10.0" stroke="BLACK" strokeType="INSIDE" styleClass="step-indicator-circle">
                       <fill>
                         <Color blue="0.000" green="0.000" red="0.800" fx:id="x1" />
                       </fill>
                     </Circle>
-                    <Label text="1" textAlignment="CENTER">
+                    <Label styleClass="step-indicator-label" text="1" textAlignment="CENTER">
                       <font>
                         <Font name="Comic Sans MS Bold" size="13.0" fx:id="x2" />
                       </font>
@@ -66,8 +66,8 @@
               <children>
                 <StackPane prefHeight="-1.0" prefWidth="-1.0">
                   <children>
-                    <Circle fill="$x1" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-                    <Label font="$x2" text="2" />
+                    <Circle fill="$x1" radius="10.0" stroke="BLACK" strokeType="INSIDE" styleClass="step-indicator-circle" />
+                    <Label font="$x2" styleClass="step-indicator-label" text="2" />
                   </children>
                   <padding>
                     <Insets left="5.0" />
@@ -81,11 +81,11 @@
             </HBox>
           </graphic>
         </TitledPane>
-        <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="section-pane" text="" VBox.vgrow="NEVER">
+        <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="section-pane" text="" VBox.vgrow="SOMETIMES">
           <content>
             <HBox alignment="CENTER" fillHeight="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" spacing="10.0" styleClass="dark-pane">
               <children>
-                <Button maxHeight="-1.0" maxWidth="-1.0" mnemonicParsing="false" text="">
+                <Button fx:id="showChartButton" maxHeight="-1.0" maxWidth="-1.0" mnemonicParsing="false" text="">
                   <graphic>
                     <ImageView fitHeight="32.0" fitWidth="32.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
                       <image>
@@ -111,8 +111,8 @@
               <children>
                 <StackPane prefHeight="-1.0" prefWidth="-1.0">
                   <children>
-                    <Circle fill="$x1" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-                    <Label font="$x2" text="3" />
+                    <Circle fill="$x1" radius="10.0" stroke="BLACK" strokeType="INSIDE" styleClass="step-indicator-circle" />
+                    <Label font="$x2" styleClass="step-indicator-label" text="3" />
                   </children>
                   <padding>
                     <Insets left="5.0" />

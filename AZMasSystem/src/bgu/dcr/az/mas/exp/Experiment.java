@@ -2,6 +2,7 @@ package bgu.dcr.az.mas.exp;
 
 import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.mas.ExecutionService;
+import bgu.dcr.az.mas.stat.StatisticCollector;
 import java.util.Collection;
 
 /**
@@ -9,7 +10,7 @@ import java.util.Collection;
  *
  * @author Benny Lutati
  */
-public interface Experiment {
+public interface Experiment extends Iterable<Experiment> {
 
     /**
      * @return the amount of executions that are needed to execute in order to
@@ -52,5 +53,12 @@ public interface Experiment {
      * @param service
      */
     public void supply(Class<? extends ExecutionService> serviceType, ExecutionService service);
+
+    /**
+     * @return mutable list of statistics stored in this execution - modifying
+     * the list while the experiment is running may or may not affect the rest
+     * of the execution
+     */
+    Collection<StatisticCollector> getStatistics();
 
 }

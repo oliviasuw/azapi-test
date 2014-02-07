@@ -8,6 +8,11 @@ package bgu.dcr.az.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
@@ -58,8 +63,10 @@ public class AZUserInterfaceFX extends JApplet {
                 applet.start();
             }
         });
+
+        
     }
-    
+
     @Override
     public void init() {
         fxContainer = new JFXPanel();

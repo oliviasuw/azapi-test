@@ -9,7 +9,6 @@ import bgu.dcr.az.mas.stat.AdditionalBarChartProperties;
 import bgu.dcr.az.mas.stat.Plotter;
 import bgu.dcr.az.orm.api.Data;
 import bgu.dcr.az.orm.api.RecordAccessor;
-import javafx.geometry.Side;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.Chart;

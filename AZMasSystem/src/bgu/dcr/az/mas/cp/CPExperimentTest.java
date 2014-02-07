@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -292,6 +293,11 @@ public class CPExperimentTest implements Experiment {
     @Override
     public void supply(Class<? extends ExecutionService> serviceType, ExecutionService service) {
         suppliedServices.put(serviceType, service);
+    }
+
+    @Override
+    public Iterator<Experiment> iterator() {
+        return Collections.EMPTY_LIST.iterator();
     }
 
     private static interface RuntimeCoreAdapter {

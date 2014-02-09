@@ -14,8 +14,8 @@ import bgu.dcr.az.anop.conf.Property;
  */
 public interface PropertyController {
 
-    public void setModel(Configuration conf);
+    public void setModel(Configuration conf, boolean readOnly);
     
-    public void setModel(Property property);
+    public void setModel(Property property, boolean readOnly);
 
 }

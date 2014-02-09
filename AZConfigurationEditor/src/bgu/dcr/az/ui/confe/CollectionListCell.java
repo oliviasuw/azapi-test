@@ -22,9 +22,11 @@ public class CollectionListCell extends ListCell {
     private Node node = null;
 //    private TerminalPropertyEditorController controller;
     private PropertyController controller;
+    private boolean readOnly;
 
-    public CollectionListCell(Property collectionProperty) {
+    public CollectionListCell(Property collectionProperty, boolean readOnly) {
         this.collectionProperty = collectionProperty;
+        this.readOnly = readOnly;
     }
 
     @Override
@@ -39,7 +41,7 @@ public class CollectionListCell extends ListCell {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource(propertyToPath(p)));
                     node = (Node) loader.load();
                     controller = (PropertyController) loader.getController();
-                    controller.setModel(p);
+                    controller.setModel(p, readOnly);
                     setGraphic(node);
                 } catch (IOException ex) {
                     System.out.println("exception in fxmlloader");
@@ -50,30 +52,6 @@ public class CollectionListCell extends ListCell {
 //                setGraphic(node);
             }
 
-//            if (PropertyUtils.isPrimitive(property)) {
-//                if (node == null) {
-//                    try {
-//                        FXMLLoader loader = new FXMLLoader(getClass().getResource("TerminalPropertyEditor.fxml"));
-//                        node = (Node) loader.load();
-//                        controller = (TerminalPropertyEditorController) loader.getController();
-//                    } catch (IOException ex) {
-//                        System.out.println("");
-//                    }
-//                }
-//                property.set(propertyValue);
-//                controller.setModel(property);
-//                setGraphic(node);
-//            }
-//            if (!PropertyUtils.isPrimitive(property) && !PropertyUtils.isCollection(property)) {
-//                try {
-//                    FXMLLoader loader = new FXMLLoader(getClass().getResource("ConfigurationPropertyEditor.fxml"));
-//                    Node node = (Node) loader.load();
-//                    ConfigurationPropertyEditorController controller = (ConfigurationPropertyEditorController) loader.getController();
-//                    controller.setModel(property);
-//                    vbox.getChildren().add(node);
-//                } catch (IOException ex) {
-//                }
-//            }
         }
     }
 

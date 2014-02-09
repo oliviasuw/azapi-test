@@ -41,7 +41,7 @@ public class ConfigurationEditorController implements Initializable {
 
     }
 
-    public void setModel(Configuration conf) {
+    public void setModel(Configuration conf, boolean readOnly) {
         vbox.getChildren().clear();
 
         vbox.setSpacing(3);
@@ -60,7 +60,7 @@ public class ConfigurationEditorController implements Initializable {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("TerminalPropertyEditor.fxml"));
                     Node node = (Node) loader.load();
                     TerminalPropertyEditorController controller = (TerminalPropertyEditorController) loader.getController();
-                    controller.setModel(property);
+                    controller.setModel(property, readOnly);
                     double labelWidth = controller.getLabelWidth();
                     if (labelWidth > max) {
                         max = labelWidth;
@@ -83,7 +83,7 @@ public class ConfigurationEditorController implements Initializable {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("ConfigurationPropertyEditor.fxml"));
                     Node node = (Node) loader.load();
                     ConfigurationPropertyEditorController controller = (ConfigurationPropertyEditorController) loader.getController();
-                    controller.setModel(property);
+                    controller.setModel(property, readOnly);
                     vbox.getChildren().add(node);
                 } catch (IOException ex) {
                     Logger.getLogger(ConfigurationEditorController.class.getName()).log(Level.SEVERE, null, ex);
@@ -97,14 +97,15 @@ public class ConfigurationEditorController implements Initializable {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("CollectionPropertyEditor.fxml"));
                     Node node = (Node) loader.load();
                     CollectionPropertyEditorController controller = (CollectionPropertyEditorController) loader.getController();
-                    controller.setModel(property);
+                    controller.setModel(property, readOnly);
                     vbox.getChildren().add(node);
                 } catch (IOException ex) {
                     Logger.getLogger(ConfigurationEditorController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
-
+        
+        
     }
 
 }

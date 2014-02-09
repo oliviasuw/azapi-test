@@ -32,13 +32,13 @@ import javax.swing.event.DocumentEvent;
  * @author Shl
  */
 public class ConfigurationPropertyEditorController implements Initializable, PropertyController {
-
+    
     @FXML
     ConfigurationEditorController confEditorController;
-
+    
     @FXML
     ChoiceBox choiceBox;
-
+    
     @FXML
     TitledPane titledPane;
 
@@ -49,8 +49,8 @@ public class ConfigurationPropertyEditorController implements Initializable, Pro
     public void initialize(URL url, ResourceBundle rb) {
 //        System.out.println("ConfEditor is : " + confEditorController);
     }
-
-    public void setModel(final Property property) {
+    
+    public void setModel(final Property property, final boolean readOnly) {
         titledPane.setText(property.name());
         String description = property.doc().description();
         if (description != null && !description.isEmpty()) {
@@ -64,36 +64,36 @@ public class ConfigurationPropertyEditorController implements Initializable, Pro
             String registeredClassName = RegisteryUtils.getDefaultRegistery().getRegisteredClassName(implementor);
             choiceBox.getItems().add(registeredClassName);
         }
-
+        
         if (property.get() != null) {
             FromConfigurationPropertyValue confv = (FromConfigurationPropertyValue) property.get();
             if (confv != null && confv.getValue() != null) { //in case property is a dummy (came from collection property editor)
                 Class implementor = confv.getValue().typeInfo().getType();
                 String classname = RegisteryUtils.getDefaultRegistery().getRegisteredClassName(implementor);
                 choiceBox.getSelectionModel().select(classname);
-                confEditorController.setModel(confv.getValue());
+                confEditorController.setModel(confv.getValue(), readOnly);
             }
         }
-
+        
         choiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue ov, Object t, Object t1) {
                 try {
                     FromConfigurationPropertyValue confv = new FromConfigurationPropertyValue(RegisteryUtils.getDefaultRegistery().getConfiguration(t1.toString()));
                     property.set(confv);
-                    confEditorController.setModel(confv.getValue());
+                    confEditorController.setModel(confv.getValue(), readOnly);
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(ConfigurationPropertyEditorController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-
+            
         });
-
+        choiceBox.setDisable(readOnly);
     }
-
+    
     @Override
-    public void setModel(Configuration conf) {
+    public void setModel(Configuration conf, boolean readOnly) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
 }

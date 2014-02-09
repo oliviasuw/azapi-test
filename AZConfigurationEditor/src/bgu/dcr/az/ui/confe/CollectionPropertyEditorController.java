@@ -62,7 +62,7 @@ public class CollectionPropertyEditorController implements Initializable, Proper
 
     }
 
-    public void setModel(final Property property) {
+    public void setModel(final Property property, final boolean readOnly) {
         this.collectionProperty = property;
         title.setText(property.name());
         String description = property.doc().description();
@@ -91,7 +91,7 @@ public class CollectionPropertyEditorController implements Initializable, Proper
         listView.setCellFactory(new Callback() {
             @Override
             public Object call(Object p) {
-                return new CollectionListCell(property);
+                return new CollectionListCell(property, readOnly);
             }
         });
 
@@ -119,6 +119,11 @@ public class CollectionPropertyEditorController implements Initializable, Proper
                 }
             }
         });
+        
+        clearButton.setDisable(readOnly);
+        removeButton.setDisable(readOnly);
+        addButton.setDisable(readOnly);
+
 
     }
 
@@ -154,7 +159,7 @@ public class CollectionPropertyEditorController implements Initializable, Proper
     }
 
     @Override
-    public void setModel(Configuration conf) {
+    public void setModel(Configuration conf, boolean readOnly) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

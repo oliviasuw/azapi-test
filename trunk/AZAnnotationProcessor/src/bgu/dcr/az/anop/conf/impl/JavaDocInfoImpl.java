@@ -17,6 +17,7 @@ import java.util.Map;
  * @author User
  */
 public class JavaDocInfoImpl implements JavaDocInfo {
+
     public static final JavaDocInfo EMPTY_JAVADOC = new JavaDocInfoImpl();
 
     private final Map<String, List<String>> data;
@@ -60,6 +61,11 @@ public class JavaDocInfoImpl implements JavaDocInfo {
             return null;
         }
         return data.get(tag).get(0);
+    }
+
+    @Override
+    public String toString() {
+        return "JavaDocInfoImpl{" + "data=" + data + ", description=" + description + '}';
     }
 
 }

@@ -280,7 +280,7 @@ public class ConfigurationUtils {
         }
 
     }
-
+    
     public static boolean isConfigurable(Class c) {
         return !RegisteryUtils.getDefaultRegistery().getImplementors(c).isEmpty();
     }

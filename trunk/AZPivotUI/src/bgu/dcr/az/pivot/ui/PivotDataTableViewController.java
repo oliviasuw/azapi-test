@@ -29,11 +29,15 @@ import javafx.scene.control.cell.PropertyValueFactory;
  */
 public class PivotDataTableViewController implements Initializable {
 
+    private static final boolean removeSingle = true;
+
     @FXML
     private TableView table;
 
     /**
      * Initializes the controller class.
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -89,6 +93,23 @@ public class PivotDataTableViewController implements Initializable {
                 }
             }
             id++;
+        }
+
+        if (removeSingle) {
+            List<TableColumn> open = new LinkedList<>();
+            open.addAll(result);
+
+            while (!open.isEmpty()) {
+                TableColumn parent = open.remove(0);
+                if (parent.getColumns().size() == 1) {
+                    TableColumn child = (TableColumn) parent.getColumns().get(0);
+                    parent.getColumns().clear();
+                    parent.getColumns().addAll(child.getColumns());
+                    parent.setText(parent.getText() + "\n" + child.getText());
+                    parent.setCellValueFactory(child.getCellValueFactory());
+                }
+                open.addAll(parent.getColumns());
+            }
         }
 
         return result;

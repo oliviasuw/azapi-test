@@ -25,7 +25,10 @@ import bgu.dcr.az.anop.utils.JavaDocParser;
     }
 
     def castify(type) {
-        type.replaceAll("\\$", ".");
+        x = type.replaceAll("\\$", ".");
+        i = x.indexOf("<");
+        if (i > 0) x = x.substring(0, i);
+        return x;
     }
 }
 public class @{className} extends AbstractConfiguration{

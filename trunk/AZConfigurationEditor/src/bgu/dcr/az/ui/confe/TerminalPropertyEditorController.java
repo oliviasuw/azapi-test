@@ -71,7 +71,7 @@ public class TerminalPropertyEditorController implements Initializable, Property
 
         label.setText(property.name());
         String description = property.doc().description();
-        if (description!=null && !description.isEmpty()) {
+        if (description != null && !description.isEmpty()) {
             Tooltip tooltip = new Tooltip(description);
             label.setTooltip(tooltip);
         }
@@ -103,6 +103,9 @@ public class TerminalPropertyEditorController implements Initializable, Property
 
     private void setModelString(final Property property) {
         final TextField textField = new TextField();
+        if (property.get() != null) {
+            textField.setText(property.stringValue());
+        }
         textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
@@ -121,6 +124,12 @@ public class TerminalPropertyEditorController implements Initializable, Property
 
     private void setModelBoolean(final Property property) {
         CheckBox cb = new CheckBox();
+        if (property.get() != null) {
+            boolean value = (property.stringValue().equals("true"));
+            cb.setSelected(value);
+        } else {
+            cb.setSelected(false);
+        }
         cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> ov,
@@ -128,8 +137,7 @@ public class TerminalPropertyEditorController implements Initializable, Property
                 property.set(new FromStringPropertyValue(new_val.toString()));
             }
         });
-        cb.setSelected(false);
-        
+
         BorderPane.setAlignment(cb, Pos.CENTER_LEFT);
         valueEditor.setCenter(cb);
     }
@@ -137,7 +145,7 @@ public class TerminalPropertyEditorController implements Initializable, Property
     private ChoiceBox<String> setModelEnum(final Property property) {
 
         ChoiceBox<String> cb = new ChoiceBox<>();
-        
+
         cb.prefWidthProperty().bind(valueEditor.widthProperty());
         cb.setMaxWidth(Control.USE_PREF_SIZE);
 //        cb.setMinWidth(-1);
@@ -160,7 +168,12 @@ public class TerminalPropertyEditorController implements Initializable, Property
             for (Object i : items) {
                 cb.getItems().add(i.toString());
             }
-            cb.setValue(items[0].toString());
+            if (property.get() != null) {
+                String value = property.stringValue();
+                cb.setValue(value);
+            } else {
+                cb.setValue(items[0].toString());
+            }
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             Logger.getLogger(TerminalPropertyEditorController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -170,6 +183,9 @@ public class TerminalPropertyEditorController implements Initializable, Property
 
     private void setModelChar(final Property property) {
         final TextField textField = new TextField();
+        if (property.get() != null) {
+            textField.setText(property.stringValue());
+        }
         textField.addEventFilter(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -195,6 +211,9 @@ public class TerminalPropertyEditorController implements Initializable, Property
 
     private void setModelShort(final Property property) {
         final TextField textField = new TextField();
+        if (property.get() != null) {
+            textField.setText(property.stringValue());
+        }
         textField.addEventFilter(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -224,6 +243,9 @@ public class TerminalPropertyEditorController implements Initializable, Property
 
     private void setModelByte(final Property property) {
         final TextField textField = new TextField();
+        if (property.get() != null) {
+            textField.setText(property.stringValue());
+        }        
         textField.addEventFilter(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -253,6 +275,9 @@ public class TerminalPropertyEditorController implements Initializable, Property
 
     private void setModelFloat(final Property property) {
         final TextField textField = new TextField();
+        if (property.get() != null) {
+            textField.setText(property.stringValue());
+        }     
         textField.addEventFilter(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -284,6 +309,9 @@ public class TerminalPropertyEditorController implements Initializable, Property
 
     private void setModelDouble(final Property property) {
         final TextField textField = new TextField();
+        if (property.get() != null) {
+            textField.setText(property.stringValue());
+        }          
         textField.addEventFilter(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -314,6 +342,9 @@ public class TerminalPropertyEditorController implements Initializable, Property
 
     private void setModelInteger(final Property property) {
         final TextField textField = new TextField();
+        if (property.get() != null) {
+            textField.setText(property.stringValue());
+        }          
         textField.addEventFilter(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {

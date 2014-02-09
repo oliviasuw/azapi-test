@@ -8,6 +8,7 @@ package bgu.dcr.az.ui.confe;
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -33,6 +34,19 @@ public class confe extends Application {
 //         Parent root = FXMLLoader.load(getClass().getResource("TerminalPropertyEditor.fxml"));
 
         SomeClass c = new SomeClass();
+        c.setJ("bla bla benjamin button");
+        c.setK(true);
+        c.setE(SomeClass.E.MEH);
+        SomeClass.ExtendedSomeType2 inside = new SomeClass.ExtendedSomeType2();
+        inside.setI(2);
+        inside.setX(4);
+        inside.setOther(new SomeClass.ExtendedSomeType1());
+        c.setComplex(inside);
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add("benny");
+        arrayList.add("vadim");
+        arrayList.add("clint eastwood");
+        c.setNames(arrayList);
         final Configuration conf = ConfigurationUtils.load(c);
         
         FXMLLoader loader = new FXMLLoader(getClass().getResource("ConfigurationEditor.fxml"));

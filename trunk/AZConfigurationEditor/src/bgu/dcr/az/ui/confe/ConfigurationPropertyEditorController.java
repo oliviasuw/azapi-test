@@ -53,7 +53,7 @@ public class ConfigurationPropertyEditorController implements Initializable, Pro
     public void setModel(final Property property) {
         titledPane.setText(property.name());
         String description = property.doc().description();
-        if (description!=null && !description.isEmpty()) {
+        if (description != null && !description.isEmpty()) {
             Tooltip tooltip = new Tooltip(description);
             titledPane.setTooltip(tooltip);
         }
@@ -61,9 +61,20 @@ public class ConfigurationPropertyEditorController implements Initializable, Pro
         Collection<Class> implementors = RegisteryUtils.getDefaultRegistery().getImplementors(pType);
         choiceBox.getItems().clear();
         for (Class implementor : implementors) {
-            choiceBox.getItems().add(RegisteryUtils.getDefaultRegistery().getRegisteredClassName(implementor));
+            String registeredClassName = RegisteryUtils.getDefaultRegistery().getRegisteredClassName(implementor);
+            choiceBox.getItems().add(registeredClassName);
         }
-        
+
+        if (property.get() != null) {
+            FromConfigurationPropertyValue confv = (FromConfigurationPropertyValue) property.get();
+            if (confv != null && confv.getValue() != null) { //in case property is a dummy (came from collection property editor)
+                Class implementor = confv.getValue().typeInfo().getType();
+                String classname = RegisteryUtils.getDefaultRegistery().getRegisteredClassName(implementor);
+                choiceBox.getSelectionModel().select(classname);
+                confEditorController.setModel(confv.getValue());
+            }
+        }
+
         choiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue ov, Object t, Object t1) {

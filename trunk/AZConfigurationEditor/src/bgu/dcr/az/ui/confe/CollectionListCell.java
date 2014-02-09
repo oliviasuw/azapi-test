@@ -6,16 +6,8 @@
 package bgu.dcr.az.ui.confe;
 
 import bgu.dcr.az.anop.conf.Property;
-import bgu.dcr.az.anop.conf.PropertyValue;
-import bgu.dcr.az.anop.conf.TypeInfo;
-import bgu.dcr.az.anop.conf.impl.ConfigurableTypeInfoImpl;
-import bgu.dcr.az.anop.conf.impl.JavaDocInfoImpl;
-import bgu.dcr.az.anop.conf.impl.PropertyImpl;
-import bgu.dcr.az.anop.utils.JavaDocParser;
 import bgu.dcr.az.anop.utils.PropertyUtils;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.ListCell;
@@ -29,7 +21,7 @@ public class CollectionListCell extends ListCell {
     private final Property collectionProperty;
     private Node node = null;
 //    private TerminalPropertyEditorController controller;
-    private Property property;
+    private PropertyController controller;
 
     public CollectionListCell(Property collectionProperty) {
         this.collectionProperty = collectionProperty;
@@ -41,21 +33,21 @@ public class CollectionListCell extends ListCell {
         if (t == null || empty) {
             setGraphic(null);
         } else {
-            PropertyValue propertyValue = (PropertyValue) t;
-            Class type = collectionProperty.typeInfo().getGenericParameters().get(0).getType();
-            property = new PropertyImpl("", null, new ConfigurableTypeInfoImpl(type), JavaDocParser.parse(""));
-
+            Property p = (Property) t;
             if (node == null) {
                 try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource(propertyToPath(property)));
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource(propertyToPath(p)));
                     node = (Node) loader.load();
-                    PropertyController controller = (PropertyController) loader.getController();
-                    property.set(propertyValue);
-                    controller.setModel(property);
+                    controller = (PropertyController) loader.getController();
+                    controller.setModel(p);
                     setGraphic(node);
                 } catch (IOException ex) {
                     System.out.println("exception in fxmlloader");
                 }
+            } else {
+//                  property.set(propertyValue);
+//                controller.setModel(property);
+//                setGraphic(node);
             }
 
 //            if (PropertyUtils.isPrimitive(property)) {
@@ -82,7 +74,6 @@ public class CollectionListCell extends ListCell {
 //                } catch (IOException ex) {
 //                }
 //            }
-
         }
     }
 

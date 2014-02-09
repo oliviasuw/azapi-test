@@ -94,7 +94,7 @@ public class ConfigurationEditorController implements Initializable {
         for (Property property : properties) {
             if (PropertyUtils.isCollection(property)) {
                 try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("CollectionPropertyEditor2.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("CollectionPropertyEditor.fxml"));
                     Node node = (Node) loader.load();
                     CollectionPropertyEditorController controller = (CollectionPropertyEditorController) loader.getController();
                     controller.setModel(property);

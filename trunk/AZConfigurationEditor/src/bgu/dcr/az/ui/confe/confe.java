@@ -52,7 +52,7 @@ public class confe extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("ConfigurationEditor.fxml"));
         VBox vbox = (VBox)loader.load();
         ConfigurationEditorController controller = (ConfigurationEditorController)loader.getController();
-        controller.setModel(conf);
+        controller.setModel(conf, true);
 
         Button button = new Button(":/");
         button.setOnAction(new EventHandler<ActionEvent>() {

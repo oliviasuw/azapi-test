@@ -67,7 +67,7 @@ public class TerminalPropertyEditorController implements Initializable, Property
         return x >= a && x <= b;
     }
 
-    public void setModel(Property property) {
+    public void setModel(Property property, boolean readOnly) {
 
         label.setText(property.name());
         String description = property.doc().description();
@@ -78,34 +78,35 @@ public class TerminalPropertyEditorController implements Initializable, Property
 
         Class pType = property.typeInfo().getType();
         if (String.class.isAssignableFrom(pType)) {
-            setModelString(property);
+            setModelString(property, readOnly);
         } else if (Integer.class.isAssignableFrom(pType)) {
-            setModelInteger(property);
+            setModelInteger(property, readOnly);
         } else if (Long.class.isAssignableFrom(pType)) {
-            setModelInteger(property);
+            setModelInteger(property, readOnly);
         } else if (Double.class.isAssignableFrom(pType)) {
-            setModelDouble(property);
+            setModelDouble(property, readOnly);
         } else if (Float.class.isAssignableFrom(pType)) {
-            setModelFloat(property);
+            setModelFloat(property, readOnly);
         } else if (Byte.class.isAssignableFrom(pType)) {
-            setModelByte(property);
+            setModelByte(property, readOnly);
         } else if (Short.class.isAssignableFrom(pType)) {
-            setModelShort(property);
+            setModelShort(property, readOnly);
         } else if (Character.class.isAssignableFrom(pType)) {
-            setModelChar(property);
+            setModelChar(property, readOnly);
         } else if (Boolean.class.isAssignableFrom(pType)) {
-            setModelBoolean(property);
+            setModelBoolean(property, readOnly);
         } else if (pType.isEnum()) {
-            ChoiceBox<String> cb = setModelEnum(property);
+            ChoiceBox<String> cb = setModelEnum(property, readOnly);
         }
 
     }
 
-    private void setModelString(final Property property) {
+    private void setModelString(final Property property, boolean readOnly) {
         final TextField textField = new TextField();
         if (property.get() != null) {
             textField.setText(property.stringValue());
         }
+        textField.setEditable(!readOnly);
         textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
@@ -122,7 +123,7 @@ public class TerminalPropertyEditorController implements Initializable, Property
         valueEditor.setCenter(textField);
     }
 
-    private void setModelBoolean(final Property property) {
+    private void setModelBoolean(final Property property, boolean readOnly) {
         CheckBox cb = new CheckBox();
         if (property.get() != null) {
             boolean value = (property.stringValue().equals("true"));
@@ -130,6 +131,7 @@ public class TerminalPropertyEditorController implements Initializable, Property
         } else {
             cb.setSelected(false);
         }
+        cb.setDisable(readOnly);
         cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> ov,
@@ -142,7 +144,7 @@ public class TerminalPropertyEditorController implements Initializable, Property
         valueEditor.setCenter(cb);
     }
 
-    private ChoiceBox<String> setModelEnum(final Property property) {
+    private ChoiceBox<String> setModelEnum(final Property property, boolean readOnly) {
 
         ChoiceBox<String> cb = new ChoiceBox<>();
 
@@ -177,15 +179,18 @@ public class TerminalPropertyEditorController implements Initializable, Property
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             Logger.getLogger(TerminalPropertyEditorController.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        cb.setDisable(readOnly);
         valueEditor.setCenter(cb);
         return cb;
     }
 
-    private void setModelChar(final Property property) {
+    private void setModelChar(final Property property, boolean readOnly) {
         final TextField textField = new TextField();
         if (property.get() != null) {
             textField.setText(property.stringValue());
         }
+        textField.setEditable(!readOnly);
         textField.addEventFilter(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -209,11 +214,12 @@ public class TerminalPropertyEditorController implements Initializable, Property
         textField.setPromptText("Single character, e.g @");
     }
 
-    private void setModelShort(final Property property) {
+    private void setModelShort(final Property property, boolean readOnly) {
         final TextField textField = new TextField();
         if (property.get() != null) {
             textField.setText(property.stringValue());
         }
+        textField.setEditable(!readOnly);
         textField.addEventFilter(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -241,11 +247,13 @@ public class TerminalPropertyEditorController implements Initializable, Property
         textField.setPromptText("Short size number, range [-32768:32767]");
     }
 
-    private void setModelByte(final Property property) {
+    private void setModelByte(final Property property, boolean readOnly) {
         final TextField textField = new TextField();
         if (property.get() != null) {
             textField.setText(property.stringValue());
-        }        
+        }
+        textField.setEditable(!readOnly);
+
         textField.addEventFilter(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -273,11 +281,13 @@ public class TerminalPropertyEditorController implements Initializable, Property
         textField.setPromptText("Byte size number, range [-128:127]");
     }
 
-    private void setModelFloat(final Property property) {
+    private void setModelFloat(final Property property, boolean readOnly) {
         final TextField textField = new TextField();
         if (property.get() != null) {
             textField.setText(property.stringValue());
-        }     
+        }
+        textField.setEditable(!readOnly);
+
         textField.addEventFilter(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -307,11 +317,13 @@ public class TerminalPropertyEditorController implements Initializable, Property
         textField.setPromptText("Float number");
     }
 
-    private void setModelDouble(final Property property) {
+    private void setModelDouble(final Property property, boolean readOnly) {
         final TextField textField = new TextField();
         if (property.get() != null) {
             textField.setText(property.stringValue());
-        }          
+        }
+        textField.setEditable(!readOnly);
+
         textField.addEventFilter(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -340,11 +352,13 @@ public class TerminalPropertyEditorController implements Initializable, Property
         textField.setPromptText("Double (real) number, e.g 22.8");
     }
 
-    private void setModelInteger(final Property property) {
+    private void setModelInteger(final Property property, boolean readOnly) {
         final TextField textField = new TextField();
         if (property.get() != null) {
             textField.setText(property.stringValue());
-        }          
+        }
+        textField.setEditable(!readOnly);
+
         textField.addEventFilter(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -382,7 +396,7 @@ public class TerminalPropertyEditorController implements Initializable, Property
     }
 
     @Override
-    public void setModel(Configuration conf) {
+    public void setModel(Configuration conf, boolean readOnly) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

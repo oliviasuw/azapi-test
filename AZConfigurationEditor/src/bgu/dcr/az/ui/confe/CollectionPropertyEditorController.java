@@ -8,11 +8,16 @@ package bgu.dcr.az.ui.confe;
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.conf.PropertyValue;
+import bgu.dcr.az.anop.conf.impl.ConfigurableTypeInfoImpl;
 import bgu.dcr.az.anop.conf.impl.FromCollectionPropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromConfigurationPropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;
+import bgu.dcr.az.anop.conf.impl.PropertyImpl;
+import bgu.dcr.az.anop.reg.RegisteryUtils;
+import bgu.dcr.az.anop.utils.JavaDocParser;
 import bgu.dcr.az.anop.utils.PropertyUtils;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
@@ -46,7 +51,7 @@ public class CollectionPropertyEditorController implements Initializable, Proper
     private Button clearButton;
 
     private Property collectionProperty;
-    private ObservableList<PropertyValue> values;
+    private ObservableList<Property> values;
 
     /**
      * Initializes the controller class.
@@ -66,9 +71,22 @@ public class CollectionPropertyEditorController implements Initializable, Proper
         } else {
             title.setTooltip(null);
         }
-        final FromCollectionPropertyValue fc = new FromCollectionPropertyValue();
+
+        PropertyValue propertyValue = property.get();
+        final FromCollectionPropertyValue fc = (propertyValue == null) ? new FromCollectionPropertyValue() : (FromCollectionPropertyValue) propertyValue;
+
         property.set(fc);
         values = FXCollections.observableArrayList();
+
+        //in case there are already values in fc
+        Iterator<PropertyValue> it = fc.iterator();
+        Class type = collectionProperty.typeInfo().getGenericParameters().get(0).getType();
+        while (it.hasNext()) {
+            PropertyImpl innerProperty = new PropertyImpl("", null, new ConfigurableTypeInfoImpl(type), JavaDocParser.parse(""));
+            innerProperty.set(it.next());
+            values.add(innerProperty);
+        }
+
         listView.setItems(values);
         listView.setCellFactory(new Callback() {
             @Override
@@ -77,19 +95,22 @@ public class CollectionPropertyEditorController implements Initializable, Proper
             }
         });
 
-        values.addListener(new ListChangeListener<PropertyValue>() {
+        values.addListener(new ListChangeListener<Property>() {
 
             @Override
-            public void onChanged(ListChangeListener.Change<? extends PropertyValue> change) {
+            public void onChanged(ListChangeListener.Change<? extends Property> change) {
                 while (change.next()) {
                     if (change.wasRemoved()) {
-                        List<? extends PropertyValue> removed = change.getRemoved();
-                        for (PropertyValue val : removed) {
-                            fc.remove(val);
+                        List<? extends Property> removed = change.getRemoved();
+                        for (Property val : removed) {
+                            fc.remove(val.get());
+                            System.out.println("Remove the value " + val.stringValue() + " from fc");
                         }
                     } else if (change.wasAdded()) {
-                        List<? extends PropertyValue> added = change.getAddedSubList();
-                        fc.addAll(values);
+                        List<? extends Property> added = change.getAddedSubList();
+                        for (Property a : added) {
+                            fc.add(a.get());
+                        }
                     } else if (change.wasUpdated()) {
                         //should i delete and add again or changes will automatically reflect?
                     } else if (change.wasReplaced()) {
@@ -103,13 +124,15 @@ public class CollectionPropertyEditorController implements Initializable, Proper
 
     public void onAddButton() {
         Class type = collectionProperty.typeInfo().getGenericParameters().get(0).getType();
+        PropertyImpl pseudo = new PropertyImpl("", null, new ConfigurableTypeInfoImpl(type), JavaDocParser.parse(""));
         if (PropertyUtils.isPrimitive(type)) {
-            values.add(new FromStringPropertyValue(""));
+            pseudo.set(new FromStringPropertyValue(""));
         } else if (PropertyUtils.isCollection(type)) {
-            values.add(new FromCollectionPropertyValue());
+            pseudo.set(new FromCollectionPropertyValue());
         } else {
-            values.add(new FromConfigurationPropertyValue(null));
+            pseudo.set(new FromConfigurationPropertyValue(null));
         }
+        values.add(pseudo);
 
     }
 
@@ -118,8 +141,10 @@ public class CollectionPropertyEditorController implements Initializable, Proper
         if (selectedItems.size() == 0) {
 //            warningText.setText("No selection found!");
         } else {
-            values.removeAll(selectedItems);
-//            listView.getSelectionModel().clearSelection();
+            for (Object s : selectedItems.toArray()){
+               values.remove(s); 
+                System.out.println("removed: " + s);
+            }
         }
     }
 

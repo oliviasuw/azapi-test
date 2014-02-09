@@ -18,6 +18,7 @@ public class SomeClass {
 
     int i;
     private List<String> names = new LinkedList<>();
+    private List<Boolean> yesnoes = new LinkedList<>();
     private List<SomeType> complexes = new LinkedList<>();
 
     public enum E {
@@ -134,9 +135,17 @@ public class SomeClass {
         return names;
     }
 
-    public List<Boolean> getBooleans() {
-        return null;
+    public void setNames(List<String> names) {
+        this.names = names;
     }
+    
+    
+
+    public List<Boolean> getBooleans() {
+        return yesnoes;
+    }
+    
+    
 
     @Register("some-type-base")
     public static class SomeType {

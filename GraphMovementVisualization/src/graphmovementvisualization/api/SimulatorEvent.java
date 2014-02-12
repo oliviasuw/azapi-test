@@ -16,6 +16,6 @@ public interface SimulatorEvent {
     
     public String getName();
     
-    public Collection<Object> getParameters();
+    public Collection<? extends Object> getParameters();
     
 }

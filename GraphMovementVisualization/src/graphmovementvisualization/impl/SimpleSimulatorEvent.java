@@ -8,6 +8,7 @@ package graphmovementvisualization.impl;
 
 import graphmovementvisualization.api.SimulatorEvent;
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  *
@@ -16,9 +17,15 @@ import java.util.Collection;
 public class SimpleSimulatorEvent implements SimulatorEvent {
     
     private String name;
-    private Collection<Object> parameters;
+    private Collection<? extends Object> parameters;
 
-    public SimpleSimulatorEvent(String name, Collection<Object> parameters) {
+    public SimpleSimulatorEvent() {
+        parameters = new LinkedList<>();
+        name = "anonymous";
+    }
+
+    
+    public SimpleSimulatorEvent(String name, Collection<? extends Object> parameters) {
         this.name = name;
         this.parameters = parameters;
     }
@@ -30,7 +37,7 @@ public class SimpleSimulatorEvent implements SimulatorEvent {
     }
 
     @Override
-    public Collection<Object> getParameters() {
+    public Collection<? extends Object> getParameters() {
         return parameters;
     }
     

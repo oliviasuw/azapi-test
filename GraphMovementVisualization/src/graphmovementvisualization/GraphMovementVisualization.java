@@ -8,14 +8,36 @@ package graphmovementvisualization;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import graphmovementvisualization.api.SimulatorEvent;
+import graphmovementvisualization.api.SimulatorTick;
+import graphmovementvisualization.impl.AZVisGraph;
+import graphmovementvisualization.impl.SimpleSimulatorEvent;
+import graphmovementvisualization.impl.SimpleSimulatorTick;
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.LineNumberReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Random;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.PathTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
@@ -25,11 +47,20 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.CubicCurveTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleWeightedGraph;
+import sun.security.provider.certpath.Vertex;
 
 /**
  *
@@ -37,95 +68,128 @@ import javafx.util.Duration;
  */
 public class GraphMovementVisualization extends Application {
 
+    private final ArrayList<Sprite> sprites = new ArrayList<>();
+
+    final int width = 2000;
+    final int height = 2000;
+    final Random r = new Random();
+    private Kryo kryo;
+
     @Override
     public void start(Stage stage) throws Exception {
-        final int width = 800;
-        final int height = 800;
-        final Canvas canvas = new Canvas(width, height); //need to set dyanmically according to image dimensions with scaling set to minimum - meaning the farthest zoom possible
-        final GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        final Random r = new Random();
+        final Canvas actionCanvas = new Canvas(width, height); //need to set dyanmically according to image dimensions with scaling set to minimum - meaning the farthest zoom possible
+        final GraphicsContext gcAction = actionCanvas.getGraphicsContext2D();
+        gcAction.setFill(new Color(0, 0, 0, 1));
+        gcAction.fillRect(0, 0, width, height);
 
-        final ArrayList<Sprite> sprites = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            Sprite sprite = new Sprite();
-            sprites.add(sprite);
+        final Canvas backCanvas = new Canvas(width, height); //need to set dyanmically according to image dimensions with scaling set to minimum - meaning the farthest zoom possible
+        final GraphicsContext gcBack = backCanvas.getGraphicsContext2D();
+        AZVisGraph graph = getGraph();
+        drawBackgroundFromGraph(gcBack, graph);
 
-            final DoubleProperty x = new SimpleDoubleProperty();
-            final DoubleProperty y = new SimpleDoubleProperty();
-
-            sprite.setX(x);
-            sprite.setY(y);
-
-            final Timeline timeLine = new Timeline();
-            timeLine.setCycleCount(Timeline.INDEFINITE);
-
-            //maybe create a timeline for each movement event and play it like this :
-            timeLine.getKeyFrames().add(
-                    new KeyFrame(Duration.millis(500),
-                            new EventHandler<ActionEvent>() {
-
-                                @Override
-                                public void handle(ActionEvent t) {
-                                    x.setValue(0);
-                                    y.setValue(0);
-                                }
-                            },
-                            new KeyValue(x, r.nextInt(width)), new KeyValue(y, r.nextInt(height)))
-            );
-            timeLine.play();
+        for (int i = 0; i < 1; i++) {
+            final Sprite s = new Sprite(i);
+            sprites.add(s);
         }
-        new AnimationTimer() {
-            @Override
-            public void handle(long l
-            ) {
-                gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        kryo = new Kryo();
+        Output output = new Output(new FileOutputStream("file.bin"));
+
+        for (int i = 0; i < 1000; i++) {
+            if (i % 10 == 0) {
+                kryo.writeClassAndObject(output, new SimpleSimulatorTick());
+            } else {
                 for (Sprite sprite : sprites) {
-                    gc.drawImage(sprite.getImage(), sprite.getX().doubleValue(), sprite.getY().doubleValue());
+                    LinkedList<Integer> list = new LinkedList<>();
+                    list.add(sprite.getIndex());
+                    list.add(r.nextInt(width));
+                    list.add(r.nextInt(height));
+                    SimpleSimulatorEvent event = new SimpleSimulatorEvent("MOVE", list);
+                    kryo.writeClassAndObject(output, event);
                 }
             }
         }
-                .start();
-
-        Kryo kryo = new Kryo();
-        Output output = new Output(new FileOutputStream("file.bin"));
-
-        String someObject = "booyakash";
-        String someObject2 = "kuwabangah";
-
-        kryo.writeClassAndObject(output, someObject);
-
-        kryo.writeClassAndObject(output, someObject2);
-
         output.close();
 
-        Input input = new Input(new FileInputStream("file.bin"));
-        Object object = kryo.readClassAndObject(input);
-        if (object instanceof String) {
-            System.out.println(object);
-        }
+        final Timeline timeLine = new Timeline();
+        timeLine.setOnFinished(new EventHandler<ActionEvent>() {
 
-        System.out.println(input.available());
-        System.out.println(input.available());
+            @Override
+            public void handle(ActionEvent t) {
+                timeLine.getKeyFrames().clear();
+                addNewMoves(timeLine);
+            }
+        });
+        timeLine.setAutoReverse(false);
+        timeLine.setCycleCount(1);
+        addNewMoves(timeLine);
 
-        Object object2 = kryo.readClassAndObject(input);
+        new AnimationTimer() {
+            @Override
+            public void handle(long l) {
+                gcAction.clearRect(0, 0, backCanvas.getWidth(), backCanvas.getHeight());
+                for (Sprite sprite : sprites) {
+                    gcAction.drawImage(sprite.getImage(), sprite.getLocation().getX().doubleValue(), sprite.getLocation().getY().doubleValue());
+                }
+            }
+        }.start();
 
-        System.out.println(object2);
+        Pane pane = new Pane();
 
-        System.out.println(input.available());
-        input.close();
+        pane.getChildren().add(backCanvas);
+        pane.getChildren().add(actionCanvas);
+        actionCanvas.toFront();
 
-//        Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
-        HBox box = new HBox();
+        ScrollPane scrollPane = new ScrollPane(pane);
+        scrollPane.setPrefWidth(900);
+        scrollPane.setPrefHeight(900);
 
-        box.getChildren()
-                .add(canvas);
-
-        Scene scene = new Scene(box);
+        Scene scene = new Scene(scrollPane);
 
         stage.setScene(scene);
 
         stage.show();
+
+//        Input input = new Input(new FileInputStream("file.bin"));
+//        while (input.available() != 0) {
+//            boolean currentTick = true;
+//            while (currentTick && input.available() != 0) {
+//                final Object object = kryo.readClassAndObject(input);
+//                new AnimationTimer() {
+//                    @Override
+//                    public void handle(long l) {
+//                        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+//                        if (object instanceof SimulatorEvent) {
+//                            SimulatorEvent event = (SimulatorEvent) object;
+//                            if (event.getName().equals("MOVE")) {
+//                                Collection<? extends Object> parameters = event.getParameters();
+//                                Iterator<? extends Object> iterator = parameters.iterator();
+//                                Integer who = (Integer) iterator.next();
+//                                Integer x = (Integer) iterator.next();
+//                                Integer y = (Integer) iterator.next();
+//                                sprites.get(who).move(x, y);
+//                            }
+//                        }
+//                    }
+//                }.start();
+//
+//                if (object instanceof SimulatorTick) {
+//                    currentTick = false;
+//                    boolean notFinished = true;
+//                    while (notFinished) {
+//                        notFinished = false;
+//                        for (Sprite sprite : sprites) {
+//                            gc.drawImage(sprite.getImage(), sprite.getLocation().getX().doubleValue(), sprite.getLocation().getY().doubleValue());
+//                            if (sprite.hasTimelineInstructions()) {
+//                                notFinished = true;
+//                            }
+//                        }
+//                    }
+//                    System.out.println("finished tick!");
+//                }
+//            }
+//        }
     }
 
     /**
@@ -138,6 +202,71 @@ public class GraphMovementVisualization extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public void addNewMoves(Timeline timeline) {
+        for (Sprite sprite : sprites) {
+            KeyFrame move = sprite.move(r.nextInt(width), r.nextInt(height));
+            timeline.getKeyFrames().add(move);
+        }
+        timeline.play();
+
+    }
+
+    private AZVisGraph getGraph() {
+        AZVisGraph graph = new AZVisGraph();
+        try {
+            Scanner in;
+            in = new Scanner(new File("graph.txt"));
+            while (in.hasNextLine()) {
+                String line = in.nextLine();
+                Scanner lineBreaker = new Scanner(line);
+                String nextToken = lineBreaker.next();
+                if (nextToken.equals("V")) {
+                    String name = lineBreaker.next();
+                    nextToken = lineBreaker.next();
+                    Collection<Integer> ints = parseVertex(lineBreaker, nextToken);
+                    Iterator<Integer> iterator = ints.iterator();
+                    graph.addVertex(new AZVisVertex(name, iterator.next(), iterator.next()));
+                } else if (nextToken.equals("E")) {
+                    String from = lineBreaker.next();
+                    String to = lineBreaker.next();
+                    graph.addEdgeByNames(from, to);
+                } else {
+                    System.out.println("unsupported!");
+                }
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(GraphMovementVisualization.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return graph;
+    }
+
+    private Collection<Integer> parseVertex(Scanner lineBreaker, String nextToken) {
+        LinkedList<Integer> ints = new LinkedList<>();
+        while (lineBreaker.hasNext()) {
+            if (nextToken.charAt(0) == '[') {
+                nextToken = nextToken.substring(1);
+                while (!(nextToken.charAt(nextToken.length() - 1) == ']')) {
+                    ints.add(Integer.parseInt(nextToken));
+                    nextToken = lineBreaker.next();
+                }
+                ints.add(Integer.parseInt(nextToken.substring(0, nextToken.length() - 1)));
+            }
+        }
+        return ints;
+    }
+
+    private void drawBackgroundFromGraph(GraphicsContext gc, AZVisGraph graph) {
+        for (AZVisVertex vertex : graph.vertexSet()) {
+            gc.strokeRect(vertex.getX(), vertex.getY(), 5, 5);
+
+        }
+        for (DefaultEdge edge : graph.edgeSet()) {
+            AZVisVertex source = graph.getEdgeSource(edge);
+            AZVisVertex target = graph.getEdgeTarget(edge);
+            gc.strokeLine(source.getX(), source.getY(), target.getX(), target.getY());
+        }
     }
 
 }

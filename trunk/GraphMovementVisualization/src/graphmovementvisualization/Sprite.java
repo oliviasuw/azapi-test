@@ -3,55 +3,91 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package graphmovementvisualization;
 
 import java.io.InputStream;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.WritableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.image.Image;
+import javafx.util.Duration;
 
 /**
  *
  * @author Shl
  */
-public class Sprite  {
-    
-    private Image image;
-    private Location location;
-    DoubleProperty x;
-    DoubleProperty y;
+public class Sprite {
 
-    public Sprite() {
+    private Image image;
+    private final Location location;
+    private Timeline timeLine;
+    private int index;
+
+    public Sprite(int index) {
         InputStream resourceAsStream = getClass().getResourceAsStream("circlesprite.png");
         image = new Image(resourceAsStream);
         location = new Location();
+        this.index = index;
+        initTimeLine();
     }
 
-    public DoubleProperty getX() {
-        return x;
+    public Location getLocation() {
+        return location;
     }
-
-    public void setX(DoubleProperty x) {
-        this.x = x;
-    }
-
-    public DoubleProperty getY() {
-        return y;
-    }
-
-    public void setY(DoubleProperty y) {
-        this.y = y;
-    }
-
-    
 
     public Image getImage() {
         return image;
     }
-    
-    
 
+    public KeyFrame move(final Location to) {
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(2000),
+                new EventHandler<ActionEvent>() {
+
+                    @Override
+                    public void handle(ActionEvent t) {
+//                        getLocation().setX(to.getX().doubleValue());
+//                        getLocation().setY(to.getY().doubleValue());
+
+                    }
+                },
+                new KeyValue(location.getX(), to.getX().doubleValue()), new KeyValue(location.getY(), to.getY().doubleValue())
+        );
+        return keyFrame;
+//        timeLine.getKeyFrames().add(keyFrame);
+//        timeLine.play();
+    }
     
+    public KeyFrame move(double x, double y) {
+        Location newLoc = new Location(x, y);
+        KeyFrame keyFrams = this.move(newLoc);
+        return keyFrams;
+    }    
+
+    private void initTimeLine() {
+//        timeLine = new Timeline();
+//        timeLine.setOnFinished(new EventHandler<ActionEvent>() {
+//
+//            @Override
+//            public void handle(ActionEvent t) {
+//                timeLine.getKeyFrames().clear();
+//            }
+//        });
+//        timeLine.setAutoReverse(false);
+//        timeLine.setCycleCount(1);
+
+    }
+
+//    public boolean hasTimelineInstructions() {
+//        return timeLine.getKeyFrames().size() > 0;
+//    }
+
+    public int getIndex() {
+        return index;
+    }
+
     
 }

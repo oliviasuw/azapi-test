@@ -6,10 +6,12 @@
 
 package graphmovementvisualization.impl;
 
+import graphmovementvisualization.api.SimulatorTick;
+
 /**
  *
  * @author Shl
  */
-public class SimpleSimulatorTick {
+public class SimpleSimulatorTick implements SimulatorTick {
     
 }

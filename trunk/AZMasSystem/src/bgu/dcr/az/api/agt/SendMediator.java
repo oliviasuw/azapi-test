@@ -30,7 +30,6 @@ public class SendMediator {
      * @param agents
      */
     public void to(int... agents) {
-        msg.getMetadata().put(Message.RECEPIENT_METADATA, agents);
         for (int a : agents) {
             controller.send(msg, a);
         }
@@ -80,20 +79,6 @@ public class SendMediator {
         for (int n : neighbors) {
             to(n);
         }
-    }
-
-    /**
-     * attach metadata to the message pirior to sending it usage:
-     * send("MESSAGE",arg1,...,argn).withMeta("META",data).to
-     *
-     *
-     * @param name
-     * @param val
-     * @return
-     */
-    public SendMediator withMeta(String name, Object val) {
-        msg.getMetadata().put(name, val);
-        return this;
     }
 
     /**

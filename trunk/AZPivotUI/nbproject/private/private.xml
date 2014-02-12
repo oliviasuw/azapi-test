@@ -12,7 +12,8 @@
         <group name="Misc">
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/ui/PivotViewController.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/model/FilterField.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/model/impl/AbstractPivot.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/ui/PivotDataTableViewController.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/ui/viewer/PivotDataViewerController.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/ui/FieldListCell.java</file>
         </group>
     </open-files>

@@ -149,13 +149,21 @@ main panel
 }
 
 
+/*
+general charts
+*/
+
+.chart-title {
+    -fx-text-fill: white;
+}
+
 /* 
-style the pie chart (cpu time per algorithm
+pie charts
 */
 
 .chart-pie {
     -fx-background-insets: 0;
-    -fx-border-color: transparent;
+    -fx-border-color: rgb(200,200,200);
     -fx-text-fill: white;
 }
 
@@ -173,15 +181,8 @@ style the pie chart (cpu time per algorithm
 }
 
 /*
-cpu usage bar chart
-
--fx-bar-fill: #b4c9d7;
+bar charts
 */
-
-.default-color0.chart-bar { 
-
-    -fx-bar-fill: #fba71b;
-}
 
 .axis {
     -fx-tick-label-fill: rgb(200,200,200);

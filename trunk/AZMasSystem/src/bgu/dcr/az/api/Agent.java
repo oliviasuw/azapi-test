@@ -10,7 +10,9 @@ import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.exp.RepeatedCallingException;
 import bgu.dcr.az.api.prob.ConstraintCheckResult;
 import bgu.dcr.az.api.tools.Assignment;
+import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.cp.CPAgentController;
+import bgu.dcr.az.mas.cp.CPData;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -37,6 +39,8 @@ public abstract class Agent extends Agt0DSL {
     private boolean finished = false; //The Status of the current Agent - TODO: TRANSFORM INTO A STATUS ENUM SO WE CAN BE ABLE TO QUERY THE AGENT ABOUT IT CURRENT STATUS
     private Message currentMessage = null; //The Current Message (The Last Message That was taken from the mailbox)
     private PlatformOps pops; //Hidden Platform Operation 
+    private long[] ccCount;
+    private long[] messageCount;
 
     @Override
     public String toString() {
@@ -44,7 +48,7 @@ public abstract class Agent extends Agt0DSL {
 
         return prefix + "@" + getClass().getName();
     }
-
+ 
     /**
      * create a default agent - this agent will have id = -1 so you must
      * reassign it
@@ -53,13 +57,6 @@ public abstract class Agent extends Agt0DSL {
         this.id = -1;
         this.pops = new PlatformOps();
 
-    }
-
-    /**
-     * @return the number of constraint checks this agent performed
-     */
-    public long getNumberOfConstraintChecks() {
-        return ((AgentProblem) prob).cc;
     }
 
     /**
@@ -457,11 +454,12 @@ public abstract class Agent extends Agt0DSL {
     /**
      * if this method return null the message is rejected and should be dumped.
      *
-     * @param msg
+     * @param currentMessage
      * @return
      */
     public final Message setCurrentMessage(Message currentMessage) {
         this.currentMessage = currentMessage;
+        messageCount[id]++;
         return beforeMessageProcessing(currentMessage);
     }
 
@@ -502,8 +500,9 @@ public abstract class Agent extends Agt0DSL {
          *
          * @param id
          * @param controller
+         * @param execution
          */
-        public void initialize(int id, CPAgentController controller) {
+        public void initialize(int id, CPAgentController controller, Execution<CPData> execution) {
             numberOfSetIdCalls++;
             if (numberOfSetIdCalls != 1) {
                 throw new RepeatedCallingException("you can only call setId once.");
@@ -512,6 +511,8 @@ public abstract class Agent extends Agt0DSL {
             Agent.this.id = id;
             Agent.this.controller = controller;
             Agent.this.prob = new AgentProblem();
+            Agent.this.ccCount = execution.data().getCcCount();
+            Agent.this.messageCount = execution.data().getMessagesCount();
         }
 
     }
@@ -539,7 +540,6 @@ public abstract class Agent extends Agt0DSL {
      */
     public class AgentProblem implements ImmutableProblem {
 
-        long cc = 0;
         ConstraintCheckResult queryTemp = new ConstraintCheckResult();
 
         public int getAgentId() {
@@ -560,7 +560,7 @@ public abstract class Agent extends Agt0DSL {
         public int getConstraintCost(int var1, int val1) {
             controller.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1, queryTemp);
 
-            cc += queryTemp.getCheckCost();
+            ccCount[id] += queryTemp.getCheckCost();
             return queryTemp.getCost();
         }
 
@@ -568,7 +568,7 @@ public abstract class Agent extends Agt0DSL {
         public int getConstraintCost(int var1, int val1, int var2, int val2) {
             controller.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1, var2, val2, queryTemp);
 
-            cc += queryTemp.getCheckCost();
+            ccCount[id] += queryTemp.getCheckCost();
             return queryTemp.getCost();
         }
 
@@ -596,7 +596,7 @@ public abstract class Agent extends Agt0DSL {
         public boolean isConsistent(int var1, int val1, int var2, int val2) {
             controller.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1, var2, val2, queryTemp);
 
-            cc += queryTemp.getCheckCost();
+            ccCount[id] += queryTemp.getCheckCost();
             return queryTemp.getCost() == 0;
         }
 
@@ -617,7 +617,7 @@ public abstract class Agent extends Agt0DSL {
         public int getConstraintCost(Assignment ass) {
             controller.getGlobalProblem().getConstraintCost(getAgentId(), ass, queryTemp);
 
-            cc += queryTemp.getCheckCost();
+            ccCount[id] += queryTemp.getCheckCost();
             return queryTemp.getCost();
         }
 
@@ -625,7 +625,7 @@ public abstract class Agent extends Agt0DSL {
         public int calculateCost(Assignment a) {
             controller.getGlobalProblem().calculateCost(getAgentId(), a, queryTemp);
 
-            cc += queryTemp.getCheckCost();
+            ccCount[id] += queryTemp.getCheckCost();
             return queryTemp.getCost();
         }
     }

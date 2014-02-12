@@ -135,11 +135,7 @@
   <top>
     <HBox fx:id="header" alignment="CENTER_LEFT" prefHeight="24.0" prefWidth="664.0" spacing="5.0" styleClass="dark-pane">
       <children>
-        <Label maxHeight="1.7976931348623157E308" prefHeight="24.0" text="Advanced Mode">
-          <HBox.margin>
-            <Insets left="5.0" right="10.0" />
-          </HBox.margin>
-        </Label>
+        <Hyperlink text="[switch to ADVANCED mode]" textFill="#cce0ff" />
       </children>
       <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

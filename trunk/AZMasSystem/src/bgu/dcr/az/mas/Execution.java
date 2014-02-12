@@ -10,14 +10,13 @@ import bgu.dcr.az.execs.api.Scheduler;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import bgu.dcr.az.mas.impl.InitializationException;
+import bgu.dcr.az.mas.stat.StatisticalInfoStream;
 
 /**
  *
  * @author User
  */
 public interface Execution<T> {
-
-    public void hook(Class hookType, Object hook);
 
     public <T extends ExecutionService> T require(Class<T> service) throws InitializationException;
 
@@ -31,7 +30,7 @@ public interface Execution<T> {
     
     public T data();
     
-    int getNumberOfCoresInUse();
+    public Experiment getContainingExperiment();
     
-    Experiment getContainingExperiment();
+    public StatisticalInfoStream informationStream();
 }

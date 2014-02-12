@@ -19,9 +19,21 @@ public abstract class AbstractProc implements Proc {
     private ProcState state = ProcState.INITIALIZING;
     private SystemCalls systemCalls = null;
     private final int pid;
+    private final boolean deamon;
 
     public AbstractProc(int pid) {
         this.pid = pid;
+        this.deamon = false;
+    }
+
+    public AbstractProc(int pid, boolean deamon) {
+        this.pid = pid;
+        this.deamon = deamon;
+    }
+
+    @Override
+    public boolean isDeamon() {
+        return deamon;
     }
 
     @Override

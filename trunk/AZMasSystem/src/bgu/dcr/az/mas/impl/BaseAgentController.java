@@ -81,7 +81,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
         for (int aId : controlled) {
             AgentManipulator manipulator = RegisteryUtils.getDefaultRegistery().getAgentManipulator(spawner.getAgentType(aId));
             Agent agent = manipulator.create();
-            initializeAgent(agent, manipulator, aId);
+            initializeAgent(agent, manipulator, aId, ex);
             AgentWithManipulator awm = new AgentWithManipulator(agent, manipulator);
             controlledAgents.put(aId, awm);
         }
@@ -226,7 +226,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
         return pid();
     }
 
-    protected abstract void initializeAgent(Agent agent, AgentManipulator manipulator, int aId);
+    protected abstract void initializeAgent(Agent agent, AgentManipulator manipulator, int aId, Execution ex);
 
     protected static class AgentWithManipulator {
 

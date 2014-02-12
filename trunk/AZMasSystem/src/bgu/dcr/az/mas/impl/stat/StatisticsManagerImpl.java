@@ -8,6 +8,7 @@ package bgu.dcr.az.mas.impl.stat;
 import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.impl.InitializationException;
 import bgu.dcr.az.mas.stat.AdditionalBarChartProperties;
+import bgu.dcr.az.mas.stat.AdditionalLineChartProperties;
 import bgu.dcr.az.mas.stat.Plotter;
 import bgu.dcr.az.mas.stat.StatisticCollector;
 import bgu.dcr.az.mas.stat.StatisticsManager;
@@ -38,7 +39,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
         }
         return instance;
     }
-    
+
     @Override
     public EmbeddedDatabaseManager database() {
         return db;
@@ -78,21 +79,16 @@ public class StatisticsManagerImpl implements StatisticsManager {
     private static class NOPlotter implements Plotter {
 
         @Override
-        public void plotLineChart(Data data, String xField, String yField, String seriesField, String title, String xAxisLabel, String yAxisLabel) {
+        public void plotLineChart(Data data, String xField, String yField, String seriesField, AdditionalLineChartProperties properties) {
         }
 
         @Override
-        public void plotPieChart(Data data, String lableField, String valueField, String title, String xAxisLabel, String yAxisLabel) {
+        public void plotPieChart(Data data, String valueField, String seriesField, String title, String valueFieldLabel, String categoriesFieldLabel) {
         }
 
         @Override
-        public void plotBarChart(Data data, String categoryField, String valueField) {
+        public void plotBarChart(Data data, String categoryField, String valueField, String seriesField, AdditionalBarChartProperties properties) {
         }
-
-        @Override
-        public void plotBarChart(Data data, String categoryField, String valueField, AdditionalBarChartProperties properties) {
-        }
-
 
     }
 }

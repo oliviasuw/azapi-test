@@ -9,6 +9,7 @@ import bgu.dcr.az.orm.api.Data;
 /**
  *
  * @author User
+ * @param <T>
  */
 public interface TableData extends Data {
 

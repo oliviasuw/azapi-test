@@ -6,6 +6,7 @@
 package bgu.dcr.az.ui.statistics;
 
 import bgu.dcr.az.mas.stat.AdditionalBarChartProperties;
+import bgu.dcr.az.mas.stat.AdditionalLineChartProperties;
 import bgu.dcr.az.mas.stat.Plotter;
 import bgu.dcr.az.orm.api.Data;
 import bgu.dcr.az.orm.api.RecordAccessor;
@@ -42,7 +43,7 @@ public class RealtimeJFXPlotter implements Plotter {
             pie = (PieChart) innerChart;
 
             int idx = 0;
-            if (data.numRecords() <= 1) {
+            if (data.numRecords() <= 1 && data.numRecords() == pie.getData().size()) {
                 return;
             }
 
@@ -72,7 +73,7 @@ public class RealtimeJFXPlotter implements Plotter {
     }
 
     @Override
-    public void plotBarChart(Data data, String categoryField, String valueField, AdditionalBarChartProperties properties) {
+    public void plotBarChart(Data data, String categoryField, String valueField, String seriesField, AdditionalBarChartProperties properties) {
         BarChart bar;
 
         if (innerChart instanceof BarChart) {
@@ -84,10 +85,17 @@ public class RealtimeJFXPlotter implements Plotter {
             for (RecordAccessor r : data) {
                 if (series.getData().size() > idx) {
 
+                    final Double value = r.getDouble(valueField);
                     if (properties.isHorizontal()) {
-                        series.getData().get(idx++).setXValue(r.getDouble(valueField));
+                        final XYChart.Data<Object, Double> d = series.getData().get(idx++);
+                        if (value.compareTo((Double) d.getXValue()) != 0) {
+                            d.setXValue(value);
+                        }
                     } else {
-                        series.getData().get(idx++).setYValue(r.getDouble(valueField));
+                        final XYChart.Data<Object, Double> d = series.getData().get(idx++);
+                        if (value.compareTo((Double) d.getYValue()) != 0) {
+                            d.setYValue(value);
+                        }
                     }
                 } else {
                     idx++;
@@ -133,7 +141,7 @@ public class RealtimeJFXPlotter implements Plotter {
     }
 
     @Override
-    public void plotBarChart(Data data, String categoryField, String valueField) {
+    public void plotLineChart(Data data, String xField, String yField, String seriesField, AdditionalLineChartProperties properties) {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

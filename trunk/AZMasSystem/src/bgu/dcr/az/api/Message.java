@@ -3,38 +3,57 @@ package bgu.dcr.az.api;
 import bgu.dcr.az.api.exp.DeepCopyFailedException;
 import bgu.dcr.az.utils.DeepCopyUtil;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * A base class for SimpleMessage and AbstractMessage it defines the most basic features that a message should have (a sender, a name and some more staff). 
- * Messages can contain metadata that can be used for passing data about the message like timestamp, statistics etc. – some metadata is filled automatically by the simulator and some can be added by the algorithm.
+ * A base class for SimpleMessage and AbstractMessage it defines the most basic
+ * features that a message should have (a sender, a name and some more staff).
+ * Messages can contain metadata that can be used for passing data about the
+ * message like timestamp, statistics etc. – some metadata is filled
+ * automatically by the simulator and some can be added by the algorithm.
+ *
  * @author bennyl
  */
 public class Message implements Serializable {
 
-    /**
-     * the message not contains the recepient in its fields this field is a metadata of the message 
-     * and it is accessable via this key
-     */
-    public static final String RECEPIENT_METADATA = "RECEPIENTS";
-    /**
-     * TODO - > it will be faster if it is a field or an argument to the mailer.. 
-     */
-    public static final String RECEPIENT_TYPE_METADATA = "RECEPIENT TYPE";
+    // ID RESERVATION RELATED
+    private static int RESERVATION_COUNT = 20;
+
+    private static class IdReservation {
+
+        long from = -1;
+        int count = 0;
+    }
+    private static final ThreadLocal<IdReservation> reservations = new ThreadLocal<>();
+    private static final AtomicLong idProvider = new AtomicLong(0);
+
+    private static long generateUniqueId() {
+        IdReservation reservation = reservations.get();
+        if (reservation == null) {
+            reservation = new IdReservation();
+            reservations.set(reservation);
+        }
+
+        if (reservation.count <= 0) {
+            reservation.from = idProvider.getAndAdd(RESERVATION_COUNT);
+            reservation.count = RESERVATION_COUNT;
+        }
+
+        return reservation.from + (reservation.count--);
+    }
+
+    // MESSAGE FIEDLS 
+    private long messageId = generateUniqueId();
     private String name; //the message name (= type)
     private int sender; //the sender of the message
+
     /**
-     * the attached metadata for the message 
-     * you can use it to send any kind of data that is not part of the message fields 
-     * think about it at the content on the envelop of the message - you may want to write the timestamp there etc.
+     * collection of the message arguments the arguments are unnamed -> TODO:
+     * FIGUREOUT A WAY TO NAME THEM FOR DEBUGGING PORPUSE -> MAYBE COMPILE TIME
+     * PROCESSING USING APT..
      */
-    private Map<String, Object> metadata;
-    /**
-     * collection of the message arguments 
-     * the arguments are unnamed -> TODO: FIGUREOUT A WAY TO NAME THEM FOR DEBUGGING PORPUSE -> MAYBE COMPILE TIME PROCESSING USING APT.. 
-     */
-    private Object[] args;
+    private final Object[] args;
 
     /**
      * @param name the message name / type
@@ -44,20 +63,17 @@ public class Message implements Serializable {
     public Message(String name, int from, Object[] args) {
         this.name = name;
         this.sender = from;
-        this.metadata = new HashMap<>();
         this.args = args;
     }
 
     /**
-     * @return the arguments of this message
-     * the args are ordered at the same way that the sender sent them / the receiver got them
-     * which means that if you sent the mesasge using:
-     * send("message", a, b, c).to(x) 
-     * message.getArgs[0] = a
-     * message.getArgs[0] = b
-     * message.getArgs[0] = c
-     * 
-     * aside from arguments message can also contain metadata accesible via {@link getMetadata()}
+     * @return the arguments of this message the args are ordered at the same
+     * way that the sender sent them / the receiver got them which means that if
+     * you sent the mesasge using: send("message", a, b, c).to(x)
+     * message.getArgs[0] = a message.getArgs[0] = b message.getArgs[0] = c
+     *
+     * aside from arguments message can also contain metadata accesible via
+     * {@link getMetadata()}
      */
     public Object[] getArgs() {
         return args;
@@ -70,6 +86,8 @@ public class Message implements Serializable {
             Object a = args[i];
             if (a instanceof DeepCopyable) {
                 cargs[i] = ((DeepCopyable) a).deepCopy();
+            } else if (a == null || a instanceof Number || a instanceof Enum || a instanceof String || a instanceof Boolean) {
+                cargs[i] = a;
             } else {
                 try {
                     cargs[i] = DeepCopyUtil.deepCopy(a);
@@ -84,9 +102,7 @@ public class Message implements Serializable {
             }
         }
 
-
         Message ret = new Message(getName(), getSender(), cargs);
-        ret.metadata = new HashMap<>(metadata); //metadata is not deep-copyed as it should be immutable
         return ret;
     }
 
@@ -97,7 +113,7 @@ public class Message implements Serializable {
             sb.append(a.toString()).append(", ");
         }
         return "[" + getName() + (args.length > 0 ? ": " + sb.deleteCharAt(sb.length() - 2).toString() + "]" : "]");
-        
+
     }
 
     /**
@@ -116,6 +132,7 @@ public class Message implements Serializable {
 
     /**
      * set the sender
+     *
      * @param from
      */
     protected void setSender(int from) {
@@ -123,18 +140,8 @@ public class Message implements Serializable {
     }
 
     /**
-     * messages can have metadata attached to them - metadata is collection of key to immutable value pairs
-     * metadata values assume to be immutable and are not getting deep copied upon sending along with the normal message fields
-     * instead it will get copied by reference to the new message object.
-     * please take that into consideration if you going to use it
-     * @return the metadata attached to this object (as a key value map)
-     */
-    public Map<String, Object> getMetadata() {
-        return metadata;
-    }
-
-    /**
      * sets the name of this message
+     *
      * @param name
      */
     protected void setName(String name) {

@@ -6,6 +6,7 @@ package bgu.dcr.az.pivot.test;
 
 import bgu.dcr.az.orm.api.FieldMetadata;
 import bgu.dcr.az.orm.impl.FieldMetadataImpl;
+import bgu.dcr.az.orm.impl.ObjectArrayRecord;
 import bgu.dcr.az.orm.impl.SimpleData;
 import bgu.dcr.az.pivot.model.Pivot;
 import bgu.dcr.az.pivot.model.impl.AbstractPivot;
@@ -40,7 +41,7 @@ public class PivotTestUtils {
 
         final int size = headers.size();
 
-        ArrayList<Object[]> data = new ArrayList<>();
+        ArrayList<ObjectArrayRecord> data = new ArrayList<>();
 
         while (s.hasNext()) {
             line = s.nextLine();
@@ -54,13 +55,13 @@ public class PivotTestUtils {
                 }
                 i++;
             }
-            data.add(row);
+            data.add(new ObjectArrayRecord(row));
         }
 
         FieldMetadata[] fields = new FieldMetadata[headers.size()];
         int i = 0;
         for (String v : headers) {
-            fields[i] = new FieldMetadataImpl(v, data.get(0)[i].getClass());
+            fields[i] = new FieldMetadataImpl(v, data.get(0).get(i).getClass());
             i++;
         }
 
@@ -68,20 +69,20 @@ public class PivotTestUtils {
     }
 
     public static AbstractPivot generateSimplePivot1() throws Exception {
-        ArrayList<Object[]> data = new ArrayList<>();
+        ArrayList<ObjectArrayRecord> data = new ArrayList<>();
 
-        data.add(new Object[]{1, "x", 1, "a"});
-        data.add(new Object[]{2, "x", 1, "a"});
-        data.add(new Object[]{3, "y", 1, "a"});
-        data.add(new Object[]{4, "y", 2, "a"});
-        data.add(new Object[]{5, "x", 2, "b"});
-        data.add(new Object[]{6, "x", 2, "b"});
-        data.add(new Object[]{7, "y", 1, "b"});
-        data.add(new Object[]{8, "y", 1, "b"});
-        data.add(new Object[]{9, "x", 1, "a"});
-        data.add(new Object[]{10, "x", 2, "a"});
-        data.add(new Object[]{11, "y", 2, "a"});
-        data.add(new Object[]{12, "y", 2, "a"});
+        data.add(new ObjectArrayRecord(new Object[]{1, "x", 1, "a"}));
+        data.add(new ObjectArrayRecord(new Object[]{2, "x", 1, "a"}));
+        data.add(new ObjectArrayRecord(new Object[]{3, "y", 1, "a"}));
+        data.add(new ObjectArrayRecord(new Object[]{4, "y", 2, "a"}));
+        data.add(new ObjectArrayRecord(new Object[]{5, "x", 2, "b"}));
+        data.add(new ObjectArrayRecord(new Object[]{6, "x", 2, "b"}));
+        data.add(new ObjectArrayRecord(new Object[]{7, "y", 1, "b"}));
+        data.add(new ObjectArrayRecord(new Object[]{8, "y", 1, "b"}));
+        data.add(new ObjectArrayRecord(new Object[]{9, "x", 1, "a"}));
+        data.add(new ObjectArrayRecord(new Object[]{10, "x", 2, "a"}));
+        data.add(new ObjectArrayRecord(new Object[]{11, "y", 2, "a"}));
+        data.add(new ObjectArrayRecord(new Object[]{12, "y", 2, "a"}));
 
         FieldMetadata[] meta = new FieldMetadata[4];
         meta[0] = new FieldMetadataImpl("Field 0", Integer.class);

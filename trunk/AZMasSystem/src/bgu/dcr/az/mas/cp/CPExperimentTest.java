@@ -36,11 +36,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -223,11 +221,7 @@ public class CPExperimentTest implements Experiment {
 
     @Override
     public int numberOfExecutions() {
-        try {
-            return looper.count() * algorithms.size();
-        } catch (ConfigurationException ex) {
-            throw new RuntimeException("cannot calculate number of executions, see cause", ex);
-        }
+        return looper.count() * algorithms.size();
     }
 
     public Execution getExecution(int i) throws ConfigurationException {
@@ -254,7 +248,7 @@ public class CPExperimentTest implements Experiment {
 
         AlgorithmDef adef = algorithms.get(i % algorithms.size());
         AgentSpawner spawner = new SimpleAgentSpawner(RegisteryUtils.getDefaultRegistery().getRegisteredClassByName("ALGORITHM." + adef.getName()));
-        CPExecution exec = new CPExecution(this, adef, spawner, p, executionEnvironment);
+        CPExecution exec = new CPExecution(this, adef, looper.getRunningVariableValue(i / algorithms.size()), spawner, p, executionEnvironment);
 
         final StatisticsManagerImpl statm = StatisticsManagerImpl.getInstance();
         statm.clearRegistrations();
@@ -267,7 +261,6 @@ public class CPExperimentTest implements Experiment {
             exec.supply(e.getKey(), e.getValue());
         }
 
-//        System.out.println("Algorithm: " + adef);
         if (correctnessTester != null) {
             exec.supply(CPCorrectnessTester.class, correctnessTester);
         }

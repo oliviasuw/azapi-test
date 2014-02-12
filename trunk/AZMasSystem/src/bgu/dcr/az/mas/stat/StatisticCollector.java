@@ -6,6 +6,7 @@
 package bgu.dcr.az.mas.stat;
 
 import bgu.dcr.az.mas.Execution;
+import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.QueryDatabase;
 
@@ -20,5 +21,5 @@ public interface StatisticCollector<T> {
 
     String getName();
 
-    void plot(Plotter ploter);
+    void plot(Plotter ploter, Experiment experiment);
 }

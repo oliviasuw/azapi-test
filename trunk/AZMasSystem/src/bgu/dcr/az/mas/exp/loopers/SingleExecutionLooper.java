@@ -26,4 +26,14 @@ public class SingleExecutionLooper implements Looper {
     public void configure(int i, Configuration[] configurations) {
     }
 
+    @Override
+    public String getRunningVariableName() {
+        return "?";
+    }
+
+    @Override
+    public double getRunningVariableValue(int i) {
+        return 0;
+    }
+
 }

@@ -6,14 +6,17 @@
 package bgu.dcr.az.anop.utils;
 
 import com.esotericsoftware.reflectasm.ConstructorAccess;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -115,5 +118,20 @@ public class ReflectionUtils {
         } else {
             throw new UnsupportedOperationException(String.format("type: %s is not a collection.", type.getCanonicalName()));
         }
+    }
+
+    /**
+     * @param c
+     * @return a collection of all the fields in the given class including
+     * public, private, protected and package and inherited fields
+     */
+    public static List<Field> allFields(Class c) {
+        ArrayList<Field> result = new ArrayList<>();
+        while (c != Object.class) {
+            result.addAll(Arrays.asList(c.getDeclaredFields()));
+            c = c.getSuperclass();
+        }
+        
+        return result;
     }
 }

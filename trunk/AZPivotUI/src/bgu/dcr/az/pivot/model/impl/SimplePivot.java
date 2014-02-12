@@ -19,7 +19,11 @@ public class SimplePivot extends AbstractPivot {
 
     @Override
     public TableData getPivotedData() {
-        return new InMemoryPivotTable(this);
+        System.out.println("Start calculating pivot");
+        long start = System.currentTimeMillis();
+        final InMemoryPivotTable pd = new InMemoryPivotTable(this);
+        System.out.println("Pivot calculated in: " + (System.currentTimeMillis() - start));
+        return pd;
     }
 
 }

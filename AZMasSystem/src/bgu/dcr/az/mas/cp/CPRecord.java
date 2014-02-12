@@ -3,13 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.mas;
+
+package bgu.dcr.az.mas.cp;
+
+import bgu.dcr.az.orm.api.DBRecord;
 
 /**
  *
  * @author User
  */
-public interface HookProvider<T> {
-
-    void register(T hook);
+public class CPRecord implements DBRecord{
+    public String algorithm_instance;
+    public double rvar;
+    public String test;
 }

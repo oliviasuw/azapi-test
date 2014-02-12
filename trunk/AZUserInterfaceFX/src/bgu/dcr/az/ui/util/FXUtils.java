@@ -33,6 +33,21 @@ public class FXUtils {
         }
     }
 
+    public static class PaneWithCTL<T> {
+
+        Pane pane;
+        T ctl;
+
+        public T getController() {
+            return ctl;
+        }
+
+        public Pane getPane() {
+            return pane;
+        }
+
+    }
+
     public static <T> JFXPanelWithCTL<T> load(final Class<T> ctl, final String fxml) {
         try {
             final JFXPanelWithCTL result = new JFXPanelWithCTL();
@@ -61,6 +76,34 @@ public class FXUtils {
             Thread.currentThread().interrupt();
             return null;
         }
+    }
+
+    public static <T> PaneWithCTL<T> loadPane(final Class<T> ctl, final String fxml) {
+        final Semaphore lock = new Semaphore(0);
+        final PaneWithCTL[] result = {new PaneWithCTL<>()};
+
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(() -> {
+                result[0] = loadPane(ctl, fxml);
+                lock.release();
+            });
+            try {
+                lock.acquire();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(FXUtils.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            try {
+                final FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(ctl.getResource(fxml));
+                Pane pane = (Pane) loader.load(ctl.getResource(fxml).openStream());
+                result[0].ctl = loader.getController();
+                result[0].pane = pane;
+            } catch (IOException ex) {
+                Logger.getLogger(FXUtils.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result[0];
     }
 
     public static Scene createScene(final Pane pane) {

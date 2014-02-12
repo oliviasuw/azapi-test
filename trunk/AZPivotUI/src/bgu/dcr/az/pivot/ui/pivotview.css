@@ -1,0 +1,48 @@
+/*
+style list views - i need them to be a little darker to fit well in the dark background
+*/
+.list-cell {
+    -fx-background-color: rgb(240,240,240);
+    -fx-padding: 8;
+}
+
+.list-cell:odd {
+    -fx-background-color: rgb(220,220,220);
+    -fx-padding: 8;
+}
+
+.list-view .list-cell:selected {
+    /*-fx-background-color: #7bbeea;*/
+    -fx-border-width: 0 3 0 3;
+    /*-fx-border-style: solid;*/
+    /*-fx-border-color: #ffcc00;*/
+    /*-fx-border-color: #4a91ff;*/
+    /*-fx-border-color: #ffcc00;*/
+    -fx-background-color: #4a91ff;
+
+    -fx-text-fill: white;
+    -fx-padding: 8;
+    -fx-background-insets: 0, 0, 0;
+    -fx-background-radius: 0, 0, 0;
+}
+
+.list-view .list-cell:focused {
+    -fx-background-insets: 0, 0, 0;
+}
+
+.list-view .list-cell:selected .label{
+    -fx-text-fill: white;
+}
+
+.list-view {
+    -fx-background-color: -fx-focus-color,-fx-box-border,-fx-control-inner-background;
+    -fx-background-insets: 0, 0, 0;
+    -fx-background-radius: 5;
+    
+    -fx-border-width: 4 4 4 4;
+    -fx-padding: 8;
+
+    /* There is some oddness if padding is in em values rather than pixels,
+       in particular, the left border of the control doesn't show. */
+    -fx-padding: 0; /* 0.083333em; */
+}

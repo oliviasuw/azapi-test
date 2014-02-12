@@ -1,58 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.*?>
+<?import java.net.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="682.0" prefWidth="320.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="bgu.dcr.az.pivot.ui.PivotViewController">
-  <children>
-    <SplitPane dividerPositions="0.6176470588235294" focusTraversable="true" orientation="VERTICAL" prefHeight="682.0" prefWidth="320.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+<BorderPane id="AnchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="list-view" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="bgu.dcr.az.pivot.ui.PivotViewController">
+  <center>
+    <SplitPane dividerPositions="0.6008583690987125" focusTraversable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" prefHeight="-1.0" prefWidth="-1.0">
       <items>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+        <AnchorPane minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0">
           <children>
-            <BorderPane prefHeight="417.0" prefWidth="318.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <BorderPane prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <center>
                 <ListView fx:id="allFieldsListView" prefHeight="-1.0" prefWidth="-1.0" />
               </center>
             </BorderPane>
           </children>
         </AnchorPane>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+        <AnchorPane minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0">
           <children>
-            <GridPane prefHeight="257.0" prefWidth="318.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <children>
-                <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <BorderPane prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
                   <center>
-                    <ListView fx:id="columnsFieldsListView" editable="true" prefHeight="-1.0" prefWidth="-1.0" />
+                    <ListView fx:id="columnsFieldsListView" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
                   </center>
                   <top>
-                    <Label text="Column Labels" />
+                    <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Column Labels" />
                   </top>
                 </BorderPane>
-                <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <BorderPane prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
                   <center>
-                    <TreeView fx:id="filterFieldsTreeView" prefHeight="-1.0" prefWidth="-1.0" showRoot="false" />
+                    <TreeView fx:id="filterFieldsTreeView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" showRoot="false" />
                   </center>
                   <top>
-                    <Label text="Report Filter" />
+                    <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Report Filter" />
                   </top>
                 </BorderPane>
-                <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                <BorderPane prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
                   <center>
-                    <ListView id="columnsFieldsListView" fx:id="valuesFieldsListView" prefHeight="-1.0" prefWidth="-1.0" />
+                    <ListView id="columnsFieldsListView" fx:id="valuesFieldsListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
                   </center>
                   <top>
-                    <Label text="Values" />
+                    <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Values" />
                   </top>
                 </BorderPane>
-                <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <BorderPane prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                   <center>
-                    <ListView fx:id="rowsFieldsListView" prefHeight="200.0" prefWidth="200.0" />
+                    <ListView fx:id="rowsFieldsListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" />
                   </center>
                   <top>
-                    <Label text="Row Labels" />
+                    <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Row Labels" />
                   </top>
                 </BorderPane>
               </children>
@@ -69,5 +70,8 @@
         </AnchorPane>
       </items>
     </SplitPane>
-  </children>
-</AnchorPane>
+  </center>
+  <stylesheets>
+    <URL value="@pivotview.css" />
+  </stylesheets>
+</BorderPane>

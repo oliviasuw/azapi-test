@@ -5,22 +5,26 @@
  */
 package bgu.dcr.az.pivot.ui;
 
-import bgu.dcr.az.pivot.ui.test.PivotView;
 import bgu.dcr.az.pivot.ui.alert.AlertDialog;
 import bgu.dcr.az.pivot.model.AggregatedField;
 import bgu.dcr.az.pivot.model.Field;
 import bgu.dcr.az.pivot.model.Pivot;
 import bgu.dcr.az.pivot.model.impl.FieldUtils;
 import bgu.dcr.az.pivot.model.impl.PivotUtils;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 
@@ -39,11 +43,11 @@ public class FieldListCell extends ListCell<Field> {
     PivotViewController.ListCellFactory factory;
     ChoiceBox choice;
 
-    public FieldListCell(boolean showCheckBox, Pivot pivot, PivotViewController.ListCellFactory factory) {
+    public FieldListCell(boolean showCheckBox, boolean editable, Pivot pivot, PivotViewController.ListCellFactory factory) {
         this.factory = factory;
         this.showCheckBox = showCheckBox;
         this.pivot = pivot;
-        setEditable(true);
+        setEditable(editable);
     }
 
     public void update() {
@@ -53,7 +57,7 @@ public class FieldListCell extends ListCell<Field> {
     public PivotViewController.ListCellFactory getFactory() {
         return factory;
     }
-    
+
     @Override
     public void startEdit() {
         super.startEdit();
@@ -72,17 +76,17 @@ public class FieldListCell extends ListCell<Field> {
                         getItem().setFieldName(text.getText());
                         commitEdit(getItem());
                     } catch (Throwable ex) {
-                        AlertDialog.showAndWait(getFactory().getScene(), ex.getMessage(), AlertDialog.ICON_ERROR);
                         cancelEdit();
                         update();
+                        AlertDialog.showAndWait(getFactory().getScene(), ex.getMessage(), AlertDialog.ICON_ERROR);
                     }
                 }
             });
         }
-        
-        
+
         text.setText(getItem().getFieldName());
         setGraphic(text);
+        text.requestFocus();
     }
 
     @Override
@@ -93,6 +97,10 @@ public class FieldListCell extends ListCell<Field> {
 
     @Override
     protected void updateItem(Field t, boolean empty) {
+        Field oldItem = getItem();
+        if (oldItem != null && oldItem instanceof AggregatedField) {
+            choice.valueProperty().unbindBidirectional(((AggregatedField) oldItem).aggregationFunctionProperty());
+        }
         super.updateItem(t, empty);
 
         if (t == null || empty) {
@@ -104,12 +112,12 @@ public class FieldListCell extends ListCell<Field> {
         } else {
             if (lbl == null) {
                 lbl = new Label();
+                lbl.setPadding(new Insets(3));
             }
 
             lbl.setText(t.toString());
             setGraphic(lbl);
         }
-
     }
 
     private void showCheckbox(Field t) {
@@ -137,8 +145,7 @@ public class FieldListCell extends ListCell<Field> {
         });
 
         lbl.setText(t.toString());
-        check.selectedProperty()
-                .setValue(PivotUtils.isInUse(pivot, t));
+        check.selectedProperty().setValue(PivotUtils.isInUse(pivot, t));
         setGraphic(border);
     }
 
@@ -146,17 +153,24 @@ public class FieldListCell extends ListCell<Field> {
         if (choice == null) {
             choice = new ChoiceBox();
             choice.getItems().addAll(FieldUtils.getDefaultAggregationFunctions());
-            border = new BorderPane();
-            lbl = new Label();
+            choice.setMinWidth(23);
+            choice.setMaxWidth(23);
+            choice.setMinHeight(23);
+            choice.setMaxHeight(23);
 
-            border.setLeft(lbl);
-            BorderPane.setAlignment(choice, Pos.CENTER_RIGHT);
-            border.setCenter(choice);
+            lbl = new Label();
+            lbl.setPadding(new Insets(0, 0, 0, 8));
+            BorderPane.setAlignment(lbl, Pos.CENTER_LEFT);
+
+            border = new BorderPane();
+            border.setLeft(choice);
+            border.setCenter(lbl);
         }
 
         lbl.setText(t.getFieldName());
-        choice.getSelectionModel().select(t.aggregationFunctionProperty().get());
+        choice.valueProperty().unbind();
+        choice.valueProperty().set(t.aggregationFunctionProperty().get());
+        choice.valueProperty().bindBidirectional(t.aggregationFunctionProperty());
         setGraphic(border);
     }
-
 }

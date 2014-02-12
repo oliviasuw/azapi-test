@@ -92,6 +92,11 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
 
         // generates association of each of columns to an integer
         Map<ObjectArray, Integer> lookupColumns = generateLookup(columns);
+        
+        if (columns.numberOfHeaders() == 1 && columns.getHeader(0).length == 0) {
+            return;
+        }
+        
         // generates association of each of rows to an integer
         Map<ObjectArray, Integer> lookupRows = generateLookup(rows);
 
@@ -99,7 +104,7 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
         Map<Integer, Collection<Object>> values = extractValues(pivot, lookupColumns, lookupRows);
 
         fillValues(pivot, values, lookupColumns, lookupRows);
-        
+
         fillFieldMetadata();
     }
 
@@ -264,9 +269,10 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
      * @param lookupRows
      */
     private void fillValues(Pivot pivot, Map<Integer, Collection<Object>> values, Map<ObjectArray, Integer> lookupColumns, Map<ObjectArray, Integer> lookupRows) {
-        for (int j = 0; j < rows.numberOfHeaders(); j++) {
+        boolean emptyRows = rows.numberOfHeaders() == 1 && rows.getHeader(0).length == 0;
+        for (int j = 0; j < rows.numberOfHeaders() && columns.numberOfHeaders() != 0; j++) {
             Object[] data = new Object[columns.numberOfHeaders() + 1];
-            data[0] = rowsHeaderExtractor.extract(rows.getHeader(j));
+            data[0] = emptyRows ? "Total" : rowsHeaderExtractor.extract(rows.getHeader(j));
             for (int i = 0; i < columns.numberOfHeaders(); i++) {
 
                 int column = lookupColumns.get(new ObjectArray(columns.getHeader(i)));
@@ -283,6 +289,10 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
                 }
             }
             getInnerData().add(data);
+        }
+
+        if (emptyRows) {
+            rows = new SimpleHeaders(new Object[][]{{"Total"}});
         }
     }
 
@@ -341,13 +351,13 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
 
     private void fillFieldMetadata() {
         FieldMetadata[] meta = new FieldMetadata[columns.numberOfHeaders() + 1];
-        
+
         meta[0] = new FieldMetadataImpl("Row headers", String.class);
-        
+
         for (int i = 0; i < columns.numberOfHeaders(); i++) {
             meta[i + 1] = new FieldMetadataImpl(columnsHeaderExtractor.extract(columns.getHeader(i)), Double.class);
         }
-        
+
         setFields(meta);
     }
 

@@ -1,12 +1,14 @@
+package bgu.dcr.az.pivot.test;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-package bgu.dcr.az.utils;
-
+import bgu.dcr.az.pivot.ui.viewer.PivotDataViewerController;
+import bgu.dcr.az.ui.util.FXUtils;
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
@@ -14,10 +16,14 @@ import javafx.stage.Stage;
  * @author User
  */
 public class PivotView extends Application {
-    
+
     @Override
     public void start(Stage stage) throws Exception {
-        
+        FXUtils.PaneWithCTL<PivotDataViewerController> p = FXUtils.loadPane(PivotDataViewerController.class, "PivotDataViewer.fxml");
+        p.getController().setModel(PivotTestUtils.readPivotFromCSV(PivotView.class.getResourceAsStream("test.csv")));
+        Scene scene = new Scene(p.getPane());
+        stage.setScene(scene);
+        stage.show();
     }
 
     /**
@@ -31,5 +37,5 @@ public class PivotView extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    
+
 }

@@ -4,6 +4,7 @@
  */
 package bgu.dcr.az.pivot.model;
 
+import bgu.dcr.az.anop.utils.EventListeners;
 import bgu.dcr.az.orm.api.Data;
 import java.util.List;
 import javafx.collections.ObservableList;
@@ -67,5 +68,11 @@ public interface Pivot {
     Data getData();
 
     TableData getPivotedData();
-    
+
+    EventListeners<PivotListener> getListeners();
+
+    public static interface PivotListener {
+
+        void pivotChanged(Pivot pivot);
+    }
 }

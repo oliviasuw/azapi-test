@@ -15,7 +15,6 @@ public class AdditionalBarChartProperties {
     private String categoryFieldLabel;
     private String valueFieldLabel;
     private boolean horizontal;
-    private String seriesField = null;
     private Integer maxValue = null;
 
     public String getCaption() {
@@ -30,15 +29,7 @@ public class AdditionalBarChartProperties {
         this.maxValue = maxValue;
     }
 
-    public String getSeriesField() {
-        return seriesField;
-    }
-
-    public void setSeriesField(String seriesField) {
-        this.seriesField = seriesField;
-    }
-
-    public void setCaption(String caption) {
+    public void setTitle(String caption) {
         this.caption = caption;
     }
 

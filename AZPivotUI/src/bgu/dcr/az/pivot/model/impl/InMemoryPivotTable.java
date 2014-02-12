@@ -7,11 +7,12 @@ package bgu.dcr.az.pivot.model.impl;
 import bgu.dcr.az.orm.api.FieldMetadata;
 import bgu.dcr.az.orm.api.RecordAccessor;
 import bgu.dcr.az.orm.impl.FieldMetadataImpl;
+import bgu.dcr.az.orm.impl.ObjectArrayRecord;
+import bgu.dcr.az.orm.impl.Record;
 import bgu.dcr.az.orm.impl.SimpleData;
 import bgu.dcr.az.pivot.model.AggregatedField;
 import bgu.dcr.az.pivot.model.AggregationFunction;
 import bgu.dcr.az.pivot.model.Field;
-import bgu.dcr.az.pivot.model.FilterField;
 import bgu.dcr.az.pivot.model.Pivot;
 import bgu.dcr.az.pivot.model.TableData;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ import javafx.collections.ObservableList;
  *
  * @author Zovadi
  */
-public class InMemoryPivotTable extends SimpleData implements TableData {
+public class InMemoryPivotTable extends SimpleData<ObjectArrayRecord> implements TableData {
 
     private Headers columns;
     private Headers rows;
@@ -288,7 +289,7 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
                     data[i + 1] = ((AggregationFunction) af.aggregationFunctionProperty().get()).aggregate(value);
                 }
             }
-            getInnerData().add(data);
+            getInnerData().add(new ObjectArrayRecord(data));
         }
 
         if (emptyRows) {
@@ -301,12 +302,9 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
         return "Columns: \n" + joinI(columns) + "\n" + "Rows: \n" + joinI(rows) + "Table: \n" + joinI(getInnerData()) + "\n";
     }
 
-    public String joinI(ArrayList<Object[]> c) {
+    public String joinI(ArrayList<? extends Record> c) {
         LinkedList<String> subRes = new LinkedList<>();
-
-        for (Object[] i : c) {
-            subRes.addLast(join(i) + ",\n");
-        }
+        c.stream().forEach(i -> subRes.addLast(join(i) + ",\n"));
 
         return join(subRes);
     }
@@ -324,7 +322,7 @@ public class InMemoryPivotTable extends SimpleData implements TableData {
     public String join(Object[] c) {
         StringBuilder sb = new StringBuilder("{");
         for (Object s : c) {
-            sb.append("" + s).append(", ");
+            sb.append(s).append(", ");
         }
         if (sb.length() != 1) {
             sb.delete(sb.length() - 2, sb.length());

@@ -5,11 +5,11 @@
  */
 package bgu.dcr.az.ui.statistics;
 
-import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.mas.Execution;
-import bgu.dcr.az.mas.Hooks;
 import bgu.dcr.az.mas.cp.CPData;
+import bgu.dcr.az.mas.cp.CPExperimentTest;
 import bgu.dcr.az.mas.impl.stat.AbstractStatisticCollector;
+import bgu.dcr.az.mas.stat.data.ExecutionTerminationInfo;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.QueryDatabase;
 import bgu.dcr.az.orm.impl.DataUtils;
@@ -26,21 +26,17 @@ public class AlgorithmCPUTimeStatisticCollector extends AbstractStatisticCollect
 
     @Override
     protected void initialize(final Execution<CPData> ex, DefinitionDatabase database) {
-        
+
         final long time = System.currentTimeMillis();
-        new Hooks.TerminationHook() {
-
-            @Override
-            public void hook(ExecutionResult result) {
-                Long oldMillis = millisSpent.get(ex.data().getAlgorithm().getName());
-                if (oldMillis == null) {
-                    oldMillis = 0L;
-                }
-
-                oldMillis += (System.currentTimeMillis() - time);
-                millisSpent.put(ex.data().getAlgorithm().getName(), oldMillis);
+        ex.informationStream().listen(ExecutionTerminationInfo.class, t -> {
+            Long oldMillis = millisSpent.get(ex.data().getAlgorithm().getName());
+            if (oldMillis == null) {
+                oldMillis = 0L;
             }
-        }.hookInto(ex);
+
+            oldMillis += (System.currentTimeMillis() - time);
+            millisSpent.put(ex.data().getAlgorithm().getName(), oldMillis);
+        });
 
     }
 
@@ -50,7 +46,7 @@ public class AlgorithmCPUTimeStatisticCollector extends AbstractStatisticCollect
     }
 
     @Override
-    public void plot(QueryDatabase database) {
+    public void plot(QueryDatabase database, CPExperimentTest test) {
         plotPieChart(DataUtils.fromMap(millisSpent, String.class, "Algorithm", Long.class, "Time"), "Time", "Algorithm");
     }
 

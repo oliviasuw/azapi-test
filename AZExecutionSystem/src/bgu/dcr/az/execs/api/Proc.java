@@ -12,6 +12,13 @@ package bgu.dcr.az.execs.api;
 public interface Proc {
 
     /**
+     * @return true if this process is a deamon process - a deamon process is
+     * automatically terminate (currently quietly) if all the non deamon
+     * processes has terminated
+     */
+    boolean isDeamon();
+
+    /**
      * @return the state of the process
      */
     ProcState state();

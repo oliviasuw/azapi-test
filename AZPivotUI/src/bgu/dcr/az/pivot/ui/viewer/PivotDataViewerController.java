@@ -5,17 +5,15 @@
  */
 package bgu.dcr.az.pivot.ui.viewer;
 
-import bgu.dcr.az.pivot.model.Pivot;
 import bgu.dcr.az.pivot.model.TableData;
 import bgu.dcr.az.pivot.model.impl.AbstractPivot;
+import bgu.dcr.az.pivot.model.impl.PlottableTableData;
 import bgu.dcr.az.pivot.ui.PivotDataTableView;
 import bgu.dcr.az.pivot.ui.PivotViewController;
 import bgu.dcr.az.ui.screens.statistics.StatisticsPlotter;
 import bgu.dcr.az.ui.util.FXUtils;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -102,6 +100,8 @@ public class PivotDataViewerController implements Initializable {
         }
         StatisticsPlotter chart = new StatisticsPlotter(vizualizerContainer);
         if (chartButtonsGroup.getSelectedToggle() == lineChartButton) {
+            PlottableTableData pd = new PlottableTableData(data);
+            chart.plotLineChart(pd, pd.columns()[1].name(), pd.columns()[2].name(), pd.columns()[0].name());
 //            chart.plotLineChart(data, data.columns()[0].name(), data.columns()[1].name(), data.columns()[2].name(), "Pivot chart", "Categories", "Value");
         }
         if (chartButtonsGroup.getSelectedToggle() == barChartButton) {

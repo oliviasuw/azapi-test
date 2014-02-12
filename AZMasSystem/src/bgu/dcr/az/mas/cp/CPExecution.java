@@ -26,15 +26,15 @@ import java.util.List;
  * @author User
  */
 public class CPExecution extends BaseExecution<CPData> {
-    
-    public CPExecution(Experiment containingExperiment, AlgorithmDef a, AgentSpawner spawner, Problem problem, ExecutionEnvironment env) {
-        super(new CPData(new CPSolution(problem), problem, a), containingExperiment, problem.getAgentDistributer(), spawner, env);
+
+    public CPExecution(Experiment containingExperiment, AlgorithmDef a, double runningVariable, AgentSpawner spawner, Problem problem, ExecutionEnvironment env) {
+        super(new CPData(new CPSolution(problem), problem, a, runningVariable), containingExperiment, problem.getAgentDistributer(), spawner, env);
     }
-    
+
     @Override
     protected Collection<AgentController> createControllers() throws InitializationException {
         List<AgentController> controllers = new LinkedList<>();
-        
+
         AgentDistributer distributer = require(AgentDistributer.class);
         for (int i = 0; i < distributer.getNumberOfAgentControllers(); i++) {
             try {
@@ -43,15 +43,15 @@ public class CPExecution extends BaseExecution<CPData> {
                 throw new InitializationException("could not initialize agent, see cause", ex);
             }
         }
-        
+
         return controllers;
     }
-    
+
     @Override
     protected void initialize() {
         if (!hasRequirement(Logger.class)) {
             supply(Logger.class, new StdoutLogger());
         }
     }
-    
+
 }

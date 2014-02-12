@@ -14,7 +14,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -24,8 +23,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
  *
  * @author Zovadi
  */
-public class PivotDataTableView extends ScrollPane {
+public class PivotDataTableView extends TableView {
 
+    public static int MAXIMUM_SHOWN_COLUMNS = 100;
     private static final boolean removeSingle = true;
 
     public PivotDataTableView() {
@@ -34,19 +34,17 @@ public class PivotDataTableView extends ScrollPane {
 
     public void setModel(TableData data) {
         if (data != null) {
-            TableView table = new TableView();
-            table.setMaxHeight(Double.MAX_VALUE);
-            table.setMaxWidth(Double.MAX_VALUE);
-            table.minHeightProperty().bind(heightProperty().subtract(2));
-            table.minWidthProperty().bind(widthProperty().subtract(2));
+//            table.setMaxHeight(Double.MAX_VALUE);
+//            table.setMaxWidth(Double.MAX_VALUE);
+//            table.minHeightProperty().bind(heightProperty().subtract(2));
+//            table.minWidthProperty().bind(widthProperty().subtract(2));
 
-            table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-            table.getColumns().addAll(generateColumns(data));
+//            setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+            getColumns().addAll(generateColumns(data));
             ObservableList<Object> list = FXCollections.observableArrayList();
             data.spliterator().forEachRemaining(f -> list.add(f));
-            table.setItems(list);
-            setContent(table);
-//            table.autosize();
+            setItems(list);
+//            autosize();
         }
     }
 
@@ -68,9 +66,17 @@ public class PivotDataTableView extends ScrollPane {
 
         TableColumn[] columns = new TableColumn[data.getColumnHeaders().getHeader(0).length];
         int id = 0;
+        int addedColumns = 0;
+        TABLE_CREATION:
         for (Object[] ch : data.getColumnHeaders()) {
             for (int i = 0; i < ch.length; i++) {
                 if (columns[i] == null || !columns[i].getText().equals(ch[i].toString())) {
+                    if (i == ch.length - 1) {
+                        if (addedColumns >= MAXIMUM_SHOWN_COLUMNS) {
+                            break TABLE_CREATION;
+                        }
+                        addedColumns++;
+                    }
                     columns[i] = new TableColumn(ch[i].toString());
                     if (i != 0) {
                         columns[i - 1].getColumns().add(columns[i]);

@@ -11,6 +11,7 @@ import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.api.tools.Assignment;
+import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.impl.BaseAgentController;
 import bgu.dcr.az.mas.impl.InitializationException;
 import java.util.LinkedList;
@@ -59,8 +60,8 @@ public class CPAgentController extends BaseAgentController {
     }
 
     @Override
-    protected void initializeAgent(Agent agent, AgentManipulator manipulator, int aId) {
-        Agent.PlatformOperationsExtractor.extract(agent).initialize(aId, this);
+    protected void initializeAgent(Agent agent, AgentManipulator manipulator, int aId, Execution ex) {
+        Agent.PlatformOperationsExtractor.extract(agent).initialize(aId, this, ex);
     }
 
     public void reportNoSolution() {

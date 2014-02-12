@@ -7,10 +7,8 @@ package bgu.dcr.az.pivot.model.impl;
 
 import bgu.dcr.az.pivot.model.AggregatedField;
 import bgu.dcr.az.pivot.model.Field;
-import bgu.dcr.az.pivot.model.FilterField;
 import bgu.dcr.az.pivot.model.Pivot;
 import java.util.Iterator;
-import java.util.function.Predicate;
 
 /**
  *
@@ -37,7 +35,7 @@ public class PivotUtils {
 
     public static boolean removeUseOfNonValueField(Pivot p, Field field) {
         p.getSelectedFilterFields().removeIf((Field t) -> t.getFieldId() == field.getFieldId());
-        
+
         return p.getSelectedAxisFields().remove(field) || p.getSelectedSeriesFields().remove(field);
     }
 

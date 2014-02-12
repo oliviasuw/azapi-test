@@ -5,7 +5,6 @@
  */
 package bgu.dcr.az.mas.impl;
 
-import bgu.dcr.az.anop.utils.EventListeners;
 import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.execs.ThreadSafeProcTable;
 import bgu.dcr.az.execs.api.Scheduler;
@@ -17,11 +16,13 @@ import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.ExecutionService;
 import bgu.dcr.az.mas.UnmetRequirementException;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
-import bgu.dcr.az.mas.HookProvider;
 import bgu.dcr.az.mas.MessageRouter;
 import bgu.dcr.az.mas.ExecutionEnvironment;
-import bgu.dcr.az.mas.Hooks;
 import bgu.dcr.az.mas.exp.Experiment;
+import bgu.dcr.az.mas.impl.stat.StatisticalInfoStreamProc;
+import bgu.dcr.az.mas.stat.StatisticalInfoStream;
+import bgu.dcr.az.mas.stat.data.ExecutionInitializationInfo;
+import bgu.dcr.az.mas.stat.data.ExecutionTerminationInfo;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,17 +30,16 @@ import java.util.Map;
 /**
  *
  * @author User
+ * @param <T>
  */
-public abstract class BaseExecution<T extends HasSolution> implements Execution<T>, HookProvider {
+public abstract class BaseExecution<T extends HasSolution> implements Execution<T> {
 
-    private final Map<Class, HookProvider> hookProviders = new HashMap<>();
     private final Map<Class<? extends ExecutionService>, ExecutionServiceWithInitializationData> services = new HashMap<>();
 
     private final ExecutionEnvironment env;
-    private final EventListeners<Hooks.TerminationHook> terminationHooks = EventListeners.create(Hooks.TerminationHook.class);
     private final T data;
     private final Experiment containingExperiment;
-    private int numCoresInUse = 0;
+    private StatisticalInfoStreamProc statisticalStream;
 
     public BaseExecution(T data, Experiment containingExperiment, AgentDistributer distributer, AgentSpawner spawner, ExecutionEnvironment env) {
         this.env = env;
@@ -48,23 +48,12 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
 
         supply(AgentDistributer.class, distributer);
         supply(AgentSpawner.class, spawner);
-
-        registerHookProvider(Hooks.TerminationHook.class, this);
-    }
-
-    protected void registerHookProvider(Class c, HookProvider provider) {
-        hookProviders.put(c, provider);
-    }
-
-    @Override
-    public int getNumberOfCoresInUse() {
-        return numCoresInUse;
     }
 
     @Override
     public ExecutionResult execute(Scheduler sched, int numCores) throws ExperimentExecutionException, InterruptedException {
-        this.numCoresInUse = numCores;
         ThreadSafeProcTable table = new ThreadSafeProcTable();
+        table.add(statisticalStream = new StatisticalInfoStreamProc(-1));
         supply(MessageRouter.class, new BaseMessageRouter());
 
         try {
@@ -85,6 +74,8 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
             throw new ExperimentExecutionException("error on experiment initialization, see cause", ex);
         }
 
+        statisticalStream.writeNow(new ExecutionInitializationInfo(numCores));
+
         TerminationReason terminationResult = sched.schedule(table, numCores);
 
         ExecutionResult result = new ExecutionResult<>();
@@ -94,18 +85,9 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
             result.toSucceefulState(data().solution());
         }
 
-        terminationHooks.fire().hook(result);
+        statisticalStream.writeNow(new ExecutionTerminationInfo(result));
 
-        System.out.println("Contention: " + sched.getContention());
         return result;
-    }
-
-    @Override
-    public void hook(Class hookType, Object hook) {
-        HookProvider provider = hookProviders.get(hookType);
-        if (provider != null) {
-            provider.register(hook);
-        }
     }
 
     @Override
@@ -137,11 +119,6 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
     @Override
     public ExecutionEnvironment getEnvironment() {
         return env;
-    }
-
-    @Override
-    public void register(Object hook) {
-        terminationHooks.add((Hooks.TerminationHook) hook);
     }
 
     private enum InitializatinState {
@@ -195,6 +172,11 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
     @Override
     public Experiment getContainingExperiment() {
         return this.containingExperiment;
+    }
+
+    @Override
+    public StatisticalInfoStream informationStream() {
+        return statisticalStream;
     }
 
 }

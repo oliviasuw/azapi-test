@@ -5,10 +5,13 @@
  */
 package bgu.dcr.az.mas.cp;
 
+import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.DeepCopyable;
 import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.mas.exp.AlgorithmDef;
 import bgu.dcr.az.mas.impl.HasSolution;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  *
@@ -19,11 +22,29 @@ public class CPData implements HasSolution {
     private final CPSolution solution;
     private final Problem problem;
     private final AlgorithmDef algorithm;
+    private final double rvar;
+    private final long[] ccCount;
+    private final long[] messagesCount;
 
-    public CPData(CPSolution solution, Problem problem, AlgorithmDef alg) {
+    public CPData(CPSolution solution, Problem problem, AlgorithmDef alg, double rvar) {
         this.solution = solution;
         this.problem = problem;
         this.algorithm = alg;
+        this.rvar = rvar;
+        ccCount = new long[problem.getNumberOfAgents()];
+        messagesCount = new long[problem.getNumberOfAgents()];
+    }
+
+    public long[] getCcCount() {
+        return ccCount;
+    }
+
+    public long[] getMessagesCount() {
+        return messagesCount;
+    }
+
+    public double getRunningVar() {
+        return rvar;
     }
 
     public AlgorithmDef getAlgorithm() {

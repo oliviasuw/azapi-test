@@ -188,12 +188,12 @@ public class StatusScreenCtl implements Initializable {
         String selectedTest = getSelectedTestName();
         if (selectedTest != null && pieChartPlotter != null) {
             AlgorithmCPUTimeStatisticCollector stat = AppController.getAlgorithmCPUTimeStatistics().get(selectedTest);
-            stat.plot(pieChartPlotter);
+            stat.plot(pieChartPlotter, null);
         }
 
         if (selectedTest != null && barChartPlotter != null) {
             NumberOfCoresInUseStatisticCollector stat = AppController.getCoresInUseStatistics().get(selectedTest);
-            stat.plot(barChartPlotter);
+            stat.plot(barChartPlotter, null);
         }
     }
 

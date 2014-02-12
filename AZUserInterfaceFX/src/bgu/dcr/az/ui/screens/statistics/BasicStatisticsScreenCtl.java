@@ -7,17 +7,14 @@ package bgu.dcr.az.ui.screens.statistics;
 
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.mas.stat.StatisticCollector;
-import bgu.dcr.az.ui.components.onoffswitch.OnOffSwitch;
 import bgu.dcr.az.ui.screens.dialogs.Notification;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -51,9 +48,7 @@ public class BasicStatisticsScreenCtl implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         plotter = new StatisticsPlotter(resultsContainer);
-        final OnOffSwitch onOffSwitch = new OnOffSwitch();
 
-        header.getChildren().add(0, onOffSwitch);
         testsTree.setShowRoot(false);
         testsTree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         testsTree.getSelectionModel().selectedItemProperty().addListener((o, ov, nv) -> {
@@ -72,10 +67,11 @@ public class BasicStatisticsScreenCtl implements Initializable {
     }
 
     private void plot() {
-        Object selection = testsTree.getSelectionModel().getSelectedItem();
+        TreeItem selection = (TreeItem) testsTree.getSelectionModel().getSelectedItem();
         if (selection != null) {
-            StatisticCollector collector = (StatisticCollector) ((TreeItem) selection).getValue();
-            collector.plot(plotter);
+            StatisticCollector collector = (StatisticCollector) selection.getValue();
+            ExperimentToStringWrapper experiment = (ExperimentToStringWrapper) selection.getParent().getValue();
+            collector.plot(plotter, experiment.exp);
         } else {
             Notification.Notifier.INSTANCE.notifyWarning("Cannot Complete Operation", "you must select statistic first.");
         }
@@ -85,7 +81,7 @@ public class BasicStatisticsScreenCtl implements Initializable {
         TreeItem testsRoot = new TreeItem("Tests");
 
         for (Experiment sub : exp) {
-            TreeItem experimentRoot = new TreeItem("Test " + sub.getName());
+            TreeItem experimentRoot = new TreeItem(new ExperimentToStringWrapper(sub));
             testsRoot.getChildren().add(experimentRoot);
             for (StatisticCollector statistic : sub.getStatistics()) {
                 experimentRoot.getChildren().add(new TreeItem(statistic));
@@ -95,6 +91,21 @@ public class BasicStatisticsScreenCtl implements Initializable {
         }
 
         Platform.runLater(() -> testsTree.setRoot(testsRoot));
+    }
+
+    private class ExperimentToStringWrapper {
+
+        Experiment exp;
+
+        public ExperimentToStringWrapper(Experiment exp) {
+            this.exp = exp;
+        }
+
+        @Override
+        public String toString() {
+            return "Test " + exp.getName();
+        }
+
     }
 
 }

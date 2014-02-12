@@ -1,0 +1,28 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Feb 7, 2014, 1:43:10 PM
+    Author     : User
+*/
+
+.hider {
+    -fx-fill: white;
+    -fx-arc-height: 5;
+    -fx-arc-width: 5;
+}
+
+.switch-button {
+    -fx-border-width: 2;
+    -fx-border-color: white;
+    -fx-border-radius: 4;
+}
+
+.switch-button .button{
+    -fx-background-color: transparent;
+    -fx-padding: 0 6 0 6;
+    -fx-text-fill: rgb(190, 190, 190);
+}
+

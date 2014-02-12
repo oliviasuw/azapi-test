@@ -15,7 +15,11 @@ import java.util.Collection;
  */
 public interface Looper {
 
-    int count() throws ConfigurationException;
+    int count();
 
     void configure(int i, Configuration[] configurations) throws ConfigurationException;
+    
+    String getRunningVariableName();
+    
+    double getRunningVariableValue(int i);
 }

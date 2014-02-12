@@ -7,8 +7,10 @@ package bgu.dcr.az.ui.statistics;
 
 import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.cp.CPData;
+import bgu.dcr.az.mas.cp.CPExperimentTest;
 import bgu.dcr.az.mas.impl.stat.AbstractStatisticCollector;
 import bgu.dcr.az.mas.stat.AdditionalBarChartProperties;
+import bgu.dcr.az.mas.stat.data.ExecutionInitializationInfo;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.QueryDatabase;
 import bgu.dcr.az.orm.impl.DataUtils;
@@ -31,14 +33,18 @@ public class NumberOfCoresInUseStatisticCollector extends AbstractStatisticColle
 
     @Override
     protected void initialize(final Execution<CPData> ex, DefinitionDatabase database) {
-        final String name = ex.data().getAlgorithm().getInstanceName();
+        ex.informationStream().listen(ExecutionInitializationInfo.class, d -> {
 
-        Float got = coreUsage.get(name);
-        if (got == null) {
-            got = 0F;
-        }
+            final String name = ex.data().getAlgorithm().getInstanceName();
 
-        coreUsage.put(name, (float) (got * 0.5 + ex.getNumberOfCoresInUse() * 0.5));
+            Float got = coreUsage.get(name);
+            if (got == null) {
+                got = 0F;
+            }
+
+            coreUsage.put(name, (float) (got * 0.5 + d.getNumberOfCores() * 0.5));
+        });
+
     }
 
     @Override
@@ -47,12 +53,17 @@ public class NumberOfCoresInUseStatisticCollector extends AbstractStatisticColle
     }
 
     @Override
-    public void plot(QueryDatabase database) {
+    public void plot(QueryDatabase database, CPExperimentTest test) {
         AdditionalBarChartProperties properties = new AdditionalBarChartProperties();
         properties.setHorizontal(true);
         properties.setMaxValue(maxCores);
+        properties.setTitle(getName());
+        properties.setCategoryAxisLabel("Algorithm");
+        properties.setValueFieldLabel("Cores used (exp-avg alpha=0.5)");
         plotBarChart(DataUtils.fromMap(coreUsage,
                 String.class, "Algorithm", Integer.class, "Cores"), "Algorithm", "Cores", properties);
     }
+
+    
 
 }

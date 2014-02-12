@@ -15,7 +15,6 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.function.Predicate;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -28,7 +27,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.ClipboardContent;
@@ -90,7 +88,7 @@ public class PivotViewController implements Initializable {
                 while (c.next()) {
                     if (c.wasRemoved()) {
                         for (FilterField ff : c.getRemoved()) {
-                            treeRoot.getChildren().removeIf(e -> ((CheckBoxTreeItem)e).getValue().equals(ff));
+                            treeRoot.getChildren().removeIf(e -> ((CheckBoxTreeItem) e).getValue().equals(ff));
                         }
                     }
                 }
@@ -101,8 +99,8 @@ public class PivotViewController implements Initializable {
             @Override
             public void handle(MouseEvent t) {
                 Object item = filterFieldsTreeView.getSelectionModel().getSelectedItem();
-                if (item != null && ((CheckBoxTreeItem)item).getValue() instanceof FilterField) {
-                    Field _item = ((FilterField) ((CheckBoxTreeItem)item).getValue()).getField();
+                if (item != null && ((CheckBoxTreeItem) item).getValue() instanceof FilterField) {
+                    Field _item = ((FilterField) ((CheckBoxTreeItem) item).getValue()).getField();
                     Dragboard db = filterFieldsTreeView.startDragAndDrop(TransferMode.COPY);
                     ClipboardContent content = new ClipboardContent();
                     content.put(DataFormat.RTF, _item);
@@ -163,9 +161,10 @@ public class PivotViewController implements Initializable {
                         }
 
                         draggedItem = null;
-                        factory.refreshCells();
                     } catch (Exception ex) {
                         AlertDialog.showAndWait(allFieldsListView.getParent().getScene(), ex.getMessage(), AlertDialog.ICON_ERROR);
+                    } finally {
+                        factory.refreshCells();
                     }
                 }
                 t.setDropCompleted(success);
@@ -248,9 +247,10 @@ public class PivotViewController implements Initializable {
                                     ((ObservableList<Field>) listView.getItems()).add(field);
                                 }
                                 draggedItem = null;
-                                factory.refreshCells();
                             } catch (Exception ex) {
                                 AlertDialog.showAndWait(allFieldsListView.getParent().getScene(), ex.getMessage(), AlertDialog.ICON_ERROR);
+                            } finally {
+                                factory.refreshCells();
                             }
                         }
                     }
@@ -265,14 +265,14 @@ public class PivotViewController implements Initializable {
     class ListCellFactory implements Callback {
 
         List<FieldListCell> existingCells = new LinkedList<>();
-        
+
         public Scene getScene() {
             return allFieldsListView.getParent().getScene();
         }
 
         @Override
         public Object call(Object p) {
-            FieldListCell cell = new FieldListCell(p == allFieldsListView, pivot, this);
+            FieldListCell cell = new FieldListCell(p == allFieldsListView, p == valuesFieldsListView, pivot, this);
             existingCells.add(cell);
             return cell;
         }

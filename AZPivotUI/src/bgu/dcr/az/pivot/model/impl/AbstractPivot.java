@@ -4,6 +4,7 @@
  */
 package bgu.dcr.az.pivot.model.impl;
 
+import bgu.dcr.az.anop.utils.EventListeners;
 import bgu.dcr.az.utils.ImmutableSetView;
 import bgu.dcr.az.orm.api.Data;
 import bgu.dcr.az.orm.api.FieldMetadata;
@@ -16,7 +17,6 @@ import bgu.dcr.az.pivot.model.Pivot;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -33,15 +33,19 @@ import javafx.collections.SetChangeListener;
  */
 public abstract class AbstractPivot implements Pivot {
 
+    private EventListeners<PivotListener> listeners = EventListeners.create(PivotListener.class);
+
     private final ObservableList<Field> selectedAxis = FXCollections.observableArrayList();
     private final ObservableList<FilterField> selectedFilters = FXCollections.observableArrayList();
     private final ObservableList<Field> selectedSeries = FXCollections.observableArrayList();
     private final ObservableList<AggregatedField> selectedValues = FXCollections.observableArrayList();
     private List<Field> availableRawFields;
     private final Data data;
+    private final AbstractPivot thisPivot;
 
     public AbstractPivot(Data data) {
         this.data = data;
+        thisPivot = this;
 
         initializeAvailableRawFields();
 
@@ -60,6 +64,7 @@ public abstract class AbstractPivot implements Pivot {
                         }
                     }
                 }
+                listeners.fire().pivotChanged(thisPivot);
             }
         });
 
@@ -71,6 +76,7 @@ public abstract class AbstractPivot implements Pivot {
                         for (FilterField f : c.getAddedSubList()) {
                             try {
                                 validateFilterField(f.getField());
+                                f.getRestrictedValues().addListener((SetChangeListener.Change change) -> listeners.fire().pivotChanged(thisPivot));
                             } catch (UnavailableFieldException ex) {
                                 selectedFilters.remove(f);
                                 throw new RuntimeException(ex);
@@ -78,6 +84,7 @@ public abstract class AbstractPivot implements Pivot {
                         }
                     }
                 }
+                listeners.fire().pivotChanged(thisPivot);
             }
         });
 
@@ -96,6 +103,7 @@ public abstract class AbstractPivot implements Pivot {
                         }
                     }
                 }
+                listeners.fire().pivotChanged(thisPivot);
             }
         });
 
@@ -107,6 +115,7 @@ public abstract class AbstractPivot implements Pivot {
                         for (AggregatedField f : c.getAddedSubList()) {
                             try {
                                 validateValuesField(f);
+                                f.aggregationFunctionProperty().addListener((ObservableValue p, Object ov, Object nv) -> listeners.fire().pivotChanged(thisPivot));
                             } catch (UnavailableFieldException ex) {
                                 selectedValues.remove(f);
                                 throw new RuntimeException(ex);
@@ -114,8 +123,14 @@ public abstract class AbstractPivot implements Pivot {
                         }
                     }
                 }
+                listeners.fire().pivotChanged(thisPivot);
             }
         });
+    }
+
+    @Override
+    public EventListeners<PivotListener> getListeners() {
+        return listeners;
     }
 
     @Override
@@ -149,10 +164,17 @@ public abstract class AbstractPivot implements Pivot {
         }
 
         for (Field f : getAvailableRawFields()) {
-            if (f.getFieldId() != field.getFieldId() && f.getFieldName().equals(newName)) {
+            if (f != field.getField() && f.getFieldName().equals(newName)) {
                 throw new RuntimeException("Field with same name already exists.");
             }
         }
+
+        for (Field f : selectedValues) {
+            if (f != field && f.getFieldName().equals(newName)) {
+                throw new RuntimeException("Aggregated field with same name already exists.");
+            }
+        }
+
     }
 
     public void validateSeriesField(Field field) throws UnavailableFieldException {
@@ -214,6 +236,10 @@ public abstract class AbstractPivot implements Pivot {
 
     private void initializeAvailableRawFields() {
         availableRawFields = new LinkedList<>();
+
+        if (data == null) {
+            return;
+        }
 
         for (int i = 0; i < data.columns().length; i++) {
             FieldMetadata md = data.columns()[i];
@@ -284,7 +310,7 @@ public abstract class AbstractPivot implements Pivot {
 
         @Override
         public boolean equals(Object obj) {
-            return obj instanceof SimpleFilterField && ((SimpleFilterField)obj).getFieldId() == getFieldId();
+            return obj instanceof SimpleFilterField && ((SimpleFilterField) obj).getFieldId() == getFieldId();
         }
     }
 
@@ -321,7 +347,8 @@ public abstract class AbstractPivot implements Pivot {
                         pivot.validateFieldName(this, init + " #" + i);
                         setFieldName(init + " #" + i);
                         break;
-                    } catch (Exception ex) {}
+                    } catch (Exception ex) {
+                    }
                 }
             }
         }

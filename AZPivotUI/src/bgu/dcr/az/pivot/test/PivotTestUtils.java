@@ -2,22 +2,18 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.pivot.ui.test;
+package bgu.dcr.az.pivot.test;
 
 import bgu.dcr.az.orm.api.FieldMetadata;
 import bgu.dcr.az.orm.impl.FieldMetadataImpl;
 import bgu.dcr.az.orm.impl.SimpleData;
-import bgu.dcr.az.pivot.model.Field;
 import bgu.dcr.az.pivot.model.Pivot;
 import bgu.dcr.az.pivot.model.impl.AbstractPivot;
 import bgu.dcr.az.pivot.model.impl.SimplePivot;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Scanner;
-import java.util.Set;
 
 /**
  *
@@ -31,12 +27,12 @@ public class PivotTestUtils {
         }
     }
 
-    public static Pivot readPivotFromCSV(InputStream stream) throws Exception {
+    public static AbstractPivot readPivotFromCSV(InputStream stream) throws Exception {
         Scanner s = new Scanner(stream);
 
         String line = s.nextLine();
 
-        LinkedList<String> headers = new LinkedList<>();
+        ArrayList<String> headers = new ArrayList<>();
 
         for (String v : line.split(",")) {
             headers.add(v.trim());
@@ -44,7 +40,7 @@ public class PivotTestUtils {
 
         final int size = headers.size();
 
-        LinkedList<Object[]> data = new LinkedList<>();
+        ArrayList<Object[]> data = new ArrayList<>();
 
         while (s.hasNext()) {
             line = s.nextLine();
@@ -61,20 +57,14 @@ public class PivotTestUtils {
             data.add(row);
         }
 
-        SimplePivot p = new SimplePivot(null);
-
-        Set<Field> fields = new HashSet<>();
-
+        FieldMetadata[] fields = new FieldMetadata[headers.size()];
         int i = 0;
-//        for (String v : headers) {
-//            fields.add(generateField(p, i, v, data.getFirst()[i].getClass()));
-//            i++;
-//        }
-//
-//        p.setAvailableRawFields(fields);
-//        p.setAggregationFunctions(generateAggregatorFunctions());
+        for (String v : headers) {
+            fields[i] = new FieldMetadataImpl(v, data.get(0)[i].getClass());
+            i++;
+        }
 
-        return p;
+        return new SimplePivot(new SimpleData(data, fields));
     }
 
     public static AbstractPivot generateSimplePivot1() throws Exception {

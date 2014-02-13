@@ -8,13 +8,13 @@ import bgu.dcr.az.orm.api.FieldMetadata;
 import bgu.dcr.az.orm.api.RecordAccessor;
 import bgu.dcr.az.orm.impl.FieldMetadataImpl;
 import bgu.dcr.az.orm.impl.ObjectArrayRecord;
-import bgu.dcr.az.orm.impl.Record;
 import bgu.dcr.az.orm.impl.SimpleData;
 import bgu.dcr.az.pivot.model.AggregatedField;
 import bgu.dcr.az.pivot.model.AggregationFunction;
 import bgu.dcr.az.pivot.model.Field;
 import bgu.dcr.az.pivot.model.Pivot;
 import bgu.dcr.az.pivot.model.TableData;
+import bgu.dcr.az.pivot.model.TableData.Headers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 
 /**
  * Creates a pivot table according to provided pivot. First all filtered initial
@@ -37,76 +38,95 @@ import javafx.collections.ObservableList;
  *
  * @author Zovadi
  */
-public class InMemoryPivotTable extends SimpleData<ObjectArrayRecord> implements TableData {
+public class InMemoryPivotTableGenerator extends Task<TableData> {
 
-    private Headers columns;
-    private Headers rows;
-    private final HeaderExtractor columnsHeaderExtractor;
-    private final HeaderExtractor rowsHeaderExtractor;
+    private final Pivot pivot;
+    private InMemoryPivotTable table;
+    private double done;
 
-    /**
-     * creates a pivot table (evaluated and stored in memory) according to
-     * provided pivot
-     *
-     * @param pivot
-     */
-    public InMemoryPivotTable(Pivot pivot) {
-        columnsHeaderExtractor = new SimpleHeaderExtractor();
-        rowsHeaderExtractor = new SimpleHeaderExtractor();
-        generatePivotTableData(pivot);
+    public InMemoryPivotTableGenerator(Pivot pivot) {
+        this.pivot = pivot;
     }
 
-    @Override
-    public Headers getColumnHeaders() {
-        return columns;
-    }
-
-    @Override
-    public Headers getRowHeaders() {
-        return rows;
+    private void incrementProgress(double incr) {
+        done += incr;
+        updateProgress(done > 1 ? 1 : done, 1);
     }
 
     /**
      * actually performs creation of a pivot table an filling it with values
      * according to provided pivot {
      *
+     * @return
+     * @throws java.lang.Exception
      * @see InMemoryPivotTable}
-     * @param pivot
      */
-    private void generatePivotTableData(Pivot pivot) {
+    @Override
+    public TableData call() throws Exception {
+        done = 0;
+        updateProgress(0, 1);
+        table = new InMemoryPivotTable();
+
         // the container for set of values for given fields
         Map<Field, Set<Object>> sets = new HashMap<>();
 
-        // collecting set of all values for a given fields in order 
+        // collecting set of all values for a given fields in order  
         // to generate permutations (rows/columns headers)
+        updateMessage("Extracting fields values");
+        double incr = 0.1 / (double) pivot.getData().numRecords();
         for (RecordAccessor r : pivot.getData()) {
+            if (isCancelled()) {
+                return null;
+            }
             if (!isRestrictedRecord(pivot, r)) {
                 extractFieldsValues(pivot.getSelectedSeriesFields(), r, sets);
                 extractFieldsValues(pivot.getSelectedAxisFields(), r, sets);
             }
+            incrementProgress(incr);
         }
 
         // generating columns labels
-        columns = permutateFieldsValues(pivot.getSelectedSeriesFields(), sets, pivot.getSelectedValuesFields());
-        // generating rows labels
-        rows = permutateFieldsValues(pivot.getSelectedAxisFields(), sets, FXCollections.emptyObservableList());
-
-        // generates association of each of columns to an integer
-        Map<ObjectArray, Integer> lookupColumns = generateLookup(columns);
-        
-        if (columns.numberOfHeaders() == 1 && columns.getHeader(0).length == 0) {
-            return;
+        updateMessage("Generating columns");
+        table.columns = permutateFieldsValues(pivot.getSelectedSeriesFields(), sets, pivot.getSelectedValuesFields(), 0.15);
+        if (table.columns == null) {
+            return null;
         }
-        
+        // generates association of each of columns to an integer
+        Map<ObjectArray, Integer> lookupColumns = generateLookup(table.columns, 0.15);
+        if (lookupColumns == null) {
+            return null;
+        }
+
+        if (table.columns.numberOfHeaders() == 1 && table.columns.getHeader(0).length == 0) {
+            updateProgress(1, 1);
+            return table;
+        }
+
+        // generating rows labels
+        updateMessage("Generating rows");
+        table.rows = permutateFieldsValues(pivot.getSelectedAxisFields(), sets, FXCollections.emptyObservableList(), 0.15);
+        if (table.rows == null) {
+            return null;
+        }
         // generates association of each of rows to an integer
-        Map<ObjectArray, Integer> lookupRows = generateLookup(rows);
-
+        Map<ObjectArray, Integer> lookupRows = generateLookup(table.rows, 0.15);
+        if (lookupRows == null) {
+            return null;
+        }
         // generates the set of values (for every column X row) in order to aggregate it
-        Map<Integer, Collection<Object>> values = extractValues(pivot, lookupColumns, lookupRows);
+        updateMessage("Extracting values");
+        Map<Integer, Collection<Object>> values = extractValues(pivot, lookupColumns, lookupRows, 0.1);
+        if (values == null) {
+            return null;
+        }
 
-        fillValues(pivot, values, lookupColumns, lookupRows);
+        updateMessage("Filling up the data");
+        fillValues(pivot, values, lookupColumns, lookupRows, 0.1);
 
-        fillFieldMetadata();
+        fillFieldMetadata(0.1);
+
+        updateProgress(1, 1);
+        return isCancelled() ? null : table;
     }
 
     /**
@@ -144,7 +164,7 @@ public class InMemoryPivotTable extends SimpleData<ObjectArrayRecord> implements
      * resulted array is MULT_{forall field in fields} (|values(field)|) *
      * |addition|
      */
-    private Headers permutateFieldsValues(ObservableList<Field> fields, Map<Field, Set<Object>> sets, ObservableList addition) {
+    private Headers permutateFieldsValues(ObservableList<Field> fields, Map<Field, Set<Object>> sets, ObservableList addition, double weight) {
         Map<Field, Object[]> oAxis = new HashMap<>();
         Object[] oAdd = addition.toArray();
 
@@ -170,7 +190,11 @@ public class InMemoryPivotTable extends SimpleData<ObjectArrayRecord> implements
 
         Object[][] result = new Object[amountOfValues][];
 
+        double incr = weight / (double) result.length;
         for (int i = 0; i < result.length; i++) {
+            if (isCancelled()) {
+                return null;
+            }
             result[i] = new Object[factors.length];
             int j = 0;
             for (Field f : fields) {
@@ -181,6 +205,7 @@ public class InMemoryPivotTable extends SimpleData<ObjectArrayRecord> implements
             if (oAdd.length != 0) {
                 result[i][j] = oAdd[(i / factors[j]) % oAdd.length];
             }
+            incrementProgress(incr);
         }
 
         return new SimpleHeaders(result);
@@ -193,11 +218,16 @@ public class InMemoryPivotTable extends SimpleData<ObjectArrayRecord> implements
      * @param headers a set of records for which we want to create association
      * @return association between records and integers
      */
-    private Map<ObjectArray, Integer> generateLookup(Headers headers) {
+    private Map<ObjectArray, Integer> generateLookup(Headers headers, double weight) {
         Map<ObjectArray, Integer> res = new HashMap<>();
 
+        double incr = weight / headers.numberOfHeaders();
         for (int i = 0; i < headers.numberOfHeaders(); i++) {
+            if (isCancelled()) {
+                return null;
+            }
             res.put(new ObjectArray(headers.getHeader(i)), i);
+            incrementProgress(incr);
         }
 
         return res;
@@ -212,10 +242,15 @@ public class InMemoryPivotTable extends SimpleData<ObjectArrayRecord> implements
      * @param lookupRows lookup for rows (data to index)
      * @return the set of extracted values for each cell in pivot table
      */
-    private Map<Integer, Collection<Object>> extractValues(Pivot pivot, Map<ObjectArray, Integer> lookupColumns, Map<ObjectArray, Integer> lookupRows) {
+    private Map<Integer, Collection<Object>> extractValues(Pivot pivot, Map<ObjectArray, Integer> lookupColumns, Map<ObjectArray, Integer> lookupRows, double weight) {
         Map<Integer, Collection<Object>> res = new HashMap<>();
 
+        double incr = weight / (double) pivot.getData().numRecords();
         for (RecordAccessor r : pivot.getData()) {
+            if (isCancelled()) {
+                return null;
+            }
+
             if (isRestrictedRecord(pivot, r)) {
                 continue;
             }
@@ -223,7 +258,7 @@ public class InMemoryPivotTable extends SimpleData<ObjectArrayRecord> implements
             for (AggregatedField v : pivot.getSelectedValuesFields()) {
                 int column = getColumnIndex(r, pivot.getSelectedSeriesFields(), v, lookupColumns);
                 int row = getRowIndex(r, pivot.getSelectedAxisFields(), lookupRows);
-                int index = column * rows.numberOfHeaders() + row;
+                int index = column * table.rows.numberOfHeaders() + row;
 
                 if (!res.containsKey(index)) {
                     res.put(index, new LinkedList<>());
@@ -231,6 +266,8 @@ public class InMemoryPivotTable extends SimpleData<ObjectArrayRecord> implements
 
                 res.get(index).add(((Number) v.getValue(r)).doubleValue());
             }
+
+            incrementProgress(incr);
         }
 
         return res;
@@ -269,42 +306,61 @@ public class InMemoryPivotTable extends SimpleData<ObjectArrayRecord> implements
      * @param lookupColumns
      * @param lookupRows
      */
-    private void fillValues(Pivot pivot, Map<Integer, Collection<Object>> values, Map<ObjectArray, Integer> lookupColumns, Map<ObjectArray, Integer> lookupRows) {
-        boolean emptyRows = rows.numberOfHeaders() == 1 && rows.getHeader(0).length == 0;
-        for (int j = 0; j < rows.numberOfHeaders() && columns.numberOfHeaders() != 0; j++) {
-            Object[] data = new Object[columns.numberOfHeaders() + 1];
-            data[0] = emptyRows ? "Total" : rowsHeaderExtractor.extract(rows.getHeader(j));
-            for (int i = 0; i < columns.numberOfHeaders(); i++) {
-
-                int column = lookupColumns.get(new ObjectArray(columns.getHeader(i)));
-                int row = lookupRows.get(new ObjectArray(rows.getHeader(j)));
-                int index = column * rows.numberOfHeaders() + row;
+    private void fillValues(Pivot pivot, Map<Integer, Collection<Object>> values, Map<ObjectArray, Integer> lookupColumns, Map<ObjectArray, Integer> lookupRows, double weight) {
+        boolean emptyRows = table.rows.numberOfHeaders() == 1 && table.rows.getHeader(0).length == 0;
+        double incr = weight / (double) (table.rows.numberOfHeaders() * table.columns.numberOfHeaders());
+        for (int j = 0; j < table.rows.numberOfHeaders() && table.columns.numberOfHeaders() != 0; j++) {
+            Object[] data = new Object[table.columns.numberOfHeaders() + 1];
+            data[0] = emptyRows ? "Total" : table.rowsHeaderExtractor.extract(table.rows.getHeader(j));
+            for (int i = 0; i < table.columns.numberOfHeaders(); i++) {
+                if (isCancelled()) {
+                    return;
+                }
+                int column = lookupColumns.get(new ObjectArray(table.columns.getHeader(i)));
+                int row = lookupRows.get(new ObjectArray(table.rows.getHeader(j)));
+                int index = column * table.rows.numberOfHeaders() + row;
                 final Collection<Object> value = values.get(index);
 
                 if (value == null) {
                     data[i + 1] = 0;
                 } else {
-                    final Object[] columnHeader = columns.getHeader(i);
+                    final Object[] columnHeader = table.columns.getHeader(i);
                     final AggregatedField af = (AggregatedField) columnHeader[columnHeader.length - 1];
                     data[i + 1] = ((AggregationFunction) af.aggregationFunctionProperty().get()).aggregate(value);
                 }
+                incrementProgress(incr);
             }
-            getInnerData().add(new ObjectArrayRecord(data));
+            table.getInnerData().add(new ObjectArrayRecord(data));
         }
 
         if (emptyRows) {
-            rows = new SimpleHeaders(new Object[][]{{"Total"}});
+            table.rows = new SimpleHeaders(new Object[][]{{"Total"}});
         }
     }
 
-    @Override
-    public String toString() {
-        return "Columns: \n" + joinI(columns) + "\n" + "Rows: \n" + joinI(rows) + "Table: \n" + joinI(getInnerData()) + "\n";
+    private void fillFieldMetadata(double weight) {
+        FieldMetadata[] meta = new FieldMetadata[table.columns.numberOfHeaders() + 1];
+
+        meta[0] = new FieldMetadataImpl("Row headers", String.class);
+
+        double incr = weight / (double) table.columns.numberOfHeaders();
+        for (int i = 0; i < table.columns.numberOfHeaders(); i++) {
+            if (isCancelled()) {
+                return;
+            }
+            meta[i + 1] = new FieldMetadataImpl(table.columnsHeaderExtractor.extract(table.columns.getHeader(i)), Double.class);
+            incrementProgress(incr);
+        }
+
+        table.setFields(meta);
     }
 
-    public String joinI(ArrayList<? extends Record> c) {
+    public String joinI(ArrayList<ObjectArrayRecord> c) {
         LinkedList<String> subRes = new LinkedList<>();
-        c.stream().forEach(i -> subRes.addLast(join(i) + ",\n"));
+
+        for (ObjectArrayRecord r : c) {
+//            subRes.addLast(join(i) + ",\n");
+        }
 
         return join(subRes);
     }
@@ -347,16 +403,43 @@ public class InMemoryPivotTable extends SimpleData<ObjectArrayRecord> implements
         return pivot.getSelectedFilterFields().stream().anyMatch(ff -> ff.getRestrictedValues().contains(ff.getValue(r)));
     }
 
-    private void fillFieldMetadata() {
-        FieldMetadata[] meta = new FieldMetadata[columns.numberOfHeaders() + 1];
+    private class InMemoryPivotTable extends SimpleData<ObjectArrayRecord> implements TableData {
 
-        meta[0] = new FieldMetadataImpl("Row headers", String.class);
+        Headers columns;
+        Headers rows;
+        final HeaderExtractor columnsHeaderExtractor;
+        final HeaderExtractor rowsHeaderExtractor;
 
-        for (int i = 0; i < columns.numberOfHeaders(); i++) {
-            meta[i + 1] = new FieldMetadataImpl(columnsHeaderExtractor.extract(columns.getHeader(i)), Double.class);
+        public InMemoryPivotTable() {
+            this.columnsHeaderExtractor = new SimpleHeaderExtractor();
+            this.rowsHeaderExtractor = new SimpleHeaderExtractor();
         }
 
-        setFields(meta);
+        @Override
+        public Headers getColumnHeaders() {
+            return columns;
+        }
+
+        @Override
+        public Headers getRowHeaders() {
+            return rows;
+        }
+
+        @Override
+        public ArrayList<ObjectArrayRecord> getInnerData() {
+            return super.getInnerData(); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void setFields(FieldMetadata[] fields) {
+            super.setFields(fields); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public String toString() {
+            return "Columns: \n" + joinI(columns) + "\n" + "Rows: \n" + joinI(rows) + "Table: \n" + joinI(getInnerData()) + "\n";
+        }
+
     }
 
     private class ObjectArray {

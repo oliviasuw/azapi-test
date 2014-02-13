@@ -23,6 +23,7 @@ public class PivotView extends Application {
         p.getController().setModel(PivotTestUtils.readPivotFromCSV(PivotView.class.getResourceAsStream("test.csv")));
         Scene scene = new Scene(p.getPane());
         stage.setScene(scene);
+        stage.setOpacity(0.5);
         stage.show();
     }
 

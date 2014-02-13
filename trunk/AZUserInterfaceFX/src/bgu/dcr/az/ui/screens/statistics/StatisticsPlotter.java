@@ -79,17 +79,17 @@ public class StatisticsPlotter implements Plotter {
         }
 
         xAxis.setForceZeroInRange(false);
-        fillXYData(data, chart, seriesField, xField, yField, false);
+        fillXYData(data, chart, seriesField, xField, yField, false, false);
 
         pane.setCenter(chart);
     }
 
-    private void fillXYData(Data data, XYChart chart, String seriesField, String xField, String yField, boolean xIsCategory) {
+    private void fillXYData(Data data, XYChart chart, String seriesField, String xField, String yField, boolean xIsCategory, boolean yIsCategory) {
         Map<String, XYChart.Series> series = new HashMap<>();
 //        ArrayList<XYChart.Data> result = new ArrayList<>();
 
         for (RecordAccessor r : data) {
-            final String seriesName = r.getString(seriesField);
+            final String seriesName = seriesField == null ? "" : r.getString(seriesField);
             XYChart.Series s = series.get(seriesName);
             if (s == null) {
                 s = new XYChart.Series();
@@ -97,25 +97,19 @@ public class StatisticsPlotter implements Plotter {
                 series.put(seriesName, s);
             }
 
-            if (xIsCategory) {
-                s.getData().add(new XYChart.Data<>(r.getString(xField), r.getDouble(yField)));
-            } else {
-                s.getData().add(new XYChart.Data<>(r.getDouble(xField), r.getDouble(yField)));
-            }
-        }
-        
-        if (!xIsCategory) {
-            for (XYChart.Series s : series.values()) {
-                FXCollections.<Object>sort(s.getData(), (o1, o2) -> {
-                    return ((Double) ((XYChart.Data) o1).getXValue()).compareTo((Double) ((XYChart.Data) o2).getXValue());
-                });
-            }
-        }
-        
-        for (XYChart.Series s : series.values()) {
-            chart.getData().add(s);
+            Object x = xIsCategory ? r.getString(xField) : r.getDouble(xField);
+            Object y = yIsCategory ? r.getString(yField) : r.getDouble(yField);
+
+            s.getData().add(new XYChart.Data<>(x, y));
         }
 
+        if (!xIsCategory && !yIsCategory) {
+            series.values().forEach(s
+                    -> FXCollections.<Object>sort(s.getData(), (o1, o2)
+                            -> ((Double) ((XYChart.Data) o1).getXValue()).compareTo((Double) ((XYChart.Data) o2).getXValue())));
+        }
+
+        series.values().forEach(chart.getData()::add);
     }
 
     @Override
@@ -133,26 +127,26 @@ public class StatisticsPlotter implements Plotter {
         }
 
         if (properties.getCategoryAxisLabel() != null) {
-            yAxis.setLabel(properties.getCategoryAxisLabel());
+            xAxis.setLabel(properties.getCategoryAxisLabel());
         }
 
         if (properties.getValueFieldLabel() != null) {
-            xAxis.setLabel(properties.getValueFieldLabel());
+            yAxis.setLabel(properties.getValueFieldLabel());
         }
 
         if (properties.isHorizontal()) {
             bar = new BarChart(yAxis, xAxis);
+            fillXYData(data, bar, seriesField, valueField, categoryField, false, true);
         } else {
             bar = new BarChart(xAxis, yAxis);
+            fillXYData(data, bar, seriesField, categoryField, valueField, true, false);
         }
-
-        fillXYData(data, bar, seriesField, valueField, categoryField, true);
 
         if (properties.getCaption() != null) {
             bar.setTitle(properties.getCaption());
         }
 
-        bar.setLegendVisible(false);
+        bar.setLegendVisible(seriesField != null);
         pane.setCenter(bar);
 
     }

@@ -70,8 +70,8 @@ public class GraphMovementVisualization extends Application {
 
     private final ArrayList<Sprite> sprites = new ArrayList<>();
 
-    final int width = 2000;
-    final int height = 2000;
+    final int width = 1000;
+    final int height = 1000;
     final Random r = new Random();
     private Kryo kryo;
 
@@ -96,8 +96,8 @@ public class GraphMovementVisualization extends Application {
         kryo = new Kryo();
         Output output = new Output(new FileOutputStream("file.bin"));
 
-        for (int i = 0; i < 1000; i++) {
-            if (i % 10 == 0) {
+        for (int i = 0; i < 100; i++) {
+            if (i % 3 == 0) {
                 kryo.writeClassAndObject(output, new SimpleSimulatorTick());
             } else {
                 for (Sprite sprite : sprites) {
@@ -112,18 +112,24 @@ public class GraphMovementVisualization extends Application {
         }
         output.close();
 
+        final Input input = new Input(new FileInputStream("file.bin"));
+
         final Timeline timeLine = new Timeline();
         timeLine.setOnFinished(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent t) {
                 timeLine.getKeyFrames().clear();
-                addNewMoves(timeLine);
+//                addNewMoves(timeLine);
+                Collection<SimulatorEvent> tickEvents = readTickFromInput(input);
+                addNewMovesFromEvents(timeLine, tickEvents);
             }
         });
         timeLine.setAutoReverse(false);
         timeLine.setCycleCount(1);
-        addNewMoves(timeLine);
+//        addNewMoves(timeLine);
+        Collection<SimulatorEvent> tickEvents = readTickFromInput(input);        
+        addNewMovesFromEvents(timeLine, tickEvents);
 
         new AnimationTimer() {
             @Override
@@ -210,7 +216,19 @@ public class GraphMovementVisualization extends Application {
             timeline.getKeyFrames().add(move);
         }
         timeline.play();
+    }
 
+    public void addNewMovesFromEvents(Timeline timeline, Collection<SimulatorEvent> events) {
+        for (SimulatorEvent event : events) {
+            Collection<? extends Object> parameters = event.getParameters();
+            Iterator<? extends Object> paramsIterator = parameters.iterator();
+            Integer who = (Integer) paramsIterator.next();
+            Integer x = (Integer) paramsIterator.next();
+            Integer y = (Integer) paramsIterator.next();
+            KeyFrame move = sprites.get(who).move(r.nextInt(width), r.nextInt(height));
+            timeline.getKeyFrames().add(move);
+        }
+        timeline.play();
     }
 
     private AZVisGraph getGraph() {
@@ -234,10 +252,12 @@ public class GraphMovementVisualization extends Application {
                     graph.addEdgeByNames(from, to);
                 } else {
                     System.out.println("unsupported!");
+
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(GraphMovementVisualization.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GraphMovementVisualization.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         return graph;
     }
@@ -267,6 +287,31 @@ public class GraphMovementVisualization extends Application {
             AZVisVertex target = graph.getEdgeTarget(edge);
             gc.strokeLine(source.getX(), source.getY(), target.getX(), target.getY());
         }
+    }
+
+    private Collection<SimulatorEvent> readTickFromInput(Input input) {
+        LinkedList<SimulatorEvent> tickEvents = new LinkedList<>();
+        try {
+            if (input.available() != 0) {
+                Object readObject = kryo.readClassAndObject(input);
+                int lastPosition = input.position();
+                if (readObject instanceof SimulatorTick) {
+                    readObject = kryo.readClassAndObject(input);
+                    while (readObject instanceof SimulatorEvent) {
+                        SimulatorEvent event = (SimulatorEvent)readObject;
+                        if (event.getName().equals("MOVE")) {
+                            tickEvents.add(event);
+                        }
+                        lastPosition = input.position();
+                        readObject = kryo.readClassAndObject(input);
+                    }
+                }
+                input.setPosition(lastPosition);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(GraphMovementVisualization.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return tickEvents;
     }
 
 }

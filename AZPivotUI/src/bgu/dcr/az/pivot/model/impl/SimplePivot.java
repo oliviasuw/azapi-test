@@ -6,6 +6,8 @@ package bgu.dcr.az.pivot.model.impl;
 
 import bgu.dcr.az.orm.api.Data;
 import bgu.dcr.az.pivot.model.TableData;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 
 /**
  *
@@ -18,12 +20,22 @@ public class SimplePivot extends AbstractPivot {
     }
 
     @Override
-    public TableData getPivotedData() {
-        System.out.println("Start calculating pivot");
-        long start = System.currentTimeMillis();
-        final InMemoryPivotTable pd = new InMemoryPivotTable(this);
-        System.out.println("Pivot calculated in: " + (System.currentTimeMillis() - start));
-        return pd;
+    public Service<TableData> getPivotedDataService() {
+        return new PivotGenerationService(this);
+
     }
 
+    private static class PivotGenerationService extends Service<TableData> {
+
+        private final AbstractPivot pivot;
+
+        public PivotGenerationService(AbstractPivot pivot) {
+            this.pivot = pivot;
+        }
+
+        @Override
+        protected Task<TableData> createTask() {
+            return new InMemoryPivotTableGenerator(pivot);
+        }
+    }
 }

@@ -10,11 +10,15 @@ import bgu.dcr.az.pivot.model.impl.AbstractPivot;
 import bgu.dcr.az.pivot.model.impl.PlottableTableData;
 import bgu.dcr.az.pivot.ui.PivotDataTableView;
 import bgu.dcr.az.pivot.ui.PivotViewController;
+import bgu.dcr.az.pivot.ui.alert.AlertDialog;
 import bgu.dcr.az.ui.screens.statistics.StatisticsPlotter;
 import bgu.dcr.az.ui.util.FXUtils;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Service;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ScrollPane;
@@ -74,9 +78,7 @@ public class PivotDataViewerController implements Initializable {
         lineChartButton.setToggleGroup(chartButtonsGroup);
         barChartButton.setToggleGroup(chartButtonsGroup);
         pieChartButton.setToggleGroup(chartButtonsGroup);
-        chartButtonsGroup.selectedToggleProperty().addListener((ObservableValue<? extends Toggle> ov, Toggle t, Toggle t1) -> {
-            setChartModel(model == null ? null : model.getPivotedData());
-        });
+        chartButtonsGroup.selectedToggleProperty().addListener((ObservableValue<? extends Toggle> ov, Toggle t, Toggle t1) -> updateViewModel());
         chartButtonsGroup.selectToggle(tableButton);
     }
 
@@ -84,32 +86,46 @@ public class PivotDataViewerController implements Initializable {
         this.model = model;
         pivotController.setModel(model);
         if (model != null) {
-            model.getListeners().add(pivot -> setChartModel(pivot.getPivotedData()));
-            setChartModel(model.getPivotedData());
+            model.getListeners().add(pivot -> updateViewModel());
+            updateViewModel();
         } else {
             setChartModel(null);
         }
     }
 
+    private void updateViewModel() {
+        if (model != null) {
+            Service<TableData> service = model.getPivotedDataService();
+            service.setOnSucceeded((WorkerStateEvent e) -> setChartModel((TableData) e.getSource().getValue()));
+            service.setOnCancelled((WorkerStateEvent e) -> AlertDialog.showAndWait(null, "Execution cancelled", AlertDialog.ICON_ERROR));
+            service.start();
+        }
+    }
+
     private void setChartModel(TableData data) {
-        if (chartButtonsGroup.getSelectedToggle() == tableButton) {
-            PivotDataTableView table = new PivotDataTableView();
-            table.setModel(data);
-            vizualizerContainer.setCenter(table);
-            return;
-        }
-        StatisticsPlotter chart = new StatisticsPlotter(vizualizerContainer);
-        if (chartButtonsGroup.getSelectedToggle() == lineChartButton) {
-            PlottableTableData pd = new PlottableTableData(data);
-            chart.plotLineChart(pd, pd.columns()[1].name(), pd.columns()[2].name(), pd.columns()[0].name());
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (chartButtonsGroup.getSelectedToggle() == tableButton) {
+                    PivotDataTableView table = new PivotDataTableView();
+                    table.setModel(data);
+                    vizualizerContainer.setCenter(table);
+                    return;
+                }
+                StatisticsPlotter chart = new StatisticsPlotter(vizualizerContainer);
+                if (chartButtonsGroup.getSelectedToggle() == lineChartButton) {
+                    PlottableTableData pd = new PlottableTableData(data);
+                    chart.plotLineChart(pd, pd.columns()[1].name(), pd.columns()[2].name(), pd.columns()[0].name());
 //            chart.plotLineChart(data, data.columns()[0].name(), data.columns()[1].name(), data.columns()[2].name(), "Pivot chart", "Categories", "Value");
-        }
-        if (chartButtonsGroup.getSelectedToggle() == barChartButton) {
+                }
+                if (chartButtonsGroup.getSelectedToggle() == barChartButton) {
 //            chart.plotBarChart(data, data.columns()[0].name(), data.columns()[1].name(), data.columns()[2].name(), "Pivot chart", "Categories", "Value");
-        }
-        if (chartButtonsGroup.getSelectedToggle() == pieChartButton) {
+                }
+                if (chartButtonsGroup.getSelectedToggle() == pieChartButton) {
 //            chart.plotPieChart(data, data.columns()[0].name(), data.columns()[1].name(), data.columns()[2].name(), "Pivot chart", "Categories", "Value");
-        }
+                }
+            }
+        });
     }
 
 }

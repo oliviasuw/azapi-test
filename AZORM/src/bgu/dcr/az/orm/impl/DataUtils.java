@@ -20,10 +20,8 @@ import java.util.Map;
 public class DataUtils {
 
     public static Data fromMapEntries(Collection<Map.Entry> entries, Class keyType, String keyName, Class valueType, String valueName) {
-        ArrayList<Object[]> resultset = new ArrayList<>(entries.size());
-        for (Map.Entry<?, ?> e : entries) {
-            resultset.add(new Object[]{e.getKey(), e.getValue()});
-        }
+        ArrayList<ObjectArrayRecord> resultset = new ArrayList<>(entries.size());
+        entries.forEach(e -> resultset.add(new ObjectArrayRecord(e.getKey(), e.getValue())));
 
         return new SimpleData(resultset, new FieldMetadata[]{
             new FieldMetadataImpl(keyName, keyType),
@@ -39,15 +37,15 @@ public class DataUtils {
     public static Data fromResultSet(ResultSet results) throws SQLException {
 
         FieldMetadata[] fields = FieldMetadataImpl.fromResultSet(results);
-        ArrayList<Object[]> records = new ArrayList<>();
+        ArrayList<ObjectArrayRecord> records = new ArrayList<>();
 
         while (results.next()) {
             Object[] data = new Object[fields.length];
             for (int i = 0; i < fields.length; i++) {
-                data[i] = results.getObject(i+1);
+                data[i] = results.getObject(i + 1);
             }
 
-            records.add(data);
+            records.add(new ObjectArrayRecord(data));
         }
 
         return new SimpleData(records, fields);

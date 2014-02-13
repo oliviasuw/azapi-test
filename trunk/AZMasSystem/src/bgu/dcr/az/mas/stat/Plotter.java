@@ -24,7 +24,7 @@ public interface Plotter {
     }
 
     default void plotBarChart(Data data, String categoryField, String valueField, String seriesField) {
-        plotBarChart(data, categoryField, valueField, null, new AdditionalBarChartProperties());
+        plotBarChart(data, categoryField, valueField, seriesField, new AdditionalBarChartProperties());
     }
 
     default void plotBarChart(Data data, String categoryField, String valueField) {

@@ -54,7 +54,7 @@ public class MessageCountStatisticCollector extends AbstractStatisticCollector {
                         + "from Message_count "
                         + "where test = ? "
                         + "group by ALGORITHM_INSTANCE, RVAR "
-                        + "order by RVAR", test.getName()), "M", "RVAR", "ALGORITHM_INSTANCE", properties);
+                        + "order by RVAR", test.getName()), "RVAR", "M", "ALGORITHM_INSTANCE", properties);
 
         }
 

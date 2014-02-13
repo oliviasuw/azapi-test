@@ -16,7 +16,7 @@ public class ObjectArrayRecord implements Record {
 
     private Object[] array;
 
-    public ObjectArrayRecord(Object[] array) {
+    public ObjectArrayRecord(Object... array) {
         this.array = array;
     }
 

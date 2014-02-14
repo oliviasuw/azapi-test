@@ -36,6 +36,10 @@ public class SomeClass {
 
     SomeType complex;
 
+    /**
+     * @propertyName complex
+     * @return 
+     */
     public SomeType getComplex() {
         return complex;
     }
@@ -146,6 +150,13 @@ public class SomeClass {
     }
     
     
+    public List<SomeType> getComplexes() {
+        return complexes;
+    }
+
+    public void setComplexes(List<SomeType> complexes) {
+        this.complexes = complexes;
+    }
 
     @Register("some-type-base")
     public static class SomeType {
@@ -177,13 +188,6 @@ public class SomeClass {
 
     }
 
-    public List<SomeType> getComplexes() {
-        return complexes;
-    }
-
-    public void setComplexes(List<SomeType> complexes) {
-        this.complexes = complexes;
-    }
 
     @Register("some-type-ext2")
     public static class ExtendedSomeType2 extends SomeType {

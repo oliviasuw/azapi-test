@@ -12,7 +12,7 @@ import bgu.dcr.az.anop.conf.Property;
  *
  * @author Shl
  */
-public interface PropertyController {
+public interface PropertyEditor {
 
     public void setModel(Configuration conf, boolean readOnly);
     

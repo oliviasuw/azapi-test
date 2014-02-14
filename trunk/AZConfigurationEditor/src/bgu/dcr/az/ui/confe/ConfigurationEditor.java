@@ -8,14 +8,9 @@ package bgu.dcr.az.ui.confe;
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.utils.PropertyUtils;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 
 /**
@@ -34,46 +29,37 @@ public class ConfigurationEditor extends VBox {
         Collection<Property> properties = conf.properties();
         double max = 0;
         LinkedList<TerminalPropertyEditor> controllerList = new LinkedList<>();
-        try {
-
-            for (Property property : properties) {
-                if (PropertyUtils.isPrimitive(property)) {
-                    TerminalPropertyEditor controller = new TerminalPropertyEditor();
-                    controller.setModel(property, readOnly);
-                    double labelWidth = controller.getLabelWidth();
-                    if (labelWidth > max) {
-                        max = labelWidth;
-                    }
-                    controllerList.add(controller);
-                    getChildren().add(controller);
+        for (Property property : properties) {
+            if (PropertyUtils.isPrimitive(property)) {
+                TerminalPropertyEditor controller = new TerminalPropertyEditor();
+                controller.setModel(property, readOnly);
+                double labelWidth = controller.getLabelWidth();
+                if (labelWidth > max) {
+                    max = labelWidth;
                 }
+                controllerList.add(controller);
+                getChildren().add(controller);
             }
-            for (TerminalPropertyEditor controller : controllerList) {
-                controller.setLabelWidth(max);
-            }
+        }
+        
+        for (TerminalPropertyEditor controller : controllerList) {
+            controller.setLabelWidth(max);
+        }
 
-            for (Property property : properties) {
-                if (!PropertyUtils.isPrimitive(property) && !PropertyUtils.isCollection(property)) {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("ConfigurationPropertyEditor.fxml"));
-                    Node node = (Node) loader.load();
-                    ConfigurationPropertyEditorController controller = loader.getController();
-                    controller.setModel(property, readOnly);
-                    getChildren().add(node);
-                }
+        for (Property property : properties) {
+            if (!PropertyUtils.isPrimitive(property) && !PropertyUtils.isCollection(property)) {
+                ConfigurationPropertyEditor editor = new ConfigurationPropertyEditor();
+                editor.setModel(property, readOnly);
+                getChildren().add(editor);
             }
+        }
 
-            for (Property property : properties) {
-                if (PropertyUtils.isCollection(property)) {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("CollectionPropertyEditor.fxml"));
-                    Node node = (Node) loader.load();
-                    CollectionPropertyEditorController controller = (CollectionPropertyEditorController) loader.getController();
-                    controller.setModel(property, readOnly);
-                    getChildren().add(node);
-                }
+        for (Property property : properties) {
+            if (PropertyUtils.isCollection(property)) {
+                CollectionPropertyEditor editor = new CollectionPropertyEditor();
+                editor.setModel(property, readOnly);
+                getChildren().add(editor);
             }
-
-        } catch (IOException ex) {
-            Logger.getLogger(ConfigurationEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

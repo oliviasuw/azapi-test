@@ -3,22 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.ui.confe;
+package bgu.dcr.az.ui.confe.test;
 
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
+import bgu.dcr.az.ui.confe.ConfigurationEditor;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 import test.delete.me.SomeClass;
 
@@ -30,10 +29,8 @@ public class confe extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-//        Parent root = FXMLLoader.load(getClass().getResource("ConfigurationPropertyEditor.fxml"));
-//         Parent root = FXMLLoader.load(getClass().getResource("TerminalPropertyEditor.fxml"));
-
         SomeClass c = new SomeClass();
+        c.setC('~');
         c.setJ("bla bla benjamin button");
         c.setK(true);
         c.setE(SomeClass.E.MEH);
@@ -50,24 +47,23 @@ public class confe extends Application {
         final Configuration conf = ConfigurationUtils.load(c);
         
         ConfigurationEditor editor = new ConfigurationEditor();
-        editor.setModel(conf, true);
+        editor.setModel(conf, false);
 
         Button button = new Button(":/");
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    System.out.println("" + ConfigurationUtils.toXML(conf).toXML());
-                } catch (ConfigurationException ex) {
-                    Logger.getLogger(confe.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        button.setOnAction((ActionEvent event) -> {
+            try {
+                System.out.println("" + ConfigurationUtils.toXML(conf).toXML());
+            } catch (ConfigurationException ex) {
+                Logger.getLogger(confe.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
         editor.getChildren().add(button);
 
-        Scene scene = new Scene(editor);
+        Scene scene = new Scene(new ScrollPane(editor));
 
         stage.setScene(scene);
+        stage.setMinWidth(400);
+        stage.setMinHeight(600);
         stage.show();
     }
 

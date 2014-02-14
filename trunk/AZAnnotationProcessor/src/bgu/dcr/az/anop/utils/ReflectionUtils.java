@@ -52,6 +52,13 @@ public class ReflectionUtils {
         if (c == String.class) {
             return (T) s;
         }
+        
+        if (c == Character.class) {
+            if (s.length() != 1) {
+                throw new RuntimeException("Unable to parse character");
+            }
+            return (T)(Character)s.charAt(0);
+        }
 
         if (c.isPrimitive()) {
             c = PRIMITIVE_TO_WRAPPER_CLASS.get(c.getName());

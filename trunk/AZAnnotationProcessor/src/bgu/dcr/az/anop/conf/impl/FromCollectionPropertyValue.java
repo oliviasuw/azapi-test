@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class FromCollectionPropertyValue implements PropertyValue, Iterable<PropertyValue> {
 
-    private List<PropertyValue> values = new LinkedList<>();
+    private final List<PropertyValue> values = new LinkedList<>();
 
     public FromCollectionPropertyValue add(PropertyValue value) {
         values.add(value);
@@ -35,6 +35,11 @@ public class FromCollectionPropertyValue implements PropertyValue, Iterable<Prop
 
     public FromCollectionPropertyValue remove(PropertyValue value) {
         values.remove(value);
+        return this;
+    }
+    
+    public FromCollectionPropertyValue removeAll(Collection<PropertyValue> properties) {
+        values.removeAll(properties);
         return this;
     }
 

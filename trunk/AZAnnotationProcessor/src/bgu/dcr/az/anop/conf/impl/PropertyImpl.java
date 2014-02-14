@@ -10,7 +10,6 @@ import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.JavaDocInfo;
 import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.conf.PropertyValue;
-import bgu.dcr.az.anop.conf.VisualData;
 
 /**
  *
@@ -18,9 +17,9 @@ import bgu.dcr.az.anop.conf.VisualData;
  */
 public class PropertyImpl implements Property {
 
-    private String name;
-    private Configuration parent;
-    private TypeInfo type;
+    private final String name;
+    private final Configuration parent;
+    private final TypeInfo type;
     private PropertyValue propertyValue;
     private JavaDocInfo javadoc;
 

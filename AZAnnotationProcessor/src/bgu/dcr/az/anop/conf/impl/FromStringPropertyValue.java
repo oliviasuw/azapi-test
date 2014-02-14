@@ -16,7 +16,7 @@ import bgu.dcr.az.anop.utils.ReflectionUtils;
  */
 public class FromStringPropertyValue implements PropertyValue {
 
-    private String value;
+    private final String value;
 
     public FromStringPropertyValue(String value) {
         this.value = value;

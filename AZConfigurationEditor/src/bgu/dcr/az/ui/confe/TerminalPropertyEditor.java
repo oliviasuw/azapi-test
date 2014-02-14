@@ -9,7 +9,7 @@ import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.conf.impl.ConfigurableTypeInfoImpl;
 import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;
-import bgu.dcr.az.ui.confe.util.FXUtils;
+import bgu.dcr.az.ui.util.FXUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.List;
@@ -36,37 +36,20 @@ import javafx.scene.layout.BorderPane;
  *
  * @author Shl
  */
-public class TerminalPropertyEditorController implements Initializable, PropertyController {
+public class TerminalPropertyEditor extends BorderPane implements PropertyController {
 
-    @FXML
-    private BorderPane valueEditor;
-
-    @FXML
     private Label label;
 
-    /**
-     * Initializes the controller class.
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-//        SomeClass c = new SomeClass();
-//        c.setJ("bla");
-//        c.setI(5);
-//        Configuration conf = null;
-//        try {
-//            conf = ConfigurationUtils.load(c);
-//        } catch (ClassNotFoundException | ConfigurationException ex) {
-//            Logger.getLogger(TerminalPropertyEditorController.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        setModel(conf.get("K"));
-
+    public TerminalPropertyEditor() {
+        label = new Label();
+        setLeft(label);
     }
 
     public boolean inRange(int x, int a, int b) {
         return x >= a && x <= b;
     }
 
+    @Override
     public void setModel(Property property, boolean readOnly) {
 
         label.setText(property.name());
@@ -120,7 +103,7 @@ public class TerminalPropertyEditorController implements Initializable, Property
         });
         textField.setPromptText("String value (free text)");
 //        textField.setStyle("-fx-prompt-text-font-style: italic;");
-        valueEditor.setCenter(textField);
+        setCenter(textField);
     }
 
     private void setModelBoolean(final Property property, boolean readOnly) {
@@ -141,14 +124,14 @@ public class TerminalPropertyEditorController implements Initializable, Property
         });
 
         BorderPane.setAlignment(cb, Pos.CENTER_LEFT);
-        valueEditor.setCenter(cb);
+        setCenter(cb);
     }
 
     private ChoiceBox<String> setModelEnum(final Property property, boolean readOnly) {
 
         ChoiceBox<String> cb = new ChoiceBox<>();
 
-        cb.prefWidthProperty().bind(valueEditor.widthProperty());
+//        cb.prefWidthProperty().bind(widthProperty());
         cb.setMaxWidth(Control.USE_PREF_SIZE);
 //        cb.setMinWidth(-1);
         cb.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
@@ -177,11 +160,11 @@ public class TerminalPropertyEditorController implements Initializable, Property
                 cb.setValue(items[0].toString());
             }
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.getLogger(TerminalPropertyEditorController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TerminalPropertyEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         cb.setDisable(readOnly);
-        valueEditor.setCenter(cb);
+        setCenter(cb);
         return cb;
     }
 
@@ -210,7 +193,7 @@ public class TerminalPropertyEditorController implements Initializable, Property
                 }
             }
         });
-        valueEditor.setCenter(textField);
+        setCenter(textField);
         textField.setPromptText("Single character, e.g @");
     }
 
@@ -243,7 +226,7 @@ public class TerminalPropertyEditorController implements Initializable, Property
                 }
             }
         });
-        valueEditor.setCenter(textField);
+        setCenter(textField);
         textField.setPromptText("Short size number, range [-32768:32767]");
     }
 
@@ -277,7 +260,7 @@ public class TerminalPropertyEditorController implements Initializable, Property
                 }
             }
         });
-        valueEditor.setCenter(textField);
+        setCenter(textField);
         textField.setPromptText("Byte size number, range [-128:127]");
     }
 
@@ -313,7 +296,7 @@ public class TerminalPropertyEditorController implements Initializable, Property
                 }
             }
         });
-        valueEditor.setCenter(textField);
+        setCenter(textField);
         textField.setPromptText("Float number");
     }
 
@@ -348,7 +331,7 @@ public class TerminalPropertyEditorController implements Initializable, Property
                 }
             }
         });
-        valueEditor.setCenter(textField);
+        setCenter(textField);
         textField.setPromptText("Double (real) number, e.g 22.8");
     }
 
@@ -381,7 +364,7 @@ public class TerminalPropertyEditorController implements Initializable, Property
                 }
             }
         });
-        valueEditor.setCenter(textField);
+        setCenter(textField);
         textField.setPromptText("Integer number, e.g 88");
     }
 

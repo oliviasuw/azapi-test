@@ -29,7 +29,6 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
           </rowConstraints>
         </GridPane>
-        <fx:include fx:id="confEditor" source="ConfigurationEditor.fxml" prefHeight="-1.0" prefWidth="-1.0" />
       </children>
     </VBox>
   </content>

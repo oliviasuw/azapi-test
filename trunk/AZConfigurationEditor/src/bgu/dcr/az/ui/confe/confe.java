@@ -49,10 +49,8 @@ public class confe extends Application {
         c.setNames(arrayList);
         final Configuration conf = ConfigurationUtils.load(c);
         
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("ConfigurationEditor.fxml"));
-        VBox vbox = (VBox)loader.load();
-        ConfigurationEditorController controller = (ConfigurationEditorController)loader.getController();
-        controller.setModel(conf, true);
+        ConfigurationEditor editor = new ConfigurationEditor();
+        editor.setModel(conf, true);
 
         Button button = new Button(":/");
         button.setOnAction(new EventHandler<ActionEvent>() {
@@ -65,9 +63,9 @@ public class confe extends Application {
                 }
             }
         });
-        vbox.getChildren().add(button);
+        editor.getChildren().add(button);
 
-        Scene scene = new Scene(vbox);
+        Scene scene = new Scene(editor);
 
         stage.setScene(scene);
         stage.show();

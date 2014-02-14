@@ -33,8 +33,7 @@ import javax.swing.event.DocumentEvent;
  */
 public class ConfigurationPropertyEditorController implements Initializable, PropertyController {
     
-    @FXML
-    ConfigurationEditorController confEditorController;
+    ConfigurationEditor confEditor;
     
     @FXML
     ChoiceBox choiceBox;
@@ -48,8 +47,10 @@ public class ConfigurationPropertyEditorController implements Initializable, Pro
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 //        System.out.println("ConfEditor is : " + confEditorController);
+        confEditor = new ConfigurationEditor();
     }
     
+    @Override
     public void setModel(final Property property, final boolean readOnly) {
         titledPane.setText(property.name());
         String description = property.doc().description();
@@ -71,7 +72,7 @@ public class ConfigurationPropertyEditorController implements Initializable, Pro
                 Class implementor = confv.getValue().typeInfo().getType();
                 String classname = RegisteryUtils.getDefaultRegistery().getRegisteredClassName(implementor);
                 choiceBox.getSelectionModel().select(classname);
-                confEditorController.setModel(confv.getValue(), readOnly);
+                confEditor.setModel(confv.getValue(), readOnly);
             }
         }
         
@@ -81,7 +82,7 @@ public class ConfigurationPropertyEditorController implements Initializable, Pro
                 try {
                     FromConfigurationPropertyValue confv = new FromConfigurationPropertyValue(RegisteryUtils.getDefaultRegistery().getConfiguration(t1.toString()));
                     property.set(confv);
-                    confEditorController.setModel(confv.getValue(), readOnly);
+                    confEditor.setModel(confv.getValue(), readOnly);
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(ConfigurationPropertyEditorController.class.getName()).log(Level.SEVERE, null, ex);
                 }

@@ -13,8 +13,6 @@ import bgu.dcr.az.ui.confe.ConfigurationEditor;
 import bgu.dcr.az.ui.confe.utils.TimingUtils;
 import bgu.dcr.az.ui.util.FXUtils;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -66,14 +64,13 @@ public class confe extends Application {
         scrollPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         scrollPane.setFitToWidth(true);
 
-//        editor.setStyle("-fx-border-color:red; -fx-border-width:1;");
         Scene scene = new Scene(scrollPane);
         scene.getStylesheets().add(getClass().getResource("ceditor.css").toExternalForm());
         
         //DO NOT DELETE BELLOW THIS LINE PLEASE!
 //        scene.getStylesheets().add("file:///C:/Users/User/Desktop/Projects/AgentZero/trunk/AZConfigurationEditor/src/bgu/dcr/az/ui/confe/test/ceditor.css");
 //        ScenicView.show(scene);
-//        TimingUtils.scheduleRepeating(() -> FXUtils.reloadSceneStylesheet(scene), 1000);
+        TimingUtils.scheduleRepeating(() -> FXUtils.reloadSceneStylesheet(scene), 1000);
 
         stage.setScene(scene);
         stage.setMinWidth(400);

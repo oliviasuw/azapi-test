@@ -13,8 +13,12 @@ import bgu.dcr.az.anop.conf.impl.FromCollectionPropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromConfigurationPropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;
 import bgu.dcr.az.anop.conf.impl.PropertyImpl;
+import bgu.dcr.az.anop.reg.RegisteryUtils;
 import bgu.dcr.az.anop.utils.JavaDocParser;
 import bgu.dcr.az.anop.utils.PropertyUtils;
+import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -112,6 +116,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     private void addItemToCollection(PropertyValue value) {
         Class type = collectionProperty.typeInfo().getGenericParameters().get(0).getType();
         PropertyImpl pseudoProperty = new PropertyImpl("item", null, new ConfigurableTypeInfoImpl(type), JavaDocParser.parse(""));
+        pseudoProperty.set(value);
         BorderPane grid = new BorderPane();
         Node editor = propertyToEditor(pseudoProperty);
         ((PropertyEditor) editor).setModel(pseudoProperty, readOnly);
@@ -133,8 +138,10 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     public final void onAddButton() {
         FromCollectionPropertyValue fcpv = (FromCollectionPropertyValue) collectionProperty.get();
         PropertyValue propertyValue = getPropertyValue();
-        fcpv.add(propertyValue);
-        addItemToCollection(propertyValue);
+        if (propertyValue != null) {
+            fcpv.add(propertyValue);
+            addItemToCollection(propertyValue);
+        }
     }
 
     public final void onEditButton() {
@@ -163,7 +170,18 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
             if (PropertyUtils.isCollection(type)) {
                 return new FromCollectionPropertyValue();
             } else {
-                return new FromConfigurationPropertyValue(null);
+                Class implementorType = collectionProperty.typeInfo().getGenericParameters().get(0).getType();
+                Collection<Class> implementors = RegisteryUtils.getDefaultRegistery().getImplementors(implementorType);
+                if (implementors.isEmpty()) {
+                    return null;
+                }
+                try {
+                    Configuration conf = RegisteryUtils.getDefaultRegistery().getConfiguration(implementors.iterator().next());
+                    return new FromConfigurationPropertyValue(conf);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(CollectionPropertyEditor.class.getName()).log(Level.SEVERE, null, ex);
+                    return null;
+                }
             }
         }
     }

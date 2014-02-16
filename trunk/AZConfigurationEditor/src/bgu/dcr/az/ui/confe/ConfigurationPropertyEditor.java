@@ -86,6 +86,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         }
 
         this.property = property;
+        
         setText(property.name());
         String description = property.doc().description();
         if (description != null && !description.isEmpty()) {

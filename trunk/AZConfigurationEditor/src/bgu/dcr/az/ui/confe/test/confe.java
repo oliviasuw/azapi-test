@@ -10,7 +10,11 @@ import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
 import bgu.dcr.az.mas.cp.CPExperiment;
 import bgu.dcr.az.ui.confe.ConfigurationEditor;
+import bgu.dcr.az.ui.confe.utils.TimingUtils;
+import bgu.dcr.az.ui.util.FXUtils;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -45,7 +49,7 @@ public class confe extends Application {
         arrayList.add("clint eastwood");
         c.setNames(arrayList);
         final Configuration conf = ConfigurationUtils.load(new CPExperiment());//ConfigurationUtils.load(c);
-        
+
         ConfigurationEditor editor = new ConfigurationEditor();
         editor.setModel(conf, false);
 
@@ -61,12 +65,16 @@ public class confe extends Application {
         final ScrollPane scrollPane = new ScrollPane(editor);
         scrollPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         scrollPane.setFitToWidth(true);
-        
+
 //        editor.setStyle("-fx-border-color:red; -fx-border-width:1;");
         Scene scene = new Scene(scrollPane);
+        scene.getStylesheets().add(getClass().getResource("ceditor.css").toExternalForm());
+        
+        //DO NOT DELETE BELLOW THIS LINE PLEASE!
+//        scene.getStylesheets().add("file:///C:/Users/User/Desktop/Projects/AgentZero/trunk/AZConfigurationEditor/src/bgu/dcr/az/ui/confe/test/ceditor.css");
 //        ScenicView.show(scene);
-        
-        
+//        TimingUtils.scheduleRepeating(() -> FXUtils.reloadSceneStylesheet(scene), 1000);
+
         stage.setScene(scene);
         stage.setMinWidth(400);
         stage.setMinHeight(600);

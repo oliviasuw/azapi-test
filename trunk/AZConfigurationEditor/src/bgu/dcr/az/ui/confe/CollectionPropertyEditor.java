@@ -54,6 +54,8 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     private boolean editEnabled;
 
     public CollectionPropertyEditor() {
+        getStyleClass().add("collection-property-editor");
+        
         addButton = new Button("Add");
         addButton.setOnAction((e) -> onAddButton());
         editButton = new Button("Edit");

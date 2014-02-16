@@ -42,6 +42,8 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
         label.setGraphic(infoContainer);
         BorderPane.setAlignment(label, Pos.CENTER_LEFT);
 
+        getStyleClass().add("terminal-property-editor");
+        
         textField = new TextField() {
             @Override
             public void replaceText(int start, int end, String text) {

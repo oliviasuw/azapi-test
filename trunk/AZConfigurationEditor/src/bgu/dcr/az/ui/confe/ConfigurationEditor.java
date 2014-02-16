@@ -26,6 +26,8 @@ public class ConfigurationEditor extends VBox {
     public ConfigurationEditor() {
         setSpacing(3);
         setPadding(new Insets(5));
+        
+        getStyleClass().add("conf-editor");
     }
 
     public void setModel(Configuration configuration, boolean readOnly) {

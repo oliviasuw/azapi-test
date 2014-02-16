@@ -47,7 +47,7 @@ public class confe extends Application {
         final Configuration conf = ConfigurationUtils.load(new CPExperiment());//ConfigurationUtils.load(c);
         
         ConfigurationEditor editor = new ConfigurationEditor();
-        editor.setModel(conf, true);
+        editor.setModel(conf, false);
 
         Button button = new Button(":/");
         button.setOnAction((ActionEvent event) -> {

@@ -147,4 +147,16 @@ COLLECTION PROPERTY EDITOR
     -fx-padding: 0 0 0 3;
 }
 
+/*
+CONFIGURATION PROPERTY EDITOR
+*/
 
+.conf-editor .configuration-property-editor .implementors{
+    -fx-padding: 5 3 8 3; 
+    
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: rgb(135,135,135);
+    -fx-border-style: segments(3, 4);
+    -fx-border-insets: 0 0 3 0;
+    
+}

@@ -30,11 +30,11 @@ public class ConfigurationEditor extends VBox {
 
     public void setModel(Configuration configuration, boolean readOnly) {
         this.readOnly = readOnly;
-        
+
         if (this.configuration == configuration) {
             return;
         }
-        
+
         this.configuration = configuration;
 
         getChildren().clear();
@@ -42,10 +42,10 @@ public class ConfigurationEditor extends VBox {
         if (configuration == null) {
             return;
         }
-        
+
         Collection<Property> properties = configuration.properties();
-        
-        generateTerminalPropertiesEditors(properties);        
+
+        generateTerminalPropertiesEditors(properties);
         generateConfigurationPropertiesEditors(properties);
         generateCollectionPropertiesEditors(properties);
     }
@@ -53,6 +53,11 @@ public class ConfigurationEditor extends VBox {
     private void generateCollectionPropertiesEditors(Collection<Property> properties) {
         for (Property property : properties) {
             if (PropertyUtils.isCollection(property)) {
+                if (property.doc() != null
+                        && property.doc().first("UIVisibility") != null
+                        && property.doc().first("UIVisibility").toLowerCase().equals("false")) {
+                    continue;
+                }
                 CollectionPropertyEditor editor = new CollectionPropertyEditor();
                 editor.setModel(property, readOnly);
                 getChildren().add(editor);
@@ -63,6 +68,11 @@ public class ConfigurationEditor extends VBox {
     private void generateConfigurationPropertiesEditors(Collection<Property> properties) {
         for (Property property : properties) {
             if (!PropertyUtils.isPrimitive(property) && !PropertyUtils.isCollection(property)) {
+                if (property.doc() != null
+                        && property.doc().first("UIVisibility") != null
+                        && property.doc().first("UIVisibility").toLowerCase().equals("false")) {
+                    continue;
+                }
                 ConfigurationPropertyEditor editor = new ConfigurationPropertyEditor(false);
                 editor.setModel(property, readOnly);
                 getChildren().add(editor);
@@ -75,6 +85,12 @@ public class ConfigurationEditor extends VBox {
         LinkedList<TerminalPropertyEditor> controllerList = new LinkedList<>();
         for (Property property : properties) {
             if (PropertyUtils.isPrimitive(property)) {
+                if (property.doc() != null
+                        && property.doc().first("UIVisibility") != null
+                        && property.doc().first("UIVisibility").toLowerCase().equals("false")) {
+                    continue;
+                }
+
                 TerminalPropertyEditor controller = new TerminalPropertyEditor();
                 controller.setModel(property, readOnly);
                 double labelWidth = controller.getLabelWidth();

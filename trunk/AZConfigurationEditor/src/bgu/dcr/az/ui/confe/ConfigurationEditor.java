@@ -11,9 +11,7 @@ import bgu.dcr.az.anop.utils.PropertyUtils;
 import java.util.Collection;
 import java.util.LinkedList;
 import javafx.geometry.Insets;
-import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
-import resources.img.R;
 
 /**
  * FXML Controller class
@@ -22,27 +20,57 @@ import resources.img.R;
  */
 public class ConfigurationEditor extends VBox {
 
-    public static final Image INFO_ICON = new Image(R.class.getResourceAsStream("info.png"));
     private Configuration configuration;
+    private boolean readOnly;
 
     public ConfigurationEditor() {
         setSpacing(3);
         setPadding(new Insets(5));
     }
 
-    public void setModel(Configuration conf, boolean readOnly) {
-        if (this.configuration == conf) {
-            return;
-        }
-        this.configuration = conf;
-
-        getChildren().clear();
-
-        if (conf == null) {
+    public void setModel(Configuration configuration, boolean readOnly) {
+        this.readOnly = readOnly;
+        
+        if (this.configuration == configuration) {
             return;
         }
         
-        Collection<Property> properties = conf.properties();
+        this.configuration = configuration;
+
+        getChildren().clear();
+
+        if (configuration == null) {
+            return;
+        }
+        
+        Collection<Property> properties = configuration.properties();
+        
+        generateTerminalPropertiesEditors(properties);        
+        generateConfigurationPropertiesEditors(properties);
+        generateCollectionPropertiesEditors(properties);
+    }
+
+    private void generateCollectionPropertiesEditors(Collection<Property> properties) {
+        for (Property property : properties) {
+            if (PropertyUtils.isCollection(property)) {
+                CollectionPropertyEditor editor = new CollectionPropertyEditor();
+                editor.setModel(property, readOnly);
+                getChildren().add(editor);
+            }
+        }
+    }
+
+    private void generateConfigurationPropertiesEditors(Collection<Property> properties) {
+        for (Property property : properties) {
+            if (!PropertyUtils.isPrimitive(property) && !PropertyUtils.isCollection(property)) {
+                ConfigurationPropertyEditor editor = new ConfigurationPropertyEditor(false);
+                editor.setModel(property, readOnly);
+                getChildren().add(editor);
+            }
+        }
+    }
+
+    private void generateTerminalPropertiesEditors(Collection<Property> properties) {
         double max = 0;
         LinkedList<TerminalPropertyEditor> controllerList = new LinkedList<>();
         for (Property property : properties) {
@@ -57,26 +85,8 @@ public class ConfigurationEditor extends VBox {
                 getChildren().add(controller);
             }
         }
-
         for (TerminalPropertyEditor controller : controllerList) {
             controller.setLabelWidth(max);
         }
-
-        for (Property property : properties) {
-            if (!PropertyUtils.isPrimitive(property) && !PropertyUtils.isCollection(property)) {
-                ConfigurationPropertyEditor editor = new ConfigurationPropertyEditor();
-                editor.setModel(property, readOnly);
-                getChildren().add(editor);
-            }
-        }
-
-        for (Property property : properties) {
-            if (PropertyUtils.isCollection(property)) {
-                CollectionPropertyEditor editor = new CollectionPropertyEditor();
-                editor.setModel(property, readOnly);
-                getChildren().add(editor);
-            }
-        }
     }
-
 }

@@ -22,6 +22,9 @@ public class AZVisGraph extends SimpleWeightedGraph<AZVisVertex, DefaultEdge> {
 
     public AZVisGraph() {
         super(DefaultEdge.class);
+        
+       
+        
     }
 
     public AZVisGraph(EdgeFactory<AZVisVertex, DefaultEdge> ef) {

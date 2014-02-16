@@ -2,14 +2,16 @@ V A [100 20]
 V B [600 11]
 V C [200 500]
 V D [5 700]
-V E [500 1000]
-V F [1300 1900]
-V G [2000 50]
+V E [500 1800]
+V F [1200 400]
+V G [950 50]
 E A B
 E A C
 E C D
 E C B
+E B G
 E D F
+E D E
 E F G
 E G C
 E A F

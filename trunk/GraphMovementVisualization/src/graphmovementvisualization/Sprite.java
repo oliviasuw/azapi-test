@@ -9,8 +9,6 @@ import java.io.InputStream;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.value.WritableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
@@ -28,7 +26,8 @@ public class Sprite {
     private int index;
 
     public Sprite(int index) {
-        InputStream resourceAsStream = getClass().getResourceAsStream("circlesprite.png");
+//        System.out.println("sprite created");
+        InputStream resourceAsStream = getClass().getResourceAsStream("Ford Mustang Fastback.png");
         image = new Image(resourceAsStream);
         location = new Location();
         this.index = index;
@@ -44,7 +43,7 @@ public class Sprite {
     }
 
     public KeyFrame move(final Location to) {
-        KeyFrame keyFrame = new KeyFrame(Duration.millis(2000),
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(1000),
                 new EventHandler<ActionEvent>() {
 
                     @Override
@@ -54,18 +53,19 @@ public class Sprite {
 
                     }
                 },
-                new KeyValue(location.getX(), to.getX().doubleValue()), new KeyValue(location.getY(), to.getY().doubleValue())
+                new KeyValue(location.getX(), to.getX().doubleValue() - image.getWidth() / 2), new KeyValue(location.getY(), to.getY().doubleValue() - image.getHeight() / 2)
         );
+
         return keyFrame;
 //        timeLine.getKeyFrames().add(keyFrame);
 //        timeLine.play();
     }
-    
+
     public KeyFrame move(double x, double y) {
         Location newLoc = new Location(x, y);
         KeyFrame keyFrams = this.move(newLoc);
         return keyFrams;
-    }    
+    }
 
     private void initTimeLine() {
 //        timeLine = new Timeline();
@@ -84,10 +84,8 @@ public class Sprite {
 //    public boolean hasTimelineInstructions() {
 //        return timeLine.getKeyFrames().size() > 0;
 //    }
-
     public int getIndex() {
         return index;
     }
 
-    
 }

@@ -68,12 +68,12 @@ public class confe extends Application {
 
 //        editor.setStyle("-fx-border-color:red; -fx-border-width:1;");
         Scene scene = new Scene(scrollPane);
-//        scene.getStylesheets().add(getClass().getResource("ceditor.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("ceditor.css").toExternalForm());
         
         //DO NOT DELETE BELLOW THIS LINE PLEASE!
-        scene.getStylesheets().add("file:///C:/Users/User/Desktop/Projects/AgentZero/trunk/AZConfigurationEditor/src/bgu/dcr/az/ui/confe/test/ceditor.css");
+//        scene.getStylesheets().add("file:///C:/Users/User/Desktop/Projects/AgentZero/trunk/AZConfigurationEditor/src/bgu/dcr/az/ui/confe/test/ceditor.css");
 //        ScenicView.show(scene);
-        TimingUtils.scheduleRepeating(() -> FXUtils.reloadSceneStylesheet(scene), 1000);
+//        TimingUtils.scheduleRepeating(() -> FXUtils.reloadSceneStylesheet(scene), 1000);
 
         stage.setScene(scene);
         stage.setMinWidth(400);

@@ -18,9 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import org.scenicview.ScenicView;
 import test.delete.me.SomeClass;
 
 /**
@@ -49,7 +47,7 @@ public class confe extends Application {
         final Configuration conf = ConfigurationUtils.load(new CPExperiment());//ConfigurationUtils.load(c);
         
         ConfigurationEditor editor = new ConfigurationEditor();
-        editor.setModel(conf, false);
+        editor.setModel(conf, true);
 
         Button button = new Button(":/");
         button.setOnAction((ActionEvent event) -> {

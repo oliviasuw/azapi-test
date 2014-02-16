@@ -19,17 +19,13 @@ import bgu.dcr.az.anop.utils.PropertyUtils;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToolBar;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -49,6 +45,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     private final Button editButton;
     private final Button clearButton;
 
+    private final Label infoContainer;
     private final ToolBar tools;
     private final VBox vBox;
 
@@ -64,31 +61,33 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         clearButton = new Button("Remove all");
         clearButton.setOnAction((e) -> onClearButton());
 
+        infoContainer = new Label("");
         tools = new ToolBar(addButton, editButton, clearButton);
 
         vBox = new VBox();
         vBox.getChildren().addAll(tools);
         setContent(vBox);
+        setGraphic(infoContainer);
         setExpanded(false);
         editEnabled = false;
     }
 
     @Override
-    public void setModel(final Property property, final boolean readOnly) {
+    public void setModel(Property property, boolean readOnly) {
         this.readOnly = readOnly;
+        
+        if (property == null) {
+            collectionProperty = null;
+            updateInfo(infoContainer);
+            return;
+        }
+        
         if (collectionProperty == property) {
             return;
         }
+        
         this.collectionProperty = property;
         setText("Collection of " + property.name());
-        String description = property.doc().description();
-        if (!description.isEmpty()) {
-            Label image = new Label("", new ImageView(ConfigurationEditor.INFO_ICON));
-            image.setTooltip(new Tooltip(description));
-            setGraphic(image);
-        } else {
-            setGraphic(null);
-        }
 
         if (property.get() == null) {
             property.set(new FromCollectionPropertyValue());
@@ -101,16 +100,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         }
 
         fc.forEach(this::addItemToCollection);
-
-//        values.addListener((ListChangeListener.Change<? extends Property> change) -> {
-//            while (change.next()) {
-//                if (change.wasRemoved()) {
-//                    change.getRemoved().stream().forEach(e -> fc.remove(e.get()));
-//                } else if (change.wasAdded()) {
-//                    change.getAddedSubList().forEach(e -> fc.add(e.get()));
-//                }
-//            }
-//        });
+        updateInfo(infoContainer);
     }
 
     private void addItemToCollection(PropertyValue value) {
@@ -193,7 +183,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
             if (PropertyUtils.isCollection(property)) {
                 return new CollectionPropertyEditor();
             } else {
-                return new ConfigurationPropertyEditor();
+                return new ConfigurationPropertyEditor(true);
             }
         }
     }

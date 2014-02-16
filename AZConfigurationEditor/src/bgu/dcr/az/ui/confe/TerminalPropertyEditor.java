@@ -18,7 +18,6 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 
 /**
@@ -30,6 +29,7 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
 
     private static final int LABEL_MARGING = 10;
     private final Label label;
+    private final Label infoContainer;
     private final TextField textField;
     private final CheckBox checkBox;
     private final ChoiceBox<String> choiceBox;
@@ -37,7 +37,10 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
     private Property property;
 
     public TerminalPropertyEditor() {
+        infoContainer = new Label("");
         label = new Label();
+        label.setGraphic(infoContainer);
+        BorderPane.setAlignment(label, Pos.CENTER_LEFT);
 
         textField = new TextField() {
             @Override
@@ -56,36 +59,48 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
                 }
             }
         };
-        textField.textProperty().addListener((ObservableValue<? extends String> p, String ov, String nv) -> property.set(new FromStringPropertyValue(nv)));
+        textField.textProperty().addListener((ObservableValue<? extends String> p, String ov, String nv) -> {
+            if (property != null) {
+                property.set(new FromStringPropertyValue(nv));
+            }
+        });
 
         checkBox = new CheckBox();
         BorderPane.setAlignment(checkBox, Pos.CENTER_LEFT);
-        checkBox.selectedProperty().addListener((ObservableValue<? extends Boolean> p, Boolean ov, Boolean nv) -> property.set(new FromStringPropertyValue(nv.toString())));
+        checkBox.selectedProperty().addListener((ObservableValue<? extends Boolean> p, Boolean ov, Boolean nv) -> {
+            if (property != null) {
+                property.set(new FromStringPropertyValue(nv.toString()));
+            }
+        });
 
         choiceBox = new ChoiceBox<>();
         choiceBox.setMaxWidth(Double.MAX_VALUE);
-        choiceBox.valueProperty().addListener((ObservableValue<? extends String> p, String ov, String nv) -> property.set(new FromStringPropertyValue(nv)));
-
-        BorderPane.setAlignment(label, Pos.CENTER_LEFT);
-        setLeft(label);
-    }
-
-    public boolean inRange(int x, int a, int b) {
-        return x >= a && x <= b;
+        choiceBox.valueProperty().addListener((ObservableValue<? extends String> p, String ov, String nv) -> {
+            if (property != null) {
+                property.set(new FromStringPropertyValue(nv));
+            }
+        });
     }
 
     @Override
     public void setModel(Property property, boolean readOnly) {
-        label.setText(property.name());
-        String description = property.doc().description();
-        if (description != null && !description.isEmpty()) {
-            Label image = new Label("", new ImageView(ConfigurationEditor.INFO_ICON));
-            label.setGraphic(image);
-            Tooltip tooltip = new Tooltip(description);
-            image.setTooltip(tooltip);
-        } else {
-            label.setGraphic(null);
+        if (this.property != property) {
+            setLeft(null);
+            setCenter(null);
         }
+
+        if (property == null) {
+            this.property = null;
+            updateInfo(infoContainer);
+            return;
+        }
+        
+        if (this.property == property) {
+            return;
+        }
+
+        label.setText(property.name());
+        setLeft(label);
 
         Class pType = property.typeInfo().getType();
         if (String.class.isAssignableFrom(pType)) {
@@ -102,6 +117,7 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
             setTextInputModel(property, "", pType.getSimpleName(), readOnly);
 //            throw new RuntimeException("Unsupported type: " + pType.getSimpleName());
         }
+        updateInfo(infoContainer);
     }
 
     private void setModelBoolean(final Property property, boolean readOnly) {
@@ -109,6 +125,7 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
         if (property.get() == null) {
             property.set(new FromStringPropertyValue("true"));
         }
+
         checkBox.setSelected(property.stringValue().equals("true"));
         setCenter(checkBox);
         checkBox.setDisable(readOnly);
@@ -117,8 +134,9 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
     private void setModelEnum(final Property property, boolean readOnly) {
         if (this.property != property) {
             try {
-                //            test.delete.me.SomeClass.E.
                 Object[] items = (Object[]) property.typeInfo().getType().getMethod("values").invoke(null);
+                this.property = null;
+                choiceBox.getItems().clear();
                 for (Object i : items) {
                     choiceBox.getItems().add(i.toString());
                 }
@@ -132,6 +150,7 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
         if (property.get() == null) {
             property.set(new FromStringPropertyValue(choiceBox.getItems().get(0)));
         }
+
         choiceBox.setValue(property.stringValue());
         setCenter(choiceBox);
         choiceBox.setDisable(readOnly);
@@ -170,6 +189,7 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
         }
 
         Class c = property.typeInfo().getType();
+
         if (Number.class.isAssignableFrom(c) && text.equals("-")) {
             return true;
         }

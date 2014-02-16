@@ -10,19 +10,27 @@ import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.conf.PropertyValue;
 import bgu.dcr.az.anop.conf.impl.ConfigurableTypeInfoImpl;
 import bgu.dcr.az.anop.conf.impl.FromCollectionPropertyValue;
+import bgu.dcr.az.anop.conf.impl.FromConfigurationPropertyValue;
+import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;
 import bgu.dcr.az.anop.conf.impl.PropertyImpl;
 import bgu.dcr.az.anop.utils.JavaDocParser;
 import bgu.dcr.az.anop.utils.PropertyUtils;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import resources.img.R;
 
 /**
  * FXML Controller class
@@ -31,114 +39,154 @@ import javafx.scene.layout.VBox;
  */
 public class CollectionPropertyEditor extends TitledPane implements PropertyEditor {
 
-    private ListView<Property> listView;
+    public static final Image REMOVE_IMAGE = new Image(R.class.getResourceAsStream("remove.png"));
+
     private final Button addButton;
-    private final Button removeButton;
+    private final Button editButton;
     private final Button clearButton;
 
-    private Property collectionProperty;
-    private ObservableList<Property> values;
     private final ToolBar tools;
     private final VBox vBox;
+
+    private Property collectionProperty;
+    private boolean readOnly;
+    private boolean editEnabled;
 
     public CollectionPropertyEditor() {
         addButton = new Button("Add");
         addButton.setOnAction((e) -> onAddButton());
-        removeButton = new Button("Remove");
-        removeButton.setOnAction((e) -> onRemoveButton());
+        editButton = new Button("Edit");
+        editButton.setOnAction((e) -> onEditButton());
         clearButton = new Button("Remove all");
         clearButton.setOnAction((e) -> onClearButton());
 
-        tools = new ToolBar(addButton, removeButton, clearButton);
-
-        listView = new ListView<>();
-        listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        listView.setEditable(true);
+        tools = new ToolBar(addButton, editButton, clearButton);
 
         vBox = new VBox();
-        vBox.getChildren().addAll(tools, listView);
+        vBox.getChildren().addAll(tools);
         setContent(vBox);
         setExpanded(false);
+        editEnabled = false;
     }
 
     @Override
     public void setModel(final Property property, final boolean readOnly) {
-        if (readOnly) {
-            vBox.getChildren().remove(tools);
+        this.readOnly = readOnly;
+        if (collectionProperty == property) {
+            return;
         }
         this.collectionProperty = property;
         setText("Collection of " + property.name());
         String description = property.doc().description();
         if (!description.isEmpty()) {
-            setTooltip(new Tooltip(description));
+            Label image = new Label("", new ImageView(ConfigurationEditor.INFO_ICON));
+            image.setTooltip(new Tooltip(description));
+            setGraphic(image);
         } else {
-            setTooltip(null);
+            setGraphic(null);
         }
 
         if (property.get() == null) {
             property.set(new FromCollectionPropertyValue());
         }
-        final FromCollectionPropertyValue fc = (FromCollectionPropertyValue) property.get();
+        FromCollectionPropertyValue fc = (FromCollectionPropertyValue) property.get();
 
-        property.set(fc);
-        vBox.getChildren().remove(listView);
-        listView = new ListView<>();
-        vBox.getChildren().add(listView);
-        values = FXCollections.<Property>observableArrayList();
-
-        Class type = collectionProperty.typeInfo().getGenericParameters().get(0).getType();
-        for (PropertyValue prop : fc) {
-            PropertyImpl innerProperty = new PropertyImpl("", null, new ConfigurableTypeInfoImpl(type), JavaDocParser.parse(""));
-            innerProperty.set(prop);
-            values.add(innerProperty);
+        vBox.getChildren().removeAll(vBox.getChildren());
+        if (!readOnly) {
+            vBox.getChildren().add(tools);
         }
 
-        listView.setItems(values);
-        listView.setCellFactory(p -> new CollectionListCell(readOnly));
+        fc.forEach(this::addItemToCollection);
 
-        values.addListener((ListChangeListener.Change<? extends Property> change) -> {
-            while (change.next()) {
-                if (change.wasRemoved()) {
-                    change.getRemoved().stream().forEach(e -> fc.remove(e.get()));
-                } else if (change.wasAdded()) {
-                    change.getAddedSubList().forEach(e -> fc.add(e.get()));
-                }
-            }
+//        values.addListener((ListChangeListener.Change<? extends Property> change) -> {
+//            while (change.next()) {
+//                if (change.wasRemoved()) {
+//                    change.getRemoved().stream().forEach(e -> fc.remove(e.get()));
+//                } else if (change.wasAdded()) {
+//                    change.getAddedSubList().forEach(e -> fc.add(e.get()));
+//                }
+//            }
+//        });
+    }
+
+    private void addItemToCollection(PropertyValue value) {
+        Class type = collectionProperty.typeInfo().getGenericParameters().get(0).getType();
+        PropertyImpl pseudoProperty = new PropertyImpl("item", null, new ConfigurableTypeInfoImpl(type), JavaDocParser.parse(""));
+        BorderPane grid = new BorderPane();
+        Node editor = propertyToEditor(pseudoProperty);
+        ((PropertyEditor) editor).setModel(pseudoProperty, readOnly);
+        Button remove = new Button("");
+        remove.setGraphic(new ImageView(REMOVE_IMAGE));
+        remove.setManaged(editEnabled);
+        remove.setVisible(editEnabled);
+        remove.setOnAction((ActionEvent t) -> {
+            FromCollectionPropertyValue fcpv = (FromCollectionPropertyValue) collectionProperty.get();
+            fcpv.remove(value);
+            vBox.getChildren().remove(grid);
         });
-
-        clearButton.setDisable(readOnly);
-        removeButton.setDisable(readOnly);
-        addButton.setDisable(readOnly);
-        listView.setDisable(readOnly);
+        BorderPane.setAlignment(remove, Pos.CENTER);
+        grid.setLeft(remove);
+        grid.setCenter(editor);
+        vBox.getChildren().add(grid);
     }
 
     public final void onAddButton() {
-        Class type = collectionProperty.typeInfo().getGenericParameters().get(0).getType();
-        PropertyImpl pseudo = new PropertyImpl("", null, new ConfigurableTypeInfoImpl(type), JavaDocParser.parse(""));
-        if (PropertyUtils.isPrimitive(type)) {
-            pseudo.set(null);
-        } else if (PropertyUtils.isCollection(type)) {
-            pseudo.set(null);
-        } else {
-            pseudo.set(null);
-        }
-        values.add(pseudo);
-
+        FromCollectionPropertyValue fcpv = (FromCollectionPropertyValue) collectionProperty.get();
+        PropertyValue propertyValue = getPropertyValue();
+        fcpv.add(propertyValue);
+        addItemToCollection(propertyValue);
     }
 
-    public final void onRemoveButton() {
-        for (Object e : listView.getSelectionModel().getSelectedItems().toArray()) {
-            values.remove(e);
+    public final void onEditButton() {
+        editEnabled = !editEnabled;
+        for (Node c : vBox.getChildren()) {
+            if (c instanceof BorderPane) {
+                Button editBtn = (Button) ((BorderPane) c).getLeft();
+                editBtn.setManaged(editEnabled);
+                editBtn.setVisible(editEnabled);
+            }
         }
     }
 
     public final void onClearButton() {
-        listView.getSelectionModel().selectAll();
-        onRemoveButton();
+        collectionProperty.set(new FromCollectionPropertyValue());
+        Property temp = collectionProperty;
+        collectionProperty = null;
+        setModel(temp, readOnly);
+    }
+
+    public PropertyValue getPropertyValue() {
+        final Class type = collectionProperty.typeInfo().getGenericParameters().get(0).getType();
+        if (PropertyUtils.isPrimitive(type)) {
+            return new FromStringPropertyValue(null);
+        } else {
+            if (PropertyUtils.isCollection(type)) {
+                return new FromCollectionPropertyValue();
+            } else {
+                return new FromConfigurationPropertyValue(null);
+            }
+        }
+    }
+
+    public Node propertyToEditor(Property property) {
+        if (PropertyUtils.isPrimitive(property)) {
+            return new TerminalPropertyEditor();
+        } else {
+            if (PropertyUtils.isCollection(property)) {
+                return new CollectionPropertyEditor();
+            } else {
+                return new ConfigurationPropertyEditor();
+            }
+        }
     }
 
     @Override
     public void setModel(Configuration conf, boolean readOnly) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Property getModel() {
+        return collectionProperty;
     }
 }

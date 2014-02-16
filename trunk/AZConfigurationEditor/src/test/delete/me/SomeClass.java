@@ -37,8 +37,9 @@ public class SomeClass {
     SomeType complex;
 
     /**
+     * some complex attribute
      * @propertyName complex
-     * @return 
+     * @return
      */
     public SomeType getComplex() {
         return complex;
@@ -82,6 +83,11 @@ public class SomeClass {
         this.k = k;
     }
 
+    /**
+     * some doc
+     *
+     * @return
+     */
     public E getE() {
         return e;
     }
@@ -142,14 +148,16 @@ public class SomeClass {
     public void setNames(List<String> names) {
         this.names = names;
     }
-    
-    
 
     public List<Boolean> getBooleans() {
         return yesnoes;
     }
-    
-    
+
+    /**
+     * the list of complexes
+     *
+     * @return
+     */
     public List<SomeType> getComplexes() {
         return complexes;
     }
@@ -187,7 +195,6 @@ public class SomeClass {
         }
 
     }
-
 
     @Register("some-type-ext2")
     public static class ExtendedSomeType2 extends SomeType {

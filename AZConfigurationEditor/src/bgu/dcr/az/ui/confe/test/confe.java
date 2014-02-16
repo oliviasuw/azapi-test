@@ -8,17 +8,19 @@ package bgu.dcr.az.ui.confe.test;
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
+import bgu.dcr.az.mas.cp.CPExperiment;
 import bgu.dcr.az.ui.confe.ConfigurationEditor;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.scenicview.ScenicView;
 import test.delete.me.SomeClass;
 
 /**
@@ -44,7 +46,7 @@ public class confe extends Application {
         arrayList.add("vadim");
         arrayList.add("clint eastwood");
         c.setNames(arrayList);
-        final Configuration conf = ConfigurationUtils.load(c);
+        final Configuration conf = ConfigurationUtils.load(new CPExperiment());//ConfigurationUtils.load(c);
         
         ConfigurationEditor editor = new ConfigurationEditor();
         editor.setModel(conf, false);
@@ -58,9 +60,15 @@ public class confe extends Application {
             }
         });
         editor.getChildren().add(button);
-
-        Scene scene = new Scene(new ScrollPane(editor));
-
+        final ScrollPane scrollPane = new ScrollPane(editor);
+        scrollPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        scrollPane.setFitToWidth(true);
+        
+//        editor.setStyle("-fx-border-color:red; -fx-border-width:1;");
+        Scene scene = new Scene(scrollPane);
+//        ScenicView.show(scene);
+        
+        
         stage.setScene(scene);
         stage.setMinWidth(400);
         stage.setMinHeight(600);

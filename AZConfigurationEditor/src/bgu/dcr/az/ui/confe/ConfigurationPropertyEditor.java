@@ -12,14 +12,13 @@ import bgu.dcr.az.anop.reg.RegisteryUtils;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
@@ -33,20 +32,38 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
 
     private static final int LABEL_MARGING = 10;
     private final ConfigurationEditor confEditor;
-    private ChoiceBox<String> choiceBox;
+    private final ChoiceBox<String> choiceBox;
     private Property property;
-    private boolean readOnly;
-    private boolean reset;
     private final GridPane gridPane;
+    private boolean readOnly;
 
     public ConfigurationPropertyEditor() {
         confEditor = new ConfigurationEditor();
 
         gridPane = new GridPane();
         gridPane.getRowConstraints().add(new RowConstraints(10, 30, Double.MAX_VALUE));
+
         final Label label = new Label("Implementations");
         label.setPadding(new Insets(0, LABEL_MARGING, 0, 0));
         gridPane.add(label, 0, 0);
+
+        choiceBox = new ChoiceBox<>();
+        choiceBox.valueProperty().addListener((ObservableValue<? extends String> p, String ov, String nv) -> {
+            try {
+                if (property != null) {
+                    Configuration value = null;
+                    if (!nv.equals("NULL")) {
+                        value = RegisteryUtils.getDefaultRegistery().getConfiguration(nv);
+                    }
+                    property.set(value == null ? null : new FromConfigurationPropertyValue(value));
+                    confEditor.setModel(value, readOnly);
+                }
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(ConfigurationPropertyEditor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
+        gridPane.add(choiceBox, 1, 0);
 
         VBox vBox = new VBox();
         vBox.getChildren().addAll(gridPane, confEditor);
@@ -57,33 +74,36 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
 
     @Override
     public void setModel(final Property property, final boolean readOnly) {
-        this.property = property;
         this.readOnly = readOnly;
+
+        if (this.property != property) {
+            this.property = null;
+            Class pType = property.typeInfo().getType();
+            Collection<Class> implementors = RegisteryUtils.getDefaultRegistery().getImplementors(pType);
+            choiceBox.getItems().clear();
+            choiceBox.getItems().add("NULL");
+            implementors.forEach((i) -> choiceBox.getItems().add(RegisteryUtils.getDefaultRegistery().getRegisteredClassName(i)));
+        }
+
+        this.property = property;
         setText(property.name());
         String description = property.doc().description();
         if (description != null && !description.isEmpty()) {
+            Label image = new Label("", new ImageView(ConfigurationEditor.INFO_ICON));
             Tooltip tooltip = new Tooltip(description);
-            setTooltip(tooltip);
+            image.setTooltip(tooltip);
+            setGraphic(image);
+        } else {
+            setGraphic(null);
         }
-
-        Class pType = property.typeInfo().getType();
-        Collection<Class> implementors = RegisteryUtils.getDefaultRegistery().getImplementors(pType);
-
-        reset = true;
-        if (choiceBox != null) {
-            gridPane.getChildren().remove(choiceBox);
-        }
-        choiceBox = new ChoiceBox<>();
-        gridPane.add(choiceBox, 1, 0);
-        implementors.forEach((i) -> choiceBox.getItems().add(RegisteryUtils.getDefaultRegistery().getRegisteredClassName(i)));
-        reset = false;
 
         if (property.get() == null) {
             try {
                 String defaultName = (String) choiceBox.getItems().get(0);
                 Configuration defaultValue = RegisteryUtils.getDefaultRegistery().getConfiguration(defaultName);
                 property.set(new FromConfigurationPropertyValue(defaultValue));
-            } catch (ClassNotFoundException ex) {
+            } catch (Exception ex) {
+                ex.printStackTrace();
                 Logger.getLogger(ConfigurationPropertyEditor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -94,17 +114,9 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
             String className = RegisteryUtils.getDefaultRegistery().getRegisteredClassName(implementor);
             choiceBox.getSelectionModel().select(className);
             confEditor.setModel(confv.getValue(), readOnly);
+        } else {
+            choiceBox.getSelectionModel().select("NULL");
         }
-
-        choiceBox.valueProperty().addListener((ObservableValue<? extends String> p, String ov, String nv) -> {
-            try {
-                Configuration value = RegisteryUtils.getDefaultRegistery().getConfiguration(nv);
-                property.set(new FromConfigurationPropertyValue(value));
-                confEditor.setModel(value, readOnly);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(ConfigurationPropertyEditor.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
 
         choiceBox.setDisable(readOnly);
     }
@@ -112,6 +124,11 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
     @Override
     public void setModel(Configuration conf, boolean readOnly) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Property getModel() {
+        return property;
     }
 
 }

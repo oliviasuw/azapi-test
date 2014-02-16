@@ -11,7 +11,9 @@ import bgu.dcr.az.anop.utils.PropertyUtils;
 import java.util.Collection;
 import java.util.LinkedList;
 import javafx.geometry.Insets;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
+import resources.img.R;
 
 /**
  * FXML Controller class
@@ -20,12 +22,26 @@ import javafx.scene.layout.VBox;
  */
 public class ConfigurationEditor extends VBox {
 
-    public void setModel(Configuration conf, boolean readOnly) {
-        getChildren().clear();
+    public static final Image INFO_ICON = new Image(R.class.getResourceAsStream("info.png"));
+    private Configuration configuration;
 
+    public ConfigurationEditor() {
         setSpacing(3);
         setPadding(new Insets(5));
+    }
 
+    public void setModel(Configuration conf, boolean readOnly) {
+        if (this.configuration == conf) {
+            return;
+        }
+        this.configuration = conf;
+
+        getChildren().clear();
+
+        if (conf == null) {
+            return;
+        }
+        
         Collection<Property> properties = conf.properties();
         double max = 0;
         LinkedList<TerminalPropertyEditor> controllerList = new LinkedList<>();
@@ -41,7 +57,7 @@ public class ConfigurationEditor extends VBox {
                 getChildren().add(controller);
             }
         }
-        
+
         for (TerminalPropertyEditor controller : controllerList) {
             controller.setLabelWidth(max);
         }

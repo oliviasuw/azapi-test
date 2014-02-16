@@ -7,7 +7,6 @@ package bgu.dcr.az.ui.confe;
 
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.Property;
-import bgu.dcr.az.anop.conf.TypeInfo;
 import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;
 import bgu.dcr.az.ui.util.FXUtils;
 import java.util.logging.Level;
@@ -16,10 +15,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 
 /**
@@ -31,9 +30,42 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
 
     private static final int LABEL_MARGING = 10;
     private final Label label;
+    private final TextField textField;
+    private final CheckBox checkBox;
+    private final ChoiceBox<String> choiceBox;
+
+    private Property property;
 
     public TerminalPropertyEditor() {
         label = new Label();
+
+        textField = new TextField() {
+            @Override
+            public void replaceText(int start, int end, String text) {
+                final String origin = getText();
+                String updated = origin.substring(0, start) + text + origin.substring(end);
+                if (isLegal(updated)) {
+                    super.replaceText(start, end, text);
+                }
+            }
+
+            @Override
+            public void replaceSelection(String text) {
+                if (isLegal(text)) {
+                    super.replaceSelection(text);
+                }
+            }
+        };
+        textField.textProperty().addListener((ObservableValue<? extends String> p, String ov, String nv) -> property.set(new FromStringPropertyValue(nv)));
+
+        checkBox = new CheckBox();
+        BorderPane.setAlignment(checkBox, Pos.CENTER_LEFT);
+        checkBox.selectedProperty().addListener((ObservableValue<? extends Boolean> p, Boolean ov, Boolean nv) -> property.set(new FromStringPropertyValue(nv.toString())));
+
+        choiceBox = new ChoiceBox<>();
+        choiceBox.setMaxWidth(Double.MAX_VALUE);
+        choiceBox.valueProperty().addListener((ObservableValue<? extends String> p, String ov, String nv) -> property.set(new FromStringPropertyValue(nv)));
+
         BorderPane.setAlignment(label, Pos.CENTER_LEFT);
         setLeft(label);
     }
@@ -47,88 +79,73 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
         label.setText(property.name());
         String description = property.doc().description();
         if (description != null && !description.isEmpty()) {
+            Label image = new Label("", new ImageView(ConfigurationEditor.INFO_ICON));
+            label.setGraphic(image);
             Tooltip tooltip = new Tooltip(description);
-            label.setTooltip(tooltip);
+            image.setTooltip(tooltip);
+        } else {
+            label.setGraphic(null);
         }
 
         Class pType = property.typeInfo().getType();
         if (String.class.isAssignableFrom(pType)) {
-            setTextInputModel(property, "", "String value (free text)", (x) -> true, readOnly);
+            setTextInputModel(property, "", "String value (free text)", readOnly);
         } else if (Number.class.isAssignableFrom(pType)) {
-            setTextInputModel(property, "0", pType.getSimpleName() + " number", new NumericalValueTester(property.typeInfo()), readOnly);
+            setTextInputModel(property, "0", pType.getSimpleName() + " number", readOnly);
         } else if (Character.class.isAssignableFrom(pType)) {
-            setTextInputModel(property, "~", "Character", new GeneralValueTester(property.typeInfo()), readOnly);
+            setTextInputModel(property, "~", "Character", readOnly);
         } else if (Boolean.class.isAssignableFrom(pType)) {
             setModelBoolean(property, readOnly);
         } else if (pType.isEnum()) {
             setModelEnum(property, readOnly);
         } else {
-            throw new RuntimeException("Unsupported type: " + pType.getSimpleName());
+            setTextInputModel(property, "", pType.getSimpleName(), readOnly);
+//            throw new RuntimeException("Unsupported type: " + pType.getSimpleName());
         }
     }
 
     private void setModelBoolean(final Property property, boolean readOnly) {
-        CheckBox cb = new CheckBox();
+        this.property = property;
         if (property.get() == null) {
             property.set(new FromStringPropertyValue("true"));
         }
-        cb.setSelected(property.stringValue().equals("true"));
-        cb.selectedProperty().addListener((ObservableValue<? extends Boolean> p, Boolean ov, Boolean nv) -> property.set(new FromStringPropertyValue(nv.toString())));
-        BorderPane.setAlignment(cb, Pos.CENTER_LEFT);
-        setCenter(cb);
-        cb.setDisable(readOnly);
+        checkBox.setSelected(property.stringValue().equals("true"));
+        setCenter(checkBox);
+        checkBox.setDisable(readOnly);
     }
 
     private void setModelEnum(final Property property, boolean readOnly) {
-        ChoiceBox<String> cb = new ChoiceBox<>();
-        cb.setMaxWidth(Control.USE_PREF_SIZE);
-
-        try {
-            //            test.delete.me.SomeClass.E.
-            Object[] items = (Object[]) property.typeInfo().getType().getMethod("values").invoke(null);
-            for (Object i : items) {
-                cb.getItems().add(i.toString());
+        if (this.property != property) {
+            try {
+                //            test.delete.me.SomeClass.E.
+                Object[] items = (Object[]) property.typeInfo().getType().getMethod("values").invoke(null);
+                for (Object i : items) {
+                    choiceBox.getItems().add(i.toString());
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(TerminalPropertyEditor.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (Exception ex) {
-            Logger.getLogger(TerminalPropertyEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        this.property = property;
 
         if (property.get() == null) {
-            property.set(new FromStringPropertyValue(cb.getItems().get(0)));
+            property.set(new FromStringPropertyValue(choiceBox.getItems().get(0)));
         }
-        cb.setValue(property.stringValue());
-
-        cb.valueProperty().addListener((ObservableValue<? extends String> p, String ov, String nv) -> property.set(new FromStringPropertyValue(nv)));
-        setCenter(cb);
-        cb.setDisable(readOnly);
+        choiceBox.setValue(property.stringValue());
+        setCenter(choiceBox);
+        choiceBox.setDisable(readOnly);
     }
 
-    private void setTextInputModel(Property property, String defaultValue, String prompt, ValueTester tester, boolean readOnly) {
-        TextField textField = new TextField() {
-            @Override
-            public void replaceText(int start, int end, String text) {
-                final String origin = getText();
-                String updated = origin.substring(0, start) + text + origin.substring(end);
-                if (tester.isLegal(updated)) {
-                    super.replaceText(start, end, text);
-                }
-            }
-
-            @Override
-            public void replaceSelection(String text) {
-                if (tester.isLegal(text)) {
-                    super.replaceSelection(text);
-                }
-            }
-        };
+    private void setTextInputModel(Property property, String defaultValue, String prompt, boolean readOnly) {
+        this.property = property;
         if (property.get() == null) {
             property.set(new FromStringPropertyValue(defaultValue));
         }
         textField.setText(property.stringValue());
-        textField.textProperty().addListener((ObservableValue<? extends String> p, String ov, String nv) -> property.set(new FromStringPropertyValue(nv)));
-
-        setCenter(textField);
         textField.setPromptText(prompt);
+        textField.setTooltip(new Tooltip("" + property.typeInfo().getType().getSimpleName() + " value"));
+        setCenter(textField);
         textField.setDisable(readOnly);
     }
 
@@ -147,47 +164,30 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private static interface ValueTester {
-
-        boolean isLegal(String text);
-    }
-
-    private static class GeneralValueTester implements ValueTester {
-
-        TypeInfo ti;
-
-        public GeneralValueTester(TypeInfo ti) {
-            this.ti = ti;
+    public boolean isLegal(String text) {
+        if (text.isEmpty()) {
+            return true;
         }
 
-        @Override
-        public boolean isLegal(String text) {
-            try {
-                new FromStringPropertyValue(text).create(ti);
-                return true;
-            } catch (Exception ex) {
-                return false;
-            }
+        Class c = property.typeInfo().getType();
+        if (Number.class.isAssignableFrom(c) && text.equals("-")) {
+            return true;
+        }
+
+        if ((Float.class.isAssignableFrom(c.getClass()) || Double.class.isAssignableFrom(c.getClass())) && text.equals(".")) {
+            return true;
+        }
+
+        try {
+            new FromStringPropertyValue(text).create(property.typeInfo());
+            return true;
+        } catch (Exception ex) {
+            return false;
         }
     }
 
-    private static class NumericalValueTester extends GeneralValueTester {
-
-        public NumericalValueTester(TypeInfo ti) {
-            super(ti);
-        }
-
-        @Override
-        public boolean isLegal(String text) {
-            if (text.equals("-")) {
-                return true;
-            }
-            
-            if ((Float.class.isAssignableFrom(ti.getClass()) || Double.class.isAssignableFrom(ti.getClass())) && text.equals(".")) {
-                return true;
-            }
-
-            return super.isLegal(text);
-        }
+    @Override
+    public Property getModel() {
+        return property;
     }
 }

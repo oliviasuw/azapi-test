@@ -18,4 +18,5 @@ public interface PropertyEditor {
     
     public void setModel(Property property, boolean readOnly);
 
+    public Property getModel();
 }

@@ -42,10 +42,13 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
     public ConfigurationPropertyEditor(boolean isListItem) {
         this.isListItem = isListItem;
 
+        getStyleClass().add("configuration-property-editor");
+        
         infoContainer = new Label("");
         confEditor = new ConfigurationEditor();
 
         implementorsBorderPane = new BorderPane();
+        implementorsBorderPane.getStyleClass().add("implementors");
 
         Label label = new Label("Implementations :");
         label.setPadding(new Insets(0, LABEL_MARGING, 0, 0));
@@ -140,6 +143,8 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
             implementors.forEach((i) -> choiceBox.getItems().add(RegisteryUtils.getDefaultRegistery().getRegisteredClassName(i)));
 
             if (isListItem && implementors.size() <= 1) {
+//                itemLabel.setAlignment(Pos.CENTER_LEFT);
+                BorderPane.setAlignment(itemLabel, Pos.CENTER_LEFT);
                 implementorsBorderPane.setCenter(itemLabel);
             } else {
                 implementorsBorderPane.setCenter(choiceBox);

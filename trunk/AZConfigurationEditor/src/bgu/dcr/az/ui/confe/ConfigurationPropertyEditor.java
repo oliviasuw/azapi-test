@@ -38,7 +38,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
     private boolean readOnly;
     private final boolean isListItem;
     private final VBox editorVBox;
-    
+
     private final NavigatableConfigurationEditor navigator;
 
     public ConfigurationPropertyEditor(NavigatableConfigurationEditor navigator, boolean isListItem) {
@@ -46,7 +46,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         this.isListItem = isListItem;
 
         getStyleClass().add("configuration-property-editor");
-        
+
         infoContainer = new Label("");
         confEditor = new ConfigurationEditor(navigator);
 
@@ -99,7 +99,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
             updateInfo(infoContainer);
             return;
         }
-        
+
         if (this.property == property) {
             return;
         }
@@ -125,36 +125,40 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
             }
         }
 
-        FromConfigurationPropertyValue confv = (FromConfigurationPropertyValue) property.get();
-        if (confv != null && confv.getValue() != null) { //in case property is a dummy (came from collection property editor)
-            Class implementor = confv.getValue().typeInfo().getType();
+        FromConfigurationPropertyValue fcpv = (FromConfigurationPropertyValue) property.get();
+        
+        if (fcpv != null && fcpv.getValue() != null) { //in case property is a dummy (came from collection property editor)
+            Class implementor = fcpv.getValue().typeInfo().getType();
             String className = RegisteryUtils.getDefaultRegistery().getRegisteredClassName(implementor);
+            Property temp = property;
+            property = null;
             choiceBox.getSelectionModel().select(className);
+            property = temp;
             itemLabel.setText(className);
-            confEditor.setModel(confv.getValue(), readOnly);
+            confEditor.setModel(fcpv.getValue(), readOnly);
         } else {
             choiceBox.getSelectionModel().select("NULL");
         }
     }
 
     private void extractImplementors(Property property) {
-        if (this.property != property) {
-            this.property = null;
-            Class pType = property.typeInfo().getType();
-            Collection<Class> implementors = RegisteryUtils.getDefaultRegistery().getImplementors(pType);
-            choiceBox.getItems().clear();
-            if (!isListItem) {
-                choiceBox.getItems().add("NULL");
-            }
-            implementors.forEach((i) -> choiceBox.getItems().add(RegisteryUtils.getDefaultRegistery().getRegisteredClassName(i)));
+        if (this.property == property) {
+            return;
+        }
+        this.property = null;
+        Class pType = property.typeInfo().getType();
+        Collection<Class> implementors = RegisteryUtils.getDefaultRegistery().getImplementors(pType);
+        choiceBox.getItems().clear();
+        if (!isListItem) {
+            choiceBox.getItems().add("NULL");
+        }
+        implementors.forEach((i) -> choiceBox.getItems().add(RegisteryUtils.getDefaultRegistery().getRegisteredClassName(i)));
 
-            if (isListItem && implementors.size() <= 1) {
-//                itemLabel.setAlignment(Pos.CENTER_LEFT);
-                BorderPane.setAlignment(itemLabel, Pos.CENTER_LEFT);
-                implementorsBorderPane.setCenter(itemLabel);
-            } else {
-                implementorsBorderPane.setCenter(choiceBox);
-            }
+        if (isListItem && implementors.size() <= 1) {
+            BorderPane.setAlignment(itemLabel, Pos.CENTER_LEFT);
+            implementorsBorderPane.setCenter(itemLabel);
+        } else {
+            implementorsBorderPane.setCenter(choiceBox);
         }
     }
 

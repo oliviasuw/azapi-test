@@ -14,23 +14,16 @@ import bgu.dcr.az.anop.utils.PropertyUtils;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.BorderPane;
 
 /**
  *
  * @author Zovadi
  */
-public class NavigatableConfigurationEditor extends HBox implements PropertyEditor {
+public class NavigatableConfigurationEditor extends BorderPane implements PropertyEditor {
 
     private final ConfigurationEditor configurationEditor;
     private final ConfigurationPropertyEditor configurationPropertyEditor;
@@ -56,18 +49,17 @@ public class NavigatableConfigurationEditor extends HBox implements PropertyEdit
         configurationTree.setPrefWidth(250);
         configurationTree.setMaxWidth(250);
         configurationTree.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> navigateToSelectedItem());
-        getChildren().add(configurationTree);
+        setLeft(configurationTree);
 
         scrollPane = new ScrollPane(configurationEditor);
-        scrollPane.setMinWidth(500);
         scrollPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         scrollPane.setFitToWidth(true);
-        scrollPane.setFitToHeight(true);
-        getChildren().add(scrollPane);
+        
+//        scrollPane.setStyle("-fx-border: 10px solid; -fx-border-color: red;");
+        setCenter(scrollPane);
 
         treeNodes = new HashMap<>();
-
-        setStyle("-fx-border: 10px solid; -fx-border-color: red;");
+//        setStyle("-fx-border: 10px solid; -fx-border-color: red;");
     }
 
     private void navigateToSelectedItem() {
@@ -85,9 +77,11 @@ public class NavigatableConfigurationEditor extends HBox implements PropertyEdit
                     scrollPane.setContent(terminalPropertyEditor);
                 } else if (PropertyUtils.isCollection(property)) {
                     collectionPropertyEditor.setModel(property, readOnly);
+                    collectionPropertyEditor.setExpanded(true);
                     scrollPane.setContent(collectionPropertyEditor);
                 } else {
                     configurationPropertyEditor.setModel(property, readOnly);
+                    configurationPropertyEditor.setExpanded(true);
                     scrollPane.setContent(configurationPropertyEditor);
                 }
             }
@@ -128,70 +122,6 @@ public class NavigatableConfigurationEditor extends HBox implements PropertyEdit
         fillTreeNodes(open);
     }
 
-    public void removeSubTree(Object root) {
-        if (!treeNodes.keySet().contains(root)) {
-            return;
-        }
-        TreeItem node = treeNodes.get(root);
-
-        node.getParent().getChildren().remove(node);
-    }
-
-    public void removeChildren(Object root) {
-        if (!treeNodes.keySet().contains(root)) {
-            return;
-        }
-
-        TreeItem parentNode = treeNodes.get(root);
-
-        for (Object k : treeNodes.keySet().toArray()) {
-            TreeItem node = treeNodes.get(k);
-            if (parentNode == node.getParent()) {
-                parentNode.getChildren().remove(node);
-                treeNodes.remove(k);
-            }
-        }
-    }
-
-    public void addFromConfigurationTreeNodes(Property property) {
-        removeChildren(property);
-
-        if (property.get() == null) {
-            return;
-        }
-
-        LinkedList open = new LinkedList();
-
-        addFromConfigurationTreeNodes(((FromConfigurationPropertyValue) property.get()).getValue(), property, open);
-
-        fillTreeNodes(open);
-    }
-
-    public void addCollectionItemTreeNode(Property collection, Property item) {
-        removeChildren(item);
-
-        if (item.get() == null) {
-            return;
-        }
-
-        LinkedList open = new LinkedList();
-
-        if (item.get() instanceof FromConfigurationPropertyValue) {
-            addLeafTreeNode(collection, item, "item", open);
-            addFromConfigurationTreeNodes(((FromConfigurationPropertyValue) item.get()).getValue(), item, open);
-        }
-
-        if (item.get() instanceof FromCollectionPropertyValue) {
-            addLeafTreeNode(collection, item, "item", open);
-        }
-
-        if (item.get() instanceof FromStringPropertyValue) {
-            addLeafTreeNode(collection, item, "item", open);
-        }
-
-        fillTreeNodes(open);
-    }
-
     private void fillTreeNodes(LinkedList open) {
         while (!open.isEmpty()) {
             Object parent = open.remove();
@@ -219,7 +149,7 @@ public class NavigatableConfigurationEditor extends HBox implements PropertyEdit
     private void addFromConfigurationTreeNodes(Configuration conf, Object parent, LinkedList open) {
         for (Property property : conf.properties()) {
             if (PropertyUtils.isPrimitive(property)) {
-                addLeafTreeNode(parent, property, property.name(), open);
+//                addLeafTreeNode(parent, property, property.name(), open);
             } else if (PropertyUtils.isCollection(property)) {
                 addLeafTreeNode(parent, property, "Collection of " + property.name(), open);
             } else {
@@ -274,4 +204,83 @@ public class NavigatableConfigurationEditor extends HBox implements PropertyEdit
             return name;
         }
     }
+
+    public void removeSubTree(Property root) {
+        if (!treeNodes.keySet().contains(root)) {
+            return;
+        }
+
+        removeChildren(root);
+
+        TreeItem node = treeNodes.get(root);
+
+        node.getParent().getChildren().remove(node);
+        treeNodes.remove(root);
+    }
+
+    public void removeChildren(Property root) {
+        if (!treeNodes.keySet().contains(root)) {
+            return;
+        }
+
+        TreeItem rootNode = treeNodes.get(root);
+
+        LinkedList open = new LinkedList();
+        open.add(rootNode);
+
+        while (!open.isEmpty()) {
+            TreeItem parentNode = (TreeItem)open.remove();
+            for (Object node : parentNode.getChildren().toArray()) {
+                parentNode.getChildren().remove(node);
+                treeNodes.remove(((TreeItemProperty) ((TreeItem) node).getValue()).getProperty());
+                open.add(node);
+            }
+        }
+    }
+
+    public void addFromConfigurationTreeNodes(Property property) {
+        if (property == null || property.get() == null) {
+            return;
+        }
+        TreeItem root = treeNodes.get(property);
+        boolean isSelected = configurationTree.getSelectionModel().getSelectedItem() == root;
+
+        removeChildren(property);
+
+        LinkedList open = new LinkedList();
+
+        addFromConfigurationTreeNodes(((FromConfigurationPropertyValue) property.get()).getValue(), property, open);
+
+        fillTreeNodes(open);
+        
+        if (isSelected) {
+            configurationTree.getSelectionModel().select(root);
+        }
+    }
+
+    public void addCollectionItemTreeNode(Property collection, Property item) {
+        if (item == null || item.get() == null) {
+            return;
+        }
+        
+        removeSubTree(item);
+
+        LinkedList open = new LinkedList();
+
+        if (item.get() instanceof FromConfigurationPropertyValue) {
+            addLeafTreeNode(collection, item, "item", open);
+            addFromConfigurationTreeNodes(((FromConfigurationPropertyValue) item.get()).getValue(), item, open);
+        }
+
+        if (item.get() instanceof FromCollectionPropertyValue) {
+            addLeafTreeNode(collection, item, "item", open);
+        }
+
+        if (item.get() instanceof FromStringPropertyValue) {
+            addLeafTreeNode(collection, item, "item", open);
+        }
+
+        fillTreeNodes(open);
+    }
+
 }

@@ -31,23 +31,19 @@ public class Location {
         this.y.setValue(y);
     }
 
+    public double getX() {
+        return x.get();
+    }
+
+    public double getY() {
+        return y.get();
+    }
     
-    
-    public DoubleProperty getX() {
+    public DoubleProperty xProperty() {
         return x;
     }
 
-    public void setX(double x) {
-        this.x.setValue(x);
-    }
-
-    public DoubleProperty getY() {
+    public DoubleProperty yProperty() {
         return y;
     }
-
-    public void setY(double y) {
-        this.y.setValue(y);
-    }
-    
-    
 }

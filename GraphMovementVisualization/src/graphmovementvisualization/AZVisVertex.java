@@ -11,17 +11,17 @@ package graphmovementvisualization;
  * @author Shl
  */
 public class AZVisVertex {
-    private int x;
-    private int y;
+    private double x;
+    private double y;
     private String name;
 
-    public AZVisVertex(String name, int x, int y) {
+    public AZVisVertex(String name, double x, double y) {
         this.x = x;
         this.y = y;
         this.name = name;
     }
 
-    public int getX() {
+    public double getX() {
         return x;
     }
 
@@ -29,7 +29,7 @@ public class AZVisVertex {
         this.x = x;
     }
 
-    public int getY() {
+    public double getY() {
         return y;
     }
 

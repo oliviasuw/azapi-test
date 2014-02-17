@@ -36,6 +36,8 @@ public class GraphData {
 
     public void addEdge(String name, String from, String to, Object edgeData) {
         data.put(name, edgeData);
+                System.out.println("from " + from + " to " + to);
+
         graph.addEdge(from, to, name);
     }
 

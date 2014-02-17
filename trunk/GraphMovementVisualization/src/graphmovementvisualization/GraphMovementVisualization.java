@@ -5,10 +5,12 @@
  */
 package graphmovementvisualization;
 
+import graphicx.sprite.Sprite;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import graphicx.sprite.Car;
 import graphmovementvisualization.api.SimulatorEvent;
 import graphmovementvisualization.api.SimulatorTick;
 import graphmovementvisualization.impl.GraphData;
@@ -43,6 +45,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 /**
@@ -53,8 +57,6 @@ public class GraphMovementVisualization extends Application {
 
     private final ArrayList<Sprite> sprites = new ArrayList<>();
 
-    final int width = 6000;
-    final int height = 6000;
     final Random r = new Random();
     private Kryo kryo;
     private GraphData graphData = new GraphData();
@@ -66,30 +68,47 @@ public class GraphMovementVisualization extends Application {
         Pane pane = new Pane();
 
         scrollPane = new ScrollPane(pane);
-        scrollPane.setPrefWidth(width / 2);
-        scrollPane.setPrefHeight(height / 2);
+        scrollPane.setPrefWidth(1000);
+        scrollPane.setPrefHeight(1000);
 
-        final Canvas actionCanvas = new Canvas(width / 2, height / 2); //need to set dyanmically according to image dimensions with scaling set to minimum - meaning the farthest zoom possible
+        final Canvas actionCanvas = new Canvas(); //need to set dyanmically according to image dimensions with scaling set to minimum - meaning the farthest zoom possible
         final GraphicsContext gcAction = actionCanvas.getGraphicsContext2D();
         gcAction.setFill(new Color(0, 0, 0, 1));
-        gcAction.fillRect(0, 0, width / 2, height / 2);
+        gcAction.fillRect(0, 0, actionCanvas.getWidth(), actionCanvas.getHeight());
 
-        final Canvas backCanvas = new Canvas(width, height); //need to set dyanmically according to image dimensions with scaling set to minimum - meaning the farthest zoom possible
-        final GraphicsContext gcBack = backCanvas.getGraphicsContext2D();
+        final Canvas backCanvas = new Canvas(); //need to set dyanmically according to image dimensions with scaling set to minimum - meaning the farthest zoom possible
         graphData = getGraphData();
-        drawBackgroundFromGraph(gcBack, graphData);
+        drawBackgroundFromGraph(backCanvas, graphData);
         backCanvas.setCacheHint(CacheHint.SPEED);
         backCanvas.setCache(true);
 
-        actionCanvas.widthProperty().bind(scrollPane.widthProperty());
-        actionCanvas.heightProperty().bind(scrollPane.heightProperty());
+        scrollPane.widthProperty().addListener((ObservableValue<? extends Number> ov, Number o, Number n) -> {
+            actionCanvas.setWidth(n.doubleValue());
+            backCanvas.setWidth(n.doubleValue());
+            drawBackgroundFromGraph(backCanvas, graphData);
+        });
+
+        scrollPane.heightProperty().addListener((ObservableValue<? extends Number> ov, Number o, Number n) -> {
+            actionCanvas.setHeight(n.doubleValue());
+            backCanvas.setHeight(n.doubleValue());
+            drawBackgroundFromGraph(backCanvas, graphData);
+        });
 
         scrollPane.hvalueProperty().addListener((ov, n, o) -> {
-            actionCanvas.setTranslateX(o.doubleValue() * (width - scrollPane.getViewportBounds().getWidth()));
+            actionCanvas.setTranslateX(o.doubleValue() * (pane.getWidth() - scrollPane.getViewportBounds().getWidth()));
+            backCanvas.setTranslateX(o.doubleValue() * (pane.getWidth() - scrollPane.getViewportBounds().getWidth()));
+            drawBackgroundFromGraph(backCanvas, graphData);
         });
+
         scrollPane.vvalueProperty().addListener((ov, n, o) -> {
-            actionCanvas.setTranslateY(o.doubleValue() * (height - scrollPane.getViewportBounds().getHeight()));
+            actionCanvas.setTranslateY(o.doubleValue() * (pane.getHeight() - scrollPane.getViewportBounds().getHeight()));
+            backCanvas.setTranslateY(o.doubleValue() * (pane.getHeight() - scrollPane.getViewportBounds().getHeight()));
+            drawBackgroundFromGraph(backCanvas, graphData);
         });
+
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        pane.setPrefWidth(8000);
+        pane.setPrefHeight(8000);
 
 //        .bind(scrollPane.getContent().translateXProperty());
         pane.getChildren().add(backCanvas);
@@ -99,7 +118,7 @@ public class GraphMovementVisualization extends Application {
 //        actionCanvas.setCacheHint(CacheHint.SPEED);
 //        actionCanvas.setCache(true);
         for (int i = 0; i < 1; i++) {
-            final Sprite s = new Sprite(i);
+            final Sprite s = new Car(i);
             sprites.add(s);
         }
 
@@ -151,8 +170,7 @@ public class GraphMovementVisualization extends Application {
                 gcAction.strokeText("tx: " + tx + ", ty: " + ty, 14, 14);
 
                 for (Sprite sprite : sprites) {
-                    Location location = sprite.getLocation();
-                    gcAction.drawImage(sprite.getImage(), location.getX().doubleValue() - tx, location.getY().doubleValue() - ty);
+                    sprite.draw(actionCanvas);
                 }
 
             }
@@ -181,7 +199,7 @@ public class GraphMovementVisualization extends Application {
 //            System.out.println("percentage = " + percentage);
             for (int j = 0; j < sprites.size(); j++) {
                 if (Math.random() > 0) {
-                    kryo.writeClassAndObject(output, new MoveEvent(j, "A B", percentage));
+                    kryo.writeClassAndObject(output, new MoveEvent(j, "427182875 1775801775", percentage));
                 }
 
             }
@@ -192,38 +210,16 @@ public class GraphMovementVisualization extends Application {
 //            System.out.println("percentage = " + percentage);
             for (int j = 0; j < sprites.size(); j++) {
                 if (Math.random() > 0) {
-                    kryo.writeClassAndObject(output, new MoveEvent(j, "B G", percentage));
+                    kryo.writeClassAndObject(output, new MoveEvent(j, "1775801775 427182876", percentage));
                 }
             }
         }
         for (int i = 0; i <= 10; i = i + 2) {
             kryo.writeClassAndObject(output, new TickEvent(i));
             int percentage = (int) (((double) i / 10) * 100);
-//            System.out.println("percentage = " + percentage);
             for (int j = 0; j < sprites.size(); j++) {
                 if (Math.random() > 0) {
-                    kryo.writeClassAndObject(output, new MoveEvent(j, "G C", percentage));
-                }
-            }
-        }
-        for (int i = 0; i <= 10; i = i + 2) {
-            kryo.writeClassAndObject(output, new TickEvent(i));
-            int percentage = (int) (((double) i / 10) * 100);
-//            System.out.println("percentage = " + percentage);
-            for (int j = 0; j < sprites.size(); j++) {
-                if (Math.random() > 0) {
-                    kryo.writeClassAndObject(output, new MoveEvent(j, "C D", percentage));
-                }
-            }
-        }
-
-        for (int i = 0; i <= 10; i = i + 2) {
-            kryo.writeClassAndObject(output, new TickEvent(i));
-            int percentage = (int) (((double) i / 10) * 100);
-//            System.out.println("percentage = " + percentage);
-            for (int j = 0; j < sprites.size(); j++) {
-                if (Math.random() > 0) {
-                    kryo.writeClassAndObject(output, new MoveEvent(j, "D E", percentage));
+                    kryo.writeClassAndObject(output, new MoveEvent(j, "427182876 427182878", percentage));
                 }
             }
         }
@@ -244,15 +240,6 @@ public class GraphMovementVisualization extends Application {
         launch(args);
     }
 
-    public void addNewMoves(Timeline timeline) {
-        for (Sprite sprite : sprites) {
-            KeyFrame move = sprite.move(r.nextInt(width), r.nextInt(height));
-            timeline.getKeyFrames().add(move);
-//            System.out.println("added a keyframe");
-        }
-        timeline.play();
-    }
-
     public void addNewMovesFromEvents(Timeline timeline, Collection events) {
         for (Object event : events) {
             if (event instanceof MoveEvent) {
@@ -261,8 +248,12 @@ public class GraphMovementVisualization extends Application {
                 String edge = movee.getEdge();
 
                 Location location = translateToLocation(edge, movee.getPercentage());
-                KeyFrame move = sprites.get(who).move(location);
-                timeline.getKeyFrames().add(move);
+                Sprite currSprite = sprites.get(who);
+                if (currSprite instanceof Car) {
+                    Car currCar = (Car)currSprite;
+                    KeyFrame move = currCar.move(location.getX(), location.getY());
+                    timeline.getKeyFrames().add(move);
+                }
 //                System.out.println("added a keyframe");
 
             }
@@ -283,8 +274,8 @@ public class GraphMovementVisualization extends Application {
                 if (nextToken.equals("V")) {
                     String name = lineBreaker.next();
                     nextToken = lineBreaker.next();
-                    Collection<Integer> ints = parseVertex(lineBreaker, nextToken);
-                    Iterator<Integer> iterator = ints.iterator();
+                    Collection<Double> ints = parseVertex(lineBreaker, nextToken);
+                    Iterator<Double> iterator = ints.iterator();
                     AZVisVertex vertexData = new AZVisVertex(name, iterator.next(), iterator.next());
                     graphData.addVertex(name, vertexData);
                 } else if (nextToken.equals("E")) {
@@ -303,31 +294,39 @@ public class GraphMovementVisualization extends Application {
         return graphData;
     }
 
-    private Collection<Integer> parseVertex(Scanner lineBreaker, String nextToken) {
-        LinkedList<Integer> ints = new LinkedList<>();
+    private Collection<Double> parseVertex(Scanner lineBreaker, String nextToken) {
+        LinkedList<Double> ints = new LinkedList<>();
         while (lineBreaker.hasNext()) {
             if (nextToken.charAt(0) == '[') {
                 nextToken = nextToken.substring(1);
                 while (!(nextToken.charAt(nextToken.length() - 1) == ']')) {
-                    ints.add(Integer.parseInt(nextToken));
+                    ints.add(Double.parseDouble(nextToken));
                     nextToken = lineBreaker.next();
                 }
-                ints.add(Integer.parseInt(nextToken.substring(0, nextToken.length() - 1)));
+                ints.add(Double.parseDouble(nextToken.substring(0, nextToken.length() - 1)));
             }
         }
         return ints;
     }
 
-    private void drawBackgroundFromGraph(GraphicsContext gc, GraphData graphData) {
+    private void drawBackgroundFromGraph(Canvas canvas, GraphData graphData) {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        double tx = canvas.getTranslateX();
+        double ty = canvas.getTranslateY();
+
+        gc.setFill(new Color(0, 0, 0, 1));
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        gc.strokeText("tx: " + tx + ", ty: " + ty, 14, canvas.getHeight() - 14);
         for (String vertexName : graphData.getVertexSet()) {
             AZVisVertex vertex = (AZVisVertex) graphData.getData(vertexName);
-            gc.strokeRect(vertex.getX(), vertex.getY(), 5, 5);
+            gc.strokeRect(vertex.getX() - tx, vertex.getY() - ty, 5, 5);
 
         }
         for (String edgeName : graphData.getEdgeSet()) {
             AZVisVertex source = (AZVisVertex) graphData.getData(graphData.getEdgeSource(edgeName));
             AZVisVertex target = (AZVisVertex) graphData.getData(graphData.getEdgeTarget(edgeName));
-            gc.strokeLine(source.getX(), source.getY(), target.getX(), target.getY());
+            gc.strokeLine(source.getX() - tx, source.getY() - ty, target.getX() - tx, target.getY() - ty);
         }
     }
 
@@ -370,8 +369,8 @@ public class GraphMovementVisualization extends Application {
         String target = graphData.getEdgeTarget(edgeName);
         AZVisVertex srcData = (AZVisVertex) graphData.getData(src);
         AZVisVertex targetData = (AZVisVertex) graphData.getData(target);
-        int xsub = Math.abs(srcData.getX() - targetData.getX());
-        int ysub = Math.abs(srcData.getY() - targetData.getY());
+        double xsub = Math.abs(srcData.getX() - targetData.getX());
+        double ysub = Math.abs(srcData.getY() - targetData.getY());
         double totalDistance = Math.sqrt(xsub * xsub + ysub * ysub);
         double distance = totalDistance * (precentage / 100D);
         double angle = Math.atan2(ysub, xsub);

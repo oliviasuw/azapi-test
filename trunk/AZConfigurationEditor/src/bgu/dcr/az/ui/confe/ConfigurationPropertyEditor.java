@@ -38,14 +38,17 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
     private boolean readOnly;
     private final boolean isListItem;
     private final VBox editorVBox;
+    
+    private final NavigatableConfigurationEditor navigator;
 
-    public ConfigurationPropertyEditor(boolean isListItem) {
+    public ConfigurationPropertyEditor(NavigatableConfigurationEditor navigator, boolean isListItem) {
+        this.navigator = navigator;
         this.isListItem = isListItem;
 
         getStyleClass().add("configuration-property-editor");
         
         infoContainer = new Label("");
-        confEditor = new ConfigurationEditor();
+        confEditor = new ConfigurationEditor(navigator);
 
         implementorsBorderPane = new BorderPane();
         implementorsBorderPane.getStyleClass().add("implementors");
@@ -67,6 +70,9 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
                         value = RegisteryUtils.getDefaultRegistery().getConfiguration(nv);
                     }
                     property.set(value == null ? null : new FromConfigurationPropertyValue(value));
+                    if (navigator != null) {
+                        navigator.addFromConfigurationTreeNodes(property);
+                    }
                     confEditor.setModel(value, readOnly);
                 }
             } catch (ClassNotFoundException ex) {

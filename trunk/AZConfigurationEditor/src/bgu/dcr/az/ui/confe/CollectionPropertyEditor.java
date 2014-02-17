@@ -53,7 +53,11 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     private boolean readOnly;
     private boolean editEnabled;
 
-    public CollectionPropertyEditor() {
+    private final NavigatableConfigurationEditor navigator;
+
+    public CollectionPropertyEditor(NavigatableConfigurationEditor navigator) {
+        this.navigator = navigator;
+
         getStyleClass().add("collection-property-editor");
         
         addButton = new Button("Add");
@@ -77,17 +81,17 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     @Override
     public void setModel(Property property, boolean readOnly) {
         this.readOnly = readOnly;
-        
+
         if (property == null) {
             collectionProperty = null;
             updateInfo(infoContainer);
             return;
         }
-        
+
         if (collectionProperty == property) {
             return;
         }
-        
+
         this.collectionProperty = property;
         setText("Collection of " + property.name());
 
@@ -109,6 +113,11 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         Class type = collectionProperty.typeInfo().getGenericParameters().get(0).getType();
         PropertyImpl pseudoProperty = new PropertyImpl("item", null, new ConfigurableTypeInfoImpl(type), JavaDocParser.parse(""));
         pseudoProperty.set(value);
+
+        if (navigator != null) {
+            navigator.addCollectionItemTreeNode(collectionProperty, pseudoProperty);
+        }
+
         BorderPane grid = new BorderPane();
         Node editor = propertyToEditor(pseudoProperty);
         ((PropertyEditor) editor).setModel(pseudoProperty, readOnly);
@@ -120,6 +129,9 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
             FromCollectionPropertyValue fcpv = (FromCollectionPropertyValue) collectionProperty.get();
             fcpv.remove(value);
             vBox.getChildren().remove(grid);
+            if (navigator != null) {
+                navigator.removeSubTree(pseudoProperty);
+            }
         });
         BorderPane.setAlignment(remove, Pos.CENTER);
         grid.setLeft(remove);
@@ -152,6 +164,10 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         Property temp = collectionProperty;
         collectionProperty = null;
         setModel(temp, readOnly);
+
+        if (navigator != null) {
+            navigator.removeChildren(collectionProperty);
+        }
     }
 
     public PropertyValue getPropertyValue() {
@@ -183,9 +199,9 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
             return new TerminalPropertyEditor();
         } else {
             if (PropertyUtils.isCollection(property)) {
-                return new CollectionPropertyEditor();
+                return new CollectionPropertyEditor(navigator);
             } else {
-                return new ConfigurationPropertyEditor(true);
+                return new ConfigurationPropertyEditor(navigator, true);
             }
         }
     }

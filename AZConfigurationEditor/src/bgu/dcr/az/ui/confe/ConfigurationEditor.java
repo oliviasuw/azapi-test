@@ -20,10 +20,13 @@ import javafx.scene.layout.VBox;
  */
 public class ConfigurationEditor extends VBox {
 
+    private final NavigatableConfigurationEditor navigator;
+    
     private Configuration configuration;
     private boolean readOnly;
 
-    public ConfigurationEditor() {
+    public ConfigurationEditor(NavigatableConfigurationEditor navigator) {
+        this.navigator = navigator;
         setSpacing(3);
         setPadding(new Insets(5));
         
@@ -60,7 +63,7 @@ public class ConfigurationEditor extends VBox {
                         && property.doc().first("UIVisibility").toLowerCase().equals("false")) {
                     continue;
                 }
-                CollectionPropertyEditor editor = new CollectionPropertyEditor();
+                CollectionPropertyEditor editor = new CollectionPropertyEditor(navigator);
                 editor.setModel(property, readOnly);
                 getChildren().add(editor);
             }
@@ -75,7 +78,7 @@ public class ConfigurationEditor extends VBox {
                         && property.doc().first("UIVisibility").toLowerCase().equals("false")) {
                     continue;
                 }
-                ConfigurationPropertyEditor editor = new ConfigurationPropertyEditor(false);
+                ConfigurationPropertyEditor editor = new ConfigurationPropertyEditor(navigator, false);
                 editor.setModel(property, readOnly);
                 getChildren().add(editor);
             }

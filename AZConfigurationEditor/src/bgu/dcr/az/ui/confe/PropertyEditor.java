@@ -27,15 +27,15 @@ public interface PropertyEditor {
 
     public Property getModel();
 
-    public default void updateInfo(Label infoContainer) {
+    public static void updateInfo(Label infoContainer, Property model) {
         infoContainer.setText("");
         infoContainer.setGraphic(null);
         infoContainer.setTooltip(null);
 
-        if (getModel() == null || getModel().doc() == null) {
+        if (model == null || model.doc() == null) {
             return;
         }
-        String iconPath = getModel().doc().first("icon");
+        String iconPath = model.doc().first("icon");
 
         if (iconPath != null) {
             if (iconPath.startsWith("#")) {
@@ -45,7 +45,7 @@ public interface PropertyEditor {
             }
         }
 
-        String info = getModel().doc().description();
+        String info = model.doc().description();
 
         if (info != null && !info.isEmpty()) {
             if (infoContainer.getGraphic() == null) {

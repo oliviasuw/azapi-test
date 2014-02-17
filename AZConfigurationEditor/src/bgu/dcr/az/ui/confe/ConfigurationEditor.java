@@ -59,8 +59,7 @@ public class ConfigurationEditor extends VBox {
         for (Property property : properties) {
             if (PropertyUtils.isCollection(property)) {
                 if (property.doc() != null
-                        && property.doc().first("UIVisibility") != null
-                        && property.doc().first("UIVisibility").toLowerCase().equals("false")) {
+                        && "false".equals(property.doc().first("UIVisibility"))) {
                     continue;
                 }
                 CollectionPropertyEditor editor = new CollectionPropertyEditor(navigator);
@@ -74,8 +73,7 @@ public class ConfigurationEditor extends VBox {
         for (Property property : properties) {
             if (!PropertyUtils.isPrimitive(property) && !PropertyUtils.isCollection(property)) {
                 if (property.doc() != null
-                        && property.doc().first("UIVisibility") != null
-                        && property.doc().first("UIVisibility").toLowerCase().equals("false")) {
+                        && "false".equals(property.doc().first("UIVisibility"))) {
                     continue;
                 }
                 ConfigurationPropertyEditor editor = new ConfigurationPropertyEditor(navigator, false);

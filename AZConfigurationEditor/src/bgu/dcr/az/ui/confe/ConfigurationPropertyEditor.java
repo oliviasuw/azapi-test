@@ -39,10 +39,10 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
     private final boolean isListItem;
     private final VBox editorVBox;
 
-    private final NavigatableConfigurationEditor navigator;
+//    private final NavigatableConfigurationEditor navigator;
 
     public ConfigurationPropertyEditor(NavigatableConfigurationEditor navigator, boolean isListItem) {
-        this.navigator = navigator;
+//        this.navigator = navigator;
         this.isListItem = isListItem;
 
         getStyleClass().add("configuration-property-editor");
@@ -69,6 +69,9 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
                     if (!nv.equals("NULL")) {
                         value = RegisteryUtils.getDefaultRegistery().getConfiguration(nv);
                     }
+//                    if (navigator != null) {
+//                        navigator.removeChildren(property);
+//                    }
                     property.set(value == null ? null : new FromConfigurationPropertyValue(value));
                     if (navigator != null) {
                         navigator.addFromConfigurationTreeNodes(property);
@@ -96,7 +99,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
 
         if (property == null) {
             this.property = null;
-            updateInfo(infoContainer);
+            PropertyEditor.updateInfo(infoContainer, this.property);
             return;
         }
 
@@ -111,7 +114,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         setText(property.name());
         setContent(editorVBox);
         choiceBox.setDisable(readOnly);
-        updateInfo(infoContainer);
+        PropertyEditor.updateInfo(infoContainer, this.property);
     }
 
     private void updateModelValue() {
@@ -126,7 +129,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         }
 
         FromConfigurationPropertyValue fcpv = (FromConfigurationPropertyValue) property.get();
-        
+
         if (fcpv != null && fcpv.getValue() != null) { //in case property is a dummy (came from collection property editor)
             Class implementor = fcpv.getValue().typeInfo().getType();
             String className = RegisteryUtils.getDefaultRegistery().getRegisteredClassName(implementor);

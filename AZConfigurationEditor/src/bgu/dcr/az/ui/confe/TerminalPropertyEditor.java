@@ -93,7 +93,7 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
 
         if (property == null) {
             this.property = null;
-            updateInfo(infoContainer);
+            PropertyEditor.updateInfo(infoContainer, this.property);
             return;
         }
         
@@ -119,7 +119,7 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
             setTextInputModel(property, "", pType.getSimpleName(), readOnly);
 //            throw new RuntimeException("Unsupported type: " + pType.getSimpleName());
         }
-        updateInfo(infoContainer);
+        PropertyEditor.updateInfo(infoContainer, this.property);
     }
 
     private void setModelBoolean(final Property property, boolean readOnly) {

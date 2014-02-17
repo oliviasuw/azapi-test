@@ -59,7 +59,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         this.navigator = navigator;
 
         getStyleClass().add("collection-property-editor");
-        
+
         addButton = new Button("Add");
         addButton.setOnAction((e) -> onAddButton());
         editButton = new Button("Edit");
@@ -84,7 +84,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
 
         if (property == null) {
             collectionProperty = null;
-            updateInfo(infoContainer);
+            PropertyEditor.updateInfo(infoContainer, collectionProperty);
             return;
         }
 
@@ -95,32 +95,32 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         this.collectionProperty = property;
         setText("Collection of " + property.name());
 
-        if (property.get() == null) {
-            property.set(new FromCollectionPropertyValue());
-        }
-        FromCollectionPropertyValue fc = (FromCollectionPropertyValue) property.get();
-
         vBox.getChildren().removeAll(vBox.getChildren());
         if (!readOnly) {
             vBox.getChildren().add(tools);
         }
 
-        fc.forEach(this::addItemToCollection);
-        updateInfo(infoContainer);
+        if (property.get() == null) {
+            property.set(new FromCollectionPropertyValue());
+        }
+
+        FromCollectionPropertyValue fc = (FromCollectionPropertyValue) property.get();
+        fc.forEach((e) -> addItemToCollection(e, false));
+
+        PropertyEditor.updateInfo(infoContainer, collectionProperty);
     }
 
-    private void addItemToCollection(PropertyValue value) {
+    private void addItemToCollection(PropertyValue value, boolean newValue) {
         Class type = collectionProperty.typeInfo().getGenericParameters().get(0).getType();
-        PropertyImpl pseudoProperty = new PropertyImpl("item", null, new ConfigurableTypeInfoImpl(type), JavaDocParser.parse(""));
+        ValueComparablePseudoProperty pseudoProperty = new ValueComparablePseudoProperty("item", type);
         pseudoProperty.set(value);
-
-        if (navigator != null) {
-            navigator.addCollectionItemTreeNode(collectionProperty, pseudoProperty);
-        }
 
         BorderPane grid = new BorderPane();
         Node editor = propertyToEditor(pseudoProperty);
         ((PropertyEditor) editor).setModel(pseudoProperty, readOnly);
+        if (editor instanceof ConfigurationPropertyEditor) {
+            ((ConfigurationPropertyEditor)editor).setExpanded(true);
+        }
         Button remove = new Button("");
         remove.setGraphic(new ImageView(REMOVE_IMAGE));
         remove.setManaged(editEnabled);
@@ -128,15 +128,21 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         remove.setOnAction((ActionEvent t) -> {
             FromCollectionPropertyValue fcpv = (FromCollectionPropertyValue) collectionProperty.get();
             fcpv.remove(value);
-            vBox.getChildren().remove(grid);
             if (navigator != null) {
                 navigator.removeSubTree(pseudoProperty);
             }
+            vBox.getChildren().remove(grid);
         });
         BorderPane.setAlignment(remove, Pos.CENTER);
         grid.setLeft(remove);
         grid.setCenter(editor);
+//        if (navigator != null) {
+//            navigator.removeSubTree(pseudoProperty);
+//        }
         vBox.getChildren().add(grid);
+        if (navigator != null && newValue) {
+            navigator.addCollectionItemTreeNode(collectionProperty, pseudoProperty);
+        }
     }
 
     public final void onAddButton() {
@@ -144,7 +150,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         PropertyValue propertyValue = getPropertyValue();
         if (propertyValue != null) {
             fcpv.add(propertyValue);
-            addItemToCollection(propertyValue);
+            addItemToCollection(propertyValue, true);
         }
     }
 
@@ -214,5 +220,30 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     @Override
     public Property getModel() {
         return collectionProperty;
+    }
+
+    private static class ValueComparablePseudoProperty extends PropertyImpl {
+
+        public ValueComparablePseudoProperty(String name, Class type) {
+            super(name, null, new ConfigurableTypeInfoImpl(type), JavaDocParser.parse(""));
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof ValueComparablePseudoProperty && ((ValueComparablePseudoProperty) obj).get() == get();
+        }
+
+        @Override
+        public String toString() {
+            return "ValueComparablePseudoProperty{" + '}';
+        }
+
+        @Override
+        public int hashCode() {
+            return get() == null? 7 : get().hashCode();
+        }
+
+        
+        
     }
 }

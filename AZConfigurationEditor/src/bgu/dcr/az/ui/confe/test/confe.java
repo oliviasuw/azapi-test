@@ -9,10 +9,7 @@ import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
 import bgu.dcr.az.mas.cp.CPExperiment;
-import bgu.dcr.az.ui.confe.ConfigurationEditor;
 import bgu.dcr.az.ui.confe.NavigatableConfigurationEditor;
-import bgu.dcr.az.ui.confe.utils.TimingUtils;
-import bgu.dcr.az.ui.util.FXUtils;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,12 +58,8 @@ public class confe extends Application {
             }
         });
         editor.getChildren().add(button);
-        final ScrollPane scrollPane = new ScrollPane(editor);
-        scrollPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setFitToHeight(true);
 
-        Scene scene = new Scene(scrollPane);
+        Scene scene = new Scene(editor);
         scene.getStylesheets().add(getClass().getResource("ceditor.css").toExternalForm());
         
         //DO NOT DELETE BELLOW THIS LINE PLEASE!
@@ -75,7 +68,7 @@ public class confe extends Application {
 //        TimingUtils.scheduleRepeating(() -> FXUtils.reloadSceneStylesheet(scene), 1000);
 
         stage.setScene(scene);
-        stage.setMinWidth(400);
+        stage.setMinWidth(800);
         stage.setMinHeight(600);
         stage.show();
     }

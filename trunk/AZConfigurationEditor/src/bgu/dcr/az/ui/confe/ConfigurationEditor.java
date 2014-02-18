@@ -10,7 +10,6 @@ import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.conf.PropertyValue;
 import bgu.dcr.az.anop.utils.EventListeners;
 import bgu.dcr.az.ui.util.FXUtils;
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
@@ -123,6 +122,8 @@ public class ConfigurationEditor extends ScrollPane {
     public interface ConfigurationEditorListener {
 
         void onPropertyValueChanged(ConfigurationEditor source, Property property);
+
+        void onListItemValueChanged(ConfigurationEditor source, Property collection, PropertyValue oldValue, PropertyValue newValue);
 
         void onPropertyValueAdded(ConfigurationEditor source, Property collection, PropertyValue value);
 

@@ -212,7 +212,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
             if (PropertyUtils.isCollection(property)) {
                 return new CollectionPropertyEditor(parent);
             } else {
-                return new ConfigurationPropertyEditor(parent, true);
+                return new ConfigurationPropertyEditor(parent, collectionProperty);
             }
         }
     }

@@ -24,9 +24,9 @@ public interface PropertyEditor {
     public void setModel(Configuration conf, boolean readOnly);
 
     public void setModel(Property property, boolean readOnly);
-
+    
     public Property getModel();
-
+    
     public static void updateInfo(Label infoContainer, Property model) {
         infoContainer.setText("");
         infoContainer.setGraphic(null);

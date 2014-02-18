@@ -7,17 +7,20 @@ package bgu.dcr.az.ui.confe;
 
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.Property;
+import bgu.dcr.az.anop.conf.PropertyValue;
+import bgu.dcr.az.anop.conf.impl.ConfigurableTypeInfoImpl;
 import bgu.dcr.az.anop.conf.impl.FromCollectionPropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromConfigurationPropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;
+import bgu.dcr.az.anop.conf.impl.PropertyImpl;
 import bgu.dcr.az.anop.reg.RegisteryUtils;
+import bgu.dcr.az.anop.utils.JavaDocParser;
 import bgu.dcr.az.anop.utils.PropertyUtils;
-import bgu.dcr.az.ui.AppController;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
@@ -28,24 +31,15 @@ import javafx.scene.layout.BorderPane;
  */
 public class NavigatableConfigurationEditor extends BorderPane implements PropertyEditor {
 
-    private ConfigurationEditor configurationEditor;
-    private ConfigurationPropertyEditor configurationPropertyEditor;
-    private CollectionPropertyEditor collectionPropertyEditor;
-    private TerminalPropertyEditor terminalPropertyEditor;
-    private final ScrollPane scrollPane;
+    private final ConfigurationEditor configurationEditor;
     private final TreeView configurationTree;
 
     private Configuration configuration;
-    private boolean readOnly;
     private boolean updateSelectionAllowed = true;
 
     private Map<Object, TreeItem> treeNodes;
 
     public NavigatableConfigurationEditor() {
-        configurationEditor = new ConfigurationEditor(this);
-        configurationPropertyEditor = new ConfigurationPropertyEditor(this, false);
-        collectionPropertyEditor = new CollectionPropertyEditor(this);
-        terminalPropertyEditor = new TerminalPropertyEditor();
 
         configurationTree = new TreeView();
         configurationTree.setShowRoot(true);
@@ -61,59 +55,79 @@ public class NavigatableConfigurationEditor extends BorderPane implements Proper
         });
         setLeft(configurationTree);
 
-        scrollPane = new ScrollPane(configurationEditor);
-        scrollPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        scrollPane.setFitToWidth(true);
-
 //        scrollPane.setStyle("-fx-border: 10px solid; -fx-border-color: red;");
-        setCenter(scrollPane);
-        scrollPane.getStyleClass().add("conf-editor");
+        configurationEditor = new ConfigurationEditor();
+        configurationEditor.getListeners().add(new ConfigurationEditor.ConfigurationEditorListener() {
+            @Override
+            public void onPropertyValueChanged(ConfigurationEditor source, Property property) {
+                if (property != null) {
+                    removeChildren(property);
+                    if (property.get() != null) {
+                        if (property.get() instanceof FromConfigurationPropertyValue) {
+                            addFromConfigurationTreeNodes(property);
+                        }
+                        for (TreeItem item : treeNodes.values()) {
+                            Object temp = item.getValue();
+                            item.setValue(null);
+                            item.setValue(temp);
+                        }
+                    }
+                }
+            }
+
+            @Override
+
+            public void onPropertyValueAdded(ConfigurationEditor source, Property collection, PropertyValue value) {
+                if (collection != null && value != null) {
+                    addCollectionItemTreeNode(collection, value);
+                }
+            }
+
+            @Override
+            public void onPropertyValueRemoved(ConfigurationEditor source, Property collection, PropertyValue value) {
+                if (collection != null && value != null) {
+                    removeSubTree(ValueComparablePseudoProperty.fromCollectionItem(collection, value));
+                }
+            }
+
+            @Override
+            public void onItemSelecttion(ConfigurationEditor source, Object item) {
+                if (item == null) {
+                    return;
+                }
+                TreeItem node = null;
+                if (item instanceof Property) {
+                    node = treeNodes.get(item);
+                } else if (item instanceof PropertyValue) {
+                    node = treeNodes.get(ValueComparablePseudoProperty.fromCollectionItem(null, (PropertyValue) item));
+                }
+
+                if (node != null) {
+                    configurationTree.getSelectionModel().select(node);
+                }
+            }
+        });
+        setCenter(configurationEditor);
 
         treeNodes = new HashMap<>();
 //        setStyle("-fx-border: 10px solid; -fx-border-color: red;");
     }
 
     private void navigateToSelectedItem() {
-        Object item = configurationTree.getSelectionModel().getSelectedItem();
+        TreeItem item = (TreeItem) configurationTree.getSelectionModel().getSelectedItem();
         System.out.println("navigating to " + item);
         if (item != null) {
-            TreeItemProperty p = (TreeItemProperty) ((TreeItem) item).getValue();
-            if (p.getConfiguration() != null) {
-                configurationEditor = new ConfigurationEditor(this);
-                configurationEditor.setModel(p.getConfiguration(), readOnly);
-                scrollPane.setContent(configurationEditor);
-            }
-            if (p.getProperty() != null) {
-                final Property property = p.getProperty();
-                if (PropertyUtils.isPrimitive(property)) {
-                    terminalPropertyEditor = new TerminalPropertyEditor();
-                    terminalPropertyEditor.setModel(p.getProperty(), readOnly);
-                    scrollPane.setContent(terminalPropertyEditor);
-                } else if (PropertyUtils.isCollection(property)) {
-//                    removeChildren(property);
-                    collectionPropertyEditor = new CollectionPropertyEditor(this);
-                    collectionPropertyEditor.setModel(property, readOnly);
-                    collectionPropertyEditor.setExpanded(true);
-                    scrollPane.setContent(collectionPropertyEditor);
-                } else {
-                    configurationPropertyEditor = new ConfigurationPropertyEditor(this, false);
-                    configurationPropertyEditor.setModel(property, readOnly);
-                    configurationPropertyEditor.setExpanded(true);
-                    scrollPane.setContent(configurationPropertyEditor);
-                }
-            }
+            Object value = ((TreeItemProperty) item.getValue()).getItem();
+            configurationEditor.select(value instanceof ValueComparablePseudoProperty ? ((ValueComparablePseudoProperty) value).get() : value);
         }
     }
 
     @Override
 
     public void setModel(Configuration configuration, boolean readOnly) {
-        this.readOnly = readOnly;
         this.configuration = configuration;
-        configurationEditor.setModel(configuration, readOnly);
-
         buildTree();
-        scrollPane.setContent(configurationEditor);
+        configurationEditor.setModel(configuration, readOnly);
     }
 
     @Override
@@ -155,10 +169,10 @@ public class NavigatableConfigurationEditor extends BorderPane implements Proper
                     addFromConfigurationTreeNodes(((FromConfigurationPropertyValue) prop.get()).getValue(), parent, open);
                 }
                 if (prop.get() instanceof FromCollectionPropertyValue) {
-                    addLeafTreeNode(parent, prop, "Collection of " + prop.name());
+                    addFromCollectionTreeNode(prop, open);
                 }
                 if (prop.get() instanceof FromStringPropertyValue) {
-                    addLeafTreeNode(parent, prop, prop.name());
+//                    addLeafTreeNode(parent, prop, prop.name());
                 }
             }
         }
@@ -166,12 +180,30 @@ public class NavigatableConfigurationEditor extends BorderPane implements Proper
 
     private void addFromConfigurationTreeNodes(Configuration conf, Object parent, LinkedList open) {
         for (Property property : conf.properties()) {
-            if (PropertyUtils.isPrimitive(property)) {
-//                addLeafTreeNode(parent, property, property.name(), open);
-            } else if (PropertyUtils.isCollection(property)) {
-                addLeafTreeNode(parent, property, "Collection of " + property.name());
+            if (!PropertyUtils.isPrimitive(property) && !PropertyUtils.isCollection(property)) {
+                addInternalTreeNode(parent, property, property.name(), open);
+            }
+        }
+        for (Property property : conf.properties()) {
+            if (PropertyUtils.isCollection(property)) {
+                addInternalTreeNode(parent, property, "Collection of " + property.name(), open);
+            }
+        }
+    }
+
+    private void addFromCollectionTreeNode(Property parent, LinkedList open) {
+        addFromCollectionTreeNode(parent, (FromCollectionPropertyValue) parent.get(), open);
+    }
+
+    private void addFromCollectionTreeNode(Property parent, Iterable<PropertyValue> values, LinkedList open) {
+        for (PropertyValue item : values) {
+            Property pseudoProperty = ValueComparablePseudoProperty.fromCollectionItem(parent, item);
+            if (PropertyUtils.isPrimitive(pseudoProperty)) {
+
+            } else if (PropertyUtils.isCollection(pseudoProperty)) {
+                addInternalTreeNode(parent, pseudoProperty, "item", open);
             } else {
-                addConfigurationTreeNode(parent, property, property.name(), open);
+                addInternalTreeNode(parent, pseudoProperty, "item", open);
             }
         }
     }
@@ -188,47 +220,47 @@ public class NavigatableConfigurationEditor extends BorderPane implements Proper
         }
     }
 
-    private void addConfigurationTreeNode(Object parent, Property child, String treeName, LinkedList open) {
+    private void addInternalTreeNode(Object parent, Property child, String treeName, LinkedList open) {
         addLeafTreeNode(parent, child, treeName);
         open.add(child);
+
     }
 
     private static class TreeItemProperty {
 
-        private final Configuration configuration;
-        private final Property property;
+        private final Object item;
         private final String name;
 
-        public TreeItemProperty(Configuration configuration, String name) {
-            this.configuration = configuration;
-            this.property = null;
+        public TreeItemProperty(Object item, String name) {
+            this.item = item;
             this.name = name;
         }
 
-        public TreeItemProperty(Property property, String name) {
-            this.configuration = null;
-            this.property = property;
-            this.name = name;
-        }
-
-        public Configuration getConfiguration() {
-            return configuration;
-        }
-
-        public Property getProperty() {
-            return property;
+        public Object getItem() {
+            return item;
         }
 
         @Override
         public String toString() {
+            if (item instanceof ValueComparablePseudoProperty) {
+                ValueComparablePseudoProperty pv = (ValueComparablePseudoProperty)item;
+                return RegisteryUtils.getRegistery().getRegisteredClassName(pv.typeInfo().getType()) + subNameSelector(pv);
+            } else if (item instanceof Property) {
+                return name + subNameSelector((Property) item);
+            } else {
+                return name;
+            }
+        }
+
+        private String subNameSelector(Property property) {
             if (property != null && property.get() != null && property.get() instanceof FromConfigurationPropertyValue) {
                 FromConfigurationPropertyValue fcpv = (FromConfigurationPropertyValue) property.get();
                 Property confName = fcpv.getValue().get("name") == null ? fcpv.getValue().get("Name") : fcpv.getValue().get("name");
                 if (confName != null && confName.get() != null) {
-                    return name + " [" + confName.get().stringValue() + "]";
+                    return " [" + confName.get().stringValue() + "]";
                 }
             }
-            return name;
+            return "";
         }
     }
 
@@ -289,7 +321,7 @@ public class NavigatableConfigurationEditor extends BorderPane implements Proper
                 TreeItem parentNode = (TreeItem) open.remove();
                 for (Object node : parentNode.getChildren().toArray()) {
                     parentNode.getChildren().remove(node);
-                    treeNodes.remove(((TreeItemProperty) ((TreeItem) node).getValue()).getProperty());
+                    treeNodes.remove(((TreeItemProperty) ((TreeItem) node).getValue()).getItem());
                     open.add(node);
                 }
             }
@@ -297,12 +329,10 @@ public class NavigatableConfigurationEditor extends BorderPane implements Proper
 
     }
 
-    public void addFromConfigurationTreeNodes(Property property) {
+    private void addFromConfigurationTreeNodes(Property property) {
         if (property == null || property.get() == null) {
             return;
         }
-        TreeItem root = treeNodes.get(property);
-
         LinkedList open = new LinkedList();
 
         addFromConfigurationTreeNodes(((FromConfigurationPropertyValue) property.get()).getValue(), property, open);
@@ -310,33 +340,45 @@ public class NavigatableConfigurationEditor extends BorderPane implements Proper
         fillTreeNodes(open);
     }
 
-    public void addCollectionItemTreeNode(Property collection, Property item) {
-        if (item == null || item.get() == null) {
+    public void addCollectionItemTreeNode(Property collection, PropertyValue item) {
+        if (item == null || collection == null) {
             return;
         }
 
-        removeSubTree(item);
         LinkedList open = new LinkedList();
 
-        if (item.get() instanceof FromConfigurationPropertyValue) {
-            String typeName = "item";
-            if (RegisteryUtils.getDefaultRegistery().getImplementors(collection.typeInfo().getGenericParameters().get(0).getType()).size() == 1) {
-                Class type = item.typeInfo().getType();
-                typeName = RegisteryUtils.getDefaultRegistery().getRegisteredClassName(type);
-            }
-            addLeafTreeNode(collection, item, typeName);
-            addFromConfigurationTreeNodes(((FromConfigurationPropertyValue) item.get()).getValue(), item, open);
-        }
-
-        if (item.get() instanceof FromCollectionPropertyValue) {
-            addLeafTreeNode(collection, item, "item");
-        }
-
-        if (item.get() instanceof FromStringPropertyValue) {
-            addLeafTreeNode(collection, item, "item");
-        }
-
+        addFromCollectionTreeNode(collection, Arrays.asList(item), open);
         fillTreeNodes(open);
+
+    }
+
+    private static class ValueComparablePseudoProperty extends PropertyImpl {
+
+        public static Property fromCollectionItem(Property collection, PropertyValue item) {
+            Class type = collection == null ? null : collection.typeInfo().getGenericParameters().get(0).getType();
+            ValueComparablePseudoProperty pseudoProperty = new ValueComparablePseudoProperty("item", type);
+            pseudoProperty.set(item);
+            return pseudoProperty;
+        }
+
+        public ValueComparablePseudoProperty(String name, Class type) {
+            super(name, null, new ConfigurableTypeInfoImpl(type), JavaDocParser.parse(""));
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof ValueComparablePseudoProperty && ((ValueComparablePseudoProperty) obj).get() == get();
+        }
+
+        @Override
+        public String toString() {
+            return "ValueComparablePseudoProperty{" + '}';
+        }
+
+        @Override
+        public int hashCode() {
+            return get() == null ? 7 : get().hashCode();
+        }
     }
 
 }

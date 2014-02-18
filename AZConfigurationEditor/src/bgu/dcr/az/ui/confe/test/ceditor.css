@@ -7,9 +7,11 @@
     -az-text-prompt-color: rgb(50,50,50);
     -az-text-field-font-color: white;
     -az-section-title-color: rgb(55,55,55);
+    -az-selected-section-title-color: rgb(55,55,55);
     -az-identation: 10;
-    -az-button-color: #0077b7;
+    -az-button-color: rgb(60,60,60);
     -az-identation-color: rgba(220, 220, 255, 0.20);
+    -az-selected-section-highlight: rgb(180,170,100);
 }
 
 .conf-editor {
@@ -119,7 +121,7 @@ BASE STYLE :: BUTTON
     -fx-background-color: -az-button-color;
     -fx-background-insets: 0;
     -fx-background-radius: 2;
-    -fx-border-color: derive(-az-button-color, 20%);
+    -fx-border-color: derive(-az-button-color, 80%);
     -fx-border-width: 1;
     -fx-border-radius: 2;
     -fx-padding: 1 4 1 4;
@@ -160,3 +162,20 @@ CONFIGURATION PROPERTY EDITOR
     -fx-border-insets: 0 0 3 0;
     
 }
+
+.conf-editor .titled-pane.selected > .title {
+    -fx-background-color: -az-selected-section-highlight;
+    -fx-text-fill: black;
+    
+}
+
+
+.conf-editor .titled-pane.selected > .content > * > * {
+    -fx-border-color: -az-selected-section-highlight;
+}
+
+/*
+.conf-editor .titled-pane.selected {
+    -fx-text-fill: rgb(30,30,100);
+    
+}*/

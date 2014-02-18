@@ -41,6 +41,8 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
 
     public static final Image REMOVE_IMAGE = new Image(R.class.getResourceAsStream("remove.png"));
 
+    private final ConfigurationEditor parent;
+
     private final Button addButton;
     private final Button editButton;
     private final Button clearButton;
@@ -53,11 +55,9 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     private boolean readOnly;
     private boolean editEnabled;
 
-    private final NavigatableConfigurationEditor navigator;
-
-    public CollectionPropertyEditor(NavigatableConfigurationEditor navigator) {
-        this.navigator = navigator;
-
+//    private final NavigatableConfigurationEditor navigator;
+    public CollectionPropertyEditor(ConfigurationEditor parent) {
+        this.parent = parent;
         getStyleClass().add("collection-property-editor");
 
         addButton = new Button("Add");
@@ -105,21 +105,21 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         }
 
         FromCollectionPropertyValue fc = (FromCollectionPropertyValue) property.get();
-        fc.forEach((e) -> addItemToCollection(e, false));
+        fc.forEach(this::addItemToCollection);
 
         PropertyEditor.updateInfo(infoContainer, collectionProperty);
     }
 
-    private void addItemToCollection(PropertyValue value, boolean newValue) {
+    private void addItemToCollection(PropertyValue value) {
         Class type = collectionProperty.typeInfo().getGenericParameters().get(0).getType();
-        ValueComparablePseudoProperty pseudoProperty = new ValueComparablePseudoProperty("item", type);
+        PropertyImpl pseudoProperty = new PropertyImpl("item", null, new ConfigurableTypeInfoImpl(type), JavaDocParser.parse(""));
         pseudoProperty.set(value);
 
         BorderPane grid = new BorderPane();
         Node editor = propertyToEditor(pseudoProperty);
         ((PropertyEditor) editor).setModel(pseudoProperty, readOnly);
         if (editor instanceof ConfigurationPropertyEditor) {
-            ((ConfigurationPropertyEditor)editor).setExpanded(true);
+            ((ConfigurationPropertyEditor) editor).setExpanded(true);
         }
         Button remove = new Button("");
         remove.setGraphic(new ImageView(REMOVE_IMAGE));
@@ -128,21 +128,13 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         remove.setOnAction((ActionEvent t) -> {
             FromCollectionPropertyValue fcpv = (FromCollectionPropertyValue) collectionProperty.get();
             fcpv.remove(value);
-            if (navigator != null) {
-                navigator.removeSubTree(pseudoProperty);
-            }
             vBox.getChildren().remove(grid);
+            parent.getListeners().fire().onPropertyValueRemoved(parent, collectionProperty, value);
         });
         BorderPane.setAlignment(remove, Pos.CENTER);
         grid.setLeft(remove);
         grid.setCenter(editor);
-//        if (navigator != null) {
-//            navigator.removeSubTree(pseudoProperty);
-//        }
         vBox.getChildren().add(grid);
-        if (navigator != null && newValue) {
-            navigator.addCollectionItemTreeNode(collectionProperty, pseudoProperty);
-        }
     }
 
     public final void onAddButton() {
@@ -150,7 +142,8 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         PropertyValue propertyValue = getPropertyValue();
         if (propertyValue != null) {
             fcpv.add(propertyValue);
-            addItemToCollection(propertyValue, true);
+            addItemToCollection(propertyValue);
+            parent.getListeners().fire().onPropertyValueAdded(parent, collectionProperty, propertyValue);
         }
     }
 
@@ -166,14 +159,16 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     }
 
     public final void onClearButton() {
+        if (collectionProperty.get() != null) {
+            for (PropertyValue pv : (FromCollectionPropertyValue) collectionProperty.get()) {
+                parent.getListeners().fire().onPropertyValueRemoved(parent, collectionProperty, pv);
+            }
+        }
+
         collectionProperty.set(new FromCollectionPropertyValue());
         Property temp = collectionProperty;
         collectionProperty = null;
         setModel(temp, readOnly);
-
-        if (navigator != null) {
-            navigator.removeChildren(collectionProperty);
-        }
     }
 
     public PropertyValue getPropertyValue() {
@@ -185,29 +180,17 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
                 return new FromCollectionPropertyValue();
             } else {
                 Class implementorType = collectionProperty.typeInfo().getGenericParameters().get(0).getType();
-                Collection<Class> implementors = RegisteryUtils.getDefaultRegistery().getImplementors(implementorType);
+                Collection<Class> implementors = RegisteryUtils.getRegistery().getImplementors(implementorType);
                 if (implementors.isEmpty()) {
                     return null;
                 }
                 try {
-                    Configuration conf = RegisteryUtils.getDefaultRegistery().getConfiguration(implementors.iterator().next());
+                    Configuration conf = RegisteryUtils.getRegistery().getConfiguration(implementors.iterator().next());
                     return new FromConfigurationPropertyValue(conf);
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(CollectionPropertyEditor.class.getName()).log(Level.SEVERE, null, ex);
                     return null;
                 }
-            }
-        }
-    }
-
-    public Node propertyToEditor(Property property) {
-        if (PropertyUtils.isPrimitive(property)) {
-            return new TerminalPropertyEditor();
-        } else {
-            if (PropertyUtils.isCollection(property)) {
-                return new CollectionPropertyEditor(navigator);
-            } else {
-                return new ConfigurationPropertyEditor(navigator, true);
             }
         }
     }
@@ -222,28 +205,16 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         return collectionProperty;
     }
 
-    private static class ValueComparablePseudoProperty extends PropertyImpl {
-
-        public ValueComparablePseudoProperty(String name, Class type) {
-            super(name, null, new ConfigurableTypeInfoImpl(type), JavaDocParser.parse(""));
+    private Node propertyToEditor(Property property) {
+        if (PropertyUtils.isPrimitive(property)) {
+            return new TerminalPropertyEditor(parent);
+        } else {
+            if (PropertyUtils.isCollection(property)) {
+                return new CollectionPropertyEditor(parent);
+            } else {
+                return new ConfigurationPropertyEditor(parent, true);
+            }
         }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj instanceof ValueComparablePseudoProperty && ((ValueComparablePseudoProperty) obj).get() == get();
-        }
-
-        @Override
-        public String toString() {
-            return "ValueComparablePseudoProperty{" + '}';
-        }
-
-        @Override
-        public int hashCode() {
-            return get() == null? 7 : get().hashCode();
-        }
-
-        
-        
     }
+
 }

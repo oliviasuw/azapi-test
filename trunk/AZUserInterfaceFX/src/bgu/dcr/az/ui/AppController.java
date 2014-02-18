@@ -15,8 +15,8 @@ import bgu.dcr.az.mas.misc.Logger;
 import bgu.dcr.az.ui.screens.MainWindow;
 import bgu.dcr.az.ui.screens.dialogs.Notification;
 import bgu.dcr.az.ui.screens.log.LogScreen;
+import bgu.dcr.az.ui.screens.problem.ProblemViewScreen;
 import bgu.dcr.az.ui.screens.statistics.BasicStatisticsScreenCtl;
-import bgu.dcr.az.ui.screens.statistics.StatisticsScreen;
 import bgu.dcr.az.ui.screens.status.StatusScreenCtl;
 import bgu.dcr.az.ui.statistics.AlgorithmCPUTimeStatisticCollector;
 import bgu.dcr.az.ui.statistics.NumberOfCoresInUseStatisticCollector;
@@ -25,11 +25,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.stage.Stage;
 import javax.swing.JFrame;
 import nu.xom.ParsingException;
 import resources.img.ResourcesImgAnchor;
@@ -122,6 +118,10 @@ public class AppController {
         statisticsScreen.getController().setModel(runningExperiment);
         main.addScreen("Statistics", "statistics", statisticsScreen);
 
+        ProblemViewScreen pview = new ProblemViewScreen();
+        pview.setModel(runningExperiment);
+        main.addScreen("Problem", "problem", pview);
+        
         java.awt.EventQueue.invokeLater(() -> main.setVisible(true));
     }
 

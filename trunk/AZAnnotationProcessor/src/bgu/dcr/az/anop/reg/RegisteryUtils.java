@@ -15,7 +15,7 @@ public class RegisteryUtils {
 
     private static Registery defaultRegistery;
 
-    public static Registery getDefaultRegistery() {
+    public static Registery getRegistery() {
         if (defaultRegistery == null) {
             defaultRegistery = new RegisteryImpl();
         }

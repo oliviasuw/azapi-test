@@ -6,6 +6,7 @@
 package bgu.dcr.az.anop.utils;
 
 import bgu.dcr.az.anop.conf.Property;
+import bgu.dcr.az.anop.reg.RegisteryUtils;
 import java.util.Collection;
 
 /**
@@ -20,19 +21,9 @@ public class PropertyUtils {
     }
 
     public static boolean isPrimitive(Class pType) {
-        return String.class.isAssignableFrom(pType)
-                || Integer.class.isAssignableFrom(pType)
-                || Boolean.class.isAssignableFrom(pType)
-                || Double.class.isAssignableFrom(pType)
-                || Float.class.isAssignableFrom(pType)
-                || pType.isEnum()
-                || Character.class.isAssignableFrom(pType)
-                || Byte.class.isAssignableFrom(pType)
-                || Short.class.isAssignableFrom(pType)
-                || Long.class.isAssignableFrom(pType);
-
+        return !Collection.class.isAssignableFrom(pType) && RegisteryUtils.getRegistery().getImplementors(pType).isEmpty();
     }
-    
+
     public static boolean isCollection(Class pType) {
         return Collection.class.isAssignableFrom(pType);
     }

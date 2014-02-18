@@ -10,11 +10,15 @@
             <file>file:/home/bennyl/NetBeansProjects/Test/src/bgu/dcr/az/pivot/ui/PivotViewController.java</file>
         </group>
         <group name="Misc">
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/ui/PivotViewController.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/model/FilterField.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/ui/PivotDataTableViewController.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/ui/viewer/PivotDataViewerController.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/ui/FieldListCell.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/model/FilterField.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/test/PivotTestUtils.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/ui/PivotDataTableView.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/test/PivotView.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/model/impl/SimplePivot.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/ui/viewer/PivotDataViewerController.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/model/impl/PlottableTableData.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZPivotUI/src/bgu/dcr/az/pivot/model/impl/PlotablePivotRecord.java</file>
         </group>
     </open-files>
 </project-private>

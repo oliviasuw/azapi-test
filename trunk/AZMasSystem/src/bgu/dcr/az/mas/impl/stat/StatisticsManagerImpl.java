@@ -67,9 +67,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
         }
 
         DefinitionDatabase ddb = db.createDefinitionDatabase();
-        for (StatisticCollector r : registered) {
-            r.initialize(this, ex, ddb);
-        }
+        registered.forEach(r -> r.initialize(this, ex, ddb));
     }
 
     public void clearRegistrations() {

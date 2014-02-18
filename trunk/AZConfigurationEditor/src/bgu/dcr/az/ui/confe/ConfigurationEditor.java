@@ -7,105 +7,128 @@ package bgu.dcr.az.ui.confe;
 
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.Property;
-import bgu.dcr.az.anop.utils.PropertyUtils;
-import java.util.Collection;
-import java.util.LinkedList;
-import javafx.geometry.Insets;
-import javafx.scene.layout.VBox;
+import bgu.dcr.az.anop.conf.PropertyValue;
+import bgu.dcr.az.anop.utils.EventListeners;
+import bgu.dcr.az.ui.util.FXUtils;
+import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TitledPane;
 
 /**
- * FXML Controller class
  *
- * @author Shl
+ * @author User
  */
-public class ConfigurationEditor extends VBox {
+public class ConfigurationEditor extends ScrollPane {
 
-    private final NavigatableConfigurationEditor navigator;
-    
-    private Configuration configuration;
-    private boolean readOnly;
+    private final ConfigurationEditorInternal internal;
+    private Configuration model;
+    private final EventListeners<ConfigurationEditorListener> listeners = EventListeners.create(ConfigurationEditorListener.class);
+    private Node selectedNode = null;
 
-    public ConfigurationEditor(NavigatableConfigurationEditor navigator) {
-        this.navigator = navigator;
-        setSpacing(3);
-        setPadding(new Insets(5));
+    public ConfigurationEditor() {
+        internal = new ConfigurationEditorInternal(this);
+
+        this.sceneProperty().addListener((ov, o, n) -> initializeFocuseListening());
+
+        this.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        this.setFitToWidth(true);
+        this.setContent(internal);
+
+    }
+
+    public EventListeners<ConfigurationEditorListener> getListeners() {
+        return listeners;
+    }
+
+    public void setModel(Configuration model, boolean readOnly) {
+        this.model = model;
+        internal.setModel(model, readOnly);
+        initializeFocuseListening();
+    }
+
+    public void select(Object item) {
+        Node child = FXUtils.lookupChild(internal, t -> {
+            if (t instanceof PropertyEditor) {
+                Property model = ((PropertyEditor) t).getModel();
+                return model == item || model.get() == item;
+            }
+            return false;
+        });
         
-        getStyleClass().add("conf-editor");
+        if (item == model) {
+            child = internal;
+        }
+        
+        if (child != null) {
+            selectNode(child, true);
+        }
     }
 
-    public void setModel(Configuration configuration, boolean readOnly) {
-        this.readOnly = readOnly;
-
-        if (this.configuration == configuration) {
+    private void initializeFocuseListening() {
+        if (getScene() == null) {
+            System.out.println("scene not found!");
             return;
         }
 
-        this.configuration = configuration;
+        getScene().focusOwnerProperty().addListener((ov, o, n) -> selectNode(n, false));
+    }
 
-        getChildren().clear();
-
-        if (configuration == null) {
+    private void selectNode(Node n, boolean expand) {
+        if (selectedNode == n) {
             return;
         }
 
-        Collection<Property> properties = configuration.properties();
+        TitledPane newSelection = (TitledPane) FXUtils.lookupParent(n, node -> node instanceof TitledPane);
 
-        generateTerminalPropertiesEditors(properties);
-        generateConfigurationPropertiesEditors(properties);
-        generateCollectionPropertiesEditors(properties);
-    }
+        //expand new selection: 
+        if (newSelection != null && expand) {
+            FXUtils.lookupParents(newSelection, node -> node instanceof TitledPane, node -> node == internal)
+                    .forEach(node -> {
+                        TitledPane tnode = (TitledPane) node;
+                        tnode.setExpanded(true);
+                    });
+        }
 
-    private void generateCollectionPropertiesEditors(Collection<Property> properties) {
-        for (Property property : properties) {
-            if (PropertyUtils.isCollection(property)) {
-                if (property.doc() != null
-                        && "false".equals(property.doc().first("UIVisibility"))) {
-                    continue;
+        if (selectedNode != newSelection) {
+
+            if (newSelection != null && selectedNode != null) {
+                selectedNode.getStyleClass().remove("selected");
+            }
+
+            if (newSelection != null) {
+                newSelection.getStyleClass().add("selected");
+                selectedNode = newSelection;
+            }
+
+            if (newSelection instanceof PropertyEditor) {
+                Property model = ((PropertyEditor) newSelection).getModel();
+                if (model.get() != null && model.parent() == null) {
+                    getListeners().fire().onItemSelecttion(this, model.get());
+                } else {
+                    getListeners().fire().onItemSelecttion(this, model);
                 }
-                CollectionPropertyEditor editor = new CollectionPropertyEditor(navigator);
-                editor.setModel(property, readOnly);
-                getChildren().add(editor);
             }
         }
-    }
 
-    private void generateConfigurationPropertiesEditors(Collection<Property> properties) {
-        for (Property property : properties) {
-            if (!PropertyUtils.isPrimitive(property) && !PropertyUtils.isCollection(property)) {
-                if (property.doc() != null
-                        && "false".equals(property.doc().first("UIVisibility"))) {
-                    continue;
-                }
-                ConfigurationPropertyEditor editor = new ConfigurationPropertyEditor(navigator, false);
-                editor.setModel(property, readOnly);
-                getChildren().add(editor);
-            }
+        if (newSelection != null) {
+            FXUtils.ensureVisibility(this, newSelection, false);
+        }
+        
+        if (n == internal) {
+            FXUtils.ensureVisibility(this, n, false);
         }
     }
 
-    private void generateTerminalPropertiesEditors(Collection<Property> properties) {
-        double max = 0;
-        LinkedList<TerminalPropertyEditor> controllerList = new LinkedList<>();
-        for (Property property : properties) {
-            if (PropertyUtils.isPrimitive(property)) {
-                if (property.doc() != null
-                        && property.doc().first("UIVisibility") != null
-                        && property.doc().first("UIVisibility").toLowerCase().equals("false")) {
-                    continue;
-                }
+    public interface ConfigurationEditorListener {
 
-                TerminalPropertyEditor controller = new TerminalPropertyEditor();
-                controller.setModel(property, readOnly);
-                double labelWidth = controller.getLabelWidth();
-                if (labelWidth > max) {
-                    max = labelWidth;
-                }
-                controllerList.add(controller);
-                getChildren().add(controller);
-            }
-        }
-        for (TerminalPropertyEditor controller : controllerList) {
-            controller.setLabelWidth(max);
-        }
+        void onPropertyValueChanged(ConfigurationEditor source, Property property);
+
+        void onPropertyValueAdded(ConfigurationEditor source, Property collection, PropertyValue value);
+
+        void onPropertyValueRemoved(ConfigurationEditor source, Property collection, PropertyValue value);
+
+        void onItemSelecttion(ConfigurationEditor source, Object item);
     }
+
 }

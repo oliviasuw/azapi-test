@@ -10,14 +10,18 @@ import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
 import bgu.dcr.az.mas.cp.CPExperiment;
 import bgu.dcr.az.ui.confe.NavigatableConfigurationEditor;
+import bgu.dcr.az.ui.confe.utils.TimingUtils;
+import bgu.dcr.az.ui.util.FXUtils;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TitledPane;
 import javafx.stage.Stage;
 import test.delete.me.SomeClass;
 
@@ -60,13 +64,13 @@ public class confe extends Application {
         editor.getChildren().add(button);
 
         Scene scene = new Scene(editor);
-        scene.getStylesheets().add(getClass().getResource("ceditor.css").toExternalForm());
         
+        scene.getStylesheets().add(getClass().getResource("ceditor.css").toExternalForm());
+
         //DO NOT DELETE BELLOW THIS LINE PLEASE!
 //        scene.getStylesheets().add("file:///C:/Users/User/Desktop/Projects/AgentZero/trunk/AZConfigurationEditor/src/bgu/dcr/az/ui/confe/test/ceditor.css");
 //        ScenicView.show(scene);
 //        TimingUtils.scheduleRepeating(() -> FXUtils.reloadSceneStylesheet(scene), 1000);
-
         stage.setScene(scene);
         stage.setMinWidth(800);
         stage.setMinHeight(600);

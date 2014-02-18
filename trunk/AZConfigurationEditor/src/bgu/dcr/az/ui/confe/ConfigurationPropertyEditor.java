@@ -29,26 +29,26 @@ import javafx.scene.layout.VBox;
 public class ConfigurationPropertyEditor extends TitledPane implements PropertyEditor {
 
     private static final int LABEL_MARGING = 10;
-    private final ConfigurationEditor confEditor;
+
+    private final ConfigurationEditor parent;
+
+    private final ConfigurationEditorInternal confEditor;
     private final ChoiceBox<String> choiceBox;
     private final Label infoContainer;
-    private final Label itemLabel;
     private Property property;
     private final BorderPane implementorsBorderPane;
     private boolean readOnly;
     private final boolean isListItem;
     private final VBox editorVBox;
 
-//    private final NavigatableConfigurationEditor navigator;
-
-    public ConfigurationPropertyEditor(NavigatableConfigurationEditor navigator, boolean isListItem) {
-//        this.navigator = navigator;
+    public ConfigurationPropertyEditor(ConfigurationEditor parent, boolean isListItem) {
+        this.parent = parent;
         this.isListItem = isListItem;
 
         getStyleClass().add("configuration-property-editor");
 
         infoContainer = new Label("");
-        confEditor = new ConfigurationEditor(navigator);
+        confEditor = new ConfigurationEditorInternal(parent);
 
         implementorsBorderPane = new BorderPane();
         implementorsBorderPane.getStyleClass().add("implementors");
@@ -58,8 +58,6 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         BorderPane.setAlignment(label, Pos.CENTER_LEFT);
         implementorsBorderPane.setLeft(label);
 
-        itemLabel = new Label();
-
         choiceBox = new ChoiceBox<>();
         choiceBox.setMaxWidth(Double.MAX_VALUE);
         choiceBox.valueProperty().addListener((ObservableValue<? extends String> p, String ov, String nv) -> {
@@ -67,21 +65,17 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
                 if (property != null) {
                     Configuration value = null;
                     if (!nv.equals("NULL")) {
-                        value = RegisteryUtils.getDefaultRegistery().getConfiguration(nv);
+                        value = RegisteryUtils.getRegistery().getConfiguration(nv);
                     }
-//                    if (navigator != null) {
-//                        navigator.removeChildren(property);
-//                    }
                     property.set(value == null ? null : new FromConfigurationPropertyValue(value));
-                    if (navigator != null) {
-                        navigator.addFromConfigurationTreeNodes(property);
-                    }
+                    parent.getListeners().fire().onPropertyValueChanged(parent, property);
                     confEditor.setModel(value, readOnly);
                 }
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(ConfigurationPropertyEditor.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
+        implementorsBorderPane.setCenter(choiceBox);
 
         editorVBox = new VBox();
         editorVBox.getChildren().addAll(implementorsBorderPane, confEditor);
@@ -106,22 +100,25 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         if (this.property == property) {
             return;
         }
+        
+        setText(property.name());
 
+        editorVBox.getChildren().removeAll(implementorsBorderPane, confEditor);
         extractImplementors(property);
         this.property = property;
         updateModelValue();
 
-        setText(property.name());
         setContent(editorVBox);
         choiceBox.setDisable(readOnly);
         PropertyEditor.updateInfo(infoContainer, this.property);
+        editorVBox.getChildren().add(confEditor);
     }
 
     private void updateModelValue() {
         if (property.get() == null) {
             try {
                 String defaultName = (String) choiceBox.getItems().get(0);
-                Configuration defaultValue = RegisteryUtils.getDefaultRegistery().getConfiguration(defaultName);
+                Configuration defaultValue = RegisteryUtils.getRegistery().getConfiguration(defaultName);
                 property.set(new FromConfigurationPropertyValue(defaultValue));
             } catch (Exception ex) {
                 Logger.getLogger(ConfigurationPropertyEditor.class.getName()).log(Level.SEVERE, null, ex);
@@ -132,12 +129,14 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
 
         if (fcpv != null && fcpv.getValue() != null) { //in case property is a dummy (came from collection property editor)
             Class implementor = fcpv.getValue().typeInfo().getType();
-            String className = RegisteryUtils.getDefaultRegistery().getRegisteredClassName(implementor);
+            String className = RegisteryUtils.getRegistery().getRegisteredClassName(implementor);
             Property temp = property;
             property = null;
             choiceBox.getSelectionModel().select(className);
             property = temp;
-            itemLabel.setText(className);
+            if (isListItem && choiceBox.getItems().size() <= 1) {
+                setText(className);
+            }
             confEditor.setModel(fcpv.getValue(), readOnly);
         } else {
             choiceBox.getSelectionModel().select("NULL");
@@ -150,18 +149,16 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         }
         this.property = null;
         Class pType = property.typeInfo().getType();
-        Collection<Class> implementors = RegisteryUtils.getDefaultRegistery().getImplementors(pType);
+        Collection<Class> implementors = RegisteryUtils.getRegistery().getImplementors(pType);
         choiceBox.getItems().clear();
         if (!isListItem) {
             choiceBox.getItems().add("NULL");
         }
-        implementors.forEach((i) -> choiceBox.getItems().add(RegisteryUtils.getDefaultRegistery().getRegisteredClassName(i)));
 
-        if (isListItem && implementors.size() <= 1) {
-            BorderPane.setAlignment(itemLabel, Pos.CENTER_LEFT);
-            implementorsBorderPane.setCenter(itemLabel);
-        } else {
-            implementorsBorderPane.setCenter(choiceBox);
+        implementors.forEach((i) -> choiceBox.getItems().add(RegisteryUtils.getRegistery().getRegisteredClassName(i)));
+
+        if (!isListItem || implementors.size() > 1) {
+            editorVBox.getChildren().add(implementorsBorderPane);
         }
     }
 

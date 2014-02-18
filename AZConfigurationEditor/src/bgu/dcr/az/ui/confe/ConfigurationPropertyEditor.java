@@ -7,6 +7,7 @@ package bgu.dcr.az.ui.confe;
 
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.Property;
+import bgu.dcr.az.anop.conf.PropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromConfigurationPropertyValue;
 import bgu.dcr.az.anop.reg.RegisteryUtils;
 import java.util.Collection;
@@ -38,12 +39,12 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
     private Property property;
     private final BorderPane implementorsBorderPane;
     private boolean readOnly;
-    private final boolean isListItem;
+    private final Property parentCollection;
     private final VBox editorVBox;
 
-    public ConfigurationPropertyEditor(ConfigurationEditor parent, boolean isListItem) {
+    public ConfigurationPropertyEditor(ConfigurationEditor parent, Property collection) {
         this.parent = parent;
-        this.isListItem = isListItem;
+        this.parentCollection = collection;
 
         getStyleClass().add("configuration-property-editor");
 
@@ -67,8 +68,15 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
                     if (!nv.equals("NULL")) {
                         value = RegisteryUtils.getRegistery().getConfiguration(nv);
                     }
+
+                    PropertyValue old = property.get();
+                    
                     property.set(value == null ? null : new FromConfigurationPropertyValue(value));
-                    parent.getListeners().fire().onPropertyValueChanged(parent, property);
+                    if (parentCollection != null) {
+                        parent.getListeners().fire().onListItemValueChanged(parent, parentCollection, old, property.get());
+                    } else {
+                        parent.getListeners().fire().onPropertyValueChanged(parent, property);
+                    }
                     confEditor.setModel(value, readOnly);
                 }
             } catch (ClassNotFoundException ex) {
@@ -100,7 +108,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         if (this.property == property) {
             return;
         }
-        
+
         setText(property.name());
 
         editorVBox.getChildren().removeAll(implementorsBorderPane, confEditor);
@@ -134,7 +142,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
             property = null;
             choiceBox.getSelectionModel().select(className);
             property = temp;
-            if (isListItem && choiceBox.getItems().size() <= 1) {
+            if (parentCollection != null && choiceBox.getItems().size() <= 1) {
                 setText(className);
             }
             confEditor.setModel(fcpv.getValue(), readOnly);
@@ -151,13 +159,13 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         Class pType = property.typeInfo().getType();
         Collection<Class> implementors = RegisteryUtils.getRegistery().getImplementors(pType);
         choiceBox.getItems().clear();
-        if (!isListItem) {
+        if (parentCollection == null) {
             choiceBox.getItems().add("NULL");
         }
 
         implementors.forEach((i) -> choiceBox.getItems().add(RegisteryUtils.getRegistery().getRegisteredClassName(i)));
 
-        if (!isListItem || implementors.size() > 1) {
+        if (parentCollection == null || implementors.size() > 1) {
             editorVBox.getChildren().add(implementorsBorderPane);
         }
     }

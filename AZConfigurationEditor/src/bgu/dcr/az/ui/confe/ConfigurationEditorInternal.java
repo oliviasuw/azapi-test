@@ -75,7 +75,7 @@ public class ConfigurationEditorInternal extends VBox{
                         && "false".equals(property.doc().first("UIVisibility"))) {
                     continue;
                 }
-                ConfigurationPropertyEditor editor = new ConfigurationPropertyEditor(parent, false);
+                ConfigurationPropertyEditor editor = new ConfigurationPropertyEditor(parent, null);
                 editor.setModel(property, readOnly);
                 getChildren().add(editor);
             }

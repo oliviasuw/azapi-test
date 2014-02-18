@@ -45,7 +45,7 @@ public abstract class AbstractConfiguration implements Configuration {
 
     @Override
     public String registeredName() {
-        return RegisteryUtils.getDefaultRegistery().getRegisteredClassName(type.getType());
+        return RegisteryUtils.getRegistery().getRegisteredClassName(type.getType());
     }
 
     public Map<String, Property> propertiesMap() {

@@ -55,7 +55,7 @@ public class ReflectionUtils {
         
         if (c == Character.class) {
             if (s.length() != 1) {
-                throw new RuntimeException("Unable to parse character");
+                throw new RuntimeException("Unable to parser string: \"" + s + "\" to Character");
             }
             return (T)(Character)s.charAt(0);
         }

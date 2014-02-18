@@ -79,7 +79,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
         finishedAgents = new HashSet<>();
 
         for (int aId : controlled) {
-            AgentManipulator manipulator = RegisteryUtils.getDefaultRegistery().getAgentManipulator(spawner.getAgentType(aId));
+            AgentManipulator manipulator = RegisteryUtils.getRegistery().getAgentManipulator(spawner.getAgentType(aId));
             Agent agent = manipulator.create();
             initializeAgent(agent, manipulator, aId, ex);
             AgentWithManipulator awm = new AgentWithManipulator(agent, manipulator);

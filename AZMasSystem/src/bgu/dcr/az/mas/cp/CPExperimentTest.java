@@ -224,7 +224,25 @@ public class CPExperimentTest implements Experiment {
         return looper.count() * algorithms.size();
     }
 
-    public Execution getExecution(int i) throws ConfigurationException {
+    public Problem getProblem(int i) throws ConfigurationException {
+        try {
+            ConfigurationOfElements conf = new ConfigurationOfElements();
+            for (int j = 0; j < conf.configurableElements.length; j++) {
+                conf.configurableElements[j] = conf.configurationsOfElements[j].create();
+            }
+
+            RandomSequance seq = new RandomSequance(seed);
+
+            conf.apply();
+            Problem p = new Problem();
+            pgen.generate(p, new Random(seq.getIthLong(i)));
+            return p;
+        } catch (ClassNotFoundException ex) {
+            throw new ConfigurationException("cannot create configuration, see cause", ex);
+        }
+    }
+
+    /* package */ Execution getExecution(int i) throws ConfigurationException {
         try {
             ConfigurationOfElements conf = new ConfigurationOfElements();
             for (int j = 0; j < conf.configurableElements.length; j++) {
@@ -242,19 +260,16 @@ public class CPExperimentTest implements Experiment {
         looper.configure(i, conf.configurationsOfElements);
 
         conf.apply();
-//        System.out.println("Start Generating Problem " + i);
         Problem p = new Problem();
         pgen.generate(p, new Random(seed));
 
         AlgorithmDef adef = algorithms.get(i % algorithms.size());
-        AgentSpawner spawner = new SimpleAgentSpawner(RegisteryUtils.getDefaultRegistery().getRegisteredClassByName("ALGORITHM." + adef.getName()));
+        AgentSpawner spawner = new SimpleAgentSpawner(RegisteryUtils.getRegistery().getRegisteredClassByName("ALGORITHM." + adef.getName()));
         CPExecution exec = new CPExecution(this, adef, looper.getRunningVariableValue(i / algorithms.size()), spawner, p, executionEnvironment);
 
         final StatisticsManagerImpl statm = StatisticsManagerImpl.getInstance();
         statm.clearRegistrations();
-        for (StatisticCollector stat : statistics) {
-            statm.register(stat);
-        }
+        statistics.forEach(statm::register);
 
         exec.supply(StatisticsManager.class, statm);
         for (Map.Entry<Class, ExecutionService> e : suppliedServices.entrySet()) {

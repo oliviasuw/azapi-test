@@ -49,6 +49,7 @@ public class CPExperiment implements Experiment {
     private List<StatisticCollector> statistics = new LinkedList<>();
 
     /**
+     * the set of tests
      * @propertyName tests
      * @return
      */
@@ -62,6 +63,7 @@ public class CPExperiment implements Experiment {
     }
 
     /**
+     * @UIVisibility false
      * @propertyName failure-description
      * @return
      */
@@ -217,6 +219,11 @@ public class CPExperiment implements Experiment {
         return (Iterator) getTests().iterator();
     }
 
+    /**
+     * available statistics
+     * @icon #remove.png
+     * @return 
+     */
     @Override
     public Collection<StatisticCollector> getStatistics() {
         return statistics;

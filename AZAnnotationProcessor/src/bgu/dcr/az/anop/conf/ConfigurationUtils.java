@@ -59,7 +59,7 @@ public class ConfigurationUtils {
     }
 
     public static Element toXML(Configuration conf) throws ConfigurationException {
-        final String registeredClassName = RegisteryUtils.getDefaultRegistery().getRegisteredClassName(conf.typeInfo().getType());
+        final String registeredClassName = RegisteryUtils.getRegistery().getRegisteredClassName(conf.typeInfo().getType());
         if (registeredClassName == null) {
             throw new ConfigurationException("cannot find registration for class: " + conf.typeInfo().getType().getCanonicalName());
         }
@@ -73,7 +73,7 @@ public class ConfigurationUtils {
     }
 
     public static Configuration fromXML(Element e) throws ClassNotFoundException {
-        Configuration c = RegisteryUtils.getDefaultRegistery().getConfiguration(e.getLocalName());
+        Configuration c = RegisteryUtils.getRegistery().getConfiguration(e.getLocalName());
 
         if (c == null) {
             throw new ClassNotFoundException("cannot find class registration for element " + e.getLocalName());
@@ -102,9 +102,13 @@ public class ConfigurationUtils {
         return true;
     }
 
-    private static void putProperty(String property, FromStringPropertyValue value, Element e, boolean allowAttributes) {
+    private static void putProperty(String property, FromStringPropertyValue value, Element e, boolean allowAttributes) throws ConfigurationException {
         if (allowAttributes) {
-            e.addAttribute(new Attribute(property, value.getValue()));
+            try {
+                e.addAttribute(new Attribute(property, value.getValue()));
+            } catch (nu.xom.IllegalCharacterDataException ex) {
+                throw new ConfigurationException("cannot write attribute:  " + property + " with value: " + value.getValue(), ex);
+            }
         } else {
             Element inner = new Element(property);
             inner.appendChild(value.getValue());
@@ -163,7 +167,7 @@ public class ConfigurationUtils {
     private static Property resolvePropertyFromElement(Configuration c, Element child) throws ClassNotFoundException {
         Property property = c.get(child.getLocalName());
         if (property == null) { //attempt to find property by type
-            Class valueType = RegisteryUtils.getDefaultRegistery().getRegisteredClassByName(child.getLocalName());
+            Class valueType = RegisteryUtils.getRegistery().getRegisteredClassByName(child.getLocalName());
             if (valueType != null) {
                 for (Property p : c) {
                     if (p.typeInfo().getType().isAssignableFrom(valueType)) {
@@ -258,8 +262,15 @@ public class ConfigurationUtils {
         return new FromConfigurationPropertyValue(fromXML(e));
     }
 
+    /**
+     * 
+     * @param o
+     * @return
+     * @throws ClassNotFoundException 
+     * @deprecated should remove before release
+     */
     public static Configuration createConfigurationFor(Object o) throws ClassNotFoundException {
-        Configuration conf = RegisteryUtils.getDefaultRegistery().getConfiguration(o.getClass());
+        Configuration conf = RegisteryUtils.getRegistery().getConfiguration(o.getClass());
         return conf;
     }
 
@@ -280,9 +291,9 @@ public class ConfigurationUtils {
         }
 
     }
-    
+
     public static boolean isConfigurable(Class c) {
-        return !RegisteryUtils.getDefaultRegistery().getImplementors(c).isEmpty();
+        return !RegisteryUtils.getRegistery().getImplementors(c).isEmpty();
     }
 
     public static PropertyValue toPropertyValue(Object o) throws ConfigurationException {

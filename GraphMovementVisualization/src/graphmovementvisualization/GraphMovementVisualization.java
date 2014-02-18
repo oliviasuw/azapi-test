@@ -16,6 +16,8 @@ import graphmovementvisualization.api.SimulatorTick;
 import graphmovementvisualization.impl.GraphData;
 import graphmovementvisualization.impl.MoveEvent;
 import graphmovementvisualization.impl.TickEvent;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,12 +39,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.scene.CacheHint;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
@@ -61,6 +65,9 @@ public class GraphMovementVisualization extends Application {
     private Kryo kryo;
     private GraphData graphData = new GraphData();
     private ScrollPane scrollPane;
+    private double MAX_SCALE = 1;
+    private double MIN_SCALE = 0.2;
+    private double scale = 1;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -82,6 +89,23 @@ public class GraphMovementVisualization extends Application {
         backCanvas.setCacheHint(CacheHint.SPEED);
         backCanvas.setCache(true);
 
+        scrollPane.addEventFilter(ScrollEvent.ANY, (ScrollEvent t) -> {
+            if (t.isControlDown()) {
+//                Point p = MouseInfo.getPointerInfo().getLocation();
+//                scrollPane.setHvalue();
+//                scrollPane.setVvalue();
+                scale = scale + t.getDeltaY() / 200;
+                if (scale <= MIN_SCALE) {
+                    scale = MIN_SCALE;
+                } else if (scale >= MAX_SCALE) {
+                    scale = MAX_SCALE;
+                }
+                drawBackgroundFromGraph(backCanvas, graphData);
+            }
+        });
+
+        //        scrollPane.addEventFilter(ScrollEvent.ANY, new ZoomHandler(backCanvas, scrollPane));
+        //        scrollPane.addEventFilter(ScrollEvent.ANY, new ZoomHandler(actionCanvas, scrollPane));
         scrollPane.widthProperty().addListener((ObservableValue<? extends Number> ov, Number o, Number n) -> {
             actionCanvas.setWidth(n.doubleValue());
             backCanvas.setWidth(n.doubleValue());
@@ -170,6 +194,7 @@ public class GraphMovementVisualization extends Application {
                 gcAction.strokeText("tx: " + tx + ", ty: " + ty, 14, 14);
 
                 for (Sprite sprite : sprites) {
+                    sprite.setScale(scale);
                     sprite.draw(actionCanvas);
                 }
 
@@ -250,7 +275,7 @@ public class GraphMovementVisualization extends Application {
                 Location location = translateToLocation(edge, movee.getPercentage());
                 Sprite currSprite = sprites.get(who);
                 if (currSprite instanceof Car) {
-                    Car currCar = (Car)currSprite;
+                    Car currCar = (Car) currSprite;
                     KeyFrame move = currCar.move(location.getX(), location.getY());
                     timeline.getKeyFrames().add(move);
                 }
@@ -320,13 +345,13 @@ public class GraphMovementVisualization extends Application {
         gc.strokeText("tx: " + tx + ", ty: " + ty, 14, canvas.getHeight() - 14);
         for (String vertexName : graphData.getVertexSet()) {
             AZVisVertex vertex = (AZVisVertex) graphData.getData(vertexName);
-            gc.strokeRect(vertex.getX() - tx, vertex.getY() - ty, 5, 5);
+            gc.strokeRect((vertex.getX() - tx) * scale, (vertex.getY() - ty) * scale, 5 * scale, 5 * scale);
 
         }
         for (String edgeName : graphData.getEdgeSet()) {
             AZVisVertex source = (AZVisVertex) graphData.getData(graphData.getEdgeSource(edgeName));
             AZVisVertex target = (AZVisVertex) graphData.getData(graphData.getEdgeTarget(edgeName));
-            gc.strokeLine(source.getX() - tx, source.getY() - ty, target.getX() - tx, target.getY() - ty);
+            gc.strokeLine((source.getX() - tx) * scale, (source.getY() - ty) * scale, (target.getX() - tx) * scale, (target.getY() - ty) * scale);
         }
     }
 

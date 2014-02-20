@@ -13,14 +13,9 @@ import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -29,9 +24,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
-import javafx.util.Duration;
 
 /**
  *
@@ -195,7 +190,7 @@ public class FXUtils {
      *
      * @param startingNode
      * @param predicate
-     * @return null if no such node exists
+     * @return
      */
     public static Node lookupChild(Node startingNode, Predicate<Node> predicate) {
         LinkedList<Node> open = new LinkedList<>();
@@ -210,6 +205,76 @@ public class FXUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * finds all the children which accepted by the given predicate
+     *
+     * @param startingNode
+     * @param predicate
+     * @return null if no such node exists
+     */
+    public static LinkedList<Node> lookupDirectChildren(Node startingNode, Predicate<Node> predicate) {
+        LinkedList<Node> result = new LinkedList<>();
+        LinkedList<Node> open = new LinkedList<>();
+        open.add(startingNode);
+        while (!open.isEmpty()) {
+            Node item = open.remove();
+            if (predicate.test(item)) {
+                result.add(item);
+                continue;
+            }
+            if (item instanceof Parent) {
+                open.addAll(((Parent) item).getChildrenUnmodifiable());
+            }
+            if (item instanceof TitledPane) {
+                open.add(((TitledPane) item).getContent());
+            }
+            if (item instanceof ScrollPane) {
+                open.add(((ScrollPane) item).getContent());
+            }
+
+        }
+        result.remove(startingNode);
+        return result;
+    }
+
+    public static void addChildListener(Node startingNode, ListChangeListener<Node> listener) {
+        LinkedList<Node> open = new LinkedList<>();
+        open.add(startingNode);
+        while (!open.isEmpty()) {
+            Node item = open.remove();
+            if (item instanceof Parent) {
+                Parent parent = (Parent) item;
+                parent.getChildrenUnmodifiable().addListener(listener);
+                open.addAll((parent).getChildrenUnmodifiable());
+            }
+            if (item instanceof TitledPane) {
+                open.add(((TitledPane) item).getContent());
+            }
+            if (item instanceof ScrollPane) {
+                open.add(((ScrollPane) item).getContent());
+            }
+        }
+    }
+
+    public static void removeChildListener(Node startingNode, ListChangeListener<Node> listener) {
+        LinkedList<Node> open = new LinkedList<>();
+        open.add(startingNode);
+        while (!open.isEmpty()) {
+            Node item = open.remove();
+            if (item instanceof Parent) {
+                Parent parent = (Parent) item;
+                parent.getChildrenUnmodifiable().removeListener(listener);
+                open.addAll((parent).getChildrenUnmodifiable());
+            }
+            if (item instanceof TitledPane) {
+                open.add(((TitledPane) item).getContent());
+            }
+            if (item instanceof ScrollPane) {
+                open.add(((ScrollPane) item).getContent());
+            }
+        }
     }
 
     /**
@@ -237,8 +302,8 @@ public class FXUtils {
 
         Bounds eBounds = element.localToScene(element.getBoundsInLocal());
         Bounds sBounds = scroll.localToScene(scroll.getBoundsInLocal());
-        
-            System.out.println("SBOUNDS " + sBounds + "\nEBOUNDS" + eBounds);
+
+        System.out.println("SBOUNDS " + sBounds + "\nEBOUNDS" + eBounds);
         if (!forceTop && sBounds.contains(new Point2D(eBounds.getMinX(), eBounds.getMinY()))) {
             return;
         }

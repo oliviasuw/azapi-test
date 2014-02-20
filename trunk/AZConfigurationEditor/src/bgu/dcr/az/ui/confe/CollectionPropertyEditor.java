@@ -19,6 +19,8 @@ import bgu.dcr.az.anop.utils.PropertyUtils;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -37,7 +39,7 @@ import resources.img.R;
  *
  * @author Shl
  */
-public class CollectionPropertyEditor extends TitledPane implements PropertyEditor {
+public class CollectionPropertyEditor extends TitledPane implements PropertyEditor, Selectable {
 
     public static final Image REMOVE_IMAGE = new Image(R.class.getResourceAsStream("remove.png"));
 
@@ -55,10 +57,24 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     private boolean readOnly;
     private boolean editEnabled;
 
+    private final BooleanProperty selected;
+
+    @Override
+    public BooleanProperty selectedProperty() {
+        return selected;
+    }
+
 //    private final NavigatableConfigurationEditor navigator;
     public CollectionPropertyEditor(ConfigurationEditor parent) {
         this.parent = parent;
         getStyleClass().add("collection-property-editor");
+
+        selected = new SimpleBooleanProperty(false);
+        selected.addListener((p, ov, nv) -> {
+            if (nv && parent != null) {
+                parent.select(this);
+            }
+        });
 
         addButton = new Button("Add");
         addButton.setOnAction((e) -> onAddButton());
@@ -74,7 +90,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         vBox.getChildren().addAll(tools);
         setContent(vBox);
         setGraphic(infoContainer);
-        setExpanded(false);
+        setExpanded(true);
         editEnabled = false;
     }
 
@@ -129,7 +145,6 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
             FromCollectionPropertyValue fcpv = (FromCollectionPropertyValue) collectionProperty.get();
             fcpv.remove(value);
             vBox.getChildren().remove(grid);
-            parent.getListeners().fire().onPropertyValueRemoved(parent, collectionProperty, value);
         });
         BorderPane.setAlignment(remove, Pos.CENTER);
         grid.setLeft(remove);
@@ -143,7 +158,6 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         if (propertyValue != null) {
             fcpv.add(propertyValue);
             addItemToCollection(propertyValue);
-            parent.getListeners().fire().onPropertyValueAdded(parent, collectionProperty, propertyValue);
         }
     }
 
@@ -159,12 +173,6 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     }
 
     public final void onClearButton() {
-        if (collectionProperty.get() != null) {
-            for (PropertyValue pv : (FromCollectionPropertyValue) collectionProperty.get()) {
-                parent.getListeners().fire().onPropertyValueRemoved(parent, collectionProperty, pv);
-            }
-        }
-
         collectionProperty.set(new FromCollectionPropertyValue());
         Property temp = collectionProperty;
         collectionProperty = null;
@@ -207,7 +215,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
 
     private Node propertyToEditor(Property property) {
         if (PropertyUtils.isPrimitive(property)) {
-            return new TerminalPropertyEditor(parent);
+            return new TerminalPropertyEditor(parent, null);
         } else {
             if (PropertyUtils.isCollection(property)) {
                 return new CollectionPropertyEditor(parent);

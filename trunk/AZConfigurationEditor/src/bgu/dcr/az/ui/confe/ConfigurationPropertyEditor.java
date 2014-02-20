@@ -13,6 +13,8 @@ import bgu.dcr.az.anop.reg.RegisteryUtils;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -27,7 +29,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Shl
  */
-public class ConfigurationPropertyEditor extends TitledPane implements PropertyEditor {
+public class ConfigurationPropertyEditor extends TitledPane implements PropertyEditor, Selectable {
 
     private static final int LABEL_MARGING = 10;
 
@@ -42,14 +44,27 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
     private final Property parentCollection;
     private final VBox editorVBox;
 
+    private final BooleanProperty selected;
+
+    @Override
+    public BooleanProperty selectedProperty() {
+        return selected;
+    }
+
     public ConfigurationPropertyEditor(ConfigurationEditor parent, Property collection) {
         this.parent = parent;
         this.parentCollection = collection;
 
         getStyleClass().add("configuration-property-editor");
+        selected = new SimpleBooleanProperty(false);
+        selected.addListener((p, ov, nv) -> {
+            if (nv && parent != null) {
+                parent.select(this);
+            }
+        });
 
         infoContainer = new Label("");
-        confEditor = new ConfigurationEditorInternal(parent);
+        confEditor = new ConfigurationEditorInternal(parent, this);
 
         implementorsBorderPane = new BorderPane();
         implementorsBorderPane.getStyleClass().add("implementors");
@@ -68,15 +83,8 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
                     if (!nv.equals("NULL")) {
                         value = RegisteryUtils.getRegistery().getConfiguration(nv);
                     }
-
-                    PropertyValue old = property.get();
-                    
                     property.set(value == null ? null : new FromConfigurationPropertyValue(value));
-                    if (parentCollection != null) {
-                        parent.getListeners().fire().onListItemValueChanged(parent, parentCollection, old, property.get());
-                    } else {
-                        parent.getListeners().fire().onPropertyValueChanged(parent, property);
-                    }
+                    setRepresentativeName();
                     confEditor.setModel(value, readOnly);
                 }
             } catch (ClassNotFoundException ex) {
@@ -87,16 +95,17 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
 
         editorVBox = new VBox();
         editorVBox.getChildren().addAll(implementorsBorderPane, confEditor);
+        setContent(editorVBox);
 
         setGraphic(infoContainer);
-        setExpanded(false);
+        setExpanded(true);
     }
 
     @Override
     public void setModel(Property property, boolean readOnly) {
         this.readOnly = readOnly;
         if (this.property != property) {
-            setContent(null);
+            editorVBox.getChildren().removeAll(implementorsBorderPane, confEditor);
         }
 
         if (property == null) {
@@ -109,13 +118,13 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
             return;
         }
 
-        setText(property.name());
-
         editorVBox.getChildren().removeAll(implementorsBorderPane, confEditor);
         extractImplementors(property);
         this.property = property;
         updateModelValue();
+        setRepresentativeName();
 
+        setContent(null);
         setContent(editorVBox);
         choiceBox.setDisable(readOnly);
         PropertyEditor.updateInfo(infoContainer, this.property);
@@ -178,5 +187,29 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
     @Override
     public Property getModel() {
         return property;
+    }
+
+    public void setRepresentativeName() {
+        if (property == null) {
+            return;
+        }
+        PropertyValue value = property.get();
+
+        if (value == null) {
+            setText(property.name());
+        } else {
+            if (value instanceof FromConfigurationPropertyValue) {
+                String name = "";
+                FromConfigurationPropertyValue fcpv = (FromConfigurationPropertyValue) value;
+                Property confName = fcpv.getValue().get("name") == null ? fcpv.getValue().get("Name") : fcpv.getValue().get("name");
+                if (confName != null) {
+                    name = " [" + (confName.get() == null ? "" : confName.get().stringValue()) + "]";
+                }
+                setText(fcpv.getValue().registeredName() + name);
+            } else {
+                setText("??? SOMETHING ???");
+            }
+        }
+
     }
 }

@@ -18,14 +18,20 @@ import javafx.scene.layout.VBox;
  *
  * @author Shl
  */
-public class ConfigurationEditorInternal extends VBox{
+public class ConfigurationEditorInternal extends VBox {
 
     private final ConfigurationEditor parent;
+    private final ConfigurationPropertyEditor parentEditor;
     private Configuration configuration;
     private boolean readOnly;
-    
+
     public ConfigurationEditorInternal(ConfigurationEditor parent) {
+        this(parent, null);
+    }
+
+    public ConfigurationEditorInternal(ConfigurationEditor parent, ConfigurationPropertyEditor parentEditor) {
         this.parent = parent;
+        this.parentEditor = parentEditor;
         setSpacing(3);
         setPadding(new Insets(5));
 
@@ -93,7 +99,7 @@ public class ConfigurationEditorInternal extends VBox{
                     continue;
                 }
 
-                TerminalPropertyEditor controller = new TerminalPropertyEditor(parent);
+                TerminalPropertyEditor controller = new TerminalPropertyEditor(parent, parentEditor);
                 controller.setModel(property, readOnly);
                 double labelWidth = controller.getLabelWidth();
                 if (labelWidth > max) {

@@ -57,80 +57,84 @@ public class NavigatableConfigurationEditor extends BorderPane implements Proper
 
 //        scrollPane.setStyle("-fx-border: 10px solid; -fx-border-color: red;");
         configurationEditor = new ConfigurationEditor();
-        configurationEditor.getListeners().add(new ConfigurationEditor.ConfigurationEditorListener() {
-            @Override
-            public void onPropertyValueChanged(ConfigurationEditor source, Property property) {
-                if (property != null) {
-                    removeChildren(property);
-                    if (property.get() != null) {
-                        if (property.get() instanceof FromConfigurationPropertyValue) {
-                            addFromConfigurationTreeNodes(property);
-                        }
-                    }
-                    for (TreeItem item : treeNodes.values()) {
-                        Object temp = item.getValue();
-                        item.setValue(null);
-                        item.setValue(temp);
-                    }
-                }
-            }
-
-            @Override
-            public void onListItemValueChanged(ConfigurationEditor source, Property collection, PropertyValue oldValue, PropertyValue newValue) {
-                Property po = ValueComparablePseudoProperty.fromCollectionItem(collection, oldValue);
-                Property pn = ValueComparablePseudoProperty.fromCollectionItem(collection, newValue);
-                TreeItem node = treeNodes.get(po);
-                if (node != null) {
-                    removeChildren(po);
-                    treeNodes.remove(po);
-                    treeNodes.put(pn, node);
-                    ((TreeItemProperty) node.getValue()).setItem(pn);
-                    if (pn.get() != null) {
-                        if (pn.get() instanceof FromConfigurationPropertyValue) {
-                            addFromConfigurationTreeNodes(((FromConfigurationPropertyValue)pn.get()).getValue(), pn, new LinkedList());
-                        }
-                        if (pn.get() instanceof FromCollectionPropertyValue) {
-                            addFromCollectionTreeNode(pn, ((FromCollectionPropertyValue)pn.get()), new LinkedList());
-                        }
-                    }
-                    Object temp = node.getValue();
-                    node.setValue(null);
-                    node.setValue(temp);
-                }
-            }
-
-            @Override
-            public void onPropertyValueAdded(ConfigurationEditor source, Property collection, PropertyValue value) {
-                if (collection != null && value != null) {
-                    addCollectionItemTreeNode(collection, value);
-                }
-            }
-
-            @Override
-            public void onPropertyValueRemoved(ConfigurationEditor source, Property collection, PropertyValue value) {
-                if (collection != null && value != null) {
-                    removeSubTree(ValueComparablePseudoProperty.fromCollectionItem(collection, value));
-                }
-            }
-
-            @Override
-            public void onItemSelecttion(ConfigurationEditor source, Object item) {
-                if (item == null) {
-                    return;
-                }
-                TreeItem node = null;
-                if (item instanceof Property) {
-                    node = treeNodes.get(item);
-                } else if (item instanceof PropertyValue) {
-                    node = treeNodes.get(ValueComparablePseudoProperty.fromCollectionItem(null, (PropertyValue) item));
-                }
-
-                if (node != null) {
-                    configurationTree.getSelectionModel().select(node);
-                }
-            }
-
-        });
+//        configurationEditor.getListeners().add(new ConfigurationEditor.ConfigurationEditorListener() {
+//            @Override
+//            public void onPropertyValueChanged(ConfigurationEditor source, Property property) {
+//                if (property != null) {
+//                    removeChildren(property);
+//                    if (property.get() != null) {
+//                        if (property.get() instanceof FromConfigurationPropertyValue) {
+//                            addFromConfigurationTreeNodes(property);
+//                        }
+//                    }
+//                    for (TreeItem item : treeNodes.values()) {
+//                        Object temp = item.getValue();
+//                        item.setValue(null);
+//                        item.setValue(temp);
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onListItemValueChanged(ConfigurationEditor source, Property collection, PropertyValue oldValue, PropertyValue newValue) {
+//                Property po = ValueComparablePseudoProperty.fromCollectionItem(collection, oldValue);
+//                Property pn = ValueComparablePseudoProperty.fromCollectionItem(collection, newValue);
+//                TreeItem node = treeNodes.get(po);
+//                if (node != null) {
+//                    removeChildren(po);
+//                    treeNodes.remove(po);
+//                    ((TreeItemProperty) node.getValue()).setItem(pn);
+//                    treeNodes.put(pn, node);
+//                    if (pn.get() != null) {
+//                        if (pn.get() instanceof FromConfigurationPropertyValue) {
+//                            addFromConfigurationTreeNodes(((FromConfigurationPropertyValue) pn.get()).getValue(), pn, new LinkedList());
+//                        }
+//                        if (pn.get() instanceof FromCollectionPropertyValue) {
+//                            addFromCollectionTreeNode(pn, ((FromCollectionPropertyValue) pn.get()), new LinkedList());
+//                        }
+//                    }
+//                    Label infoContainer = new Label("");
+//                    PropertyEditor.updateInfo(infoContainer, pn);
+//                    node.setGraphic(infoContainer);
+//
+//                    Object temp = node.getValue();
+//                    node.setValue(null);
+//                    node.setValue(temp);
+//                }
+//            }
+//
+//            @Override
+//            public void onPropertyValueAdded(ConfigurationEditor source, Property collection, PropertyValue value) {
+//                if (collection != null && value != null) {
+//                    addCollectionItemTreeNode(collection, value);
+//                }
+//            }
+//
+//            @Override
+//            public void onPropertyValueRemoved(ConfigurationEditor source, Property collection, PropertyValue value) {
+//                if (collection != null && value != null) {
+//                    removeSubTree(ValueComparablePseudoProperty.fromCollectionItem(collection, value));
+//                }
+//            }
+//
+//            @Override
+//            public void onItemSelecttion(ConfigurationEditor source, Object item) {
+//                if (item == null) {
+//                    return;
+//                }
+//                TreeItem node = null;
+//                if (item instanceof Property) {
+//                    node = treeNodes.get(item);
+//                } else if (item instanceof PropertyValue) {
+//                    node = treeNodes.get(ValueComparablePseudoProperty.fromCollectionItem(null, (PropertyValue) item));
+//                }
+//
+//                if (node != null) {
+//                    configurationTree.getSelectionModel().select(node);
+//                }
+//            }
+//
+//        });
         setCenter(configurationEditor);
 
         treeNodes = new HashMap<>();

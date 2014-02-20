@@ -9,7 +9,9 @@ import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
 import bgu.dcr.az.mas.cp.CPExperiment;
+import bgu.dcr.az.ui.confe.ConfigurationEditor;
 import bgu.dcr.az.ui.confe.NavigatableConfigurationEditor;
+import bgu.dcr.az.ui.confe.TitledPaneTreeNavigator;
 import bgu.dcr.az.ui.confe.utils.TimingUtils;
 import bgu.dcr.az.ui.util.FXUtils;
 import java.util.ArrayList;
@@ -50,9 +52,11 @@ public class confe extends Application {
         c.setNames(arrayList);
         final Configuration conf = ConfigurationUtils.load(new CPExperiment());//ConfigurationUtils.load(c);
 
-        NavigatableConfigurationEditor editor = new NavigatableConfigurationEditor();
+//        NavigatableConfigurationEditor editor = new NavigatableConfigurationEditor();
+        ConfigurationEditor editor = new ConfigurationEditor();
         editor.setModel(conf, false);
 
+        TitledPaneTreeNavigator navigator = new TitledPaneTreeNavigator(editor);
         Button button = new Button(":/");
         button.setOnAction((ActionEvent event) -> {
             try {
@@ -61,9 +65,9 @@ public class confe extends Application {
                 Logger.getLogger(confe.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-        editor.getChildren().add(button);
+        navigator.getChildren().add(button);
 
-        Scene scene = new Scene(editor);
+        Scene scene = new Scene(navigator);
         
         scene.getStylesheets().add(getClass().getResource("ceditor.css").toExternalForm());
 

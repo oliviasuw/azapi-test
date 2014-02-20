@@ -30,6 +30,7 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
     private static final int LABEL_MARGING = 10;
     
     private final ConfigurationEditor parent;
+    private final ConfigurationPropertyEditor parentEditor;
     
     private final Label label;
     private final Label infoContainer;
@@ -39,7 +40,8 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
 
     private Property property;
 
-    public TerminalPropertyEditor(ConfigurationEditor parent) {
+    public TerminalPropertyEditor(ConfigurationEditor parent, ConfigurationPropertyEditor parentEditor) {
+        this.parentEditor = parentEditor;
         this.parent = parent;
         
         infoContainer = new Label("");
@@ -69,7 +71,9 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
         textField.textProperty().addListener((ObservableValue<? extends String> p, String ov, String nv) -> {
             if (property != null) {
                 property.set(new FromStringPropertyValue(nv));
-                parent.getListeners().fire().onPropertyValueChanged(parent, property);
+                if (parentEditor != null) {
+                    parentEditor.setRepresentativeName();
+                }
             }
         });
 
@@ -78,7 +82,6 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
         checkBox.selectedProperty().addListener((ObservableValue<? extends Boolean> p, Boolean ov, Boolean nv) -> {
             if (property != null) {
                 property.set(new FromStringPropertyValue(nv.toString()));
-                parent.getListeners().fire().onPropertyValueChanged(parent, property);
             }
         });
 
@@ -87,7 +90,6 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
         choiceBox.valueProperty().addListener((ObservableValue<? extends String> p, String ov, String nv) -> {
             if (property != null) {
                 property.set(new FromStringPropertyValue(nv));
-                parent.getListeners().fire().onPropertyValueChanged(parent, property);
             }
         });
     }

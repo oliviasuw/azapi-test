@@ -7,8 +7,6 @@ package bgu.dcr.az.ui.confe;
 
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.Property;
-import bgu.dcr.az.anop.conf.PropertyValue;
-import bgu.dcr.az.anop.utils.EventListeners;
 import bgu.dcr.az.ui.util.FXUtils;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -22,7 +20,6 @@ public class ConfigurationEditor extends ScrollPane {
 
     private final ConfigurationEditorInternal internal;
     private Configuration model;
-    private final EventListeners<ConfigurationEditorListener> listeners = EventListeners.create(ConfigurationEditorListener.class);
     private Node selectedNode = null;
 
     public ConfigurationEditor() {
@@ -33,11 +30,6 @@ public class ConfigurationEditor extends ScrollPane {
         this.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         this.setFitToWidth(true);
         this.setContent(internal);
-
-    }
-
-    public EventListeners<ConfigurationEditorListener> getListeners() {
-        return listeners;
     }
 
     public void setModel(Configuration model, boolean readOnly) {
@@ -54,11 +46,11 @@ public class ConfigurationEditor extends ScrollPane {
             }
             return false;
         });
-        
+
         if (item == model) {
             child = internal;
         }
-        
+
         if (child != null) {
             selectNode(child, true);
         }
@@ -66,11 +58,14 @@ public class ConfigurationEditor extends ScrollPane {
 
     private void initializeFocuseListening() {
         if (getScene() == null) {
-            System.out.println("scene not found!");
             return;
         }
-
+        System.out.println("Initializing scene...");
         getScene().focusOwnerProperty().addListener((ov, o, n) -> selectNode(n, false));
+    }
+
+    public void select(TitledPane selected) {
+        selectNode(selected, false);
     }
 
     private void selectNode(Node n, boolean expand) {
@@ -88,9 +83,9 @@ public class ConfigurationEditor extends ScrollPane {
                         tnode.setExpanded(true);
                     });
         }
+        
 
         if (selectedNode != newSelection) {
-
             if (newSelection != null && selectedNode != null) {
                 selectedNode.getStyleClass().remove("selected");
             }
@@ -99,37 +94,19 @@ public class ConfigurationEditor extends ScrollPane {
                 newSelection.getStyleClass().add("selected");
                 selectedNode = newSelection;
             }
-
-            if (newSelection instanceof PropertyEditor) {
-                Property model = ((PropertyEditor) newSelection).getModel();
-                if (model.get() != null && model.parent() == null) {
-                    getListeners().fire().onItemSelecttion(this, model.get());
-                } else {
-                    getListeners().fire().onItemSelecttion(this, model);
-                }
+            
+            if (newSelection != null && newSelection instanceof Selectable) {
+                ((Selectable) newSelection).selectedProperty().set(true);
             }
         }
 
         if (newSelection != null) {
             FXUtils.ensureVisibility(this, newSelection, false);
         }
-        
+
         if (n == internal) {
             FXUtils.ensureVisibility(this, n, false);
         }
-    }
-
-    public interface ConfigurationEditorListener {
-
-        void onPropertyValueChanged(ConfigurationEditor source, Property property);
-
-        void onListItemValueChanged(ConfigurationEditor source, Property collection, PropertyValue oldValue, PropertyValue newValue);
-
-        void onPropertyValueAdded(ConfigurationEditor source, Property collection, PropertyValue value);
-
-        void onPropertyValueRemoved(ConfigurationEditor source, Property collection, PropertyValue value);
-
-        void onItemSelecttion(ConfigurationEditor source, Object item);
     }
 
 }

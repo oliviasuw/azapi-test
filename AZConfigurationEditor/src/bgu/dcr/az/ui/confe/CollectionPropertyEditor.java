@@ -68,6 +68,11 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     public CollectionPropertyEditor(ConfigurationEditor parent) {
         this.parent = parent;
         getStyleClass().add("collection-property-editor");
+        this.setOnMouseClicked((t) -> {
+            if (t.getClickCount() == 1) {
+                setExpanded(!expandedProperty().get());
+            }
+        });
 
         selected = new SimpleBooleanProperty(false);
         selected.addListener((p, ov, nv) -> {

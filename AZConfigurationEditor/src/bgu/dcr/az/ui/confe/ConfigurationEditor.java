@@ -83,21 +83,23 @@ public class ConfigurationEditor extends ScrollPane {
                         tnode.setExpanded(true);
                     });
         }
-        
 
         if (selectedNode != newSelection) {
             if (newSelection != null && selectedNode != null) {
+                if (selectedNode instanceof Selectable) {
+                    ((Selectable) selectedNode).selectedProperty().set(false);
+                }
                 selectedNode.getStyleClass().remove("selected");
             }
 
             if (newSelection != null) {
-                newSelection.getStyleClass().add("selected");
                 selectedNode = newSelection;
+                if (newSelection instanceof Selectable) {
+                    ((Selectable) newSelection).selectedProperty().set(true);
+                }
+                newSelection.getStyleClass().add("selected");
             }
-            
-            if (newSelection != null && newSelection instanceof Selectable) {
-                ((Selectable) newSelection).selectedProperty().set(true);
-            }
+
         }
 
         if (newSelection != null) {

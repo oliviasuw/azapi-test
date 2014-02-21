@@ -16,11 +16,13 @@ import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
@@ -56,6 +58,11 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         this.parentCollection = collection;
 
         getStyleClass().add("configuration-property-editor");
+        this.setOnMouseClicked((t) -> {
+            if (t.getClickCount() == 1) {
+                setExpanded(!expandedProperty().get());
+            }
+        });
         selected = new SimpleBooleanProperty(false);
         selected.addListener((p, ov, nv) -> {
             if (nv && parent != null) {
@@ -98,7 +105,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         setContent(editorVBox);
 
         setGraphic(infoContainer);
-        setExpanded(true);
+        setExpanded(false);
     }
 
     @Override
@@ -189,7 +196,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         return property;
     }
 
-    public void setRepresentativeName() {
+    public final void setRepresentativeName() {
         if (property == null) {
             return;
         }

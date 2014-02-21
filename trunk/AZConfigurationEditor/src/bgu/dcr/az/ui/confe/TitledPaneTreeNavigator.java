@@ -8,12 +8,7 @@ package bgu.dcr.az.ui.confe;
 import bgu.dcr.az.ui.util.FXUtils;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -31,7 +26,8 @@ public class TitledPaneTreeNavigator extends BorderPane implements ListChangeLis
     private final ScrollPane observable;
     private final TreeView navigationTree;
 
-    private BiMap<TitledPane, TreeItem> treeNodes;
+    private BiMap<TitledPane, TreeItem> titledPaneToTreeItem;
+    private BiMap<TitledPane, TitledPane> parentToChildTitledPane;
 
     public TitledPaneTreeNavigator(ScrollPane observable) {
         this.observable = observable;
@@ -44,14 +40,15 @@ public class TitledPaneTreeNavigator extends BorderPane implements ListChangeLis
         setLeft(navigationTree);
         setCenter(observable);
 
-        treeNodes = HashBiMap.create();
+        titledPaneToTreeItem = HashBiMap.create();
+        parentToChildTitledPane = HashBiMap.create();
 
         buildTree();
 
         navigationTree.getSelectionModel().selectedItemProperty().addListener((p, ov, nv) -> {
             if (nv != null && nv instanceof TreeItem) {
                 TreeItem item = (TreeItem) nv;
-                TitledPane tp = treeNodes.inverse().get(item);
+                TitledPane tp = titledPaneToTreeItem.inverse().get(item);
                 if (tp != null && tp instanceof Selectable) {
                     ((Selectable) tp).selectedProperty().set(true);
                 }
@@ -63,15 +60,11 @@ public class TitledPaneTreeNavigator extends BorderPane implements ListChangeLis
 
     @Override
     public void onChanged(ListChangeListener.Change<? extends Node> change) {
-        LinkedList<Node> add = new LinkedList<>();
-        LinkedList<Node> remove = new LinkedList<>();
         while (change.next()) {
             if (change.wasAdded()) {
                 LinkedList<Node> open = new LinkedList<>();
                 for (Node item : change.getAddedSubList()) {
-                    System.out.println("Added node: " + item);
                     open.add(item);
-                    add.add(item);
                 }
                 fillTreeNodes(open);
             }
@@ -80,17 +73,15 @@ public class TitledPaneTreeNavigator extends BorderPane implements ListChangeLis
                     for (Node child : FXUtils.lookupDirectChildren(item, n -> n instanceof TitledPane)) {
                         removeSubTree((TitledPane) child);
                     }
-                    remove.add(item);
                 }
             }
         }
-        add.forEach(e -> FXUtils.addChildListener(e, this));
-        remove.forEach(e -> FXUtils.removeChildListener(e, this));
     }
 
     private void buildTree() {
         System.out.println("rebuilding tree... ");
-        treeNodes = HashBiMap.create();
+        titledPaneToTreeItem = HashBiMap.create();
+        parentToChildTitledPane = HashBiMap.create();
 
         TreeItem root = new TreeItem();
         root.setExpanded(true);
@@ -103,8 +94,15 @@ public class TitledPaneTreeNavigator extends BorderPane implements ListChangeLis
     private void fillTreeNodes(LinkedList<Node> open) {
         while (!open.isEmpty()) {
             Node parent = open.remove();
+            
+            if (parent instanceof TitledPane) {
+                addTreeItem((TitledPane)parent);
+            }
 
             for (Node child : FXUtils.lookupDirectChildren(parent, n -> n instanceof TitledPane)) {
+                if (parent instanceof TitledPane) {
+                    parentToChildTitledPane.put((TitledPane) parent, (TitledPane) child);
+                }
                 addTreeItem((TitledPane) child);
                 open.add(child);
             }
@@ -112,18 +110,10 @@ public class TitledPaneTreeNavigator extends BorderPane implements ListChangeLis
     }
 
     private void addTreeItem(TitledPane childItem) {
-        if (treeNodes.keySet().contains(childItem)) {
+        if (titledPaneToTreeItem.keySet().contains(childItem)) {
             return;
         }
-        Node parentItem = FXUtils.lookupParent(childItem, n -> n != childItem && (n instanceof TitledPane || n == observable));
-        TreeItem parent = navigationTree.getRoot();
-        if (parentItem instanceof TitledPane) {
-            parent = treeNodes.get((TitledPane) parentItem);
-            if (parent == null) {
-                addTreeItem((TitledPane) parentItem);
-            }
-            parent = treeNodes.get((TitledPane) parentItem);
-        }
+        TreeItem parent = findParent(childItem);
 
         TreeItem child = new TreeItem();
         child.expandedProperty().bindBidirectional(childItem.expandedProperty());
@@ -131,41 +121,49 @@ public class TitledPaneTreeNavigator extends BorderPane implements ListChangeLis
         child.valueProperty().bind(childItem.textProperty());
         if (childItem instanceof Selectable) {
             ((Selectable) childItem).selectedProperty().addListener((p, ov, nv) -> {
-                if (nv && treeNodes.containsKey(childItem)) {
-                    TreeItem item = treeNodes.get(childItem);
+                if (nv && titledPaneToTreeItem.containsKey(childItem)) {
+                    TreeItem item = titledPaneToTreeItem.get(childItem);
                     navigationTree.getSelectionModel().select(item);
                 }
             });
         }
         parent.getChildren().add(child);
-        treeNodes.put(childItem, child);
-        System.out.println("Added child: " + childItem);
+        titledPaneToTreeItem.put(childItem, child);
+        FXUtils.addChildListener(childItem, this);
+    }
+
+    private TreeItem findParent(TitledPane childItem) {
+        for (TitledPane parent : titledPaneToTreeItem.keySet()) {
+            if (FXUtils.lookupDirectChildren(parent, n -> n instanceof TitledPane).contains(childItem)) {
+                return titledPaneToTreeItem.get(parent);
+            }
+        }
+        return navigationTree.getRoot();
     }
 
     private void removeSubTree(TitledPane root) {
-        if (!treeNodes.keySet().contains(root)) {
+        if (!titledPaneToTreeItem.keySet().contains(root)) {
             return;
         }
+        FXUtils.removeChildListener(root, this);
 
         removeChildren(root);
 
-        TreeItem node = treeNodes.get(root);
+        TreeItem node = titledPaneToTreeItem.get(root);
 
         if (node.getParent() != null) {
             node.getParent().getChildren().remove(node);
         }
 
-        treeNodes.remove(root);
+        titledPaneToTreeItem.remove(root);
     }
 
     private void removeChildren(TitledPane root) {
-        System.out.println("removing children " + root);
-
-        if (!treeNodes.keySet().contains(root)) {
+        if (!titledPaneToTreeItem.keySet().contains(root)) {
             return;
         }
 
-        TreeItem rootNode = treeNodes.get(root);
+        TreeItem rootNode = titledPaneToTreeItem.get(root);
 
         LinkedList<TreeItem> open = new LinkedList<>();
         open.add(rootNode);
@@ -174,8 +172,9 @@ public class TitledPaneTreeNavigator extends BorderPane implements ListChangeLis
             TreeItem parentNode = open.remove();
             for (Object node : parentNode.getChildren().toArray()) {
                 TreeItem item = (TreeItem) node;
+                FXUtils.removeChildListener(titledPaneToTreeItem.inverse().get(item), this);
                 parentNode.getChildren().remove(item);
-                treeNodes.inverse().remove(item);
+                titledPaneToTreeItem.inverse().remove(item);
                 open.add(item);
             }
         }

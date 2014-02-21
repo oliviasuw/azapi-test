@@ -220,7 +220,7 @@ public class FXUtils {
         open.add(startingNode);
         while (!open.isEmpty()) {
             Node item = open.remove();
-            if (predicate.test(item)) {
+            if (predicate.test(item) && item != startingNode) {
                 result.add(item);
                 continue;
             }
@@ -235,7 +235,6 @@ public class FXUtils {
             }
 
         }
-        result.remove(startingNode);
         return result;
     }
 
@@ -303,7 +302,6 @@ public class FXUtils {
         Bounds eBounds = element.localToScene(element.getBoundsInLocal());
         Bounds sBounds = scroll.localToScene(scroll.getBoundsInLocal());
 
-        System.out.println("SBOUNDS " + sBounds + "\nEBOUNDS" + eBounds);
         if (!forceTop && sBounds.contains(new Point2D(eBounds.getMinX(), eBounds.getMinY()))) {
             return;
         }

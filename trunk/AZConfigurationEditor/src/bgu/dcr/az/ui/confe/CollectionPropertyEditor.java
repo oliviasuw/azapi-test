@@ -70,8 +70,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         this.parent = parent;
         getStyleClass().add("collection-property-editor");
         expandedProperty().addListener((p, ov, nv) -> {
-            if (recentlySelected) {
-                System.out.println("EXPAND");
+            if (recentlySelected && !isExpanded()) {
                 recentlySelected = false;
                 setAnimated(false);
                 setExpanded(true);

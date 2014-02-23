@@ -16,13 +16,11 @@ import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
@@ -47,6 +45,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
     private final VBox editorVBox;
 
     private final BooleanProperty selected;
+    private boolean recentlySelected = false;
 
     @Override
     public BooleanProperty selectedProperty() {
@@ -58,14 +57,22 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         this.parentCollection = collection;
 
         getStyleClass().add("configuration-property-editor");
-        this.setOnMouseClicked((t) -> {
-            if (t.getClickCount() == 1) {
-                setExpanded(!expandedProperty().get());
+        expandedProperty().addListener((p, ov, nv) -> {
+            if (recentlySelected) {
+                System.out.println("EXPAND");
+                recentlySelected = false;
+                setAnimated(false);
+                setExpanded(true);
+                setAnimated(true);
             }
+            recentlySelected = false;
         });
+
         selected = new SimpleBooleanProperty(false);
         selected.addListener((p, ov, nv) -> {
             if (nv && parent != null) {
+                recentlySelected = true;
+                setExpanded(true);
                 parent.select(this);
             }
         });

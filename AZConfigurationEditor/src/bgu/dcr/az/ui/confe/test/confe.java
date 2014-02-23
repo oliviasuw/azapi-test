@@ -19,6 +19,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import org.scenicview.ScenicView;
 import test.delete.me.SomeClass;
 
 /**

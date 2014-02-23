@@ -58,6 +58,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     private boolean editEnabled;
 
     private final BooleanProperty selected;
+    private boolean recentlySelected = false;
 
     @Override
     public BooleanProperty selectedProperty() {
@@ -68,15 +69,22 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     public CollectionPropertyEditor(ConfigurationEditor parent) {
         this.parent = parent;
         getStyleClass().add("collection-property-editor");
-        this.setOnMouseClicked((t) -> {
-            if (t.getClickCount() == 1) {
-                setExpanded(!expandedProperty().get());
+        expandedProperty().addListener((p, ov, nv) -> {
+            if (recentlySelected) {
+                System.out.println("EXPAND");
+                recentlySelected = false;
+                setAnimated(false);
+                setExpanded(true);
+                setAnimated(true);
             }
+            recentlySelected = false;
         });
 
         selected = new SimpleBooleanProperty(false);
         selected.addListener((p, ov, nv) -> {
             if (nv && parent != null) {
+                recentlySelected = true;
+                setExpanded(true);
                 parent.select(this);
             }
         });
@@ -95,7 +103,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         vBox.getChildren().addAll(tools);
         setContent(vBox);
         setGraphic(infoContainer);
-        setExpanded(true);
+        setExpanded(false);
         editEnabled = false;
     }
 

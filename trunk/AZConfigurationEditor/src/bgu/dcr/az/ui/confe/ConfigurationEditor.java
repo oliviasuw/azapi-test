@@ -52,7 +52,7 @@ public class ConfigurationEditor extends ScrollPane {
         }
 
         if (child != null) {
-            selectNode(child, true);
+            selectNode(child, false);
         }
     }
 
@@ -76,13 +76,13 @@ public class ConfigurationEditor extends ScrollPane {
         TitledPane newSelection = (TitledPane) FXUtils.lookupParent(n, node -> node instanceof TitledPane);
 
         //expand new selection: 
-        if (newSelection != null && expand) {
-            FXUtils.lookupParents(newSelection, node -> node instanceof TitledPane, node -> node == internal)
-                    .forEach(node -> {
-                        TitledPane tnode = (TitledPane) node;
-                        tnode.setExpanded(true);
-                    });
-        }
+//        if (newSelection != null && expand) {
+//            FXUtils.lookupParents(newSelection, node -> node instanceof TitledPane, node -> node == internal)
+//                    .forEach(node -> {
+//                        TitledPane tnode = (TitledPane) node;
+//                        tnode.setExpanded(true);
+//                    });
+//        }
 
         if (selectedNode != newSelection) {
             if (newSelection != null && selectedNode != null) {
@@ -95,6 +95,7 @@ public class ConfigurationEditor extends ScrollPane {
             if (newSelection != null) {
                 selectedNode = newSelection;
                 if (newSelection instanceof Selectable) {
+                    newSelection.setExpanded(true);
                     ((Selectable) newSelection).selectedProperty().set(true);
                 }
                 newSelection.getStyleClass().add("selected");

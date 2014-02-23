@@ -58,8 +58,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
 
         getStyleClass().add("configuration-property-editor");
         expandedProperty().addListener((p, ov, nv) -> {
-            if (recentlySelected) {
-                System.out.println("EXPAND");
+            if (recentlySelected && !isExpanded()) {
                 recentlySelected = false;
                 setAnimated(false);
                 setExpanded(true);

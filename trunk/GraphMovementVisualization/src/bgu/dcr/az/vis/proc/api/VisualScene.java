@@ -6,7 +6,6 @@
 package bgu.dcr.az.vis.proc.api;
 
 import java.util.Collection;
-import javafx.animation.KeyValue;
 
 /**
  *
@@ -21,8 +20,4 @@ public interface VisualScene {
     Entity getEntity(long id);
     
     Collection<Entity> getEntities();
-    
-    void addDelayedTransformation(KeyValue transformation);
-    
-    void refresh();
 }

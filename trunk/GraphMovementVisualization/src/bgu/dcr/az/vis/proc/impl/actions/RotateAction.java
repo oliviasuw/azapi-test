@@ -5,9 +5,10 @@
  */
 package bgu.dcr.az.vis.proc.impl.actions;
 
-import bgu.dcr.az.vis.proc.api.Entity;
-import bgu.dcr.az.vis.proc.api.VisualScene;
-import javafx.animation.KeyValue;
+import bgu.dcr.az.vis.proc.api.Action;
+import bgu.dcr.az.vis.tools.easing.DoubleEasingVariable;
+import bgu.dcr.az.vis.tools.easing.EasingVariableDoubleBased;
+import bgu.dcr.az.vis.tools.easing.LinearDouble;
 
 /**
  *
@@ -15,31 +16,33 @@ import javafx.animation.KeyValue;
  */
 public class RotateAction extends SingleEntityAction {
 
-    private final double finalAngle;
-    private double initialAngle;
+    private final DoubleEasingVariable angleEasingVar;
+    private final double fromAngle;
+    private final double toAngle;
 
-    public RotateAction(long entityId, double finalAngle, double duration) {
-        super(entityId, duration);
-        this.finalAngle = finalAngle;
+    public RotateAction(long entityId, double fromAngle, double toAngle) {
+        super(entityId);
+        this.fromAngle = fromAngle;
+        this.toAngle = toAngle;
+        angleEasingVar = new DoubleEasingVariable(new LinearDouble(), EasingVariableDoubleBased.EasingFunctinTypeDouble.EASE_IN, fromAngle);
     }
 
     @Override
-    protected void _init(VisualScene scene) {
-        Entity entity = scene.getEntity(getEntityId());
-        initialAngle = entity.rotationProperty().get();
+    public void _initialize(long transitionMillis) {
+        angleEasingVar.change(toAngle, transitionMillis);
+    }
+    
+    @Override
+    protected void _update() {
+        angleEasingVar.update();
+        
+        getEntity().rotationProperty().set(angleEasingVar.getCurrentValue());
     }
 
     @Override
-    protected void _tick(VisualScene scene, double duration) {
-        Entity entity = scene.getEntity(getEntityId());
-        double percentage = getCurrentTime() / getDuration();
-        double ta = (finalAngle - initialAngle) * percentage + initialAngle;
-        scene.addDelayedTransformation(new KeyValue(entity.rotationProperty(), ta));
-    }
+    public Action subAction(double percentageFrom, double percentageTo) {
+        double dr = toAngle - fromAngle;
 
-    @Override
-    public void execute(VisualScene scene) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new RotateAction(getEntityId(), fromAngle + dr * percentageFrom, fromAngle + dr * percentageTo);
     }
-
 }

@@ -9,7 +9,11 @@ package bgu.dcr.az.vis.proc.api;
  *
  * @author Zovadi
  */
-public interface Frame extends Iterable<Action> {
+public interface Frame {
     
-    void addAction(Action action);
+    Frame addAction(Action action);
+    
+    void initialize(Player player);
+    
+    void update();
 }

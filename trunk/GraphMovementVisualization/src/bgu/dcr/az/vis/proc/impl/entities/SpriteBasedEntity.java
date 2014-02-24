@@ -24,9 +24,13 @@ public class SpriteBasedEntity extends CanvasLayeredEntity {
     }
 
     public SpriteBasedEntity(long entityId, long canvasId, InputStream in) {
+        this(entityId, canvasId, new Image(in));
+    }
+
+    public SpriteBasedEntity(long entityId, long canvasId, Image image) {
         super(entityId, canvasId);
 
-        image = new Image(in);
+        this.image = image;
     }
 
     @Override

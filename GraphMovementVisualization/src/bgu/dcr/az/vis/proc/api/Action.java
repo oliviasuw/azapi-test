@@ -5,18 +5,11 @@
  */
 package bgu.dcr.az.vis.proc.api;
 
-import java.util.Collection;
-import javafx.animation.KeyValue;
-
 /**
  *
  * @author Zovadi
  */
 public interface Action {
 
-    double getDurationFraction();
-
-    Collection<KeyValue> apply(Entity entity);
-
-    ActionSequence split(double duration);
+    void execute(VisualScene scene);
 }

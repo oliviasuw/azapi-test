@@ -3,17 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.vis.proc.api;
 
-import javafx.scene.canvas.Canvas;
+package bgu.dcr.az.vis.proc.api;
 
 /**
  *
- * @author Zovadi
+ * @author Shl
  */
-public interface VisualizationProcessor {
-
-    Canvas getCanvas();
+public interface Layer {
     
-    void play(Frame frame);
 }

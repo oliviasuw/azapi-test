@@ -5,11 +5,15 @@
  */
 package bgu.dcr.az.vis.proc.api;
 
+import javafx.concurrent.Service;
+
 /**
  *
  * @author Zovadi
  */
-public interface Frame extends Iterable<Action> {
+public interface Player {
+
+    VisualScene getScene();
     
-    void addAction(Action action);
+    Service play(Frame frame);
 }

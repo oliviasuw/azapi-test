@@ -11,5 +11,10 @@ package bgu.dcr.az.vis.proc.api;
  */
 public interface Action {
 
-    void execute(VisualScene scene);
+    void initialize(Player player);
+    
+    void update();
+    
+    Action subAction(double percentageFrom, double percentageTo);
+    
 }

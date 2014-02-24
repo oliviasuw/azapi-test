@@ -14,7 +14,7 @@ import bgu.dcr.az.vis.proc.impl.Location;
 public class LocateAction extends MoveAction {
 
     public LocateAction(long entityId, Location location) {
-        super(entityId, location, 0);
+        super(entityId, location, location);
     }
 
 }

@@ -6,10 +6,18 @@
 
 package bgu.dcr.az.vis.proc.api;
 
+import javafx.beans.property.DoubleProperty;
+
 /**
  *
  * @author Shl
  */
 public interface Layer {
+    DoubleProperty widthProperty();
+
+    DoubleProperty heightProperty();
     
+    DoubleProperty scaleProperty();
+    
+    void refresh();
 }

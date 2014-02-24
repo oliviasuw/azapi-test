@@ -5,7 +5,9 @@
  */
 package bgu.dcr.az.vis.proc.api;
 
-import javafx.concurrent.Service;
+import javafx.animation.AnimationTimer;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.LongProperty;
 
 /**
  *
@@ -13,7 +15,19 @@ import javafx.concurrent.Service;
  */
 public interface Player {
 
-    VisualScene getScene();
+    LongProperty millisPerFrameProperty();
     
-    Service play(Frame frame);
+    long getMillisPerFrame();
+    
+    void setMillisPerFrame(long millis);
+    
+    IntegerProperty framesPerSecondProperty();
+    
+    int getFramesPerSecond();
+    
+    void setFramesPerSeccond(int fps);
+    
+    VisualScene getScene();
+
+    AnimationTimer play(Frame frame);
 }

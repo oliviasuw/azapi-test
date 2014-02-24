@@ -20,7 +20,7 @@ public interface Entity {
     long getEntityId();
     
     ObjectProperty<Location> locationProperty();
-
+    
     DoubleProperty rotationProperty();
     
     DoubleProperty scaleProperty();

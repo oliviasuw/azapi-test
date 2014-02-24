@@ -23,17 +23,18 @@ public abstract class CanvasLayeredEntity extends SimpleEntity {
     @Override
     protected final void _draw(Layer layer) {
         if (layer instanceof CanvasLayer) {
-            Canvas canvas = ((CanvasLayer)layer).getCanvas();
+            CanvasLayer canvasLayer = (CanvasLayer)layer;
+            Canvas canvas = canvasLayer.getCanvas();
             GraphicsContext gc = canvas.getGraphicsContext2D();
 
-            double drawX = (getLocation().getX() - canvas.getTranslateX()) * canvas.getScaleX();
-            double drawY = (getLocation().getY() - canvas.getTranslateY()) * canvas.getScaleY();
+            double drawX = (getLocation().getX() - canvas.getTranslateX()) * canvasLayer.getScale();
+            double drawY = (getLocation().getY() - canvas.getTranslateY()) * canvasLayer.getScale();
 
             gc.save();
             gc.translate(drawX, drawY);
             gc.rotate(getRotation());
             gc.scale(getScale(), getScale());
-            gc.scale(canvas.getScaleX(), canvas.getScaleY());
+            gc.scale(canvasLayer.getScale(), canvasLayer.getScale());
             _draw(gc);
             gc.restore();
         } else {

@@ -7,8 +7,8 @@ package bgu.dcr.az.vis.proc.impl;
 
 import bgu.dcr.az.vis.proc.api.Action;
 import bgu.dcr.az.vis.proc.api.Frame;
+import bgu.dcr.az.vis.proc.api.Player;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  *
@@ -23,13 +23,20 @@ public class SimpleFrame implements Frame {
     }
 
     @Override
-    public void addAction(Action action) {
+    public SimpleFrame addAction(Action action) {
         actions.add(action);
+        return this;
+    }
+    
+    @Override
+    public void initialize(Player player) {
+        actions.parallelStream().forEach(a -> a.initialize(player));
     }
 
     @Override
-    public Iterator<Action> iterator() {
-        return actions.iterator();
+    public void update() {
+//        actions.parallelStream().forEach(a -> a.update());
+        actions.forEach(a -> a.update());
     }
 
 }

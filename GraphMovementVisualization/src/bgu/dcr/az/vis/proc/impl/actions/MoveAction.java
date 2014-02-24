@@ -5,10 +5,11 @@
  */
 package bgu.dcr.az.vis.proc.impl.actions;
 
-import bgu.dcr.az.vis.proc.api.Entity;
-import bgu.dcr.az.vis.proc.api.VisualScene;
+import bgu.dcr.az.vis.proc.api.Action;
 import bgu.dcr.az.vis.proc.impl.Location;
-import javafx.animation.KeyValue;
+import bgu.dcr.az.vis.tools.easing.DoubleEasingVariable;
+import bgu.dcr.az.vis.tools.easing.EasingVariableDoubleBased;
+import bgu.dcr.az.vis.tools.easing.LinearDouble;
 
 /**
  *
@@ -16,41 +17,42 @@ import javafx.animation.KeyValue;
  */
 public class MoveAction extends SingleEntityAction {
 
-    private final Location destination;
-    private Location initialLocation;
+    private final DoubleEasingVariable xEasingVar;
+    private final DoubleEasingVariable yEasingVar;
+    private final Location from;
+    private final Location to;
 
-    public MoveAction(long entityId, Location destination, double duration) {
-        super(entityId, duration);
-        this.destination = destination;
+    public MoveAction(long entityId, Location from, Location to) {
+        super(entityId);
+        this.from = from;
+        this.to = to;
+        xEasingVar = new DoubleEasingVariable(new LinearDouble(), EasingVariableDoubleBased.EasingFunctinTypeDouble.EASE_IN, from.getX());
+        yEasingVar = new DoubleEasingVariable(new LinearDouble(), EasingVariableDoubleBased.EasingFunctinTypeDouble.EASE_IN, from.getY());
     }
 
     @Override
-    protected void _init(VisualScene scene) {
-        Entity entity = scene.getEntity(getEntityId());
-        initialLocation = new Location(entity.locationProperty().get().getX(), entity.locationProperty().get().getY());
+    public void _initialize(long transitionMillis) {
+        xEasingVar.change(to.getX(), transitionMillis);
+        yEasingVar.change(to.getY(), transitionMillis);
+    }
+    
+    @Override
+    protected void _update() {
+        xEasingVar.update();
+        yEasingVar.update();
+        
+        getEntity().locationProperty().get().xProperty().set(xEasingVar.getCurrentValue());
+        getEntity().locationProperty().get().yProperty().set(yEasingVar.getCurrentValue());
     }
 
     @Override
-    protected void _tick(VisualScene scene, double duration) {
-        if (!isFinished()) {
-            Entity entity = scene.getEntity(getEntityId());
-            double percentage = getCurrentTime() / getDuration();
-            double sx = entity.locationProperty().get().getX();
-            double sy = entity.locationProperty().get().getY();
-            double ex = destination.getX();
-            double ey = destination.getY();
-            
-            double tx = (ex - sx) * percentage + sx;
-            double ty = (ey - sy) * percentage + sy;
-            
-            scene.addDelayedTransformation(new KeyValue(entity.locationProperty().get().xProperty(), tx));
-            scene.addDelayedTransformation(new KeyValue(entity.locationProperty().get().yProperty(), ty));
-        }
-    }
+    public Action subAction(double percentageFrom, double percentageTo) {
+        double dx = to.getX() - from.getX();
+        double dy = to.getY() - from.getY();
 
-    @Override
-    public void execute(VisualScene scene) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new MoveAction(getEntityId(),
+                new Location(from.getX() + dx * percentageFrom, from.getY() + dy * percentageFrom),
+                new Location(from.getX() + dx * percentageTo, from.getY() + dy * percentageTo));
     }
 
 }

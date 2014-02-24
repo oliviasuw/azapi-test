@@ -14,6 +14,6 @@ public interface ResourceManager {
     
     public void initialize();
     
-    public Object  getResource(long id);
+    public Object getResource(long id);
     
 }

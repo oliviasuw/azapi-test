@@ -3,13 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package bgu.dcr.az.vis.proc.api;
+
+import java.util.Collection;
 
 /**
  *
- * @author Zovadi
+ * @author Shl
  */
-public interface Frame extends Iterable<Action> {
+public interface EntityManager {
     
-    void addAction(Action action);
+    Collection<Entity> getAll();
+    
+    Entity getEntity(long id);
+    
+    void addEntity(Entity entity);
+    
 }

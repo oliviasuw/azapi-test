@@ -5,11 +5,10 @@
  */
 package bgu.dcr.az.vis.proc.impl;
 
-import bgu.dcr.az.vis.proc.api.ActionSequence;
-import bgu.dcr.az.vis.proc.api.Entity;
+import bgu.dcr.az.vis.proc.api.Action;
 import bgu.dcr.az.vis.proc.api.Frame;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  *
@@ -17,21 +16,20 @@ import java.util.Map;
  */
 public class SimpleFrame implements Frame {
 
-    private final double duration;
-    private final Map<Entity, ActionSequence> entitiesActions;
+    private final ArrayList<Action> actions;
 
-    public SimpleFrame(double duration) {
-        this.duration = duration;
-        entitiesActions = new HashMap<>();
+    public SimpleFrame() {
+        this.actions = new ArrayList<>();
     }
 
     @Override
-    public double getDuration() {
-        return duration;
+    public void addAction(Action action) {
+        actions.add(action);
     }
 
     @Override
-    public ActionSequence getActionSequence(Entity entity) {
-        return entitiesActions.get(entity);
+    public Iterator<Action> iterator() {
+        return actions.iterator();
     }
+
 }

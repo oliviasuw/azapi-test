@@ -9,7 +9,6 @@ package bgu.dcr.az.vis.proc.api;
 import bgu.dcr.az.vis.proc.impl.Location;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.scene.canvas.Canvas;
 
 /**
  * Represents the basic visualization entity, contains the 
@@ -18,7 +17,7 @@ import javafx.scene.canvas.Canvas;
  * @author Zovadi
  */
 public interface Entity {
-    long getId();
+    long getEntityId();
     
     ObjectProperty<Location> locationProperty();
 
@@ -26,5 +25,5 @@ public interface Entity {
     
     DoubleProperty scaleProperty();
     
-    void draw(VisualizationProcessor processor);
+    void draw(VisualScene scene);
 }

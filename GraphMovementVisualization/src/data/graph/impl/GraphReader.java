@@ -5,10 +5,10 @@
  */
 package data.graph.impl;
 
-import graphmovementvisualization.AZVisVertex;
 import graphmovementvisualization.GraphMovementVisualization;
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Scanner;
@@ -40,7 +40,9 @@ public class GraphReader {
                 } else if (nextToken.equals("E")) {
                     String from = lineBreaker.next();
                     String to = lineBreaker.next();
-                    graphData.addEdge(from + " " + to, from, to, null);
+                    String next = lineBreaker.next();
+                    HashMap<String, String> params = parseEdgeParams(lineBreaker, next);
+                    graphData.addEdge(from + " " + to, from, to, params);
                 } else {
                     System.out.println("unsupported!");
 
@@ -67,5 +69,31 @@ public class GraphReader {
         }
         return ints;
     }
-    
+
+    private HashMap<String, String> parseEdgeParams(Scanner lineBreaker, String nextToken) {
+        HashMap<String, String> params = new HashMap<>(5);
+
+        while (nextToken != null) {
+            if (nextToken.charAt(0) == '[') {
+                nextToken = nextToken.substring(1);
+                while (nextToken != null && !(nextToken.charAt(nextToken.length() - 1) == ']')) {
+                    String[] split = nextToken.split("=");
+                    params.put(split[0], split[1]);
+                    nextToken = lineBreaker.next();
+                }
+                if (nextToken != null) {
+                    String[] split = nextToken.substring(0, nextToken.length() - 1).split("=");
+                    params.put(split[0], split[1]);
+                }
+            }
+            if (lineBreaker.hasNext()) {
+            nextToken = lineBreaker.next();
+            }
+            else {
+                nextToken = null;
+            }
+        }
+        return params;
+    }
+
 }

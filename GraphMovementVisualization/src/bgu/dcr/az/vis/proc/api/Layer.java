@@ -13,9 +13,16 @@ import javafx.beans.property.DoubleProperty;
  * @author Shl
  */
 public interface Layer {
+    
     DoubleProperty widthProperty();
 
     DoubleProperty heightProperty();
+    
+    DoubleProperty translateXProperty();
+    
+    DoubleProperty translateYProperty();
+
+    DoubleProperty translateZProperty();
     
     DoubleProperty scaleProperty();
     

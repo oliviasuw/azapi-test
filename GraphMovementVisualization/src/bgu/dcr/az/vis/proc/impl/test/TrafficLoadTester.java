@@ -41,7 +41,7 @@ public class TrafficLoadTester extends Application {
             }
         });
         
-        SimplePlayer player = new SimplePlayer(vs, 10000, 0);
+        SimplePlayer player = new SimplePlayer(vs, 1000, 0);
         
         Scene scene = new Scene(pane);
         stage.setScene(scene);

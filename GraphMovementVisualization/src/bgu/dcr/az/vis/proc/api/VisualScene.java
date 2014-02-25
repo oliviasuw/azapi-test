@@ -15,9 +15,9 @@ public interface VisualScene {
     
     Layer getLayer(long id);
     
-    Collection<Layer> getLayers();
+    Collection<? extends Layer> getLayers();
 
     Entity getEntity(long id);
     
-    Collection<Entity> getEntities();
+    Collection<? extends Entity> getEntities();
 }

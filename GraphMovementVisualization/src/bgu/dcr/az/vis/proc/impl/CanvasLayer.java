@@ -18,7 +18,7 @@ import javafx.scene.paint.Color;
  */
 public class CanvasLayer implements Layer {
 
-    public static final Color BACKGROUND_COLOR = new Color(1, 1, 1, 1);
+    public static final Color BACKGROUND_COLOR = new Color(0, 0, 0, .5);
 
     private final DoubleProperty scaleProperty;
     private final Canvas canvas;
@@ -75,7 +75,22 @@ public class CanvasLayer implements Layer {
     public void refresh() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(BACKGROUND_COLOR);
-        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+    }
+
+    @Override
+    public DoubleProperty translateXProperty() {
+        return canvas.translateXProperty();
+    }
+
+    @Override
+    public DoubleProperty translateYProperty() {
+        return canvas.translateYProperty();
+    }
+
+    @Override
+    public DoubleProperty translateZProperty() {
+        return canvas.translateZProperty();
     }
 
 }

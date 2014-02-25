@@ -6,10 +6,8 @@
 
 package data.graph.impl;
 
-import graphmovementvisualization.AZVisVertex;
 import java.util.HashMap;
 import java.util.Set;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 /**
@@ -18,8 +16,8 @@ import org.jgrapht.graph.SimpleWeightedGraph;
  */
 public class GraphData {
     
-    private HashMap<String, Object> data = new HashMap<String, Object>();
-    private SimpleWeightedGraph<String, String> graph = new SimpleWeightedGraph<String, String>(String.class);
+    private HashMap<String, Object> data = new HashMap<>();
+    private SimpleWeightedGraph<String, String> graph = new SimpleWeightedGraph<>(String.class);
     
     public Object getData(String name) {
         return data.get(name);

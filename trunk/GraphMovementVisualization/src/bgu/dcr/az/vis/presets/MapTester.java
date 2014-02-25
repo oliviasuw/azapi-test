@@ -20,7 +20,7 @@ public class MapTester extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        MapVisualScene vs = new MapVisualScene(1, "graph2.txt");
+        MapVisualScene vs = new MapVisualScene(1, "graph3.txt");
         BasicOperationsFrame frame = new BasicOperationsFrame();
         frame.move(0, new Location(100, 100), new Location(500, 500));
         frame.move(0, new Location(500, 500), new Location(100, 100));

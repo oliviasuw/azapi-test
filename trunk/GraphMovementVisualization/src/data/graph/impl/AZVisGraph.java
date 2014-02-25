@@ -5,7 +5,6 @@
  */
 package data.graph.impl;
 
-import graphmovementvisualization.AZVisVertex;
 import java.util.Collection;
 import java.util.HashMap;
 import org.jgrapht.EdgeFactory;

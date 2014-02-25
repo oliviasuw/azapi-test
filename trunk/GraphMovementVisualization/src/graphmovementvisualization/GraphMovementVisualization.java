@@ -5,6 +5,7 @@
  */
 package graphmovementvisualization;
 
+import data.graph.impl.AZVisVertex;
 import graphics.sprite.Sprite;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoException;

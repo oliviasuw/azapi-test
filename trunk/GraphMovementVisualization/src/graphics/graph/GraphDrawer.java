@@ -5,8 +5,9 @@
  */
 package graphics.graph;
 
-import graphmovementvisualization.AZVisVertex;
+import data.graph.impl.AZVisVertex;
 import data.graph.impl.GraphData;
+import java.util.HashMap;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -16,6 +17,12 @@ import javafx.scene.paint.Color;
  * @author Shl
  */
 public class GraphDrawer {
+    
+    EdgeDrawer edgeDrawer;
+
+    public GraphDrawer() {
+        this.edgeDrawer = new EdgeDrawer();
+    }
 
     public void drawGraph(Canvas canvas, GraphData graphData, double scale) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -34,7 +41,13 @@ public class GraphDrawer {
         for (String edgeName : graphData.getEdgeSet()) {
             AZVisVertex source = (AZVisVertex) graphData.getData(graphData.getEdgeSource(edgeName));
             AZVisVertex target = (AZVisVertex) graphData.getData(graphData.getEdgeTarget(edgeName));
-            gc.strokeLine((source.getX() - tx) * scale, (source.getY() - ty) * scale, (target.getX() - tx) * scale, (target.getY() - ty) * scale);
+            HashMap<String, String> edgeData = (HashMap<String, String>) graphData.getData(edgeName);
+            
+            edgeDrawer.draw(canvas, graphData, edgeName, scale);
+            
+            
+//            gc.setStroke(null);
+//            gc.strokeLine((source.getX() - tx) * scale, (source.getY() - ty) * scale, (target.getX() - tx) * scale, (target.getY() - ty) * scale);
         }
     }
 

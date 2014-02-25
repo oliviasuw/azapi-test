@@ -13,8 +13,6 @@ import bgu.dcr.az.vis.proc.impl.entities.SpriteBasedEntity;
 import graphics.sprite.Car;
 import java.util.Collection;
 import java.util.HashMap;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;

@@ -40,11 +40,11 @@ public class GraphData {
         graph.addEdge(from, to, name);
     }
 
-    public Iterable<String> getVertexSet() {
+    public Set<String> getVertexSet() {
         return graph.vertexSet();
     }
 
-    public Iterable<String> getEdgeSet() {
+    public Set<String> getEdgeSet() {
         return graph.edgeSet();
     }
 

@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.vis.presets;
 
-import bgu.dcr.az.vis.proc.impl.CanvasLayer;
+import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import data.graph.impl.GraphData;
 import data.graph.impl.GraphReader;
 import graphics.graph.GraphDrawer;

@@ -6,6 +6,7 @@ package graphics.graph;
 
 import data.graph.impl.AZVisVertex;
 import data.graph.impl.GraphData;
+import java.util.Collection;
 import java.util.HashMap;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -48,13 +49,12 @@ public class EdgeDrawer {
                         roadImagePattern),
                 new EdgeStroke(INNER_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         roadImagePattern)));
-        
+
 //        descriptors.put("tertiary", new EdgeDescriptor(
 //                new EdgeStroke(MAIN_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
 //                        Color.BLACK),
 //                new EdgeStroke(INNER_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
 //                        Color.BLUE)));
-
         descriptors.put("trunk", new EdgeDescriptor(
                 new EdgeStroke(MAIN_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.BLACK),
@@ -138,6 +138,42 @@ public class EdgeDrawer {
         gc.setStroke(ed.getInnerStroke().getPaint());
         gc.strokeLine((source.getX() - tx) * scale, (source.getY() - ty) * scale, (target.getX() - tx) * scale, (target.getY() - ty) * scale);
 
+        gc.restore();
+
+    }
+
+    public void draw(Canvas canvas, GraphData graphData, Collection<String> edges, double scale) {
+
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        double tx = canvas.getTranslateX();
+        double ty = canvas.getTranslateY();
+
+        HashMap<String, String> edgeData = (HashMap<String, String>) graphData.getData(edges.iterator().next());
+        EdgeDescriptor ed = descriptors.get(edgeData.get(ROAD_KEY));
+        if (ed == null) {
+            ed = defaultDescriptor;
+        }
+
+        gc.save();
+        gc.beginPath();
+        for (String edgeName : edges) {
+            AZVisVertex source = (AZVisVertex) graphData.getData(graphData.getEdgeSource(edgeName));
+            AZVisVertex target = (AZVisVertex) graphData.getData(graphData.getEdgeTarget(edgeName));
+
+            gc.setLineCap(ed.getOuterStroke().getLineCap());
+            gc.setLineJoin(ed.getOuterStroke().getLineJoin());
+            gc.setLineWidth(ed.getOuterStroke().getWidth() * scale);
+            gc.setStroke(ed.getOuterStroke().getPaint());
+
+            gc.setLineCap(ed.getInnerStroke().getLineCap());
+            gc.setLineJoin(ed.getInnerStroke().getLineJoin());
+            gc.setLineWidth(ed.getInnerStroke().getWidth() * scale);
+            gc.setStroke(ed.getInnerStroke().getPaint());
+
+            gc.moveTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
+            gc.lineTo((target.getX() - tx) * scale, (target.getY() - ty) * scale);
+        }
+        gc.stroke();
         gc.restore();
 
     }

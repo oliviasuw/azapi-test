@@ -6,13 +6,16 @@ package graphics.graph;
 
 import data.graph.impl.AZVisVertex;
 import data.graph.impl.GraphData;
+import data.graph.impl.GraphPolygon;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import resources.img.R;
@@ -177,5 +180,34 @@ public class EdgeDrawer {
         gc.restore();
 
     }
+    
+    public void draw(Canvas canvas, GraphData graphData, GraphPolygon polygon, double scale) {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        double tx = canvas.getTranslateX();
+        double ty = canvas.getTranslateY();        
+        gc.save();
+        gc.setFill(Color.RED);
+        gc.beginPath();
+        Iterator<String> it = polygon.getNodes().iterator();
+        while (it.hasNext()) {
+            String node = it.next();
+            AZVisVertex source = (AZVisVertex) graphData.getData(node);
+            gc.moveTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
+            if (it.hasNext()) {
+                node = it.next();
+                AZVisVertex target = (AZVisVertex) graphData.getData(node);
+                gc.lineTo((target.getX() - tx) * scale, (target.getY() - ty) * scale);
+            }
+            else {
+                String first = polygon.getNodes().iterator().next();
+                AZVisVertex target = (AZVisVertex) graphData.getData(first);
+                gc.lineTo((target.getX() - tx) * scale, (target.getY() - ty) * scale);
+            }
+        }
+        gc.fill();
+        gc.restore();
+    
+    }
+    
 
 }

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import javafx.scene.shape.Polygon;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 /**
@@ -24,7 +25,7 @@ public class GraphData {
     
     //saves edges according to what will become their path descriptors
     private HashMap<String, Collection<String>> tagToEdges = new HashMap();
-    
+    private LinkedList<GraphPolygon> polygons = new LinkedList<>();
     
     public Object getData(String name) {
         return data.get(name);
@@ -89,6 +90,15 @@ public class GraphData {
 //        return graph.incomingEdgesOf(edgeName);
 //    }
 
+    void addPolygon(Collection<String> pNodes, HashMap<String, String> params) {
+       polygons.add(new GraphPolygon(pNodes, params));
+    }
+
+    public LinkedList<GraphPolygon> getPolygons() {
+        return polygons;
+    }
+
+    
 
     
     

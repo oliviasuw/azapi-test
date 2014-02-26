@@ -6,10 +6,12 @@
 package graphics.graph;
 
 import data.graph.impl.GraphData;
+import data.graph.impl.GraphPolygon;
 import java.util.Collection;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Box;
 
 /**
  *
@@ -55,13 +57,16 @@ public class GraphDrawer {
 ////            gc.strokeLine((source.getX() - tx) * scale, (source.getY() - ty) * scale, (target.getX() - tx) * scale, (target.getY() - ty) * scale);
 //        }
 //        gc.stroke();
-        
-        
-        
+
         
         for (String edgeType : graphData.getTagToEdge().keySet()) {
             edgeDrawer.draw(canvas, graphData, graphData.getTagToEdge().get(edgeType), scale);
         }
+        
+        for (GraphPolygon polygon : graphData.getPolygons()) {
+            edgeDrawer.draw(canvas, graphData, polygon, scale);
+        }
+        
         
     }
 

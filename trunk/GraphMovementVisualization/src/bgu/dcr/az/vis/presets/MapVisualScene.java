@@ -5,11 +5,11 @@
  */
 package bgu.dcr.az.vis.presets;
 
-import bgu.dcr.az.vis.proc.api.Entity;
-import bgu.dcr.az.vis.proc.api.Layer;
-import bgu.dcr.az.vis.proc.api.VisualScene;
-import bgu.dcr.az.vis.proc.impl.CanvasLayer;
-import bgu.dcr.az.vis.proc.impl.entities.SpriteBasedEntity;
+import bgu.dcr.az.vis.player.api.Entity;
+import bgu.dcr.az.vis.player.api.Layer;
+import bgu.dcr.az.vis.player.api.VisualScene;
+import bgu.dcr.az.vis.player.impl.CanvasLayer;
+import bgu.dcr.az.vis.player.impl.entities.SpriteBasedEntity;
 import java.util.Collection;
 import java.util.HashMap;
 import javafx.beans.value.ObservableValue;
@@ -101,7 +101,7 @@ public class MapVisualScene extends ScrollPane implements VisualScene {
 
         layers.put(0l, back);
         layers.put(1l, front);
-        Image carImage = new Image(R.class.getResourceAsStream("car.jpg"));
+        Image carImage = new Image(R.class.getResourceAsStream("car-green.jpg"));
         entities = new HashMap<>();
         for (long i = 0; i < carNum; i++) {
             entities.put(i, new SpriteBasedEntity(i, 1, carImage));

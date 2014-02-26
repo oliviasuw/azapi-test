@@ -5,14 +5,16 @@
  */
 package bgu.dcr.az.vis.presets;
 
-import bgu.dcr.az.vis.proc.api.FramesStream;
-import bgu.dcr.az.vis.proc.impl.BasicOperationsFrame;
-import bgu.dcr.az.vis.proc.impl.BoundedFramesStream;
-import bgu.dcr.az.vis.proc.impl.Location;
-import bgu.dcr.az.vis.proc.impl.SimplePlayer;
+import bgu.dcr.az.vis.player.api.FramesStream;
+import bgu.dcr.az.vis.player.impl.BasicOperationsFrame;
+import bgu.dcr.az.vis.player.impl.BoundedFramesStream;
+import bgu.dcr.az.vis.player.impl.Location;
+import bgu.dcr.az.vis.player.impl.SimplePlayer;
 import javafx.application.Application;
-import javafx.event.EventHandler;
+import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -29,7 +31,21 @@ public class MapTester extends Application {
         FramesGenerator fg = new FramesGenerator(fs);
         SimplePlayer player = new SimplePlayer(vs, 1000, 0);
 
-        Scene scene = new Scene(vs);
+        BorderPane bp = new BorderPane();
+        bp.setCenter(vs);
+        Button pause = new Button("Pause");
+        pause.setOnAction((ActionEvent t) -> {
+            if (player.isPaused()) {
+                pause.setText("Pause");
+                player.resume();
+            } else {
+                pause.setText("Resume");
+                player.pause();
+            }
+        });
+        bp.setBottom(pause);
+
+        Scene scene = new Scene(bp);
         stage.setScene(scene);
         stage.show();
         stage.addEventFilter(WindowEvent.WINDOW_HIDING, e -> fg.cancel());

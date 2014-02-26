@@ -6,7 +6,10 @@
 
 package data.graph.impl;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
@@ -18,6 +21,10 @@ public class GraphData {
     
     private HashMap<String, Object> data = new HashMap<>();
     private SimpleWeightedGraph<String, String> graph = new SimpleWeightedGraph<>(String.class);
+    
+    //saves edges according to what will become their path descriptors
+    private HashMap<String, Collection<String>> tagToEdges = new HashMap();
+    
     
     public Object getData(String name) {
         return data.get(name);
@@ -38,6 +45,15 @@ public class GraphData {
                 System.out.println("from " + from + " to " + to);
 
         graph.addEdge(from, to, name);
+        
+        //adding the edge type to the hashmap
+        HashMap<String, String> edgeDataReal = (HashMap<String, String>) edgeData;
+        String firstTag = edgeDataReal.values().iterator().next();
+        if (tagToEdges.get(firstTag) == null) {
+            tagToEdges.put(firstTag, new LinkedList<>());
+        }
+        tagToEdges.get(firstTag).add(name);
+        
     }
 
     public Set<String> getVertexSet() {
@@ -60,6 +76,11 @@ public class GraphData {
         return graph.edgesOf(vertexName);
     }
     
+    
+    public HashMap<String, Collection<String>> getTagToEdge() {
+        return tagToEdges;
+    }
+        
 //    public Set<String> getOutgoingEdgesOf(String edgeName) {
 //        return graph.outgoingEdgesOf(edgeName);
 //    }
@@ -67,6 +88,8 @@ public class GraphData {
 //    public Set<String> getIncomingEdgesOf(String edgeName) {
 //        return graph.incomingEdgesOf(edgeName);
 //    }
+
+
     
     
     

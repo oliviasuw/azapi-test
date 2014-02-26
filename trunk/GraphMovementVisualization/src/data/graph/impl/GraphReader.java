@@ -43,6 +43,12 @@ public class GraphReader {
                     String next = lineBreaker.next();
                     HashMap<String, String> params = parseEdgeParams(lineBreaker, next);
                     graphData.addEdge(from + " " + to, from, to, params);
+                } else if (nextToken.equals("P")) {
+                    String next = lineBreaker.next();
+                    Collection<String> pNodes = parsePolygonNodes(lineBreaker, next);
+                    next = lineBreaker.next();
+                    HashMap<String, String> params = parseEdgeParams(lineBreaker, next);
+                    graphData.addPolygon(pNodes, params);
                 } else {
                     System.out.println("unsupported!");
 
@@ -87,13 +93,21 @@ public class GraphReader {
                 }
             }
             if (lineBreaker.hasNext()) {
-            nextToken = lineBreaker.next();
-            }
-            else {
+                nextToken = lineBreaker.next();
+            } else {
                 nextToken = null;
             }
         }
         return params;
+    }
+
+    private Collection<String> parsePolygonNodes(Scanner lineBreaker, String nextToken) {
+        LinkedList<String> nodeIds = new LinkedList<>();
+        while (!nextToken.equals("E"))  {
+            nodeIds.add(nextToken);
+            nextToken = lineBreaker.next();
+        }
+        return nodeIds;
     }
 
 }

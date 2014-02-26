@@ -6,6 +6,7 @@
 package bgu.dcr.az.vis.proc.impl.test;
 
 import bgu.dcr.az.vis.proc.impl.BasicOperationsFrame;
+import bgu.dcr.az.vis.proc.impl.BoundedFramesStream;
 import bgu.dcr.az.vis.proc.impl.CanvasLayer;
 import bgu.dcr.az.vis.proc.impl.Location;
 import bgu.dcr.az.vis.proc.impl.SimplePlayer;
@@ -24,10 +25,13 @@ public class TrafficLoadTester extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         TrafficLoadVisualScene vs = new TrafficLoadVisualScene();
-        BasicOperationsFrame frame = new BasicOperationsFrame();
-        frame.move(0, new Location(100, 100), new Location(500, 500));
-        frame.move(0, new Location(500, 500), new Location(100, 100));
-        frame.rotate(0, 0, 3600);
+        BasicOperationsFrame frame1 = new BasicOperationsFrame().move(0, new Location(100, 100), new Location(500, 500));
+        BasicOperationsFrame frame2 = new BasicOperationsFrame().move(0, new Location(500, 500), new Location(100, 100));
+        BasicOperationsFrame frame3 = new BasicOperationsFrame().rotate(0, 0, 3600);
+        BoundedFramesStream fs = new BoundedFramesStream(10);
+        fs.writeFrame(frame1);
+        fs.writeFrame(frame2);
+        fs.writeFrame(frame3);
 
         Pane pane = new Pane();
         pane.setPrefSize(800, 600);
@@ -40,14 +44,14 @@ public class TrafficLoadTester extends Application {
                 System.out.println("Added layer: " + l);
             }
         });
-        
+
         SimplePlayer player = new SimplePlayer(vs, 1000, 0);
-        
+
         Scene scene = new Scene(pane);
         stage.setScene(scene);
         stage.show();
-        
-        player.play(frame);
+
+        player.play(fs);
     }
 
     public static void main(String[] args) {

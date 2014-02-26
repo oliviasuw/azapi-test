@@ -10,7 +10,6 @@ import bgu.dcr.az.vis.proc.api.Layer;
 import bgu.dcr.az.vis.proc.api.VisualScene;
 import bgu.dcr.az.vis.proc.impl.CanvasLayer;
 import bgu.dcr.az.vis.proc.impl.entities.SpriteBasedEntity;
-import graphics.sprite.Car;
 import java.util.Collection;
 import java.util.HashMap;
 import javafx.beans.value.ObservableValue;
@@ -18,6 +17,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
+import resources.img.R;
 
 /**
  *
@@ -101,7 +101,7 @@ public class MapVisualScene extends ScrollPane implements VisualScene {
 
         layers.put(0l, back);
         layers.put(1l, front);
-        Image carImage = new Image(Car.class.getResourceAsStream("car.jpg"));
+        Image carImage = new Image(R.class.getResourceAsStream("car.jpg"));
         entities = new HashMap<>();
         for (long i = 0; i < carNum; i++) {
             entities.put(i, new SpriteBasedEntity(i, 1, carImage));

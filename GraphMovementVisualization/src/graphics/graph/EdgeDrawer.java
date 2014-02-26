@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
+import resources.img.R;
 
 /**
  *
@@ -29,7 +30,7 @@ public class EdgeDrawer {
 
     public EdgeDrawer() {
         descriptors = new HashMap<>();
-        ImagePattern roadImagePattern = new ImagePattern(new Image("roadTexture.jpg"), 0, 0, 100, 100, false);
+        ImagePattern roadImagePattern = new ImagePattern(new Image(R.class.getResourceAsStream("roadTexture.jpg")), 0, 0, 100, 100, false);
 
         descriptors.put("primary", new EdgeDescriptor(
                 new EdgeStroke(MAIN_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,

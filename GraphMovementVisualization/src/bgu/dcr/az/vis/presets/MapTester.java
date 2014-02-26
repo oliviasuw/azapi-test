@@ -5,12 +5,16 @@
  */
 package bgu.dcr.az.vis.presets;
 
+import bgu.dcr.az.vis.proc.api.FramesStream;
 import bgu.dcr.az.vis.proc.impl.BasicOperationsFrame;
+import bgu.dcr.az.vis.proc.impl.BoundedFramesStream;
 import bgu.dcr.az.vis.proc.impl.Location;
 import bgu.dcr.az.vis.proc.impl.SimplePlayer;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  *
@@ -21,22 +25,61 @@ public class MapTester extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         MapVisualScene vs = new MapVisualScene(1, "graph3.txt");
-        BasicOperationsFrame frame = new BasicOperationsFrame();
-        frame.move(0, new Location(100, 100), new Location(500, 500));
-        frame.move(0, new Location(500, 500), new Location(100, 100));
-        frame.rotate(0, 0, 3600);
-        
-        SimplePlayer player = new SimplePlayer(vs, 100000, 0);
-        
+        BoundedFramesStream fs = new BoundedFramesStream(10);
+        FramesGenerator fg = new FramesGenerator(fs);
+        SimplePlayer player = new SimplePlayer(vs, 1000, 0);
+
         Scene scene = new Scene(vs);
         stage.setScene(scene);
         stage.show();
-        
-        player.play(frame);
+        stage.addEventFilter(WindowEvent.WINDOW_HIDING, e -> fg.cancel());
+
+        player.play(fs);
+
+        fg.start();
     }
 
     public static void main(String[] args) {
         launch(args);
     }
 
+    private static class FramesGenerator extends Thread {
+
+        private final FramesStream stream;
+        private boolean isStopped = false;
+
+        public FramesGenerator(FramesStream stream) {
+            this.stream = stream;
+        }
+
+        @Override
+        public void run() {
+
+            long i = 0;
+            while (true) {
+                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(100, 100), new Location(100, 500)));
+                if (isStopped) {
+                    break;
+                }
+                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(100, 500), new Location(500, 500)));
+                if (isStopped) {
+                    break;
+                }
+                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(500, 500), new Location(500, 100)));
+                if (isStopped) {
+                    break;
+                }
+                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(500, 100), new Location(100, 100)));
+                if (isStopped) {
+                    break;
+                }
+                i++;
+            }
+        }
+
+        public void cancel() {
+            isStopped = true;
+            stop();
+        }
+    };
 }

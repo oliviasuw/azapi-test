@@ -35,7 +35,7 @@ public abstract class SingleEntityAction implements Action {
     public final void initialize(Player player) {
         this.player = player;
         entity = player.getScene().getEntity(entityId);
-        _initialize(player.getMillisPerFrame());
+        _initialize(player.millisPerFrameProperty().get());
     }
 
     protected abstract void _initialize(long transitionMillis);

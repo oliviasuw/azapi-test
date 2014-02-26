@@ -4,8 +4,6 @@
  */
 package graphics.graph;
 
-import javafx.scene.canvas.GraphicsContext;
-
 /**
  *
  * @author Shl

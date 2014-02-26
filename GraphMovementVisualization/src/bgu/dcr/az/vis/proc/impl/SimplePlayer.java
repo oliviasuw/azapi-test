@@ -6,9 +6,11 @@
 package bgu.dcr.az.vis.proc.impl;
 
 import bgu.dcr.az.vis.proc.api.Frame;
+import bgu.dcr.az.vis.proc.api.FramesStream;
 import bgu.dcr.az.vis.proc.api.Player;
 import bgu.dcr.az.vis.proc.api.VisualScene;
 import javafx.animation.AnimationTimer;
+import javafx.beans.binding.LongBinding;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -25,10 +27,13 @@ public class SimplePlayer implements Player {
     private final LongProperty millisPerFrame;
     private final IntegerProperty fps;
 
+    private Animator animator;
+
     public SimplePlayer(VisualScene scene, long millisPerFrame, int fps) {
         this.scene = scene;
         this.millisPerFrame = new SimpleLongProperty(millisPerFrame);
         this.fps = new SimpleIntegerProperty(fps);
+        this.animator = null;
     }
 
     @Override
@@ -41,12 +46,10 @@ public class SimplePlayer implements Player {
         return millisPerFrame;
     }
 
-    @Override
     public long getMillisPerFrame() {
         return millisPerFrame.get();
     }
 
-    @Override
     public void setMillisPerFrame(long millis) {
         millisPerFrame.set(millis);
     }
@@ -56,38 +59,122 @@ public class SimplePlayer implements Player {
         return fps;
     }
 
-    @Override
     public int getFramesPerSecond() {
         return fps.get();
     }
 
-    @Override
     public void setFramesPerSeccond(int fps) {
         this.fps.set(fps);
     }
 
     @Override
-    public AnimationTimer play(Frame frame) {
-        frame.initialize(this);
-
-        AnimationTimer timeline = new AnimationTimer() {
-            long startTime = System.nanoTime();
-            long nanoDuration = getMillisPerFrame() * 1000000;
-
-            @Override
-            public void handle(long l) {
-                scene.getLayers().forEach(layer -> layer.refresh());
-                
-                frame.update();
-
-                if (l - startTime > nanoDuration) {
-                    stop();
-                }
-            }
-        };
-        
-        timeline.start();
-        
-        return timeline;
+    public void play(FramesStream stream) {
+        stop();
+        animator = new Animator(this, stream);
+        animator.start();
     }
+
+    @Override
+    public void pause() {
+        if (animator != null) {
+            animator.pause();
+        }
+    }
+
+    @Override
+    public void stop() {
+        if (animator != null) {
+            animator.stop();
+        }
+    }
+
+    private class Animator extends AnimationTimer {
+
+        private final FramesStream stream;
+        private final Player player;
+        private boolean isPaused;
+        private boolean isStopped;
+
+        private int fps = 0;
+        private int lastFps = 0;
+        private long lastSecondStart;
+
+        private long frameStartTime;
+        private Frame currentFrame;
+
+        private final LongBinding frameDurationInNano;
+
+        public Animator(Player player, FramesStream stream) {
+            this.stream = stream;
+            this.player = player;
+            this.isPaused = false;
+            this.isStopped = true;
+
+            frameDurationInNano = player.millisPerFrameProperty().multiply(1000000);
+        }
+
+        @Override
+        public void handle(long l) {
+            double frameProgress = Math.min(1, (l - frameStartTime) / frameDurationInNano.doubleValue());
+
+            scene.getLayers().forEach(layer -> layer.refresh());
+
+            if (currentFrame != null) {
+                currentFrame.update();
+            }
+
+            if (currentFrame == null || frameProgress == 1) {
+                prepareNextFrame();
+            }
+
+            measureFPS(l);
+        }
+
+        private void measureFPS(long l) {
+            if (l - lastSecondStart > 1000000000) {
+                lastFps = fps;
+                fps = 0;
+                lastSecondStart = l;
+            }
+            fps++;
+
+            CanvasLayer cl = (CanvasLayer) player.getScene().getLayer(1);
+
+            cl.getCanvas().getGraphicsContext2D().strokeText("fps: " + lastFps, 14, 14);
+        }
+
+        private void prepareNextFrame() {
+            Frame frame = stream.readFrame();
+
+            if (frame != null) {
+                frame.initialize(player);
+                currentFrame = frame;
+                frameStartTime = System.nanoTime();
+            }
+        }
+
+        @Override
+        public void start() {
+            this.isPaused = false;
+            this.isStopped = false;
+
+            lastFps = 0;
+            lastSecondStart = System.nanoTime();
+
+            prepareNextFrame();
+
+            super.start();
+        }
+
+        public void pause() {
+            isPaused = true;
+        }
+
+        @Override
+        public void stop() {
+            isStopped = true;
+            super.stop();
+        }
+    }
+
 }

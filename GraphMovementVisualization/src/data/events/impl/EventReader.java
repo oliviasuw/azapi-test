@@ -8,12 +8,12 @@ package data.events.impl;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import data.events.api.SimulatorEvent;
-import graphmovementvisualization.GraphMovementVisualization;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import resources.img.R;
 
 /**
  *
@@ -49,7 +49,7 @@ public class EventReader {
                 input.setPosition(lastPosition);
             }
         } catch (IOException ex) {
-            Logger.getLogger(GraphMovementVisualization.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(R.class.getName()).log(Level.SEVERE, null, ex);
         }
         return tickEvents;
     }

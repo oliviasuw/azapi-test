@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.vis.proc.impl;
 
+import bgu.dcr.az.vis.proc.impl.actions.DirectedMoveAction;
 import bgu.dcr.az.vis.proc.impl.actions.LocateAction;
 import bgu.dcr.az.vis.proc.impl.actions.MoveAction;
 import bgu.dcr.az.vis.proc.impl.actions.RotateAction;
@@ -16,14 +17,18 @@ import bgu.dcr.az.vis.proc.impl.actions.RotateAction;
 public class BasicOperationsFrame extends SimpleFrame {
 
     public BasicOperationsFrame locate(long entityId, Location location) {
-        return (BasicOperationsFrame)this.addAction(new LocateAction(entityId, location));
+        return (BasicOperationsFrame) this.addAction(new LocateAction(entityId, location));
     }
 
     public BasicOperationsFrame move(long entityId, Location from, Location to) {
-        return (BasicOperationsFrame)this.addAction(new MoveAction(entityId, from, to));
+        return (BasicOperationsFrame) this.addAction(new MoveAction(entityId, from, to));
+    }
+
+    public BasicOperationsFrame directedMove(long entityId, Location from, Location to) {
+        return (BasicOperationsFrame) this.addAction(new DirectedMoveAction(entityId, from, to));
     }
 
     public BasicOperationsFrame rotate(long entityId, double fromAngle, double toAngle) {
-        return (BasicOperationsFrame)this.addAction(new RotateAction(entityId, fromAngle, toAngle));
+        return (BasicOperationsFrame) this.addAction(new RotateAction(entityId, fromAngle, toAngle));
     }
 }

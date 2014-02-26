@@ -11,9 +11,9 @@ import bgu.dcr.az.vis.proc.api.Layer;
 import bgu.dcr.az.vis.proc.api.VisualScene;
 import bgu.dcr.az.vis.proc.impl.CanvasLayer;
 import bgu.dcr.az.vis.proc.impl.entities.SpriteBasedEntity;
-import graphics.sprite.Car;
 import java.util.Arrays;
 import java.util.Collection;
+import resources.img.R;
 
 /**
  *
@@ -25,7 +25,7 @@ public class TrafficLoadVisualScene implements VisualScene {
 
     public TrafficLoadVisualScene() {
         this.layer = new CanvasLayer();
-        this.entity = new SpriteBasedEntity(0, 0, Car.class.getResourceAsStream("car.jpg"));
+        this.entity = new SpriteBasedEntity(0, 0, R.class.getResourceAsStream("car.jpg"));
     }
     
     

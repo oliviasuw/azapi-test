@@ -5,7 +5,6 @@
  */
 package data.graph.impl;
 
-import graphmovementvisualization.GraphMovementVisualization;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,6 +13,7 @@ import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import resources.img.R;
 
 /**
  *
@@ -49,7 +49,7 @@ public class GraphReader {
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(GraphMovementVisualization.class
+            Logger.getLogger(R.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
         return graphData;

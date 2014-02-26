@@ -3,13 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-package newpackage;
+package bgu.dcr.az.vis.proc.api;
 
 /**
  *
- * @author Shl
+ * @author Zovadi
  */
-class Frame {
-    
+public interface FramesStream {
+
+    void writeFrame(Frame frame);
+
+    Frame readFrame();
 }

@@ -4,14 +4,12 @@
  * and open the template in the editor.
  */
 
-package newpackage;
+package resources.img;
 
 /**
  *
- * @author Shl
+ * @author Zovadi
  */
-public interface Animator {
-    
-    public void initialize();
+public class R {
     
 }

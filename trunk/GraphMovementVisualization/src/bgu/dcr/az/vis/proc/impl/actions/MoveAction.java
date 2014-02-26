@@ -19,8 +19,8 @@ public class MoveAction extends SingleEntityAction {
 
     private final DoubleEasingVariable xEasingVar;
     private final DoubleEasingVariable yEasingVar;
-    private final Location from;
-    private final Location to;
+    protected final Location from;
+    protected final Location to;
 
     public MoveAction(long entityId, Location from, Location to) {
         super(entityId);

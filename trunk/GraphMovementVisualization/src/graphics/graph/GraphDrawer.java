@@ -33,22 +33,28 @@ public class GraphDrawer {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         gc.strokeText("tx: " + tx + ", ty: " + ty, 14, canvas.getHeight() - 14);
-        for (String vertexName : graphData.getVertexSet()) {
-            AZVisVertex vertex = (AZVisVertex) graphData.getData(vertexName);
-            gc.strokeRect((vertex.getX() - tx) * scale, (vertex.getY() - ty) * scale, 5 * scale, 5 * scale);
+//        for (String vertexName : graphData.getVertexSet()) {
+//            AZVisVertex vertex = (AZVisVertex) graphData.getData(vertexName);
+//            gc.strokeRect((vertex.getX() - tx) * scale, (vertex.getY() - ty) * scale, 5 * scale, 5 * scale);
+//        }
 
-        }
+//        gc.beginPath();
+        
         for (String edgeName : graphData.getEdgeSet()) {
             AZVisVertex source = (AZVisVertex) graphData.getData(graphData.getEdgeSource(edgeName));
             AZVisVertex target = (AZVisVertex) graphData.getData(graphData.getEdgeTarget(edgeName));
             HashMap<String, String> edgeData = (HashMap<String, String>) graphData.getData(edgeName);
             
             edgeDrawer.draw(canvas, graphData, edgeName, scale);
+//            gc.moveTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
+//            gc.lineTo((target.getX() - tx) * scale, (target.getY() - ty) * scale);
             
             
 //            gc.setStroke(null);
 //            gc.strokeLine((source.getX() - tx) * scale, (source.getY() - ty) * scale, (target.getX() - tx) * scale, (target.getY() - ty) * scale);
         }
+        
+//        gc.stroke();
     }
 
 }

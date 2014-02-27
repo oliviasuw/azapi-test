@@ -5,13 +5,11 @@
  */
 package graphics.graph;
 
-import data.graph.impl.GraphData;
-import data.graph.impl.GraphPolygon;
-import java.util.Collection;
+import data.map.impl.wersdfawer.GraphData;
+import data.map.impl.wersdfawer.GraphPolygon;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Box;
 
 /**
  *

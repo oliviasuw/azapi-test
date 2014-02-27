@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package data.graph.impl;
+package data.map.impl.wersdfawer;
 
 /**
  *

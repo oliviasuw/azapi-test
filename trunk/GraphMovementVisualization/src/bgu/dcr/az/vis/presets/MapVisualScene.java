@@ -34,7 +34,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
         addEventFilter(ScrollEvent.ANY, (ScrollEvent t) -> {
             if (t.isControlDown()) {
-                double scale = back.getScale() + t.getDeltaY() / 200;
+                double scale = back.getScale() + t.getDeltaY() / 500;
                 if (scale <= MIN_SCALE) {
                     scale = MIN_SCALE;
                 } else if (scale >= MAX_SCALE) {
@@ -42,15 +42,16 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                 }
                 scaleProperty().set(scale);
 
-                double mousePointX = t.getSceneX() + back.getCanvas().getTranslateX();
-                double mousePointY = t.getSceneY() + back.getCanvas().getTranslateY();
-
-                double newHval = (mousePointX) / (CONTAINER_WIDTH - getViewportBounds().getWidth());
-                double newVval = (mousePointY) / (CONTAINER_HEIGHT - getViewportBounds().getHeight());
-                setHvalue(newHval);
-                setVvalue(newVval);
+//                double mousePointX = t.getSceneX() + back.getCanvas().getTranslateX();
+//                double mousePointY = t.getSceneY() + back.getCanvas().getTranslateY();
+//
+//                double newHval = (mousePointX) / (CONTAINER_WIDTH - getViewportBounds().getWidth());
+//                double newVval = (mousePointY) / (CONTAINER_HEIGHT - getViewportBounds().getHeight());
+//                setHvalue(newHval);
+//                setVvalue(newVval);
 
                 back.drawGraph();
+                t.consume();
             }
         });
 

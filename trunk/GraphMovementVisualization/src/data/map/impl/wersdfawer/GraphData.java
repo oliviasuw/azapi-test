@@ -4,14 +4,12 @@
  * and open the template in the editor.
  */
 
-package data.graph.impl;
+package data.map.impl.wersdfawer;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
-import javafx.scene.shape.Polygon;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 /**

@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.vis.presets;
 
+import bgu.dcr.az.vis.controls.ui.PlayerControls;
 import bgu.dcr.az.vis.player.api.FramesStream;
 import bgu.dcr.az.vis.player.impl.BasicOperationsFrame;
 import bgu.dcr.az.vis.player.impl.BoundedFramesStream;

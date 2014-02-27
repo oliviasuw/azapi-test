@@ -11,18 +11,24 @@ import java.util.HashMap;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
 import resources.img.R;
 
 /**
+ * @TODO
+ * MAKE THIS AN INTERFACE AND LET BUILDING DRAWER INHERIT..
+ * 
  * @author Shlomi
  */
-public class BuildingImageDrawer implements PolygonImageDrawer {
+public class BackgroundImageDrawer {
     
     private final String key = "building";
     private final HashMap<String, Image> images;
     private final Image defaultImage;
     
-    public BuildingImageDrawer() {
+    public BackgroundImageDrawer() {
         images = new HashMap<>();
 
 //        images.put("yes", new Image(R.class.getResourceAsStream("building")) );
@@ -33,13 +39,11 @@ public class BuildingImageDrawer implements PolygonImageDrawer {
     }
     
     
-    @Override
     public boolean canDraw(GraphPolygon polygon) {
         HashMap<String, String> params = (HashMap<String, String>) polygon.getParams();
         return params.get(key) != null;
     }
     
-    @Override
     public void draw(Canvas canvas, GraphData graphData, GraphPolygon polygon, double scale) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         double tx = canvas.getTranslateX();

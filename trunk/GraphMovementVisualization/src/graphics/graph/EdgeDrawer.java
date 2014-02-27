@@ -4,9 +4,9 @@
  */
 package graphics.graph;
 
-import data.graph.impl.AZVisVertex;
-import data.graph.impl.GraphData;
-import data.graph.impl.GraphPolygon;
+import data.map.impl.wersdfawer.AZVisVertex;
+import data.map.impl.wersdfawer.GraphData;
+import data.map.impl.wersdfawer.GraphPolygon;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;

@@ -7,8 +7,8 @@ package bgu.dcr.az.vis.presets;
 
 import bgu.dcr.az.vis.player.api.VisualScene;
 import bgu.dcr.az.vis.player.impl.CanvasLayer;
-import data.graph.impl.GraphData;
-import data.graph.impl.GraphReader;
+import data.map.impl.wersdfawer.GraphData;
+import data.map.impl.wersdfawer.GraphReader;
 import graphics.graph.GraphDrawer;
 import javafx.scene.CacheHint;
 

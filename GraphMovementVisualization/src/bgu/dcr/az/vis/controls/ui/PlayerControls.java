@@ -3,10 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.vis.presets;
+package bgu.dcr.az.vis.controls.ui;
 
 import bgu.dcr.az.vis.player.api.Player;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
@@ -24,7 +23,7 @@ public class PlayerControls extends BorderPane {
 
     public static final int BUTTON_SIZE = 32;
     public static final int ANIMATION_SPEED_WIDTH = 128;
-    public static final int ANIMATION_MIN_SPEED = 10000;
+    public static final int ANIMATION_MIN_SPEED = 4;
 
     public static final Image PLAY = new Image(R.class.getResourceAsStream("playback-start.png"));
     public static final Image PAUSE = new Image(R.class.getResourceAsStream("pause.png"));
@@ -40,10 +39,10 @@ public class PlayerControls extends BorderPane {
     private Button seekForwardButton;
     private Button skipBackwardButton;
     private Button skipForwardButton;
-    
+
     private Slider playProgressSlider;
-    
-    private Slider animationSpeedSlider;
+
+    private ButtonedSlider animationSpeedSlider;
 
     private final Player player;
 
@@ -92,12 +91,18 @@ public class PlayerControls extends BorderPane {
     }
 
     private Node generateAnimationSpeedSlider() {
-        animationSpeedSlider = new Slider(0, ANIMATION_MIN_SPEED, 9000);
+        animationSpeedSlider = new ButtonedSlider(0, ANIMATION_MIN_SPEED, 0);
         animationSpeedSlider.setMinWidth(ANIMATION_SPEED_WIDTH);
         animationSpeedSlider.setPrefWidth(ANIMATION_SPEED_WIDTH);
         animationSpeedSlider.setMaxWidth(ANIMATION_SPEED_WIDTH);
-        BorderPane.setAlignment(animationSpeedSlider, Pos.CENTER);
-        player.millisPerFrameProperty().bind(animationSpeedSlider.valueProperty().subtract(ANIMATION_MIN_SPEED).multiply(-1));
+        animationSpeedSlider.valueProperty().addListener((p, ov, nv) -> {
+            if (nv.doubleValue() <= ANIMATION_MIN_SPEED / 2.0) {
+                player.millisPerFrameProperty().setValue(Math.pow(10, ANIMATION_MIN_SPEED - nv.doubleValue()));
+            } else {
+                player.millisPerFrameProperty().setValue(Math.pow(10, ANIMATION_MIN_SPEED / 2.0) + (ANIMATION_MIN_SPEED / 2.0 - nv.doubleValue()));
+            }
+        });
+        animationSpeedSlider.setValue(1);
         return animationSpeedSlider;
     }
 

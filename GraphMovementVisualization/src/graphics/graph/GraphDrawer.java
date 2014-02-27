@@ -20,10 +20,12 @@ import javafx.scene.shape.Box;
 public class GraphDrawer {
     
     EdgeDrawer edgeDrawer;
+    BackgroundImageDrawer backGroundImageDrawer;
     
 
     public GraphDrawer() {
         this.edgeDrawer = new EdgeDrawer();
+        this.backGroundImageDrawer = new BackgroundImageDrawer();
     }
 
     public void drawGraph(Canvas canvas, GraphData graphData, double scale) {
@@ -65,9 +67,9 @@ public class GraphDrawer {
         
         for (GraphPolygon polygon : graphData.getPolygons()) {
             edgeDrawer.draw(canvas, graphData, polygon, scale);
+            backGroundImageDrawer.draw(canvas, graphData, polygon, scale);
         }
-        
-        
+ 
     }
 
 }

@@ -6,11 +6,9 @@
 
 package data.events.api;
 
-import java.util.Collection;
-
 /**
  *
- * @author Shl
+ * @author Zovadi
  */
 public interface SimulatorEvent {
     

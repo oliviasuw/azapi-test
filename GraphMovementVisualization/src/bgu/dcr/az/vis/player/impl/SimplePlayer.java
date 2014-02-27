@@ -145,7 +145,7 @@ public class SimplePlayer implements Player {
                 currentFrame.update(frameProgress);
             }
 
-            if (currentFrame == null || frameProgress == 1) {
+            if (!isPaused && (currentFrame == null || frameProgress == 1)) {
                 prepareNextFrame();
             }
 

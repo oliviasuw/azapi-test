@@ -5,7 +5,6 @@
  */
 package data.graph.impl;
 
-import java.util.Collection;
 import java.util.HashMap;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.graph.DefaultEdge;
@@ -21,9 +20,6 @@ public class AZVisGraph extends SimpleWeightedGraph<AZVisVertex, DefaultEdge> {
 
     public AZVisGraph() {
         super(DefaultEdge.class);
-        
-       
-        
     }
 
     public AZVisGraph(EdgeFactory<AZVisVertex, DefaultEdge> ef) {

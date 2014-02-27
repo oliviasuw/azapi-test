@@ -6,12 +6,26 @@
 package bgu.dcr.az.vis.player.api;
 
 import java.util.Collection;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 
 /**
  *
  * @author Shl
  */
 public interface VisualScene {
+    
+    ReadOnlyDoubleProperty widthProperty();
+    
+    ReadOnlyDoubleProperty heightProperty();
+    
+    DoubleProperty translateXProperty();
+    
+    DoubleProperty translateYProperty();
+    
+    DoubleProperty rotationProperty();
+    
+    DoubleProperty scaleProperty();
     
     Layer getLayer(long id);
     

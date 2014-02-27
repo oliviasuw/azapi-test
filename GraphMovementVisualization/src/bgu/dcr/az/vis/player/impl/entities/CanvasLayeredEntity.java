@@ -33,6 +33,7 @@ public abstract class CanvasLayeredEntity extends SimpleEntity {
             gc.save();
             gc.translate(drawX, drawY);
             gc.rotate(getRotation());
+            gc.rotate(canvasLayer.getRotation());
             gc.scale(getScale(), getScale());
             gc.scale(canvasLayer.getScale(), canvasLayer.getScale());
             _draw(gc);

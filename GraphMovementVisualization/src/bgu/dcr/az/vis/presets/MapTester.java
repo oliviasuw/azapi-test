@@ -11,9 +11,7 @@ import bgu.dcr.az.vis.player.impl.BoundedFramesStream;
 import bgu.dcr.az.vis.player.impl.Location;
 import bgu.dcr.az.vis.player.impl.SimplePlayer;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -33,17 +31,7 @@ public class MapTester extends Application {
 
         BorderPane bp = new BorderPane();
         bp.setCenter(vs);
-        Button pause = new Button("Pause");
-        pause.setOnAction((ActionEvent t) -> {
-            if (player.isPaused()) {
-                pause.setText("Pause");
-                player.resume();
-            } else {
-                pause.setText("Resume");
-                player.pause();
-            }
-        });
-        bp.setBottom(pause);
+        bp.setBottom(new PlayerControls(player));
 
         Scene scene = new Scene(bp);
         stage.setScene(scene);

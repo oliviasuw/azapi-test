@@ -17,8 +17,8 @@ import bgu.dcr.az.vis.tools.easing.LinearDouble;
  */
 public class MoveAction extends SingleEntityAction {
 
-    private final DoubleEasingVariable xEasingVar;
-    private final DoubleEasingVariable yEasingVar;
+    private DoubleEasingVariable xEasingVar;
+    private DoubleEasingVariable yEasingVar;
     protected final Location from;
     protected final Location to;
 
@@ -26,21 +26,19 @@ public class MoveAction extends SingleEntityAction {
         super(entityId);
         this.from = from;
         this.to = to;
+    }
+
+    @Override
+    public void _initialize() {
         xEasingVar = new DoubleEasingVariable(new LinearDouble(), EasingVariableDoubleBased.EasingFunctinTypeDouble.EASE_IN, from.getX(), to.getX());
         yEasingVar = new DoubleEasingVariable(new LinearDouble(), EasingVariableDoubleBased.EasingFunctinTypeDouble.EASE_IN, from.getY(), to.getY());
     }
 
     @Override
-    public void _initialize(long transitionMillis) {
-        xEasingVar.change(to.getX(), transitionMillis);
-        yEasingVar.change(to.getY(), transitionMillis);
-    }
-    
-    @Override
     protected void _update(double percentage) {
         xEasingVar.update(percentage);
         yEasingVar.update(percentage);
-        
+
         getEntity().locationProperty().get().xProperty().set(xEasingVar.getCurrentValue());
         getEntity().locationProperty().get().yProperty().set(yEasingVar.getCurrentValue());
     }

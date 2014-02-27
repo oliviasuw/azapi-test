@@ -27,7 +27,7 @@ public interface VisualScene {
     
     DoubleProperty scaleProperty();
     
-    Layer getLayer(long id);
+    Layer getLayer(Class<? extends Layer> clazz);
     
     Collection<? extends Layer> getLayers();
 

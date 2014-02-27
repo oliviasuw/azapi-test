@@ -29,8 +29,8 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         MapCanvasLayer back = new MapCanvasLayer(this, mapPath);
         CanvasLayer front = new CanvasLayer(this);
 
-        addLayer(0, back, back.getCanvas());
-        addLayer(1, front, front.getCanvas());
+        registerLayer(MapCanvasLayer.class, back, back.getCanvas());
+        registerLayer(CanvasLayer.class, front, front.getCanvas());
 
         addEventFilter(ScrollEvent.ANY, (ScrollEvent t) -> {
             if (t.isControlDown()) {
@@ -61,7 +61,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
         Image greenCarImage = new Image(R.class.getResourceAsStream("car-green.jpg"));
         for (long i = 0; i < carNum; i++) {
-            addEntity(i, new SpriteBasedEntity(i, 1, greenCarImage));
+            addEntity(i, new SpriteBasedEntity(i, CanvasLayer.class, greenCarImage));
         }
 
         setPrefWidth(800);

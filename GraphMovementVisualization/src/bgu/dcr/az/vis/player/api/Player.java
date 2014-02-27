@@ -5,8 +5,8 @@
  */
 package bgu.dcr.az.vis.player.api;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.LongProperty;
 
 /**
  *
@@ -14,7 +14,7 @@ import javafx.beans.property.LongProperty;
  */
 public interface Player {
 
-    LongProperty millisPerFrameProperty();
+    DoubleProperty millisPerFrameProperty();
     
     IntegerProperty framesPerSecondProperty();
     

@@ -16,7 +16,7 @@ import bgu.dcr.az.vis.tools.easing.LinearDouble;
  */
 public class RotateAction extends SingleEntityAction {
 
-    private final DoubleEasingVariable angleEasingVar;
+    private DoubleEasingVariable angleEasingVar;
     private final double fromAngle;
     private final double toAngle;
 
@@ -24,18 +24,17 @@ public class RotateAction extends SingleEntityAction {
         super(entityId);
         this.fromAngle = fromAngle;
         this.toAngle = toAngle;
+    }
+
+    @Override
+    public void _initialize() {
         angleEasingVar = new DoubleEasingVariable(new LinearDouble(), EasingVariableDoubleBased.EasingFunctinTypeDouble.EASE_IN, fromAngle, toAngle);
     }
 
     @Override
-    public void _initialize(long transitionMillis) {
-        angleEasingVar.change(toAngle, transitionMillis);
-    }
-    
-    @Override
     protected void _update(double percentage) {
         angleEasingVar.update(percentage);
-        
+
         getEntity().rotationProperty().set(angleEasingVar.getCurrentValue());
     }
 

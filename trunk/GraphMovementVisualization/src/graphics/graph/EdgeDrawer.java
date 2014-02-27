@@ -180,34 +180,41 @@ public class EdgeDrawer {
         gc.restore();
 
     }
-    
+
     public void draw(Canvas canvas, GraphData graphData, GraphPolygon polygon, double scale) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         double tx = canvas.getTranslateX();
-        double ty = canvas.getTranslateY();        
+        double ty = canvas.getTranslateY();
         gc.save();
         gc.setFill(Color.RED);
         gc.beginPath();
         Iterator<String> it = polygon.getNodes().iterator();
+        String node = it.next();
+        AZVisVertex source = (AZVisVertex) graphData.getData(node);
+
+//        gc.moveTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
+        double[] xs = new double[polygon.getNodes().size()];
+        double[] ys = new double[polygon.getNodes().size()];
+
+        xs[0] = (source.getX() - tx) * scale;
+        ys[0] = (source.getY() - ty) * scale;
+        int i = 1;
         while (it.hasNext()) {
-            String node = it.next();
-            AZVisVertex source = (AZVisVertex) graphData.getData(node);
-            gc.moveTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
-            if (it.hasNext()) {
-                node = it.next();
-                AZVisVertex target = (AZVisVertex) graphData.getData(node);
-                gc.lineTo((target.getX() - tx) * scale, (target.getY() - ty) * scale);
-            }
-            else {
-                String first = polygon.getNodes().iterator().next();
-                AZVisVertex target = (AZVisVertex) graphData.getData(first);
-                gc.lineTo((target.getX() - tx) * scale, (target.getY() - ty) * scale);
-            }
+            node = it.next();
+            source = (AZVisVertex) graphData.getData(node);
+//            gc.lineTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
+
+            xs[i] = (source.getX() - tx) * scale;
+            ys[i] = (source.getY() - ty) * scale;
+            i++;
+
         }
-        gc.fill();
+
+//        gc.fill();
+        gc.fillPolygon(xs, ys, polygon.getNodes().size());
+
         gc.restore();
-    
+
     }
-    
 
 }

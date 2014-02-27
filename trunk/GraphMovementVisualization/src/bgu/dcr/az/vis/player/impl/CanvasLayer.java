@@ -5,9 +5,7 @@
  */
 package bgu.dcr.az.vis.player.impl;
 
-import bgu.dcr.az.vis.player.api.Layer;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import bgu.dcr.az.vis.player.api.VisualScene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -16,81 +14,28 @@ import javafx.scene.paint.Color;
  *
  * @author Shl
  */
-public class CanvasLayer implements Layer {
+public class CanvasLayer extends SimpleLayer {
 
-    public static final Color BACKGROUND_COLOR = new Color(0, 0, 0, .5);
+    public static final Color BACKGROUND_COLOR = new Color(0, 0, 0, 1);
 
-    private final DoubleProperty scaleProperty;
     private final Canvas canvas;
 
-    public CanvasLayer() {
-        this.scaleProperty = new SimpleDoubleProperty(1);
+    public CanvasLayer(VisualScene scene) {
+        super(scene);
         this.canvas = new Canvas();
+        this.canvas.widthProperty().bind(getVisualScene().widthProperty());
+        this.canvas.heightProperty().bind(getVisualScene().heightProperty());
     }
 
     public Canvas getCanvas() {
         return canvas;
     }
-
-    @Override
-    public DoubleProperty widthProperty() {
-        return canvas.widthProperty();
-    }
-
-    public void setWidth(double width) {
-        widthProperty().set(width);
-    }
-
-    public double getWidth() {
-        return widthProperty().get();
-    }
-
-    @Override
-    public DoubleProperty heightProperty() {
-        return canvas.heightProperty();
-    }
-
-    public void setHeight(double height) {
-        heightProperty().set(height);
-    }
-
-    public double getHeight() {
-        return heightProperty().get();
-    }
-
-    @Override
-    public DoubleProperty scaleProperty() {
-        return scaleProperty;
-    }
-
-    public void setScale(double scale) {
-        scaleProperty().set(scale);
-    }
-
-    public double getScale() {
-        return scaleProperty().get();
-    }
-
+    
     @Override
     public void refresh() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(BACKGROUND_COLOR);
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-    }
-
-    @Override
-    public DoubleProperty translateXProperty() {
-        return canvas.translateXProperty();
-    }
-
-    @Override
-    public DoubleProperty translateYProperty() {
-        return canvas.translateYProperty();
-    }
-
-    @Override
-    public DoubleProperty translateZProperty() {
-        return canvas.translateZProperty();
     }
 
 }

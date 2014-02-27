@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.vis.presets;
 
+import bgu.dcr.az.vis.player.api.VisualScene;
 import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import data.graph.impl.GraphData;
 import data.graph.impl.GraphReader;
@@ -23,9 +24,11 @@ public class MapCanvasLayer extends CanvasLayer {
      * generates a new canvas layer map from the specified file path. the map is
      * represented by a jgrapht graph.
      *
+     * @param scene
      * @param mapFilePath
      */
-    public MapCanvasLayer(String mapFilePath) {
+    public MapCanvasLayer(VisualScene scene, String mapFilePath) {
+        super(scene);
         graphData = new GraphReader().readGraph(mapFilePath);
         graphDrawer = new GraphDrawer();
         graphDrawer.drawGraph(getCanvas(), graphData, 1);
@@ -45,6 +48,5 @@ public class MapCanvasLayer extends CanvasLayer {
     public void drawGraph() {
         graphDrawer.drawGraph(getCanvas(), graphData, getScale());
     }
-
 
 }

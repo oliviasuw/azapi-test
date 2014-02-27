@@ -26,7 +26,7 @@ public class MapTester extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        MapVisualScene vs = new MapVisualScene(1, "graph4.txt");
+        MapVisualScene vs = new MapVisualScene(1, "graph3.txt");
         BoundedFramesStream fs = new BoundedFramesStream(10);
         FramesGenerator fg = new FramesGenerator(fs);
         SimplePlayer player = new SimplePlayer(vs, 1000, 0);

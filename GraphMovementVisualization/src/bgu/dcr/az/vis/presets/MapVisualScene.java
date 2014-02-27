@@ -64,7 +64,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         for (long i = 0; i < carNum; i++) {
             addEntity(i, new SpriteBasedEntity(i, CanvasLayer.class, greenCarImage));
         }
-
+        
         setPrefWidth(800);
         setPrefHeight(600);
     }

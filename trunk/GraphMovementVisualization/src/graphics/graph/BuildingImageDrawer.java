@@ -17,18 +17,15 @@ import javafx.scene.shape.StrokeLineJoin;
 import resources.img.R;
 
 /**
- * @TODO
- * MAKE THIS AN INTERFACE AND LET BUILDING DRAWER INHERIT..
- * 
  * @author Shlomi
  */
-public class BackgroundImageDrawer {
+public class BuildingImageDrawer implements PolygonImageDrawer {
     
     private final String key = "building";
     private final HashMap<String, Image> images;
     private final Image defaultImage;
     
-    public BackgroundImageDrawer() {
+    public BuildingImageDrawer() {
         images = new HashMap<>();
 
 //        images.put("yes", new Image(R.class.getResourceAsStream("building")) );
@@ -39,11 +36,13 @@ public class BackgroundImageDrawer {
     }
     
     
+    @Override
     public boolean canDraw(GraphPolygon polygon) {
         HashMap<String, String> params = (HashMap<String, String>) polygon.getParams();
         return params.get(key) != null;
     }
     
+    @Override
     public void draw(Canvas canvas, GraphData graphData, GraphPolygon polygon, double scale) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         double tx = canvas.getTranslateX();

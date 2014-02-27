@@ -21,14 +21,14 @@ import javafx.beans.property.SimpleObjectProperty;
 public abstract class SimpleEntity implements Entity {
 
     private final long entityId;
-    private final long layerId;
+    private final Class<? extends Layer> layerClazz;
     private final ObjectProperty<Location> locationProperty;
     private final DoubleProperty rotationProperty;
     private final DoubleProperty scaleProperty;
 
-    public SimpleEntity(long entityId, long layerId) {
+    public SimpleEntity(long entityId, Class<? extends Layer> layerClazz) {
         this.entityId = entityId;
-        this.layerId = layerId;
+        this.layerClazz = layerClazz;
         locationProperty = new SimpleObjectProperty<>(new Location());
         rotationProperty = new SimpleDoubleProperty(0);
         scaleProperty = new SimpleDoubleProperty(1);
@@ -39,8 +39,8 @@ public abstract class SimpleEntity implements Entity {
         return entityId;
     }
     
-    public long getLayerId() {
-        return layerId;
+    public Class<? extends Layer> getLayerClass() {
+        return layerClazz;
     }
 
     @Override
@@ -84,7 +84,7 @@ public abstract class SimpleEntity implements Entity {
 
     @Override
     public final void draw(VisualScene scene) {
-        _draw(scene.getLayer(layerId));
+        _draw(scene.getLayer(layerClazz));
     }
 
     protected abstract void _draw(Layer layer);

@@ -35,10 +35,10 @@ public abstract class SingleEntityAction implements Action {
     public final void initialize(Player player) {
         this.player = player;
         entity = player.getScene().getEntity(entityId);
-        _initialize(player.millisPerFrameProperty().get());
+        _initialize();
     }
 
-    protected abstract void _initialize(long transitionMillis);
+    protected abstract void _initialize();
     
     @Override
     public final void update(double percentage) {

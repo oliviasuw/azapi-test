@@ -16,8 +16,8 @@ import javafx.scene.canvas.GraphicsContext;
  */
 public abstract class CanvasLayeredEntity extends SimpleEntity {
 
-    public CanvasLayeredEntity(long entityId, long layerId) {
-        super(entityId, layerId);
+    public CanvasLayeredEntity(long entityId, Class<? extends Layer> layerClazz) {
+        super(entityId, layerClazz);
     }
 
     @Override

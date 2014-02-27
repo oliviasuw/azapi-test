@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.vis.player.impl.entities;
 
+import bgu.dcr.az.vis.player.api.Layer;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -19,16 +20,16 @@ public class SpriteBasedEntity extends CanvasLayeredEntity {
 
     private final Image image;
 
-    public SpriteBasedEntity(long entityId, long canvasId, String filepath) throws FileNotFoundException {
-        this(entityId, canvasId, new FileInputStream(filepath));
+    public SpriteBasedEntity(long entityId, Class<? extends Layer> layerClazz, String filepath) throws FileNotFoundException {
+        this(entityId, layerClazz, new FileInputStream(filepath));
     }
 
-    public SpriteBasedEntity(long entityId, long canvasId, InputStream in) {
-        this(entityId, canvasId, new Image(in));
+    public SpriteBasedEntity(long entityId, Class<? extends Layer> layerClazz, InputStream in) {
+        this(entityId, layerClazz, new Image(in));
     }
 
-    public SpriteBasedEntity(long entityId, long canvasId, Image image) {
-        super(entityId, canvasId);
+    public SpriteBasedEntity(long entityId, Class<? extends Layer> layerClazz, Image image) {
+        super(entityId, layerClazz);
 
         this.image = image;
     }

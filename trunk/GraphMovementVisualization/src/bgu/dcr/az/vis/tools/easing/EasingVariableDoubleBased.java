@@ -20,6 +20,7 @@ public abstract class EasingVariableDoubleBased<T> {
     public EasingVariableDoubleBased(EasingFunctionDoubleBased function, EasingFunctinTypeDouble efType, T initialValue, T targetValue) {
         this.function = function;
         this.efType = efType;
+        this.beginingValue = initialValue;
         this.currentValue = initialValue;
         this.targetValue = targetValue;
     }
@@ -50,10 +51,10 @@ public abstract class EasingVariableDoubleBased<T> {
     }
 
     public void update(double percentage) {
-        if (percentage <= 1) {
+        if (percentage >= 0 && percentage <= 1) {
             currentValue = doUpdate(percentage);
         } else {
-            currentValue = targetValue;
+            currentValue = percentage < 0 ? beginingValue : targetValue;
         }
     }
 

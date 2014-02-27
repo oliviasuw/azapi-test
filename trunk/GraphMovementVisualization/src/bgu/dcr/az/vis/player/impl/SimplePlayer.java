@@ -10,11 +10,11 @@ import bgu.dcr.az.vis.player.api.FramesStream;
 import bgu.dcr.az.vis.player.api.Player;
 import bgu.dcr.az.vis.player.api.VisualScene;
 import javafx.animation.AnimationTimer;
-import javafx.beans.binding.LongBinding;
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleLongProperty;
 
 /**
  *
@@ -24,14 +24,14 @@ public class SimplePlayer implements Player {
 
     private final VisualScene scene;
 
-    private final LongProperty millisPerFrame;
+    private final DoubleProperty millisPerFrame;
     private final IntegerProperty fps;
 
     private Animator animator;
 
-    public SimplePlayer(VisualScene scene, long millisPerFrame, int fps) {
+    public SimplePlayer(VisualScene scene, double millisPerFrame, int fps) {
         this.scene = scene;
-        this.millisPerFrame = new SimpleLongProperty(millisPerFrame);
+        this.millisPerFrame = new SimpleDoubleProperty(millisPerFrame);
         this.fps = new SimpleIntegerProperty(fps);
         this.animator = null;
     }
@@ -42,15 +42,15 @@ public class SimplePlayer implements Player {
     }
 
     @Override
-    public LongProperty millisPerFrameProperty() {
+    public DoubleProperty millisPerFrameProperty() {
         return millisPerFrame;
     }
 
-    public long getMillisPerFrame() {
+    public double getMillisPerFrame() {
         return millisPerFrame.get();
     }
 
-    public void setMillisPerFrame(long millis) {
+    public void setMillisPerFrame(double millis) {
         millisPerFrame.set(millis);
     }
 
@@ -120,7 +120,7 @@ public class SimplePlayer implements Player {
         private long frameStartTime;
         private Frame currentFrame;
 
-        private final LongBinding frameDurationInNano;
+        private final DoubleBinding frameDurationInNano;
 
         public Animator(Player player, FramesStream stream) {
             this.stream = stream;
@@ -160,7 +160,7 @@ public class SimplePlayer implements Player {
             }
             fps++;
 
-            CanvasLayer cl = (CanvasLayer) player.getScene().getLayer(1);
+            CanvasLayer cl = (CanvasLayer) player.getScene().getLayer(CanvasLayer.class);
 
             cl.getCanvas().getGraphicsContext2D().strokeText("fps: " + lastFps, 14, 14);
         }

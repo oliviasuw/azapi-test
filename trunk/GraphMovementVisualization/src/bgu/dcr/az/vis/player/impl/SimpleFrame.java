@@ -30,12 +30,11 @@ public class SimpleFrame implements Frame {
     
     @Override
     public void initialize(Player player) {
-        actions.parallelStream().forEach(a -> a.initialize(player));
+        actions.forEach(a -> a.initialize(player));
     }
 
     @Override
     public void update(double percentage) {
-//        actions.parallelStream().forEach(a -> a.update());
         actions.forEach(a -> a.update(percentage));
     }
 

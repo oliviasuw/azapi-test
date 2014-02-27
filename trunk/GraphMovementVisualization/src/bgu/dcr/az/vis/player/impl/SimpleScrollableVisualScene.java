@@ -26,7 +26,7 @@ public abstract class SimpleScrollableVisualScene extends ScrollPane implements 
     private final DoubleProperty rotationProperty;
     private final DoubleProperty scaleProperty;
 
-    private final Map<Long, Layer> layers;
+    private final Map<Class, Layer> layers;
     private final Map<Long, Entity> entities;
 
     private final Pane pane;
@@ -46,8 +46,8 @@ public abstract class SimpleScrollableVisualScene extends ScrollPane implements 
         setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
     }
 
-    public void addLayer(long layerId, Layer layer, Node layerNode) {
-        layers.put(layerId, layer);
+    public void registerLayer(Class<? extends Layer> clazz, Layer layer, Node layerNode) {
+        layers.put(clazz, layer);
 
         if (layerNode != null) {
             pane.getChildren().add(layerNode);
@@ -59,8 +59,8 @@ public abstract class SimpleScrollableVisualScene extends ScrollPane implements 
     }
 
     @Override
-    public Layer getLayer(long id) {
-        return layers.get(id);
+    public Layer getLayer(Class<? extends Layer> clazz) {
+        return layers.get(clazz);
     }
 
     @Override

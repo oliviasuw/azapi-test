@@ -10,6 +10,7 @@ import bgu.dcr.az.vis.player.impl.actions.FromCurrentDirectedMoveAction;
 import bgu.dcr.az.vis.player.impl.actions.LocateAction;
 import bgu.dcr.az.vis.player.impl.actions.MoveAction;
 import bgu.dcr.az.vis.player.impl.actions.RotateAction;
+import bgu.dcr.az.vis.tools.Location;
 
 /**
  *

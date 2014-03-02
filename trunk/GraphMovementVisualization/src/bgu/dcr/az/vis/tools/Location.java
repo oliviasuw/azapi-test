@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package bgu.dcr.az.vis.player.impl;
+package bgu.dcr.az.vis.tools;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;

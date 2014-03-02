@@ -6,7 +6,7 @@
 
 package bgu.dcr.az.vis.player.api;
 
-import bgu.dcr.az.vis.player.impl.Location;
+import bgu.dcr.az.vis.tools.Location;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 

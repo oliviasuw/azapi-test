@@ -7,15 +7,10 @@ package bgu.dcr.az.vis.presets;
 
 import bgu.dcr.az.vis.controls.ui.PlayerControls;
 import bgu.dcr.az.vis.player.api.FramesStream;
-import bgu.dcr.az.vis.player.api.Layer;
 import bgu.dcr.az.vis.player.impl.BasicOperationsFrame;
 import bgu.dcr.az.vis.player.impl.BoundedFramesStream;
-import bgu.dcr.az.vis.player.impl.CanvasLayer;
-import bgu.dcr.az.vis.player.impl.Location;
 import bgu.dcr.az.vis.player.impl.SimplePlayer;
-import data.events.api.SimulatorEvent;
-import data.events.impl.test.EventsTester;
-import java.util.Collection;
+import bgu.dcr.az.vis.tools.Location;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -28,11 +23,9 @@ import javafx.stage.WindowEvent;
  */
 public class MapTester extends Application {
 
-    private static MapVisualScene vs;
-
     @Override
     public void start(Stage stage) throws Exception {
-        vs = new MapVisualScene(1, "graph4.txt");
+        MapVisualScene vs = new MapVisualScene(1, "graph4.txt");
         BoundedFramesStream fs = new BoundedFramesStream(10);
         FramesGenerator fg = new FramesGenerator(fs);
         SimplePlayer player = new SimplePlayer(vs, 1000, 0);
@@ -59,45 +52,34 @@ public class MapTester extends Application {
 
         private final FramesStream stream;
         private boolean isStopped = false;
-        private final EventsTester eventTester;
 
         public FramesGenerator(FramesStream stream) {
             this.stream = stream;
-            MapCanvasLayer layer = (MapCanvasLayer) vs.getLayer(MapCanvasLayer.class);
-            eventTester = new EventsTester(layer.getGraphData());
-            eventTester.write();
         }
 
         @Override
         public void run() {
 
-            Collection<SimulatorEvent> read = eventTester.read();
-
-            while (!read.isEmpty() && !isStopped) {
-                eventTester.addNewMovesFromEvents(read, stream);
-                read = eventTester.read();
+            long i = 0;
+            while (true) {
+                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(100, 100), new Location(100, 500)));
+                if (isStopped) {
+                    break;
+                }
+                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(100, 500), new Location(500, 500)));
+                if (isStopped) {
+                    break;
+                }
+                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(500, 500), new Location(500, 100)));
+                if (isStopped) {
+                    break;
+                }
+                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(500, 100), new Location(100, 100)));
+                if (isStopped) {
+                    break;
+                }
+                i++;
             }
-
-//            long i = 0;
-//            while (true) {
-//                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(100, 100), new Location(100, 500)));
-//                if (isStopped) {
-//                    break;
-//                }
-//                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(100, 500), new Location(500, 500)));
-//                if (isStopped) {
-//                    break;
-//                }
-//                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(500, 500), new Location(500, 100)));
-//                if (isStopped) {
-//                    break;
-//                }
-//                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(500, 100), new Location(100, 100)));
-//                if (isStopped) {
-//                    break;
-//                }
-//                i++;
-//            }
         }
 
         public void cancel() {

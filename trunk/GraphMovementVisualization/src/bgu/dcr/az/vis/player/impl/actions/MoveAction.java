@@ -6,7 +6,7 @@
 package bgu.dcr.az.vis.player.impl.actions;
 
 import bgu.dcr.az.vis.player.api.Action;
-import bgu.dcr.az.vis.player.impl.Location;
+import bgu.dcr.az.vis.tools.Location;
 import bgu.dcr.az.vis.tools.easing.DoubleEasingVariable;
 import bgu.dcr.az.vis.tools.easing.EasingVariableDoubleBased;
 import bgu.dcr.az.vis.tools.easing.LinearDouble;

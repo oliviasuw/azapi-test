@@ -7,7 +7,7 @@ package data.events.impl.test;
 
 import bgu.dcr.az.vis.player.api.FramesStream;
 import bgu.dcr.az.vis.player.impl.BasicOperationsFrame;
-import bgu.dcr.az.vis.player.impl.Location;
+import bgu.dcr.az.vis.tools.Location;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryo.io.Input;
@@ -16,6 +16,7 @@ import data.events.api.SimulatorEvent;
 import data.events.impl.EventReader;
 import data.events.impl.EventWriter;
 import data.events.impl.MoveEvent;
+import data.events.impl.Tick;
 import data.events.impl.TickEvent;
 import data.map.impl.wersdfawer.AZVisVertex;
 import data.map.impl.wersdfawer.GraphData;
@@ -50,7 +51,7 @@ public class EventsTester {
         eventReader = new EventReader(kryo);
         try {
             input = new Input(new FileInputStream("file.bin"));
-            output = new Output(new FileOutputStream("file.bin"));
+//            output = new Output(new FileOutputStream("file.bin"));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(EventsTester.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -61,41 +62,48 @@ public class EventsTester {
         writeTicksAndEvents(output);
     }
 
-    public Collection<SimulatorEvent> read() {
+    public Tick read() {
         return eventReader.readNextTickFromInput(input);
     }
 
     private void writeTicksAndEvents(Output output) throws KryoException {
-        int spritesNum = 1;
-        String currEdge = "427182875 1775801775";
-        String nextEdge = "";
-        Random rand = new Random(System.currentTimeMillis());
-        for (int edges = 0; edges < 1000; edges++) {
-            Set<String> outgoing = graphData.getEdgesOf(currEdge.split(" ")[1]);
-            Object[] setArray = outgoing.toArray();
-            nextEdge = (String) setArray[rand.nextInt(outgoing.size())];
-            for (int i = 0; i <= 10; i = i + 5) {
-                eventWriter.writeTick(output, i);
-                int percentage = (int) (((double) i / 10) * 100);
-                for (int j = 0; j < spritesNum; j++) {
-                    if (Math.random() > 0) {
-                        System.out.println(currEdge);
-                        eventWriter.writeEvent(output, new MoveEvent(j, currEdge, percentage));
-                    }
-                }
-            }
-            currEdge = nextEdge;
-        }
-        output.close();
+//        int spritesNum = 1;
+//        String currEdge = "427182875 1775801775";
+//        String nextEdge = "";
+//        Random rand = new Random(System.currentTimeMillis());
+//        for (int edges = 0; edges < 1000; edges++) {
+//            Set<String> outgoing = graphData.getEdgesOf(currEdge.split(" ")[1]);
+//            Object[] setArray = outgoing.toArray();
+//            nextEdge = (String) setArray[rand.nextInt(outgoing.size())];
+//            for (int i = 0; i <= 10; i = i + 5) {
+//                eventWriter.writeTick(output, i);
+//                int percentage = (int) (((double) i / 10) * 100);
+//                for (int j = 0; j < spritesNum; j++) {
+//                    if (Math.random() > 0) {
+//                        System.out.println(currEdge);
+//                        eventWriter.writeEvent(output, new MoveEvent(j, currEdge, percentage));
+//                    }
+//                }
+//            }
+//            currEdge = nextEdge;
+//        }
+//        output.close();
     }
 
-    public void addNewMovesFromEvents(Collection<SimulatorEvent> events, FramesStream stream) {
+    public void AddNewMovesFromTick(Tick tick, FramesStream stream) {
+
+        Collection<SimulatorEvent> events = tick.getEvents();
         Set<String> edgeSet = graphData.getEdgeSet();
+        BasicOperationsFrame frame = new BasicOperationsFrame();
         for (Object event : events) {
             if (event instanceof MoveEvent) {
                 MoveEvent movee = (MoveEvent) event;
                 Integer who = movee.getId();
-                String edge = movee.getEdge();
+                String from = movee.getFromNode();
+                String to = movee.getToNode();
+
+                double endPrecent = ((tick.getTickNum() - movee.getStartTick() + 1.0) / (movee.getEndTick() - movee.getStartTick() + 1.0)) * 100.0;
+                double startPrecent = ((tick.getTickNum() - movee.getStartTick()) / (movee.getEndTick() - movee.getStartTick() + 1.0)) * 100.0;
 //                if (!edgeSet.contains(edge)) {
 //                    String[] split = edge.split(" ");
 //                    Set<String> edgesof = graphData.getEdgesOf(split[1]);
@@ -107,16 +115,17 @@ public class EventsTester {
 //
 //                    String reversed = split[1] + " " + split[0];
 //                }
-                Location location = translateToLocation(edge, movee.getPercentage());
-                stream.writeFrame(new BasicOperationsFrame().directedMove(0l, location));
-
+                Location startLocation = translateToLocation(from, to, startPrecent);
+                Location endLocation = translateToLocation(from, to, endPrecent);
+                frame.directedMove(who, startLocation, endLocation);
             }
         }
+            stream.writeFrame(frame);
     }
 
-    private Location translateToLocation(String edgeName, Integer precentage) {
-        String src = graphData.getEdgeSource(edgeName);
-        String target = graphData.getEdgeTarget(edgeName);
+    private Location translateToLocation(String src, String target, Double precentage) {
+//        String src = graphData.getEdgeSource(edgeName);
+//        String target = graphData.getEdgeTarget(edgeName);
         AZVisVertex srcData = (AZVisVertex) graphData.getData(src);
         AZVisVertex targetData = (AZVisVertex) graphData.getData(target);
         double xsub = Math.abs(srcData.getX() - targetData.getX());

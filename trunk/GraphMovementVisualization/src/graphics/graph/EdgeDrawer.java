@@ -160,9 +160,16 @@ public class EdgeDrawer {
         gc.save();
         gc.beginPath();
         for (String edgeName : edges) {
-            AZVisVertex source = (AZVisVertex) graphData.getData(graphData.getEdgeSource(edgeName));
-            AZVisVertex target = (AZVisVertex) graphData.getData(graphData.getEdgeTarget(edgeName));
-
+            AZVisVertex source=null;
+            AZVisVertex target=null;
+            try {
+             source = (AZVisVertex) graphData.getData(graphData.getEdgeSource(edgeName));
+             target = (AZVisVertex) graphData.getData(graphData.getEdgeTarget(edgeName));
+            }
+            catch (Exception e) {
+                System.out.println("problem with drawing! cant find some node.");
+                continue;
+            }
             gc.setLineCap(ed.getOuterStroke().getLineCap());
             gc.setLineJoin(ed.getOuterStroke().getLineJoin());
             gc.setLineWidth(ed.getOuterStroke().getWidth() * scale);
@@ -192,26 +199,25 @@ public class EdgeDrawer {
         String node = it.next();
         AZVisVertex source = (AZVisVertex) graphData.getData(node);
 
-//        gc.moveTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
-        double[] xs = new double[polygon.getNodes().size()];
-        double[] ys = new double[polygon.getNodes().size()];
+        gc.moveTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
+//        double[] xs = new double[polygon.getNodes().size()];
+//        double[] ys = new double[polygon.getNodes().size()];
 
-        xs[0] = (source.getX() - tx) * scale;
-        ys[0] = (source.getY() - ty) * scale;
+//        xs[0] = (source.getX() - tx) * scale;
+//        ys[0] = (source.getY() - ty) * scale;
         int i = 1;
         while (it.hasNext()) {
             node = it.next();
             source = (AZVisVertex) graphData.getData(node);
-//            gc.lineTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
+            gc.lineTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
 
-            xs[i] = (source.getX() - tx) * scale;
-            ys[i] = (source.getY() - ty) * scale;
-            i++;
-
+//            xs[i] = (source.getX() - tx) * scale;
+//            ys[i] = (source.getY() - ty) * scale;
+//            i++;
         }
-
-//        gc.fill();
-        gc.fillPolygon(xs, ys, polygon.getNodes().size());
+        gc.closePath();
+        gc.fill();
+//        gc.fillPolygon(xs, ys, polygon.getNodes().size());
 
         gc.restore();
 

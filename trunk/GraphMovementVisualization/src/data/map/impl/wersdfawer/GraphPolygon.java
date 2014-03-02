@@ -22,6 +22,7 @@ public class GraphPolygon {
     private final Collection<String> nodes;
     private final HashMap<String, String> params;
     private Point2D.Double center = null;
+    private double area;
 
     GraphPolygon(Collection<String> pNodes, HashMap<String, String> params) {
         this.nodes = pNodes;
@@ -48,6 +49,10 @@ public class GraphPolygon {
         }
         return center;
     }
+    
+    public double getArea() {
+        return area;
+    }
 
     public void setCenter(GraphData graphData) {
         if (center != null) {
@@ -63,9 +68,10 @@ public class GraphPolygon {
         }
         Point2D ans = centerOfMass(polyPoints);
         this.center = new Point2D.Double(ans.getX(), ans.getY());
+        this.area = area(polyPoints);
     }
 
-    public static double area(Point2D[] polyPoints) {
+    private double area(Point2D[] polyPoints) {
         int i, j, n = polyPoints.length;
         double area = 0;
 
@@ -78,7 +84,7 @@ public class GraphPolygon {
         return (area);
     }
 
-    public static Point2D centerOfMass(Point2D[] polyPoints) {
+    private Point2D centerOfMass(Point2D[] polyPoints) {
         double cx = 0, cy = 0;
         double area = area(polyPoints);
         // could change this to Point2D.Float if you want to use less memory

@@ -53,8 +53,10 @@ public class BuildingImageDrawer implements PolygonImageDrawer {
         if (image==null) {
             image = defaultImage;
         }
-        
-        gc.drawImage(image, (centerX -tx -(image.getWidth() / 2.0)) * scale, (centerY -ty -(image.getHeight() / 2.0)) * scale, image.getWidth()*scale, image.getHeight()*scale);
+        double subScale = Math.sqrt(Math.abs(polygon.getArea()));
+        System.out.println(subScale);
+//        gc.drawImage(image, (centerX -tx -(image.getWidth() / 2.0)) * scale, (centerY -ty -(image.getHeight() / 2.0)) * scale, image.getWidth()*scale, image.getHeight()*scale);
+        gc.drawImage(image, (centerX -tx -(scale*subScale / 2.0)) * scale, (centerY -ty -(scale*subScale / 2.0)) * scale, scale *subScale, scale*subScale);
     }
 
     

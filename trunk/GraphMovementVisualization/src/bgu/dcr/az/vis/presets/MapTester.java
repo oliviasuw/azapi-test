@@ -11,9 +11,16 @@ import bgu.dcr.az.vis.player.impl.BasicOperationsFrame;
 import bgu.dcr.az.vis.player.impl.BoundedFramesStream;
 import bgu.dcr.az.vis.player.impl.SimplePlayer;
 import bgu.dcr.az.vis.tools.Location;
+import data.events.api.SimulatorEvent;
+import data.events.impl.Tick;
+import data.events.impl.test.EventsTester;
+import java.util.Collection;
 import javafx.application.Application;
+import javafx.scene.Camera;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -23,9 +30,11 @@ import javafx.stage.WindowEvent;
  */
 public class MapTester extends Application {
 
+    private static MapVisualScene vs;
+
     @Override
     public void start(Stage stage) throws Exception {
-        MapVisualScene vs = new MapVisualScene(1, "graph4.txt");
+        vs = new MapVisualScene(3, "graph4.txt");
         BoundedFramesStream fs = new BoundedFramesStream(10);
         FramesGenerator fg = new FramesGenerator(fs);
         SimplePlayer player = new SimplePlayer(vs, 1000, 0);
@@ -35,6 +44,15 @@ public class MapTester extends Application {
         bp.setBottom(new PlayerControls(player));
 
         Scene scene = new Scene(bp);
+//        Camera camera = new PerspectiveCamera(false);
+//        scene.setCamera(camera);
+//        bp.getChildren().add(camera);
+
+//        camera.setTranslateZ(-400);
+//        camera.setTranslateY(190);
+//        camera.getTransforms().add(new Rotate(40, Rotate.X_AXIS));
+//        camera.setRotate(360);
+//        camera.setRotationAxis(new Point3D(0.7, 0.4 , 0));
         stage.setScene(scene);
         stage.show();
         stage.addEventFilter(WindowEvent.WINDOW_HIDING, e -> fg.cancel());
@@ -52,34 +70,45 @@ public class MapTester extends Application {
 
         private final FramesStream stream;
         private boolean isStopped = false;
+        private final EventsTester eventTester;
 
         public FramesGenerator(FramesStream stream) {
             this.stream = stream;
+            MapCanvasLayer layer = (MapCanvasLayer) vs.getLayer(MapCanvasLayer.class);
+            eventTester = new EventsTester(layer.getGraphData());
+//            eventTester.write();
+
         }
 
         @Override
         public void run() {
-
-            long i = 0;
-            while (true) {
-                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(100, 100), new Location(100, 500)));
-                if (isStopped) {
-                    break;
-                }
-                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(100, 500), new Location(500, 500)));
-                if (isStopped) {
-                    break;
-                }
-                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(500, 500), new Location(500, 100)));
-                if (isStopped) {
-                    break;
-                }
-                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(500, 100), new Location(100, 100)));
-                if (isStopped) {
-                    break;
-                }
-                i++;
+            Tick tick = eventTester.read();
+            Collection<SimulatorEvent> read = tick.getEvents();
+            while (!read.isEmpty() && !isStopped) {
+                eventTester.AddNewMovesFromTick(tick, stream);
+                tick = eventTester.read();
             }
+//
+//            long i = 0;
+//            while (true) {
+//                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(100, 100), new Location(100, 500)));
+//                if (isStopped) {
+//                    break;
+//                }
+//                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(100, 500), new Location(500, 500)));
+//                if (isStopped) {
+//                    break;
+//                }
+//                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(500, 500), new Location(500, 100)));
+//                if (isStopped) {
+//                    break;
+//                }
+//                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(500, 100), new Location(100, 100)));
+//                if (isStopped) {
+//                    break;
+//                }
+//                i++;
+//            }
         }
 
         public void cancel() {

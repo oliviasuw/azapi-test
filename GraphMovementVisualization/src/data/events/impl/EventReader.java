@@ -28,13 +28,15 @@ public class EventReader {
 
     }
 
-    public Collection<SimulatorEvent> readNextTickFromInput(Input input) {
+    public Tick readNextTickFromInput(Input input) {
         LinkedList tickEvents = new LinkedList();
+        int tickNum = -1;
         try {
             if (input.available() != 0) {
                 Object readObject = kryo.readClassAndObject(input);
                 int lastPosition = input.position();
                 if (readObject instanceof TickEvent) {
+                    tickNum = ((TickEvent)readObject).getNumber();
                     readObject = kryo.readClassAndObject(input);
                     while (!(readObject instanceof TickEvent)) {
                         Object event = readObject;
@@ -51,6 +53,6 @@ public class EventReader {
         } catch (IOException ex) {
             Logger.getLogger(R.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return tickEvents;
+        return new Tick(tickNum, tickEvents);
     }
 }

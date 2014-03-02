@@ -36,14 +36,19 @@ public class GraphData {
 
     public void addVertex(String name, Object vertexData) {
         data.put(name, vertexData);
-        graph.addVertex(name);
+        graph.addVertex(name);  
     }
 
     public void addEdge(String name, String from, String to, Object edgeData) {
         data.put(name, edgeData);
                 System.out.println("from " + from + " to " + to);
 
-        graph.addEdge(from, to, name);
+        try {
+            graph.addEdge(from, to, name);
+        }
+        catch (Exception e) {
+            System.out.println("");
+        }
         
         //adding the edge type to the hashmap
         HashMap<String, String> edgeDataReal = (HashMap<String, String>) edgeData;

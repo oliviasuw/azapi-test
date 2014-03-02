@@ -103,7 +103,7 @@ public class GraphReader {
 
     private Collection<String> parsePolygonNodes(Scanner lineBreaker, String nextToken) {
         LinkedList<String> nodeIds = new LinkedList<>();
-        while (!nextToken.equals("E"))  {
+        while (!nextToken.equals("E")) {
             nodeIds.add(nextToken);
             nextToken = lineBreaker.next();
         }

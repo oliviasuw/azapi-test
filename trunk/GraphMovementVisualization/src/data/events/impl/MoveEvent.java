@@ -13,29 +13,44 @@ import data.events.api.SimulatorEvent;
  */
 public class MoveEvent implements SimulatorEvent {
 
-    int id;
-    String edge;
-    int percentage;
+    private int id;
+    private String fromNode;
+    private String toNode;
+    private int startTick;
+    private int endTick;
 
     public MoveEvent() {
+    }
+
+    public MoveEvent(int id, String fromNode, String toNode, int startTick, int endTick) {
+        this.id = id;
+        this.fromNode = fromNode;
+        this.toNode = toNode;
+        this.startTick = startTick;
+        this.endTick = endTick;
     }
 
     public int getId() {
         return id;
     }
 
-    public String getEdge() {
-        return edge;
+    public String getFromNode() {
+        return fromNode;
     }
 
-    public int getPercentage() {
-        return percentage;
+    public String getToNode() {
+        return toNode;
     }
 
-    public MoveEvent(int id, String edge, int percentage) {
-        this.id = id;
-        this.edge = edge;
-        this.percentage = percentage;
+    public int getStartTick() {
+        return startTick;
     }
+
+    public int getEndTick() {
+        return endTick;
+    }
+
+    
+
 
 }

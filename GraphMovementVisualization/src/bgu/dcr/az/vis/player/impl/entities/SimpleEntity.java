@@ -8,7 +8,7 @@ package bgu.dcr.az.vis.player.impl.entities;
 import bgu.dcr.az.vis.player.api.Entity;
 import bgu.dcr.az.vis.player.api.Layer;
 import bgu.dcr.az.vis.player.api.VisualScene;
-import bgu.dcr.az.vis.player.impl.Location;
+import bgu.dcr.az.vis.tools.Location;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;

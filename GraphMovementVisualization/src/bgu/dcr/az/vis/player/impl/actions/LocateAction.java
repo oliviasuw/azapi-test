@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.vis.player.impl.actions;
 
-import bgu.dcr.az.vis.player.impl.Location;
+import bgu.dcr.az.vis.tools.Location;
 
 /**
  *

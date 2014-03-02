@@ -11,7 +11,7 @@ package data.map.api;
  * @author Zovadi
  */
 public interface MapNode {
-    long getId();
+    long getNodeId();
     
     MapNodeProperties properties();
 }

@@ -41,6 +41,22 @@
                 <id>jar</id>
             </reference>
             <reference>
+                <foreign-project>AZCommon</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>build.xml</script>
+                <target>jar</target>
+                <clean-target>clean</clean-target>
+                <id>jar</id>
+            </reference>
+            <reference>
+                <foreign-project>AZConfigurationEditor</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>build.xml</script>
+                <target>jar</target>
+                <clean-target>clean</clean-target>
+                <id>jar</id>
+            </reference>
+            <reference>
                 <foreign-project>AZExecutionSystem</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>

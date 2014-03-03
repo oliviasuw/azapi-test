@@ -10,6 +10,7 @@ import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.utils.PropertyUtils;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.function.Predicate;
 import javafx.geometry.Insets;
 import javafx.scene.layout.VBox;
 
@@ -25,6 +26,8 @@ public class ConfigurationEditorInternal extends VBox {
     private Configuration configuration;
     private boolean readOnly;
 
+    private Predicate filter;
+
     public ConfigurationEditorInternal(ConfigurationEditor parent) {
         this(parent, null);
     }
@@ -38,13 +41,14 @@ public class ConfigurationEditorInternal extends VBox {
         getStyleClass().add("conf-editor");
     }
 
-    public void setModel(Configuration configuration, boolean readOnly) {
+    public void setModel(Configuration configuration, boolean readOnly, Predicate filter) {
         this.readOnly = readOnly;
 
         if (this.configuration == configuration) {
             return;
         }
 
+        this.filter = filter;
         this.configuration = configuration;
 
         getChildren().clear();
@@ -67,9 +71,11 @@ public class ConfigurationEditorInternal extends VBox {
                         && "false".equals(property.doc().first("UIVisibility"))) {
                     continue;
                 }
-                CollectionPropertyEditor editor = new CollectionPropertyEditor(parent);
-                editor.setModel(property, readOnly);
-                getChildren().add(editor);
+                if (filter == null || filter.test(property)) {
+                    CollectionPropertyEditor editor = new CollectionPropertyEditor(parent);
+                    editor.setModel(property, readOnly, filter);
+                    getChildren().add(editor);
+                }
             }
         }
     }
@@ -81,9 +87,11 @@ public class ConfigurationEditorInternal extends VBox {
                         && "false".equals(property.doc().first("UIVisibility"))) {
                     continue;
                 }
-                ConfigurationPropertyEditor editor = new ConfigurationPropertyEditor(parent, null);
-                editor.setModel(property, readOnly);
-                getChildren().add(editor);
+                if (filter == null || filter.test(property)) {
+                    ConfigurationPropertyEditor editor = new ConfigurationPropertyEditor(parent, null);
+                    editor.setModel(property, readOnly, filter);
+                    getChildren().add(editor);
+                }
             }
         }
     }
@@ -99,14 +107,16 @@ public class ConfigurationEditorInternal extends VBox {
                     continue;
                 }
 
-                TerminalPropertyEditor controller = new TerminalPropertyEditor(parent, parentEditor);
-                controller.setModel(property, readOnly);
-                double labelWidth = controller.getLabelWidth();
-                if (labelWidth > max) {
-                    max = labelWidth;
+                if (filter == null || filter.test(property)) {
+                    TerminalPropertyEditor controller = new TerminalPropertyEditor(parent, parentEditor);
+                    controller.setModel(property, readOnly, filter);
+                    double labelWidth = controller.getLabelWidth();
+                    if (labelWidth > max) {
+                        max = labelWidth;
+                    }
+                    controllerList.add(controller);
+                    getChildren().add(controller);
                 }
-                controllerList.add(controller);
-                getChildren().add(controller);
             }
         }
         for (TerminalPropertyEditor controller : controllerList) {

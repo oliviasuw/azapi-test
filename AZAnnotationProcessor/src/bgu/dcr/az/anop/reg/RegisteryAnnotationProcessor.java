@@ -145,7 +145,7 @@ public class RegisteryAnnotationProcessor extends AbstractProcessor {
                 if (methods.containsKey(setterName)) {
                     info.setter = setterName;
                 }
-
+                
                 properties.add(info);
             }
         }

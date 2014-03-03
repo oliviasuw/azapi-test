@@ -31,7 +31,7 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>AZMasSystem</foreign-project>
+                <foreign-project>AZCommon</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>
@@ -39,7 +39,7 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>AZUserInterfaceFX</foreign-project>
+                <foreign-project>AZMasSystem</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>

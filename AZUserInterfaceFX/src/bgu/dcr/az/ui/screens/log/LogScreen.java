@@ -11,10 +11,10 @@
 package bgu.dcr.az.ui.screens.log;
 
 //import bc.dsl.PageDSL;
+import bgu.dcr.az.common.ui.UIPoke;
 import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.cp.CPData;
 import bgu.dcr.az.mas.impl.InitializationException;
-import bgu.dcr.az.ui.util.UIPoke;
 import java.awt.Color;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Scanner;

@@ -8,6 +8,7 @@ package bgu.dcr.az.ui;
 import bc.dsl.SwingDSL;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.api.exen.ExecutionResult;
+import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.mas.cp.CPExperiment;
 import bgu.dcr.az.mas.cp.CPExperimentTest;
 import bgu.dcr.az.mas.exp.ExperimentUtils;
@@ -20,7 +21,6 @@ import bgu.dcr.az.ui.screens.statistics.BasicStatisticsScreenCtl;
 import bgu.dcr.az.ui.screens.status.StatusScreenCtl;
 import bgu.dcr.az.ui.statistics.AlgorithmCPUTimeStatisticCollector;
 import bgu.dcr.az.ui.statistics.NumberOfCoresInUseStatisticCollector;
-import bgu.dcr.az.ui.util.FXUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +28,7 @@ import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javax.swing.JFrame;
 import nu.xom.ParsingException;
+import resources.img.ResourcesImg;
 import resources.img.ResourcesImgAnchor;
 
 /**
@@ -36,9 +37,11 @@ import resources.img.ResourcesImgAnchor;
  */
 public class AppController {
 
-    public static final Image WHOOPY_DIMA = new Image(ResourcesImgAnchor.class.getResourceAsStream("success-message.png"));
-    public static final Image AMAZED_DIMA = new Image(ResourcesImgAnchor.class.getResourceAsStream("test-passed-message.png"));
-    public static final Image GREETING_DIMA = new Image(ResourcesImgAnchor.class.getResourceAsStream("greeting-message.png"));
+    public static final Image WHOOPY_DIMA = ResourcesImg.png("success-message");
+    public static final Image AMAZED_DIMA = ResourcesImg.png("test-passed-message");
+    public static final Image GREETING_DIMA = ResourcesImg.png("greeting-message");
+    public static final Image EXCEPTION_DIMA = ResourcesImg.png("exception-message");
+    public static final Image INFORMATIVE_DIMA = ResourcesImg.png("info-message-notification");
 
     private static final int UPDATE_INTERVAL = 100;
     private static CPExperiment runningExperiment;
@@ -116,6 +119,7 @@ public class AppController {
 
         FXUtils.JFXPanelWithCTL<BasicStatisticsScreenCtl> statisticsScreen = FXUtils.load(BasicStatisticsScreenCtl.class, "BasicStatisticsScreen.fxml");
         statisticsScreen.getController().setModel(runningExperiment);
+        FXUtils.startCSSLiveReloader(statisticsScreen.getScene(), "C:\\Users\\User\\Desktop\\Projects\\AgentZero\\trunk\\AZUserInterfaceFX\\src\\bgu\\dcr\\az\\ui\\azstyle.css");
         main.addScreen("Statistics", "statistics", statisticsScreen);
 
         ProblemViewScreen pview = new ProblemViewScreen();

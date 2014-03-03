@@ -7,6 +7,7 @@ package bgu.dcr.az.ui.confe;
 
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.Property;
+import java.util.function.Predicate;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -21,9 +22,9 @@ public interface PropertyEditor {
 
     public static final Image INFO_ICON = new Image(R.class.getResourceAsStream("info.png"));
 
-    public void setModel(Configuration conf, boolean readOnly);
+    public void setModel(Configuration conf, boolean readOnly, Predicate filter);
 
-    public void setModel(Property property, boolean readOnly);
+    public void setModel(Property property, boolean readOnly, Predicate filter);
     
     public Property getModel();
     

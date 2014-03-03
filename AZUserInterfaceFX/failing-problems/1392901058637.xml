@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<experiment>
+    <failure-description>
+        <failure-description test-name="0" description="The Execution crushed with the exception: java.lang.NullPointerException at bgu.dcr.az.api.agt.ReportMediator.to(ReportMediator.java:31) at bgu.dcr.az.algos.ConcFB_Agent.initSP(ConcFB_Agent.java:101) at bgu.dcr.az.algos.ConcFB_Agent.start(ConcFB_Agent.java:55) at bgu.dcr.az.mas.impl.BaseAgentController.start(BaseAgentController.java:100) at bgu.dcr.az.execs.AbstractProc.quota(AbstractProc.java:58) at bgu.dcr.az.execs.MultithreadedScheduler$Core.run(MultithreadedScheduler.java:167) at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) at java.util.concurrent.FutureTask.run(FutureTask.java:266) at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) at java.lang.Thread.run(Thread.java:744) " execution-number="1" algorithm="CONC_FB"/>
+    </failure-description>
+    <tests>
+        <test seed="42" name="0" env="async">
+            <algorithms>
+                <algorithm name="ABT"/>
+                <algorithm name="CONC_FB"/>
+            </algorithms>
+            <problem-generator>
+                <dcsp-unstructured p1="0.1" p2="0.64" d="5" n="8"/>
+            </problem-generator>
+            <loop>
+                <for-loop repeat-count="100" run-var="p1" start="0.1" end="0.9" tick-size="0.1">
+                    <looper>
+                        <do-once/>
+                    </looper>
+                </for-loop>
+            </loop>
+            <statistics>
+                <item>Number of cores in use</item>
+                <item>Algorithm CPU time spending</item>
+                <msgc-sc type="BY_RUNVAR"/>
+                <cc-sc/>
+            </statistics>
+        </test>
+        <test seed="100" name="1" env="async">
+            <algorithms>
+                <algorithm name="ABT"/>
+            </algorithms>
+            <problem-generator>
+                <dcsp-unstructured p1="0.6" p2="0.64" d="10" n="10"/>
+            </problem-generator>
+            <loop>
+                <for-loop repeat-count="100" run-var="p1" start="0.1" end="0.9" tick-size="0.1">
+                    <looper>
+                        <do-once/>
+                    </looper>
+                </for-loop>
+            </loop>
+            <statistics>
+                <item>Number of cores in use</item>
+                <item>Algorithm CPU time spending</item>
+            </statistics>
+        </test>
+        <test seed="101" name="2" env="async">
+            <algorithms>
+                <algorithm name="ABT"/>
+            </algorithms>
+            <problem-generator>
+                <dcsp-unstructured p1="0.6" p2="0.64" d="5" n="10"/>
+            </problem-generator>
+            <loop>
+                <for-loop repeat-count="100" run-var="p1" start="0.1" end="0.9" tick-size="0.1">
+                    <looper>
+                        <do-once/>
+                    </looper>
+                </for-loop>
+            </loop>
+            <statistics>
+                <item>Number of cores in use</item>
+                <item>Algorithm CPU time spending</item>
+            </statistics>
+        </test>
+    </tests>
+    <Statistics/>
+</experiment>

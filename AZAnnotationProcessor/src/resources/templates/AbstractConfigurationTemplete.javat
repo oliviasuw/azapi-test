@@ -49,8 +49,13 @@ public class @{className} extends AbstractConfiguration{
         //fill properties
         VisualData vd = null;
         @foreach{p : properties}
+        @if{p.setter != empty}
         properties.put("@{p.name}", new PropertyImpl("@{p.name}", this, @{lc(p.declaredName)}_TYPE_INFO , @{lc(p.declaredName)}_JAVADOC_INFO));
-        @end{}
+        @else{}
+        if (Collection.class.isAssignableFrom(@{lc(p.declaredName)}_TYPE_INFO.getType())){
+            properties.put("@{p.name}", new PropertyImpl("@{p.name}", this, @{lc(p.declaredName)}_TYPE_INFO , @{lc(p.declaredName)}_JAVADOC_INFO));
+        }
+        @end{} @end{}
         @if{extension != null}
         parent = new @{extensionConfiurationClass}();
         this.properties.putAll(parent.propertiesMap());
@@ -84,12 +89,14 @@ public class @{className} extends AbstractConfiguration{
 
         @foreach{p : properties}
         property = properties.get("@{p.name}");
-        propertyValue = (Object) o.@{p.getter}();
-        if (propertyValue != null){
-            try{          
-                property.set(ConfigurationUtils.toPropertyValue(propertyValue));
-            } catch (Exception ex){
-                throw new ConfigurationException("cannot configure property @{p.name}", ex);
+        if (property != null){
+            propertyValue = (Object) o.@{p.getter}();
+            if (propertyValue != null){
+                try{          
+                    property.set(ConfigurationUtils.toPropertyValue(propertyValue));
+                } catch (Exception ex){
+                    throw new ConfigurationException("cannot configure property @{p.name}", ex);
+                }
             }
         }
         @end{}
@@ -110,7 +117,7 @@ public class @{className} extends AbstractConfiguration{
         @end{}
         @foreach{p : properties}
         property = properties.get("@{p.name}");
-        if (property.get() != null){
+        if (property != null && property.get() != null){
             try{          
                 @if{p.setter != empty}
                 o.@{p.setter}( property.get().<@{castify(p.type)}>create(property.typeInfo()));

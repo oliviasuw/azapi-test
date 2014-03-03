@@ -12,7 +12,7 @@
 
 <BorderPane id="AnchorPane" prefHeight="537.0" prefWidth="834.0" styleClass="main-pane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="bgu.dcr.az.ui.screens.statistics.BasicStatisticsScreenCtl">
   <center>
-    <BorderPane fx:id="resultsContainer" prefHeight="200.0" prefWidth="200.0" styleClass="viewer" />
+    <BorderPane fx:id="resultsContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="viewer" />
   </center>
   <left>
     <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" BorderPane.alignment="CENTER">
@@ -57,12 +57,12 @@
             </HBox>
           </graphic>
         </TitledPane>
-        <TitledPane animated="false" collapsible="false" styleClass="section-pane" text="" VBox.vgrow="ALWAYS">
+        <TitledPane animated="false" collapsible="false" maxHeight="150.0" maxWidth="1.7976931348623157E308" minHeight="150.0" prefHeight="150.0" styleClass="section-pane" text="" VBox.vgrow="SOMETIMES">
           <content>
-            <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="200.0" styleClass="dark-pane" />
+            <BorderPane fx:id="statConfigurationPanel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="dark-pane" />
           </content>
           <graphic>
-            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="-1.0" prefWidth="230.0">
+            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-1.0" prefHeight="-1.0" prefWidth="230.0">
               <children>
                 <StackPane prefHeight="-1.0" prefWidth="-1.0">
                   <children>
@@ -81,9 +81,9 @@
             </HBox>
           </graphic>
         </TitledPane>
-        <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="section-pane" text="" VBox.vgrow="SOMETIMES">
+        <TitledPane animated="false" collapsible="false" maxHeight="80.0" maxWidth="1.7976931348623157E308" minHeight="80.0" prefHeight="80.0" styleClass="section-pane" text="" VBox.vgrow="SOMETIMES">
           <content>
-            <HBox alignment="CENTER" fillHeight="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" spacing="10.0" styleClass="dark-pane">
+            <HBox alignment="CENTER" fillHeight="false" maxHeight="55.0" maxWidth="1.7976931348623157E308" minHeight="55.0" minWidth="-1.0" prefHeight="55.0" prefWidth="-1.0" spacing="10.0" styleClass="dark-pane">
               <children>
                 <Button fx:id="showChartButton" maxHeight="-1.0" maxWidth="-1.0" mnemonicParsing="false" text="">
                   <graphic>
@@ -94,7 +94,7 @@
                     </ImageView>
                   </graphic>
                 </Button>
-                <Button mnemonicParsing="false" text="">
+                <Button fx:id="showTableButton" mnemonicParsing="false" text="">
                   <graphic>
                     <ImageView fitHeight="32.0" fitWidth="32.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
                       <image>
@@ -107,7 +107,7 @@
             </HBox>
           </content>
           <graphic>
-            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="-1.0" prefWidth="230.0">
+            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-1.0" prefHeight="-1.0" prefWidth="230.0">
               <children>
                 <StackPane prefHeight="-1.0" prefWidth="-1.0">
                   <children>

@@ -7,7 +7,8 @@ package bgu.dcr.az.ui.confe;
 
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.Property;
-import bgu.dcr.az.ui.util.FXUtils;
+import bgu.dcr.az.common.ui.FXUtils;
+import java.util.function.Predicate;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
@@ -21,20 +22,36 @@ public class ConfigurationEditor extends ScrollPane {
     private final ConfigurationEditorInternal internal;
     private Configuration model;
     private Node selectedNode = null;
+    private boolean autoScroll = true;
 
     public ConfigurationEditor() {
+        this(true);
+    }
+
+    public ConfigurationEditor(boolean autoScroll) {
+        getStyleClass().add("conf-editor-scroll");
+//        
+        getStylesheets().add(getClass().getResource("ceditor.css").toExternalForm());
+
         internal = new ConfigurationEditorInternal(this);
 
-        this.sceneProperty().addListener((ov, o, n) -> initializeFocuseListening());
+        if (autoScroll) {
+            this.sceneProperty().addListener((ov, o, n) -> initializeFocuseListening());
+        }
 
         this.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         this.setFitToWidth(true);
         this.setContent(internal);
     }
 
-    public void setModel(Configuration model, boolean readOnly) {
+    public ConfigurationEditor(Configuration model, boolean readOnly, boolean autoScroll, Predicate<Property> filter) {
+        this(autoScroll);
+        setModel(model, readOnly, filter);
+    }
+
+    public void setModel(Configuration model, boolean readOnly, Predicate<Property> filter) {
         this.model = model;
-        internal.setModel(model, readOnly);
+        internal.setModel(model, readOnly, filter);
         initializeFocuseListening();
     }
 
@@ -69,11 +86,16 @@ public class ConfigurationEditor extends ScrollPane {
     }
 
     private void selectNode(Node n, boolean expand) {
+
         if (selectedNode == n) {
             return;
         }
 
-        TitledPane newSelection = (TitledPane) FXUtils.lookupParent(n, node -> node instanceof TitledPane);
+        if (FXUtils.lookupParent(n, node -> node == this) == null) {
+            return;
+        }
+
+        TitledPane newSelection = (TitledPane) FXUtils.lookupParent(n, node -> node instanceof TitledPane, node -> node == this);
 
         //expand new selection: 
 //        if (newSelection != null && expand) {

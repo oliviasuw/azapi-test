@@ -13,7 +13,7 @@ import bgu.dcr.az.mas.stat.AdditionalBarChartProperties;
 import bgu.dcr.az.mas.stat.data.ExecutionInitializationInfo;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.QueryDatabase;
-import bgu.dcr.az.orm.impl.DataUtils;
+import bgu.dcr.az.orm.api.DataUtils;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

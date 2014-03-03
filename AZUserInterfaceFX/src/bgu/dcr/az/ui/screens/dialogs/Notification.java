@@ -19,13 +19,10 @@ package bgu.dcr.az.ui.screens.dialogs;
  * Ripped from eu.hansolo.enzo.notification;
  */
 import bgu.dcr.az.ui.AppController;
-import java.awt.Window;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
@@ -38,11 +35,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 /**
@@ -54,6 +49,7 @@ public class Notification {
     public static final Image WARNING_ICON = new Image(Notifier.class.getResourceAsStream("warning.png"));
     public static final Image SUCCESS_ICON = new Image(Notifier.class.getResourceAsStream("success.png"));
     public static final Image ERROR_ICON = new Image(Notifier.class.getResourceAsStream("error.png"));
+
     public final String TITLE;
     public final String MESSAGE;
     public final Image IMAGE;
@@ -73,6 +69,13 @@ public class Notification {
         this.MESSAGE = MESSAGE;
         this.IMAGE = IMAGE;
         this.EXTRA_STYLE = EXTRA_STYLE;
+    }
+
+    public static void exception(Throwable ex) {
+        Notifier.INSTANCE.notify("Oh Snap!", ex.getMessage(), AppController.EXCEPTION_DIMA, "exception") ;
+    }
+    public static void info(String message) {
+        Notifier.INSTANCE.notify("Breaking news!", message, AppController.INFORMATIVE_DIMA, "info") ;
     }
 
     // ******************** Inner Classes *************************************
@@ -116,8 +119,7 @@ public class Notification {
 
             JFXPanel panel = new JFXPanel();
             panel.setScene(scene);
-            
-            
+
             stage = scene.getWindow();
 //            stage = new Stage();
 //            stage.initStyle(StageStyle.TRANSPARENT);
@@ -370,7 +372,6 @@ public class Notification {
             POPUP.getContent().add(popupContent);
 
 //            POPUP.focusedProperty().addListener(e -> AppController.focusMainScreen());
-
             popups.add(POPUP);
 
             // Add a timeline for popup fade out
@@ -401,7 +402,7 @@ public class Notification {
 //                stage.toBack();
 //                stage.show();
                 POPUP.show(stage);
-                AppController.focusMainScreen();
+//                AppController.focusMainScreen();
             });
 //            }
 

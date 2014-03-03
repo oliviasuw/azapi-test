@@ -5,34 +5,37 @@
  */
 package bgu.dcr.az.ui.screens.status;
 
+import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
+import bgu.dcr.az.common.ui.UIPoke;
 import bgu.dcr.az.mas.exp.Experiment;
+import bgu.dcr.az.mas.stat.StatisticCollector;
 import bgu.dcr.az.ui.AppController;
 import bgu.dcr.az.ui.ExperimentStatusEventListener;
+import bgu.dcr.az.ui.confe.ConfigurationEditor;
+import bgu.dcr.az.ui.screens.dialogs.Notification;
 import bgu.dcr.az.ui.statistics.AlgorithmCPUTimeStatisticCollector;
 import bgu.dcr.az.ui.statistics.NumberOfCoresInUseStatisticCollector;
 import bgu.dcr.az.ui.statistics.RealtimeJFXPlotter;
-import bgu.dcr.az.ui.util.UIPoke;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.function.Predicate;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
-import syntaxhl.JSAnchor;
 
 /**
  * FXML Controller class
@@ -48,7 +51,7 @@ public class StatusScreenCtl implements Initializable {
     BorderPane coreUsageChartContainer;
 
     @FXML
-    WebView experimentXMLView;
+    BorderPane experimentViewContainer;
 
     @FXML
     ProgressBar progressBar;
@@ -65,6 +68,7 @@ public class StatusScreenCtl implements Initializable {
     RealtimeJFXPlotter pieChartPlotter;
     RealtimeJFXPlotter barChartPlotter;
 
+    ConfigurationEditor experimentView;
     UIPoke pieChartPlotterPoke;
 
     /**
@@ -77,26 +81,10 @@ public class StatusScreenCtl implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         pieChartPlotterPoke = new UIPoke(this::updateStatistics, 1000);
 
-        final WebEngine engine = experimentXMLView.getEngine();
-        engine.getHistory().setMaxSize(0);
-        engine.load(JSAnchor.class.getResource("index.html").toExternalForm());
-        engine.getLoadWorker().stateProperty().addListener(new ChangeListener<Worker.State>() {
-
-            @Override
-            public void changed(ObservableValue<? extends Worker.State> ov, Worker.State t, Worker.State t1) {
-                if (t1 == Worker.State.SUCCEEDED) {
-                    try {
-                        final Object exp = testsList.getSelectionModel().getSelectedItem();
-                        if (exp != null) {
-                            updateSelectedExperimentXML((Experiment) exp);
-                        }
-                    } finally {
-                        engine.getLoadWorker().stateProperty().removeListener(this);
-
-                    }
-                }
-            }
-        });
+        experimentView = new ConfigurationEditor();
+        BorderPane.setAlignment(experimentView, Pos.TOP_CENTER);
+        BorderPane.setMargin(experimentView, new Insets(0));
+        experimentViewContainer.setCenter(experimentView);
     }
 
     public void setModel(final Experiment exp) {
@@ -105,25 +93,8 @@ public class StatusScreenCtl implements Initializable {
         Platform.runLater(() -> {
             createProgressUpdater(exp);
             createListSelectionUpdater();
-            updateSelectedExperimentXML(exp);
+            updateSelectedExperiment();
         });
-    }
-
-    private void updateSelectedExperimentXML(final Experiment exp) {
-        final WebEngine engine = experimentXMLView.getEngine();
-        if (engine.getLoadWorker().getState() == Worker.State.SUCCEEDED) { //otherwise this means that the callback will update this
-            try {
-                engine.executeScript(""
-                        + "document.getElementsByTagName(\"body\")[0].innerHTML = \"<pre class='brush: xml' id='xml-data'/>\";\n");
-                engine.getDocument().getElementById("xml-data").setTextContent(ConfigurationUtils.toConfigurationXMLString(exp));
-                engine.executeScript("SyntaxHighlighter.highlight();");
-//                                System.out.println("script execution returned: " + result);
-
-            } catch (Exception ex) {
-                Logger.getLogger(StatusScreenCtl.class
-                        .getName()).log(Level.SEVERE, null, ex);
-            }
-        }
     }
 
     private void createListSelectionUpdater() {
@@ -131,7 +102,7 @@ public class StatusScreenCtl implements Initializable {
 
             @Override
             public void changed(ObservableValue ov, Object t, Object t1) {
-                updateSelectedExperimentXML((Experiment) t1);
+                updateSelectedExperiment();
                 pieChartPlotter = new RealtimeJFXPlotter(cpuTimeChartContainer);
                 barChartPlotter = new RealtimeJFXPlotter(coreUsageChartContainer);
                 updateStatistics();
@@ -219,12 +190,29 @@ public class StatusScreenCtl implements Initializable {
     }
 
     private String getSelectedTestName() {
-        final Experiment selection = (Experiment) testsList.getSelectionModel().getSelectedItem();
+        final Experiment selection = getSelectedExperiment();
         if (selection != null) {
             return selection.getName();
         }
 
         return null;
+    }
+
+    private Experiment getSelectedExperiment() {
+        return (Experiment) testsList.getSelectionModel().getSelectedItem();
+    }
+
+    private void updateSelectedExperiment() {
+        Experiment selection = getSelectedExperiment();
+        if (selection != null) {
+            try {
+                experimentView.setModel(ConfigurationUtils.load(selection), true,
+                        p -> p.parent() == null || !StatisticCollector.class.isAssignableFrom(p.parent().typeInfo().getType()));
+
+            } catch (ClassNotFoundException | ConfigurationException ex) {
+                Notification.exception(ex);
+            }
+        }
     }
 
 }

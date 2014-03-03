@@ -5,11 +5,14 @@
  */
 package bgu.dcr.az.ui.screens.statistics;
 
+import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.mas.stat.AdditionalBarChartProperties;
 import bgu.dcr.az.mas.stat.AdditionalLineChartProperties;
 import bgu.dcr.az.mas.stat.Plotter;
 import bgu.dcr.az.orm.api.Data;
 import bgu.dcr.az.orm.api.RecordAccessor;
+import bgu.dcr.az.pivot.model.impl.TableDataWrapper;
+import bgu.dcr.az.pivot.ui.PivotDataTableView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,6 +26,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 
 /**
@@ -32,13 +36,22 @@ import javafx.scene.layout.BorderPane;
 public class StatisticsPlotter implements Plotter {
 
     private final BorderPane pane;
+    private boolean asTable = false;
 
     public StatisticsPlotter(BorderPane pane) {
         this.pane = pane;
     }
 
+    public void setAsTable(boolean asTable) {
+        this.asTable = asTable;
+    }
+
     @Override
     public void plotPieChart(Data data, String valueField, String seriesField, String title, String valueFieldLabel, String seriesFieldLabel) {
+        if (asTable) {
+            plotTable(data);
+            return;
+        }
         PieChart pie = new PieChart();
 
         pie.setTitle(title);
@@ -54,7 +67,10 @@ public class StatisticsPlotter implements Plotter {
 
     @Override
     public void plotLineChart(Data data, String xField, String yField, String seriesField, AdditionalLineChartProperties properties) {
-
+        if (asTable) {
+            plotTable(data);
+            return;
+        }
         NumberAxis xAxis = new NumberAxis();
         if (properties.getXAxisLabel() != null) {
             xAxis.setLabel(properties.getXAxisLabel());
@@ -114,6 +130,11 @@ public class StatisticsPlotter implements Plotter {
 
     @Override
     public void plotBarChart(Data data, String categoryField, String valueField, String seriesField, AdditionalBarChartProperties properties) {
+        if (asTable) {
+            plotTable(data);
+            return;
+        }
+
         BarChart bar;
 
         CategoryAxis xAxis = new CategoryAxis();
@@ -155,6 +176,12 @@ public class StatisticsPlotter implements Plotter {
     public void plotLineChart(Data data, String xField, String yField, String seriesField) {
         AdditionalLineChartProperties properties = new AdditionalLineChartProperties();
         plotLineChart(data, xField, yField, seriesField, properties);
+    }
+
+    private void plotTable(Data data) {
+        final TableView table = StatisticViewUtils.createTable(data);
+        table.getStyleClass().add("dark");
+        pane.setCenter(table);
     }
 
 }

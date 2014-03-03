@@ -12,22 +12,22 @@
         <!--<default-tester/>-->
         <algorithm name="ABT"/>
         <!--<algorithm name="CONC_FB"/>-->
-        <!--<algorithm name="SBB"/>-->
+        <algorithm name="SBB"/>
     </test>
     
-     <test seed="42">
+<!--     <test seed="42">
         <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100">
-            <!--<for-loop start="0.1" end="0.9" tick-size="0.1" run-var="p2" repeat-count="10" />-->
+            <for-loop start="0.1" end="0.9" tick-size="0.1" run-var="p2" repeat-count="10" />
         </for-loop>
     
         <cc-sc/>
         <msgc-sc/>
     
         <dcsp-unstructured n="5" d="6" p2="0.64"/>        
-        <!--<default-tester/>-->
+        <default-tester/>
         <algorithm name="ABT"/>
-        <!--<algorithm name="CONC_FB"/>-->
-        <!--<algorithm name="SBB"/>-->
-    </test>
+        <algorithm name="CONC_FB"/>
+        <algorithm name="SBB"/>
+    </test>-->
     
 </experiment>

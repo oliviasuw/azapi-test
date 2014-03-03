@@ -29,7 +29,6 @@ import javafx.scene.image.Image;
 import javax.swing.JFrame;
 import nu.xom.ParsingException;
 import resources.img.ResourcesImg;
-import resources.img.ResourcesImgAnchor;
 
 /**
  *
@@ -78,7 +77,6 @@ public class AppController {
         final ExecutionResult executionResults = runningExperiment.execute();
         System.out.println("DONE " + executionResults);
 
-//        System.gc();
     }
 
     public static ExperimentStatusUpdateServer getUpdateServer() {

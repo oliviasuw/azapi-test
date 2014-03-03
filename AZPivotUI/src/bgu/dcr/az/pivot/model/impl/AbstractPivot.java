@@ -4,8 +4,8 @@
  */
 package bgu.dcr.az.pivot.model.impl;
 
-import bgu.dcr.az.anop.utils.EventListeners;
 import bgu.dcr.az.common.collections.immut.ImmutableSetView;
+import bgu.dcr.az.common.events.EventListeners;
 import bgu.dcr.az.orm.api.Data;
 import bgu.dcr.az.orm.api.FieldMetadata;
 import bgu.dcr.az.orm.api.RecordAccessor;

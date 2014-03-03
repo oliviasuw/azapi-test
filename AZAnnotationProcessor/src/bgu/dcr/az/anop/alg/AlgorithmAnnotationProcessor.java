@@ -27,7 +27,7 @@ import resources.templates.ResourcesTemplatesAncor;
  * @author User
  */
 @SupportedAnnotationTypes("bgu.dcr.az.anop.alg.Algorithm")
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class AlgorithmAnnotationProcessor extends AbstractProcessor {
 
     private static boolean run = false;

@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.execs;
 
-import bgu.dcr.az.anop.utils.EventListeners;
+import bgu.dcr.az.common.events.EventListeners;
 import bgu.dcr.az.execs.api.Proc;
 import bgu.dcr.az.execs.api.ProcState;
 import bgu.dcr.az.execs.api.ProcTable;

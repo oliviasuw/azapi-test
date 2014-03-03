@@ -14,5 +14,15 @@
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZAnnotationProcessor/src/bgu/dcr/az/anop/conf/impl/FromStringPropertyValue.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZAnnotationProcessor/src/bgu/dcr/az/anop/algo/impl/AbstractAgentManipulator.java</file>
         </group>
+        <group>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZAnnotationProcessor/src/bgu/dcr/az/anop/utils/ReflectionUtils.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZAnnotationProcessor/src/bgu/dcr/az/anop/utils/ProcessorUtils.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZAnnotationProcessor/src/bgu/dcr/az/anop/reg/impl/RegisteryImpl.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZAnnotationProcessor/src/bgu/dcr/az/anop/conf/ConfigurationUtils.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZAnnotationProcessor/src/bgu/dcr/az/anop/utils/StringBuilderStream.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZAnnotationProcessor/src/bgu/dcr/az/anop/reg/RegisteryAnnotationProcessor.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZAnnotationProcessor/src/bgu/dcr/az/anop/alg/AlgorithmAnnotationProcessor.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZAnnotationProcessor/src/bgu/dcr/az/anop/utils/MirrorUtils.java</file>
+        </group>
     </open-files>
 </project-private>

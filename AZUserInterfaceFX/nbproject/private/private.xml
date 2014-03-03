@@ -69,5 +69,13 @@
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/StatisticsPlotter.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/status/StatusScreenCtl.java</file>
         </group>
+        <group>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZUserInterfaceFX/nbproject/jfx-impl.xml</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/pivot/model/Pivot.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/ExperimentStatusUpdateServer.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/pivot/model/impl/AbstractPivot.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/ExperimentStatusEventObserver.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/AppController.java</file>
+        </group>
     </open-files>
 </project-private>

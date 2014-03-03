@@ -6,7 +6,6 @@
 package bgu.dcr.az.ui.confe;
 
 import bgu.dcr.az.common.ui.FXUtils;
-import bgu.dcr.az.utils.DeepCopyUtil;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.util.LinkedList;

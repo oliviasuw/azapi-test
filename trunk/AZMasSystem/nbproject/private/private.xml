@@ -74,5 +74,9 @@
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPExperiment.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/stat/StatisticsManagerImpl.java</file>
         </group>
+        <group>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZMasSystem/src/bgu/dcr/az/mas/exp/ExperimentStatusSnapshot.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZMasSystem/src/bgu/dcr/az/mas/exp/ExperimentUtils.java</file>
+        </group>
     </open-files>
 </project-private>

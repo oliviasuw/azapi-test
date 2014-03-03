@@ -178,7 +178,7 @@ public class MultithreadedScheduler implements Scheduler {
             } catch (Exception ex) {
                 exitError = ex;
                 misbihavingProcess = proc;
-                reportFailingCore(this);
+                reportFailingCore(this);               
             } finally {
                 if (proc != null) {
                     table.release(proc.pid());

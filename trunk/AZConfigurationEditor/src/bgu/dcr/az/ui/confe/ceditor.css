@@ -2,25 +2,25 @@
 /*-az-button-color: rgb(70,70,70);*/
 .conf-editor, .conf-editor-scroll, .conf-editor-nav {
     -az-dark-color : rgb(51,51,51);
-    
+
     -az-light-text-color: white;
     -az-dark-text-color: rgb(30,30,30);
-    
+
     -az-text-field-color: rgb(51,51,51);
-    
+
     -az-text-prompt-color: rgb(120,120,120);
     -az-text-field-font-color: white;
     -az-section-title-color: rgb(51,51,51);
-    
+
     -az-identation: 10;
     -az-button-color: rgb(170,70,70);
     -az-identation-color: rgba(220, 220, 255, 0.20);
-    
+
     -az-selected-section-highlight: rgb(200,200,200);
     -az-selected-section-title-color: rgb(50,50,50);
-    
+
     -az-navigation-tree-background: rgb(222,227,233);
-    
+
     -az-property-name-label-color: rgb(150, 200,220);
 
 }
@@ -33,6 +33,33 @@
 /*
 BASE STYLE
 */
+
+
+.button:disabled,
+.toggle-button:disabled,
+.radio-button:disabled,
+.check-box:disabled,
+.hyperlink:disabled,
+.menu-button:disabled,
+.split-menu-button:disabled,
+.slider:disabled,
+.scroll-pane:disabled,
+.progress-bar:disabled,
+.progress-indicator:disabled,
+.text-input:disabled,
+.choice-box:disabled,
+.combo-box-base:disabled,
+.list-view:disabled,
+.tree-view:disabled,
+.table-view:disabled,
+.tree-table-view:disabled,
+.tab-pane:disabled,
+.tab-pane > .tab-header-area > .headers-region > .tab:disabled {
+    -fx-opacity: 0.85;
+    -fx-fill: -az-light-text-color;
+    -fx-text-fill: -az-light-text-color;
+}
+
 
 .conf-editor .label, .conf-editor .text, .conf-editor .text-field {
     -fx-text-fill: -az-light-text-color;
@@ -59,7 +86,7 @@ BASE STYLE :: SCROLL PANE
 
 .scroll-bar:vertical > .thumb {
     -fx-background-color: rgb(100,100,100); 
-    
+
 }
 /*
 BASE STYLE :: COMBO-BOX
@@ -80,10 +107,10 @@ BASE STYLE :: COMBO-BOX
 }
 
 .conf-editor .context-menu {
-  -fx-background-color: -az-section-title-color;
-  -fx-border-color: rgb(120,120,120);
-  -fx-border-width: 1;
-  -fx-text-fill: white;
+    -fx-background-color: -az-section-title-color;
+    -fx-border-color: rgb(120,120,120);
+    -fx-border-width: 1;
+    -fx-text-fill: white;
 }
 .conf-editor .tool-bar {
     -fx-background-color: -az-dark-color;
@@ -186,10 +213,10 @@ CONFIGURATION PROPERTY EDITOR
 
 .conf-editor .configuration-property-editor .implementors{
     -fx-padding: 5 3 0 3; 
-/*    -fx-border-width: 0 0 1 0;
-    -fx-border-color: yellowgreen;
-    -fx-border-style: segments(4, 2);
-    -fx-border-insets: 0 0 3 0;    */
+    /*    -fx-border-width: 0 0 1 0;
+        -fx-border-color: yellowgreen;
+        -fx-border-style: segments(4, 2);
+        -fx-border-insets: 0 0 3 0;    */
 }
 
 .conf-editor .configuration-property-editor .implementors > .label{

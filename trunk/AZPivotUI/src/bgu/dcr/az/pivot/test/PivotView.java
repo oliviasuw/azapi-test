@@ -5,8 +5,8 @@ package bgu.dcr.az.pivot.test;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.pivot.ui.viewer.PivotDataViewerController;
-import bgu.dcr.az.ui.util.FXUtils;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

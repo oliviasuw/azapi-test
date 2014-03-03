@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.pivot.ui.viewer;
 
+import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.pivot.model.TableData;
 import bgu.dcr.az.pivot.model.impl.AbstractPivot;
 import bgu.dcr.az.pivot.model.impl.PlottableTableData;
@@ -12,7 +13,6 @@ import bgu.dcr.az.pivot.ui.PivotDataTableView;
 import bgu.dcr.az.pivot.ui.PivotViewController;
 import bgu.dcr.az.pivot.ui.alert.AlertDialog;
 import bgu.dcr.az.ui.screens.statistics.StatisticsPlotter;
-import bgu.dcr.az.ui.util.FXUtils;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;

@@ -23,6 +23,12 @@
 .notification.success{
     -fx-background-color :#b3eeb3; /* light green */
 }
+.notification.exception{
+    -fx-background-color : #cc0000; /* light green */
+}
+.notification.info{
+    -fx-background-color : #c8a0f8; /* light green */
+}
 
 .notification {
     /*-fx-background-color : rgba(15, 15, 15, 0.8);*/

@@ -32,7 +32,7 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>AZORM</foreign-project>
+                <foreign-project>AZCommon</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>
@@ -40,7 +40,7 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>AZUserInterfaceFX</foreign-project>
+                <foreign-project>AZORM</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>

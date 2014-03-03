@@ -12,6 +12,7 @@ import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;
 import bgu.dcr.az.anop.utils.StringBuilderStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -274,6 +275,10 @@ public class ConfigurationUtils {
         return conf;
     }
 
+    public static Configuration get(Class type) throws ClassNotFoundException{
+        return RegisteryUtils.getRegistery().getConfiguration(type);
+    }
+    
     public static Configuration load(Object o) throws ClassNotFoundException, ConfigurationException {
         return createConfigurationFor(o).loadFrom(o);
     }
@@ -334,6 +339,27 @@ public class ConfigurationUtils {
         try {
             Builder builder = new Builder();
             Document doc = builder.build(f);
+
+            return ConfigurationUtils.fromXML(doc.getRootElement());
+        } catch (ParsingException ex) {
+            throw new IIOException("improper formated file", ex);
+        } catch (ClassNotFoundException ex) {
+            throw new IIOException("cannot create configuration from given file", ex);
+        }
+    }
+
+    /**
+     * read an object configuration from the given file
+     *
+     * @param <T>
+     * @param in
+     * @param f
+     * @return
+     */
+    public static Configuration read(InputStream in) throws IOException {
+        try {
+            Builder builder = new Builder();
+            Document doc = builder.build(in);
 
             return ConfigurationUtils.fromXML(doc.getRootElement());
         } catch (ParsingException ex) {

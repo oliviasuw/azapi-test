@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.orm.impl;
 
+import bgu.dcr.az.orm.api.DataUtils;
 import bgu.dcr.az.orm.api.Data;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.EmbeddedDatabaseManager;

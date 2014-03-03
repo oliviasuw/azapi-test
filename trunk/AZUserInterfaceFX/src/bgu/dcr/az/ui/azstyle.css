@@ -1,0 +1,51 @@
+.root{    
+    -az-gray30 : rgb(30,30,30);
+    -az-gray35 : rgb(35,35,35);
+    -az-gray200: rgb(200,200,200);
+
+    -az-dark-table-cell-odd-color: -az-gray30;
+    -az-dark-table-cell-even-color: rgb(33,33,33);
+    -az-dark-table-cell-text : rgb(150, 200,220);
+    -az-dark-table-header : rgb(180,180,180);
+}
+
+/*
+CLEANUP
+*/
+
+.table-view {
+    -fx-background-radius: 0;
+}
+
+.table-view:focused {
+    -fx-background-insets: 0;
+}
+
+/* 
+DARK TABLE
+*/
+
+.table-view.dark {
+    -fx-background-insets: 1;    
+    -fx-table-cell-border-color: -az-dark-table-header;
+}
+
+.table-view.dark .table-row-cell {
+    -fx-background-color: -az-dark-table-cell-even-color;
+    -fx-text-fill: -az-dark-table-cell-text;
+}
+
+
+.table-view.dark .table-row-cell:odd {
+    -fx-background-color: -az-dark-table-cell-odd-color;
+}
+
+.table-view.dark .table-row-cell .text {
+    -fx-fill: -az-dark-table-cell-text;
+}
+
+.table-view.dark .column-header {
+    -fx-background-color: -az-dark-table-header;
+    -fx-padding: 0;
+}
+

@@ -10,7 +10,9 @@ import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.conf.PropertyValue;
 import bgu.dcr.az.anop.conf.impl.FromConfigurationPropertyValue;
 import bgu.dcr.az.anop.reg.RegisteryUtils;
+import bgu.dcr.az.common.ui.FXUtils;
 import java.util.Collection;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
@@ -18,9 +20,11 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
@@ -43,9 +47,10 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
     private boolean readOnly;
     private final Property parentCollection;
     private final VBox editorVBox;
+    
+    private Predicate filter;
 
     private final BooleanProperty selected;
-    private boolean recentlySelected = false;
 
     @Override
     public BooleanProperty selectedProperty() {
@@ -57,21 +62,25 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         this.parentCollection = collection;
 
         getStyleClass().add("configuration-property-editor");
-        expandedProperty().addListener((p, ov, nv) -> {
-            if (recentlySelected && !isExpanded()) {
-                recentlySelected = false;
-                setAnimated(false);
-                setExpanded(true);
-                setAnimated(true);
-            }
-            recentlySelected = false;
-        });
 
         selected = new SimpleBooleanProperty(false);
+        addEventFilter(MouseEvent.MOUSE_PRESSED, eh -> {
+            Node node = FXUtils.getTitledPaneTitleRegion(this);
+            
+            if (node != null && node.getParent() == this
+                    && node.localToScene(node.getBoundsInLocal()).contains(eh.getSceneX(), eh.getSceneY())) {
+                eh.consume();
+                
+                if (!selected.get()) {
+                    selected.set(true);
+                } else {
+                    setExpanded(!isExpanded());
+                }
+            }
+        });
+
         selected.addListener((p, ov, nv) -> {
             if (nv && parent != null) {
-                recentlySelected = true;
-                setExpanded(true);
                 parent.select(this);
             }
         });
@@ -82,13 +91,13 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         implementorsBorderPane = new BorderPane();
         implementorsBorderPane.getStyleClass().add("implementors");
 
-        Label label = new Label("Implementations :");
+        Label label = new Label("type :");
         label.setPadding(new Insets(0, LABEL_MARGING, 0, 0));
         BorderPane.setAlignment(label, Pos.CENTER_LEFT);
         implementorsBorderPane.setLeft(label);
 
         choiceBox = new ChoiceBox<>();
-        choiceBox.setMaxWidth(Double.MAX_VALUE);
+//        choiceBox.setMaxWidth(Double.MAX_VALUE);
         choiceBox.valueProperty().addListener((ObservableValue<? extends String> p, String ov, String nv) -> {
             try {
                 if (property != null) {
@@ -98,12 +107,13 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
                     }
                     property.set(value == null ? null : new FromConfigurationPropertyValue(value));
                     setRepresentativeName();
-                    confEditor.setModel(value, readOnly);
+                    confEditor.setModel(value, readOnly, filter);
                 }
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(ConfigurationPropertyEditor.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
+        BorderPane.setAlignment(choiceBox, Pos.CENTER_LEFT);
         implementorsBorderPane.setCenter(choiceBox);
 
         editorVBox = new VBox();
@@ -115,7 +125,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
     }
 
     @Override
-    public void setModel(Property property, boolean readOnly) {
+    public void setModel(Property property, boolean readOnly, Predicate filter) {
         this.readOnly = readOnly;
         if (this.property != property) {
             editorVBox.getChildren().removeAll(implementorsBorderPane, confEditor);
@@ -133,6 +143,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
 
         editorVBox.getChildren().removeAll(implementorsBorderPane, confEditor);
         extractImplementors(property);
+        this.filter = filter;
         this.property = property;
         updateModelValue();
         setRepresentativeName();
@@ -145,7 +156,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
     }
 
     private void updateModelValue() {
-        if (property.get() == null) {
+        if (property.get() == null || ! (property.get() instanceof FromConfigurationPropertyValue)) {
             try {
                 String defaultName = (String) choiceBox.getItems().get(0);
                 Configuration defaultValue = RegisteryUtils.getRegistery().getConfiguration(defaultName);
@@ -155,6 +166,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
             }
         }
 
+        
         FromConfigurationPropertyValue fcpv = (FromConfigurationPropertyValue) property.get();
 
         if (fcpv != null && fcpv.getValue() != null) { //in case property is a dummy (came from collection property editor)
@@ -167,7 +179,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
             if (parentCollection != null && choiceBox.getItems().size() <= 1) {
                 setText(className);
             }
-            confEditor.setModel(fcpv.getValue(), readOnly);
+            confEditor.setModel(fcpv.getValue(), readOnly, filter);
         } else {
             choiceBox.getSelectionModel().select("NULL");
         }
@@ -193,7 +205,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
     }
 
     @Override
-    public void setModel(Configuration conf, boolean readOnly) {
+    public void setModel(Configuration conf, boolean readOnly, Predicate filter) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

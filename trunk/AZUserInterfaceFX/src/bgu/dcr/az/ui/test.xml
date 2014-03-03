@@ -8,30 +8,26 @@
         <cc-sc/>
         <msgc-sc/>
     
-        <dcsp-unstructured n="8" d="5" p2="0.64"/>        
+        <dcsp-unstructured n="5" d="6" p2="0.64"/>        
         <!--<default-tester/>-->
         <algorithm name="ABT"/>
-        <algorithm name="SBB"/>
+        <!--<algorithm name="CONC_FB"/>-->
         <!--<algorithm name="SBB"/>-->
     </test>
     
-    <test seed="100">
+     <test seed="42">
         <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100">
             <!--<for-loop start="0.1" end="0.9" tick-size="0.1" run-var="p2" repeat-count="10" />-->
         </for-loop>
     
-        <dcsp-unstructured n="10" d="10" p2="0.64"/>        
+        <cc-sc/>
+        <msgc-sc/>
+    
+        <dcsp-unstructured n="5" d="6" p2="0.64"/>        
         <!--<default-tester/>-->
         <algorithm name="ABT"/>
+        <!--<algorithm name="CONC_FB"/>-->
+        <!--<algorithm name="SBB"/>-->
     </test>
     
-    <test seed="101">
-        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100">
-            <!--<for-loop start="0.1" end="0.9" tick-size="0.1" run-var="p2" repeat-count="10" />-->
-        </for-loop>
-    
-        <dcsp-unstructured n="10" d="5" p2="0.64"/>        
-        <!--<default-tester/>-->
-        <algorithm name="ABT"/>
-    </test>
 </experiment>

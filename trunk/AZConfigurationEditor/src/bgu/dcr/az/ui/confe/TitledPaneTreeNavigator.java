@@ -5,16 +5,21 @@
  */
 package bgu.dcr.az.ui.confe;
 
-import bgu.dcr.az.ui.util.FXUtils;
+import bgu.dcr.az.common.ui.FXUtils;
+import bgu.dcr.az.utils.DeepCopyUtil;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.util.LinkedList;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 
 /**
@@ -31,6 +36,9 @@ public class TitledPaneTreeNavigator extends BorderPane implements ListChangeLis
 
     public TitledPaneTreeNavigator(ScrollPane observable) {
         this.observable = observable;
+
+        getStylesheets().add(getClass().getResource("ceditor.css").toExternalForm());
+        this.getStyleClass().add("conf-editor-nav");
 
         navigationTree = new TreeView();
         navigationTree.setShowRoot(false);
@@ -94,9 +102,9 @@ public class TitledPaneTreeNavigator extends BorderPane implements ListChangeLis
     private void fillTreeNodes(LinkedList<Node> open) {
         while (!open.isEmpty()) {
             Node parent = open.remove();
-            
+
             if (parent instanceof TitledPane) {
-                addTreeItem((TitledPane)parent);
+                addTreeItem((TitledPane) parent);
             }
 
             for (Node child : FXUtils.lookupDirectChildren(parent, n -> n instanceof TitledPane)) {
@@ -117,8 +125,15 @@ public class TitledPaneTreeNavigator extends BorderPane implements ListChangeLis
 
         TreeItem child = new TreeItem();
         child.expandedProperty().bindBidirectional(childItem.expandedProperty());
-        child.graphicProperty().bind(childItem.graphicProperty());
+//        child.graphicProperty().bind(childItem.graphicProperty());
+        childItem.graphicProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue p, Object ov, Object nv) {
+                updateInfo(child, nv);
+            }
+        });
         child.valueProperty().bind(childItem.textProperty());
+        updateInfo(child, childItem.getGraphic());
         if (childItem instanceof Selectable) {
             ((Selectable) childItem).selectedProperty().addListener((p, ov, nv) -> {
                 if (nv && titledPaneToTreeItem.containsKey(childItem)) {
@@ -130,6 +145,19 @@ public class TitledPaneTreeNavigator extends BorderPane implements ListChangeLis
         parent.getChildren().add(child);
         titledPaneToTreeItem.put(childItem, child);
         FXUtils.addChildListener(childItem, this);
+    }
+
+    private void updateInfo(TreeItem child, Object nv) {
+        child.setGraphic(null);
+        if (nv instanceof Label) {
+            Label infoContainer = (Label) nv;
+            if (infoContainer.getGraphic() instanceof ImageView) {
+                Label newInfoContainer = new Label();
+                newInfoContainer.setGraphic(new ImageView(((ImageView) infoContainer.getGraphic()).getImage()));
+                newInfoContainer.setTooltip(infoContainer.getTooltip());
+                child.setGraphic(newInfoContainer);
+            }
+        }
     }
 
     private TreeItem findParent(TitledPane childItem) {

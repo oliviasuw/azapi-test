@@ -34,5 +34,40 @@
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/problem/ProblemViewScreen.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/problem/ConstraintCalcConsole.java</file>
         </group>
+        <group name="AgentZero">
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/BasicStatisticsScreenCtl.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/ExperimentStatusEventListener.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/pivot/model/impl/PlottableTableData.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/BasicStatisticsScreen.fxml</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/ExperimentStatusEventObserver.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/basicstatisticsscreen.css</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/StatisticsScreen.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/pivot/model/impl/InMemoryPivotTableGenerator.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/log/AgentLogDocument.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/pivot/model/impl/PlotablePivotRecord.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/statistics/AlgorithmCPUTimeStatisticCollector.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/pivot/model/Pivot.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bc/ui/swing/models/GenericTableModel.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/nbproject/build-impl.xml</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/components/SwitchButton.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/statistics/NumberOfCoresInUseStatisticCollector.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bc/ui/swing/configurable/VariablesEditor.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/test.xml</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/StatisticViewUtils.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/components/switch-button.css</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/DataJTableModel.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/statistics/RealtimeJFXPlotter.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/AppController.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bc/ui/swing/configurable/SingleVariableEditor.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/status/SubExperimentListCell.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/log/LogScreen.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/StatisticsQueryScreen.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/azstyle.css</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/status/statusscreen.css</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/pivot/ui/viewer/PivotDataViewerController.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/pivot/model/impl/TableDataWrapper.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/StatisticsPlotter.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/status/StatusScreenCtl.java</file>
+        </group>
     </open-files>
 </project-private>

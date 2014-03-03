@@ -8,7 +8,8 @@ package bgu.dcr.az.ui.confe;
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.Property;
 import bgu.dcr.az.anop.conf.impl.FromStringPropertyValue;
-import bgu.dcr.az.ui.util.FXUtils;
+import bgu.dcr.az.common.ui.FXUtils;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
@@ -46,6 +47,7 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
         
         infoContainer = new Label("");
         label = new Label();
+        label.getStyleClass().add("property-name-label");
         label.setGraphic(infoContainer);
         BorderPane.setAlignment(label, Pos.CENTER_LEFT);
 
@@ -86,7 +88,7 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
         });
 
         choiceBox = new ChoiceBox<>();
-        choiceBox.setMaxWidth(Double.MAX_VALUE);
+//        choiceBox.setMaxWidth(Double.MAX_VALUE);
         choiceBox.valueProperty().addListener((ObservableValue<? extends String> p, String ov, String nv) -> {
             if (property != null) {
                 property.set(new FromStringPropertyValue(nv));
@@ -95,7 +97,7 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
     }
 
     @Override
-    public void setModel(Property property, boolean readOnly) {
+    public void setModel(Property property, boolean readOnly, Predicate filter) {
         if (this.property != property) {
             setLeft(null);
             setCenter(null);
@@ -164,6 +166,7 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
         }
 
         choiceBox.setValue(property.stringValue());
+        BorderPane.setAlignment(choiceBox, Pos.CENTER_LEFT);
         setCenter(choiceBox);
         choiceBox.setDisable(readOnly);
     }
@@ -191,7 +194,7 @@ public class TerminalPropertyEditor extends BorderPane implements PropertyEditor
     }
 
     @Override
-    public void setModel(Configuration conf, boolean readOnly) {
+    public void setModel(Configuration conf, boolean readOnly, Predicate filter) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

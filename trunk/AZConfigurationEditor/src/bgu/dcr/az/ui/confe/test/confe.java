@@ -8,7 +8,6 @@ package bgu.dcr.az.ui.confe.test;
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
-import bgu.dcr.az.mas.cp.CPExperiment;
 import bgu.dcr.az.ui.confe.ConfigurationEditor;
 import bgu.dcr.az.ui.confe.TitledPaneTreeNavigator;
 import java.util.ArrayList;
@@ -45,11 +44,12 @@ public class confe extends Application {
         arrayList.add("vadim");
         arrayList.add("clint eastwood");
         c.setNames(arrayList);
-        final Configuration conf = ConfigurationUtils.load(new CPExperiment());//ConfigurationUtils.load(c);
+        final Configuration conf = ConfigurationUtils.read(getClass().getResourceAsStream("test.xml"));//ConfigurationUtils.load(c);
 
 //        NavigatableConfigurationEditor editor = new NavigatableConfigurationEditor();
         ConfigurationEditor editor = new ConfigurationEditor();
-        editor.setModel(conf, false);
+        editor.setModel(conf, false, null);
+//        editor.setModel(ConfigurationUtils.get(CPExperiment.class), false);
 
         TitledPaneTreeNavigator navigator = new TitledPaneTreeNavigator(editor);
         Button button = new Button(":/");
@@ -64,10 +64,10 @@ public class confe extends Application {
 
         Scene scene = new Scene(navigator);
         
-        scene.getStylesheets().add(getClass().getResource("ceditor.css").toExternalForm());
+//        scene.getStylesheets().add(getClass().getResource("ceditor.css").toExternalForm());
 
         //DO NOT DELETE BELLOW THIS LINE PLEASE!
-//        scene.getStylesheets().add("file:///C:/Users/User/Desktop/Projects/AgentZero/trunk/AZConfigurationEditor/src/bgu/dcr/az/ui/confe/test/ceditor.css");
+        scene.getStylesheets().add("file:///C:/Users/User/Desktop/Projects/AgentZero/trunk/AZConfigurationEditor/src/bgu/dcr/az/ui/confe/ceditor.css");
 //        ScenicView.show(scene);
 //        TimingUtils.scheduleRepeating(() -> FXUtils.reloadSceneStylesheet(scene), 1000);
         stage.setScene(scene);

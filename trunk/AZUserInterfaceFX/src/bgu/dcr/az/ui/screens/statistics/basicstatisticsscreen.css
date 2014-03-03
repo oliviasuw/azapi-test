@@ -104,6 +104,10 @@ dark panels
     -fx-padding: 8 40 8 40; 
 }
 
+.dark-pane .button:hover {
+    -fx-background-color: rgb(200,200,200);
+}
+
 /*
 for some reason border pane contains padding of 9.6 - this will disable it
 */
@@ -125,6 +129,10 @@ styling the center piece
     -fx-background-insets: 0 5 5 5;
     -fx-background-radius: 6;
     -fx-padding: 8;
+}
+
+.no-data .label {
+    -fx-text-fill: white;
 }
 
 /*

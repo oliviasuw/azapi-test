@@ -1,0 +1,251 @@
+
+/*-az-button-color: rgb(70,70,70);*/
+.conf-editor, .conf-editor-scroll, .conf-editor-nav {
+    -az-dark-color : rgb(51,51,51);
+    
+    -az-light-text-color: white;
+    -az-dark-text-color: rgb(30,30,30);
+    
+    -az-text-field-color: rgb(51,51,51);
+    
+    -az-text-prompt-color: rgb(120,120,120);
+    -az-text-field-font-color: white;
+    -az-section-title-color: rgb(51,51,51);
+    
+    -az-identation: 10;
+    -az-button-color: rgb(170,70,70);
+    -az-identation-color: rgba(220, 220, 255, 0.20);
+    
+    -az-selected-section-highlight: rgb(200,200,200);
+    -az-selected-section-title-color: rgb(50,50,50);
+    
+    -az-navigation-tree-background: rgb(222,227,233);
+    
+    -az-property-name-label-color: rgb(150, 200,220);
+
+}
+
+.conf-editor {
+    -fx-background-color: -az-dark-color;
+    -fx-padding: 0;
+}
+
+/*
+BASE STYLE
+*/
+
+.conf-editor .label, .conf-editor .text, .conf-editor .text-field {
+    -fx-text-fill: -az-light-text-color;
+    -fx-font-size: 12;
+}
+
+.conf-editor .text-field {
+    -fx-background-color: -az-text-field-color;
+    -fx-background-insets: 0;
+    -fx-background-radius: 2;
+    -fx-padding: 2;
+    -fx-text-fill: -az-text-field-font-color;
+    -fx-prompt-text-fill:-az-text-prompt-color;
+}
+
+/*
+BASE STYLE :: SCROLL PANE
+*/
+
+.scroll-bar:vertical {
+    -fx-background-color: -az-navigation-tree-background;
+    -fx-padding: 0;
+}
+
+.scroll-bar:vertical > .thumb {
+    -fx-background-color: rgb(100,100,100); 
+    
+}
+/*
+BASE STYLE :: COMBO-BOX
+*/
+
+.choice-box,
+.combo-box-base,
+.combo-box-base > .arrow-button {
+    -fx-background-color: -az-text-field-color; 
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 3;
+    -fx-padding: 0;
+    -fx-text-fill: -fx-text-base-color;
+}
+
+.conf-editor .choice-box .label{
+    -fx-padding: 2 2 2 5;
+}
+
+.conf-editor .context-menu {
+  -fx-background-color: -az-section-title-color;
+  -fx-border-color: rgb(120,120,120);
+  -fx-border-width: 1;
+  -fx-text-fill: white;
+}
+.conf-editor .tool-bar {
+    -fx-background-color: -az-dark-color;
+    -fx-background-insets: 0 0 0 0;
+    -fx-padding: 3 0 3 0;
+    -fx-spacing: 0.333em; /* 4 */
+    -fx-alignment: CENTER_LEFT;
+}
+
+/*
+BASE STYLE :: TITLED PANE
+*/
+.conf-editor .titled-pane > .title {
+    -fx-background-color: -az-section-title-color;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 4 10 4 1; /* 2 10 3 10 */
+    -fx-font-weight: bold;
+}
+
+.conf-editor .titled-pane {
+    -fx-padding: 5 0 5 0; 
+}
+
+
+.conf-editor .titled-pane {
+    -fx-text-fill: white;
+    -fx-border-width: 1 0 0 0;
+    -fx-border-color: rgb(135,135,135);
+    -fx-border-style: segments(3, 4);
+}
+
+.conf-editor .titled-pane > .title > .arrow-button > .arrow {
+    -fx-background-color: rgb(230,230,230);
+}
+
+.conf-editor .titled-pane > .content {
+    -fx-background-color: -az-dark-color;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+}
+
+.conf-editor .titled-pane > .content > * > * {
+    -fx-border-width: 0 0 0 10;
+    -fx-border-style: segments(1.5, 3.5);
+    -fx-border-color: -az-identation-color;
+    -fx-padding: 0 0 0 1;
+}
+
+/* 
+BASE STYLE :: BUTTON
+*/
+.button,
+.toggle-button,
+.radio-button > .radio {
+    -fx-background-color: -az-button-color;
+    -fx-background-insets: 0;
+    -fx-background-radius: 2;
+    -fx-border-width: 1;
+    -fx-border-radius: 2;
+    -fx-padding: 1 4 1 4;
+    -fx-text-fill: rgb(245,245,245);
+}
+
+.button:hover,
+.toggle-button:hover,
+.radio-button:hover > .radio {
+    -fx-background-color: derive(-az-button-color, 60%);
+}
+/*
+TERMINAL EDITOR
+*/
+
+.conf-editor .terminal-property-editor{
+    -fx-padding: 4;
+    -fx-background-color: -az-text-field-color;
+    -fx-background-insets: 4;
+}
+
+.conf-editor .terminal-property-editor .property-name-label{
+    -fx-text-fill: -az-property-name-label-color;
+}
+
+/*
+COLLECTION PROPERTY EDITOR
+*/
+
+.conf-editor .collection-property-editor .content > * > *{
+    -fx-padding: 0 0 0 3;
+}
+
+.conf-editor .collection-property-editor .buttons{
+    -fx-padding: 10 0 10 10;
+}
+
+
+/*
+CONFIGURATION PROPERTY EDITOR
+*/
+
+.conf-editor .configuration-property-editor .implementors{
+    -fx-padding: 5 3 0 3; 
+/*    -fx-border-width: 0 0 1 0;
+    -fx-border-color: yellowgreen;
+    -fx-border-style: segments(4, 2);
+    -fx-border-insets: 0 0 3 0;    */
+}
+
+.conf-editor .configuration-property-editor .implementors > .label{
+    -fx-text-fill: yellowgreen;
+}
+
+.conf-editor .titled-pane.selected > .title  {
+    -fx-background-color: -az-selected-section-highlight;
+}
+.conf-editor .titled-pane.selected > .title .text {
+    -fx-fill: -az-selected-section-title-color;
+}
+
+.conf-editor .titled-pane > .title .text {
+    -fx-fill: -az-light-text-color;
+}
+
+
+.conf-editor .titled-pane.selected > .content > * > * {
+    -fx-border-color: -az-selected-section-highlight;
+}
+
+/*
+NAVIGATION
+*/
+
+.conf-editor-nav .tree-view{
+    -fx-background-color: -az-navigation-tree-background;
+    -fx-background-insets: 0;
+}
+
+.conf-editor-nav .tree-view  .tree-cell{
+    -fx-background-color: -az-navigation-tree-background;
+    -fx-text-fill: rgb(30,30,30);
+    -fx-padding: 3;
+}
+
+.conf-editor-nav .tree-view  .tree-cell:selected {
+    -fx-background-color: rgb(83,135,182);
+    -fx-text-fill: rgb(230,230,230);
+}
+
+/* 
+SCROLL OF CONFIGURATION EDITOR 
+*/
+
+.conf-editor-scroll > *{
+    -fx-background-color: -az-section-title-color;    
+}
+
+.conf-editor-scroll {
+    -fx-background-color: -az-dark-color;
+}
+
+/*
+.conf-editor .titled-pane.selected {
+    -fx-text-fill: rgb(30,30,100);
+    
+}*/

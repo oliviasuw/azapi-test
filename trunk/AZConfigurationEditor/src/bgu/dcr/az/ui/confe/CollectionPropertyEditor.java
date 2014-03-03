@@ -16,7 +16,9 @@ import bgu.dcr.az.anop.conf.impl.PropertyImpl;
 import bgu.dcr.az.anop.reg.RegisteryUtils;
 import bgu.dcr.az.anop.utils.JavaDocParser;
 import bgu.dcr.az.anop.utils.PropertyUtils;
+import bgu.dcr.az.common.ui.FXUtils;
 import java.util.Collection;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
@@ -30,6 +32,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import resources.img.R;
@@ -56,9 +59,10 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     private Property collectionProperty;
     private boolean readOnly;
     private boolean editEnabled;
+    
+    private Predicate filter;
 
     private final BooleanProperty selected;
-    private boolean recentlySelected = false;
 
     @Override
     public BooleanProperty selectedProperty() {
@@ -69,21 +73,25 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     public CollectionPropertyEditor(ConfigurationEditor parent) {
         this.parent = parent;
         getStyleClass().add("collection-property-editor");
-        expandedProperty().addListener((p, ov, nv) -> {
-            if (recentlySelected && !isExpanded()) {
-                recentlySelected = false;
-                setAnimated(false);
-                setExpanded(true);
-                setAnimated(true);
+        selected = new SimpleBooleanProperty(false);
+        addEventFilter(MouseEvent.MOUSE_PRESSED, eh -> {
+
+            Node node = FXUtils.getTitledPaneTitleRegion(this);
+
+            if (node != null && node.getParent() == this
+                    && node.localToScene(node.getBoundsInLocal()).contains(eh.getSceneX(), eh.getSceneY())) {
+                eh.consume();
+
+                if (!selected.get()) {
+                    selected.set(true);
+                } else {
+                    setExpanded(!isExpanded());
+                }
             }
-            recentlySelected = false;
         });
 
-        selected = new SimpleBooleanProperty(false);
         selected.addListener((p, ov, nv) -> {
             if (nv && parent != null) {
-                recentlySelected = true;
-                setExpanded(true);
                 parent.select(this);
             }
         });
@@ -97,6 +105,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
 
         infoContainer = new Label("");
         tools = new ToolBar(addButton, editButton, clearButton);
+        tools.getStyleClass().add("buttons");
 
         vBox = new VBox();
         vBox.getChildren().addAll(tools);
@@ -107,7 +116,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     }
 
     @Override
-    public void setModel(Property property, boolean readOnly) {
+    public void setModel(Property property, boolean readOnly, Predicate filter) {
         this.readOnly = readOnly;
 
         if (property == null) {
@@ -120,6 +129,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
             return;
         }
 
+        this.filter = filter;
         this.collectionProperty = property;
         setText("Collection of " + property.name());
 
@@ -145,7 +155,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
 
         BorderPane grid = new BorderPane();
         Node editor = propertyToEditor(pseudoProperty);
-        ((PropertyEditor) editor).setModel(pseudoProperty, readOnly);
+        ((PropertyEditor) editor).setModel(pseudoProperty, readOnly, filter);
         if (editor instanceof ConfigurationPropertyEditor) {
             ((ConfigurationPropertyEditor) editor).setExpanded(true);
         }
@@ -188,7 +198,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         collectionProperty.set(new FromCollectionPropertyValue());
         Property temp = collectionProperty;
         collectionProperty = null;
-        setModel(temp, readOnly);
+        setModel(temp, readOnly, filter);
     }
 
     public PropertyValue getPropertyValue() {
@@ -216,7 +226,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     }
 
     @Override
-    public void setModel(Configuration conf, boolean readOnly) {
+    public void setModel(Configuration conf, boolean readOnly, Predicate filter) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

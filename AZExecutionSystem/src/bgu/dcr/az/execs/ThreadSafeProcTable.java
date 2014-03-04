@@ -31,7 +31,8 @@ public class ThreadSafeProcTable implements ProcTable {
     private final AtomicInteger blockingProcesses = new AtomicInteger(0);
     private final AtomicInteger totalNumberOfProcesses = new AtomicInteger(0);
     private final AtomicInteger nextProceId = new AtomicInteger(0);
-    //signaling cores in blocked in pending queue that there is an idle
+    
+//signaling cores in blocked in pending queue that there is an idle
     private final ProcessInfo currentIdleSignal = new ProcessInfo(null);
     private final AtomicInteger estimatedWaitingCores = new AtomicInteger(0);
     private final AtomicInteger numberOfDeamons = new AtomicInteger(0);
@@ -202,7 +203,7 @@ public class ThreadSafeProcTable implements ProcTable {
 
     @Override
     public boolean isEmpty() {
-        return totalNumberOfProcesses.get() == numberOfDeamons.get();
+        return totalNumberOfProcesses.get() == numberOfDeamons.get() && numberOfDeamons.get() == blockingProcesses.get();
     }
 
     @Override

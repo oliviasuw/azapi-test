@@ -4,11 +4,11 @@
  */
 package bgu.dcr.az.utils;
 
-import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.DeepCopyable;
-import com.ajexperience.utils.DeepCopyException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.Serializer;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 
 /**
  *
@@ -16,16 +16,49 @@ import java.util.logging.Logger;
  */
 public class DeepCopyUtil {
 
-    //private static Cloner cloner = new Cloner();
-    private static com.ajexperience.utils.DeepCopyUtil dcu = null;
+//    private static Cloner cloner = new Cloner();
+    private static ThreadLocal<Kryo> kloner;
+//    private static com.ajexperience.utils.DeepCopyUtil dcu = null;
 
     static {
-        try {
-            dcu = new com.ajexperience.utils.DeepCopyUtil();
-        } catch (DeepCopyException ex) {
-            Logger.getLogger(DeepCopyUtil.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
+        kloner = new ThreadLocal<Kryo>() {
+
+            @Override
+            protected Kryo initialValue() {
+                Kryo k = new Kryo();
+                k.setAsmEnabled(true);
+                k.setRegistrationRequired(false);
+                k.addDefaultSerializer(DeepCopyable.class, new Serializer() {
+
+                    @Override
+                    public void write(Kryo kryo, Output output, Object t) {
+                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    }
+
+                    @Override
+                    public Object read(Kryo kryo, Input input, Class type) {
+                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    }
+
+                    @Override
+                    public Object copy(Kryo kryo, Object original) {
+                        return ((DeepCopyable)original).deepCopy();
+                    }
+                    
+                    
+                });
+                k.setReferences(false);
+                return k;
+            }
+
+        };
+
+//        try {
+//            dcu = new com.ajexperience.utils.DeepCopyUtil();
+//        } catch (DeepCopyException ex) {
+//            Logger.getLogger(DeepCopyUtil.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     /**
@@ -34,19 +67,22 @@ public class DeepCopyUtil {
      * @return deep copy of orig using a generic deep copy framework
      */
     public static <T> T deepCopy(T orig) {
-        if (orig instanceof Enum || orig instanceof Throwable) {
-            return orig;
-        }
 
-        if (orig instanceof DeepCopyable) {
-            return (T) ((DeepCopyable) orig).deepCopy();
-        }
+//        if (orig instanceof Enum || orig instanceof Throwable) {
+//            return orig;
+//        }
 
-        try {
-            return dcu.deepCopy(orig);//cloner.deepClone(orig);
-        } catch (DeepCopyException ex) {
-            Agt0DSL.throwUncheked(ex);
-            return null; //SHOULD NEVER HAPPENED...
-        }
+//        if (orig instanceof DeepCopyable) {
+//            return (T) ((DeepCopyable) orig).deepCopy();
+//        }
+
+//        try {
+//            return dcu.deepCopy(orig);//cloner.deepClone(orig);
+//            return cloner.deepClone(orig);
+        return kloner.get().copy(orig);
+//        } catch (DeepCopyException ex) {
+//            Agt0DSL.throwUncheked(ex);
+//            return null; //SHOULD NEVER HAPPENED...
+//        }
     }
 }

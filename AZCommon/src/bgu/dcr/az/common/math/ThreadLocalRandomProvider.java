@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.execs.utils;
+package bgu.dcr.az.common.math;
 
 import java.util.concurrent.atomic.AtomicLong;
 

@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.execs.api;
 
-import bgu.dcr.az.execs.utils.StringBuilderWriter;
+import bgu.dcr.az.common.io.StringBuilderWriter;
 import java.io.PrintWriter;
 
 /**

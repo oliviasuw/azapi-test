@@ -12,7 +12,6 @@ import bgu.dcr.az.execs.api.SystemCalls;
 import bgu.dcr.az.execs.api.TerminationReason;
 import bgu.dcr.az.execs.api.UnexpectedTerminationException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -156,6 +155,7 @@ public class MultithreadedScheduler implements Scheduler {
         @Override
         public void run() {
             waitingTime = 0;
+
             currentThread = Thread.currentThread();
             Proc proc = null;
             try {
@@ -178,7 +178,7 @@ public class MultithreadedScheduler implements Scheduler {
             } catch (Exception ex) {
                 exitError = ex;
                 misbihavingProcess = proc;
-                reportFailingCore(this);               
+                reportFailingCore(this);
             } finally {
                 if (proc != null) {
                     table.release(proc.pid());
@@ -199,11 +199,6 @@ public class MultithreadedScheduler implements Scheduler {
                     }
                 });
 
-//                for (Integer p : procCollection) {
-////                    if (p.state() != ProcState.TERMINATED) {
-////                    p.quota(systemCalls, true);
-////                    }
-//                }
                 idleDetectionEnterenceLock.release(numCores - 1);
             } else {
                 long time = System.currentTimeMillis();
@@ -214,9 +209,11 @@ public class MultithreadedScheduler implements Scheduler {
         }
 
         public void interrupt() {
-            if (currentThread != null) {
-                currentThread.interrupt();
+            while (currentThread == null) {
+                Thread.yield(); //busy waiting until thread started
             }
+            
+            currentThread.interrupt();
         }
 
     } //Class Core.

@@ -32,7 +32,7 @@
  * Expert Group and released to the public domain, as explained at
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
-package bgu.dcr.az.execs.utils;
+package bgu.dcr.az.common.math;
 
 import java.util.Random;
 

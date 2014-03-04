@@ -8,11 +8,11 @@
         <cc-sc/>
         <msgc-sc/>
     
-        <dcsp-unstructured n="5" d="6" p2="0.64"/>        
+        <dcsp-unstructured n="20" d="10" p2="0.64"/>        
         <!--<default-tester/>-->
         <algorithm name="ABT"/>
         <!--<algorithm name="CONC_FB"/>-->
-        <algorithm name="SBB"/>
+        <!--<algorithm name="SBB"/>-->
     </test>
     
 <!--     <test seed="42">

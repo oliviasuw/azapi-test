@@ -6,7 +6,6 @@
             <name>AZMasSystem</name>
             <source-roots>
                 <root id="src.dir"/>
-                <root id="src.ap-source-output.dir"/>
             </source-roots>
             <test-roots>
                 <root id="test.src.dir"/>
@@ -15,6 +14,14 @@
         <references xmlns="http://www.netbeans.org/ns/ant-project-references/1">
             <reference>
                 <foreign-project>AZAnnotationProcessor</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>build.xml</script>
+                <target>jar</target>
+                <clean-target>clean</clean-target>
+                <id>jar</id>
+            </reference>
+            <reference>
+                <foreign-project>AZCommon</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>

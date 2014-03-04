@@ -4,8 +4,8 @@
  */
 package bgu.dcr.az.utils;
 
-import bgu.dcr.az.execs.utils.LocalRandom;
-import bgu.dcr.az.execs.utils.ThreadLocalRandomProvider;
+import bgu.dcr.az.common.math.LocalRandom;
+import bgu.dcr.az.common.math.ThreadLocalRandomProvider;
 import java.util.Random;
 
 /**

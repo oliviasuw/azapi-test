@@ -10,6 +10,7 @@ import bgu.dcr.az.anop.reg.RegisteryUtils;
 import bgu.dcr.az.anop.conf.Configuration;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
+import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.api.exen.mdef.ProblemGenerator;
 import bgu.dcr.az.api.prob.Problem;
@@ -263,7 +264,11 @@ public class CPExperimentTest implements Experiment {
         pgen.generate(p, new Random(seed));
 
         AlgorithmDef adef = algorithms.get(i % algorithms.size());
-        AgentSpawner spawner = new SimpleAgentSpawner(RegisteryUtils.getRegistery().getRegisteredClassByName("ALGORITHM." + adef.getName()));
+        final Class registeredClassByName = RegisteryUtils.getRegistery().getRegisteredClassByName("ALGORITHM." + adef.getName());
+        if (registeredClassByName == null){
+            Agt0DSL.panic("cannot find agent with algorithem name = " + adef.getName());
+        }
+        AgentSpawner spawner = new SimpleAgentSpawner(registeredClassByName);
         CPExecution exec = new CPExecution(this, adef, looper.getRunningVariableValue(i / algorithms.size()), spawner, p, executionEnvironment);
 
         final StatisticsManagerImpl statm = StatisticsManagerImpl.getInstance();

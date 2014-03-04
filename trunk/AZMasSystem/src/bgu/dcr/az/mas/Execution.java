@@ -10,7 +10,7 @@ import bgu.dcr.az.execs.api.Scheduler;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import bgu.dcr.az.mas.impl.InitializationException;
-import bgu.dcr.az.mas.stat.StatisticalInfoStream;
+import bgu.dcr.az.mas.stat.InfoStream;
 
 /**
  *
@@ -32,5 +32,5 @@ public interface Execution<T> {
     
     public Experiment getContainingExperiment();
     
-    public StatisticalInfoStream informationStream();
+    public InfoStream informationStream();
 }

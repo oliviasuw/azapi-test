@@ -6,7 +6,7 @@
 package bgu.dcr.az.mas.impl.stat;
 
 import bgu.dcr.az.execs.AbstractProc;
-import bgu.dcr.az.mas.stat.StatisticalInfoStream;
+import bgu.dcr.az.mas.stat.InfoStream;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *
  * @author User
  */
-public class StatisticalInfoStreamProc extends AbstractProc implements StatisticalInfoStream {
+public class StatisticalInfoStreamProc extends AbstractProc implements InfoStream {
 
     private Map<Class, List<InfoStreamListener>> listeners = new IdentityHashMap<>();
     private ConcurrentLinkedQueue dataQueue = new ConcurrentLinkedQueue();

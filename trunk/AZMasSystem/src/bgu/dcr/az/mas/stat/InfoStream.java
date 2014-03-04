@@ -9,7 +9,7 @@ package bgu.dcr.az.mas.stat;
  *
  * @author User
  */
-public interface StatisticalInfoStream {
+public interface InfoStream {
 
     <T> void listen(Class<T> dataType, InfoStreamListener<T> listener);
 

@@ -8,8 +8,6 @@
         <group name="AgentZero">
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZExecutionSystem/src/bgu/dcr/az/execs/api/Proc.java</file>
         </group>
-        <group>
-            <file>file:/home/bennyl/Desktop/Agent%20Zero/trunk/AZExecutionSystem/src/bgu/dcr/az/execs/ThreadSafeProcTable.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

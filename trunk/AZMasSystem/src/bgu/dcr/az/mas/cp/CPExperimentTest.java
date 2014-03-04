@@ -181,15 +181,14 @@ public class CPExperimentTest implements Experiment {
         }
 
         int i = 0;
-        try {
+        try {           
             status.start();
 
             ConfigurationOfElements conf = new ConfigurationOfElements();
             final int count = looper.count() * algorithms.size();
             for (i = executionNumber == -1 ? 0 : executionNumber; i < count; i++) {
+                System.out.println("Start Running Problem on " + coreAdapters[i % algorithms.size()].getAdaptedNumberOfCores() + " cores");
                 CPExecution exec = createExecutionWithSeed(i, conf, randomSeq.getIthLong(i));
-//                System.out.println("Start Running Problem on " + coreAdapters[i % algorithms.size()].getAdaptedNumberOfCores() + " cores");
-
                 result = exec.execute(scheduler, coreAdapters[i % algorithms.size()].getAdaptedNumberOfCores());
 
                 if (result.getState() != ExecutionResult.State.SUCCESS) {

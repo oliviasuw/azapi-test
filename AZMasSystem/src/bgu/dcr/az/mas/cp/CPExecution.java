@@ -8,6 +8,7 @@ package bgu.dcr.az.mas.cp;
 import bgu.dcr.az.mas.ExecutionEnvironment;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.api.prob.Problem;
+import bgu.dcr.az.execs.api.Proc;
 import bgu.dcr.az.mas.AgentController;
 import bgu.dcr.az.mas.AgentDistributer;
 import bgu.dcr.az.mas.AgentSpawner;
@@ -32,8 +33,8 @@ public class CPExecution extends BaseExecution<CPData> {
     }
 
     @Override
-    protected Collection<AgentController> createControllers() throws InitializationException {
-        List<AgentController> controllers = new LinkedList<>();
+    protected Collection<Proc> createProcesses() throws InitializationException {
+        List<Proc> controllers = new LinkedList<>();
 
         AgentDistributer distributer = require(AgentDistributer.class);
         for (int i = 0; i < distributer.getNumberOfAgentControllers(); i++) {

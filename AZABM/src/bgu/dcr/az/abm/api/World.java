@@ -5,17 +5,21 @@
  */
 package bgu.dcr.az.abm.api;
 
+import bgu.dcr.az.mas.impl.HasSolution;
+import bgu.dcr.az.mas.stat.InfoStream;
 import java.util.Collection;
 
 /**
  *
  * @author Eran
  */
-public interface World {
+public interface World extends HasSolution {
 
-    Collection<ABMAgent> existingAgents();
+    InfoStream infoStream();
 
-    Collection<Behavior> appliedBehaviors();
+    Collection<Class<? extends Behavior>> behaviors();
 
-    Collection<Service> existingServices();
+    Collection<Service> services();
+
+    Collection<ABMAgent> agents();
 }

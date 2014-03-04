@@ -7,6 +7,7 @@ package bgu.dcr.az.mas.impl;
 
 import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.execs.ThreadSafeProcTable;
+import bgu.dcr.az.execs.api.Proc;
 import bgu.dcr.az.execs.api.Scheduler;
 import bgu.dcr.az.execs.api.TerminationReason;
 import bgu.dcr.az.mas.AgentController;
@@ -20,7 +21,7 @@ import bgu.dcr.az.mas.MessageRouter;
 import bgu.dcr.az.mas.ExecutionEnvironment;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.mas.impl.stat.StatisticalInfoStreamProc;
-import bgu.dcr.az.mas.stat.StatisticalInfoStream;
+import bgu.dcr.az.mas.stat.InfoStream;
 import bgu.dcr.az.mas.stat.data.ExecutionInitializationInfo;
 import bgu.dcr.az.mas.stat.data.ExecutionTerminationInfo;
 import java.util.Collection;
@@ -46,8 +47,13 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
         this.data = data;
         this.containingExperiment = containingExperiment;
 
-        supply(AgentDistributer.class, distributer);
-        supply(AgentSpawner.class, spawner);
+        if (distributer != null) {
+            supply(AgentDistributer.class, distributer);
+        }
+
+        if (spawner != null) {
+            supply(AgentSpawner.class, spawner);
+        }
     }
 
     @Override
@@ -66,10 +72,7 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
             }
 
             //create agentcontrollers
-            Collection<AgentController> controllers = createControllers();
-            for (AgentController c : controllers) {
-                table.add(c);
-            }
+            createProcesses().forEach(table::add);
         } catch (InitializationException ex) {
             throw new ExperimentExecutionException("error on experiment initialization, see cause", ex);
         }
@@ -112,7 +115,7 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
         return services.containsKey(service);
     }
 
-    protected abstract Collection<AgentController> createControllers() throws InitializationException;
+    protected abstract Collection<Proc> createProcesses() throws InitializationException;
 
     protected abstract void initialize() throws InitializationException;
 
@@ -175,7 +178,7 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
     }
 
     @Override
-    public StatisticalInfoStream informationStream() {
+    public InfoStream informationStream() {
         return statisticalStream;
     }
 

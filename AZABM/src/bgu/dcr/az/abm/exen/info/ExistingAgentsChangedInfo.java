@@ -9,12 +9,12 @@ package bgu.dcr.az.abm.exen.info;
  *
  * @author bennyl
  */
-public class AgentsChangedInfo {
+public class ExistingAgentsChangedInfo {
 
     private int agentId;
     private ChangeType changeType;
 
-    public AgentsChangedInfo(int agentId, ChangeType changeType) {
+    public ExistingAgentsChangedInfo(int agentId, ChangeType changeType) {
         this.agentId = agentId;
         this.changeType = changeType;
     }

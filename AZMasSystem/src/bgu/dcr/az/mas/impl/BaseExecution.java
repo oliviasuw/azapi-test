@@ -42,17 +42,13 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
     private final Experiment containingExperiment;
     private StatisticalInfoStreamProc statisticalStream;
 
-    public BaseExecution(T data, Experiment containingExperiment, AgentDistributer distributer, AgentSpawner spawner, ExecutionEnvironment env) {
+    public BaseExecution(T data, Experiment containingExperiment, ExecutionEnvironment env, ExecutionService... services) {
         this.env = env;
         this.data = data;
         this.containingExperiment = containingExperiment;
 
-        if (distributer != null) {
-            supply(AgentDistributer.class, distributer);
-        }
-
-        if (spawner != null) {
-            supply(AgentSpawner.class, spawner);
+        for (ExecutionService s : services){
+            supply(s.getClass(), s);
         }
     }
 

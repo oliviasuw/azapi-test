@@ -5,11 +5,40 @@
  */
 package bgu.dcr.az.abm.api;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
  *
  * @author Eran
  */
 public interface ABMAgent {
+
+    /**
+     * @param type
+     * @return true if the agent has data from the given type
+     */
+    boolean hasDataOfType(Class<? extends AgentData> type);
+
+    /**
+     * @return collection of all agent data
+     */
+    Collection<AgentData> data();
+
+    /**
+     * add data for this agent
+     *
+     * @param data
+     */
+    void addData(AgentData data);
+
+    default void addAllData(AgentData... data) {
+        addAllData(Arrays.asList(data));
+    }
+
+    default void addAllData(Collection<AgentData> data) {
+        data.forEach(this::addData);
+    }
 
     /**
      * register a new behavior to be applied to this agent, assumes that the
@@ -20,12 +49,21 @@ public interface ABMAgent {
     void registerBehavior(Behavior behavior);
 
     /**
-     * register a new behavior to be applied to this agent, assumes that the
-     * agent is not running and there is no tick currently executing
+     * un register behavior with the given type, assumes that the agent is not
+     * running and there is no tick currently executing
      *
      * @param behavior
      */
-    void unregisterBehavior(Behavior behavior);
+    void unregisterBehavior(Class<? extends Behavior> behavior);
+
+    default void unregisterBehaviors(Collection<Class<? extends Behavior>> behaviors) {
+        behaviors.forEach(this::unregisterBehavior);
+    }
+
+    /**
+     * @return collection of all the behaviors that registered to this agent
+     */
+    Collection<Class<? extends Behavior>> registeredBehaviors();
 
     /**
      * @return the agent id (unique)

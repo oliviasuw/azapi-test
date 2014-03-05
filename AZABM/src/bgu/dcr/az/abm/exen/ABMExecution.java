@@ -25,7 +25,7 @@ public class ABMExecution extends BaseExecution<World> {
     int initialNumberOfAgents;
 
     public ABMExecution(World data, Experiment containingExperiment, int initialNumberOfAgents) {
-        super(data, containingExperiment, null, null, ExecutionEnvironment.sync);
+        super(data, containingExperiment, ExecutionEnvironment.sync, new BehaviorDistributer());
         this.initialNumberOfAgents = initialNumberOfAgents;
     }
 

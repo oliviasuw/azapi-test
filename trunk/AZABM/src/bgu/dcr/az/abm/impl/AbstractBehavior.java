@@ -9,8 +9,10 @@ import bgu.dcr.az.abm.api.ABMAgent;
 import bgu.dcr.az.abm.api.Behavior;
 import bgu.dcr.az.abm.api.Service;
 import bgu.dcr.az.abm.api.World;
+import com.esotericsoftware.reflectasm.ConstructorAccess;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -47,23 +49,33 @@ public abstract class AbstractBehavior implements Behavior {
     }
 
     private Requirements retreiveRequirements() {
-        Requirements r = cachedRequirements.get(getClass());
+        return retreiveRequirements(getClass());
+    }
+
+    public static Behavior create(Class<? extends Behavior> behaviorType, ABMAgent agent, World w) {
+        Behavior b = ConstructorAccess.get(behaviorType).newInstance();
+        b.init(agent, w);
+        return b;
+    }
+
+    public static Requirements retreiveRequirements(Class c) {
+        Requirements r = cachedRequirements.get(c);
         if (r == null) {
-            r = new Requirements(getClass());
-            r = cachedRequirements.putIfAbsent(getClass(), r);
+            r = new Requirements(c);
+            r = cachedRequirements.putIfAbsent(c, r);
         }
 
         return r;
     }
 
-    private static final class Requirements {
+    public static final class Requirements {
 
         public Collection<Class> agentRequirements;
         public Collection<Class> worldRequirements;
 
         public Requirements(Class c) {
-            agentRequirements = new LinkedList<>();
-            worldRequirements = new LinkedList<>();
+            agentRequirements = new HashSet<>();
+            worldRequirements = new HashSet<>();
 
             Arrays.stream(c.getDeclaredFields()).filter(f -> f.getAnnotation(Require.class) != null).map(f -> {
                 f.setAccessible(true);
@@ -75,7 +87,14 @@ public abstract class AbstractBehavior implements Behavior {
                     this.agentRequirements.add(c);
                 }
             });
+        }
 
+        public Collection<Class> getAgentRequirements() {
+            return agentRequirements;
+        }
+
+        public Collection<Class> getWorldRequirements() {
+            return worldRequirements;
         }
 
     }

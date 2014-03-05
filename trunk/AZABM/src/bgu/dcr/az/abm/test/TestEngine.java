@@ -7,9 +7,11 @@ package bgu.dcr.az.abm.test;
 
 import bgu.dcr.az.abm.api.World;
 import bgu.dcr.az.abm.exen.ABMExecution;
+import bgu.dcr.az.abm.impl.WorldImpl;
 import bgu.dcr.az.execs.MultithreadedScheduler;
 import bgu.dcr.az.execs.api.Scheduler;
 import bgu.dcr.az.mas.Execution;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,7 +34,9 @@ public class TestEngine {
     }
 
     private static World createWorld() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        World w = new WorldImpl();
+        new TestWorldGenerator().generate(w, new Random());
+        return w;
     }
 
 }

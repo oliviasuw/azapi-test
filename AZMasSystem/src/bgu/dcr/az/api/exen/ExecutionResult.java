@@ -4,8 +4,8 @@
  */
 package bgu.dcr.az.api.exen;
 
-import bgu.dcr.az.anop.utils.StringBuilderWriter;
 import bgu.dcr.az.api.DeepCopyable;
+import bgu.dcr.az.common.io.StringBuilderWriter;
 import java.io.PrintWriter;
 
 /**
@@ -102,7 +102,7 @@ public class ExecutionResult<SOLUTION_TYPE extends DeepCopyable> implements Deep
 
                     @Override
                     public String toString(ExecutionResult er) {
-                        StringBuilderWriter w = new StringBuilderWriter();
+                        StringBuilderWriter w = new StringBuilderWriter(new StringBuilder());
                         if (er.crushReason != null) er.crushReason.printStackTrace(new PrintWriter(w));
                         return "The Execution crushed with the exception: " + (er.crushReason != null ? w.toString() : "no-exception");
                     }

@@ -18,12 +18,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *
  * @author User
  */
-public class StatisticalInfoStreamProc extends AbstractProc implements InfoStream {
+public class InfoStreamProc extends AbstractProc implements InfoStream {
 
     private Map<Class, List<InfoStreamListener>> listeners = new IdentityHashMap<>();
     private ConcurrentLinkedQueue dataQueue = new ConcurrentLinkedQueue();
 
-    public StatisticalInfoStreamProc(int pid) {
+    public InfoStreamProc(int pid) {
         super(pid, true);
     }
 

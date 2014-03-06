@@ -8,16 +8,14 @@ package bgu.dcr.az.abm.impl;
 import bgu.dcr.az.abm.api.ABMAgent;
 import bgu.dcr.az.abm.api.AgentData;
 import bgu.dcr.az.abm.api.Behavior;
+import bgu.dcr.az.abm.exen.ABMExecution;
+import bgu.dcr.az.abm.exen.info.TickInfo;
 import bgu.dcr.az.execs.AbstractProc;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -25,15 +23,22 @@ import java.util.stream.Collectors;
  */
 public class ABMAgentImpl extends AbstractProc implements ABMAgent {
 
-    private Map<Class<? extends Behavior>, Behavior> behaviors;
+    private final Map<Class<? extends Behavior>, Behavior> behaviors;
     private Iterator<Behavior> handlingBehaviors;
     private Map<Class, AgentData> data;
+    private ABMExecution execution;
+    private int tickNumber = 0;
+    private boolean terminated = false;
 
     public ABMAgentImpl(int pid) {
         super(pid);
 
-        behaviors = new LinkedHashMap<>();
-        data = new IdentityHashMap<>();
+        this.behaviors = new LinkedHashMap<>();
+        this.data = new IdentityHashMap<>();
+    }
+
+    public void setExecution(ABMExecution execution) {
+        this.execution = execution;
     }
 
     @Override
@@ -66,9 +71,21 @@ public class ABMAgentImpl extends AbstractProc implements ABMAgent {
 
     @Override
     protected void onIdleDetected() {
+        if (terminated) {
+            terminate();
+            return;
+        }
+
+        tickNumber++;
+        if (pid() == 0) {
+            execution.informationStream().write(new TickInfo(tickNumber));
+        }
+
         if (!behaviors.isEmpty()) {
             handlingBehaviors = behaviors.values().iterator();
             wakeup(pid());
+        } else {
+            sleep();
         }
     }
 
@@ -99,6 +116,22 @@ public class ABMAgentImpl extends AbstractProc implements ABMAgent {
     @Override
     public Collection<Class<? extends Behavior>> registeredBehaviors() {
         return behaviors.keySet();
+    }
+
+    @Override
+    public void kill() {
+        terminated = true;
+    }
+
+    @Override
+    public void setData(AgentData... data) {
+        this.data.clear();
+        addAllData(data);
+    }
+
+    @Override
+    public int tickNumber() {
+        return tickNumber;
     }
 
 }

@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class AbstractBehavior implements Behavior {
 
-    private static ConcurrentHashMap<Class, Requirements> cachedRequirements;
+    private static ConcurrentHashMap<Class, Requirements> cachedRequirements = new ConcurrentHashMap<Class, Requirements>();
 
     private ABMAgent agent;
 
@@ -62,7 +62,10 @@ public abstract class AbstractBehavior implements Behavior {
         Requirements r = cachedRequirements.get(c);
         if (r == null) {
             r = new Requirements(c);
-            r = cachedRequirements.putIfAbsent(c, r);
+            Requirements old = cachedRequirements.putIfAbsent(c, r);
+            if (old != null) {
+                r = old;
+            }
         }
 
         return r;
@@ -82,9 +85,9 @@ public abstract class AbstractBehavior implements Behavior {
                 return f;
             }).forEach(field -> {
                 if (Service.class.isAssignableFrom(field.getType())) {
-                    this.worldRequirements.add(c);
+                    this.worldRequirements.add(field.getType());
                 } else {
-                    this.agentRequirements.add(c);
+                    this.agentRequirements.add(field.getType());
                 }
             });
         }

@@ -39,6 +39,10 @@ public class StringBuilderWriter extends Writer {
         return sb;
     }
 
+    @Override
+    public String toString() {
+        return sb.toString();
+    }
     
     
 }

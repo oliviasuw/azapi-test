@@ -171,6 +171,7 @@ public class MultithreadedScheduler implements Scheduler {
                         if (allowIdle && !table.isEmpty()) {
                             resolveIdle();
                         } else {
+//                            System.out.println("Core " + coreId + " is down");
                             return; //the table is empty - shutdown
                         }
                     }

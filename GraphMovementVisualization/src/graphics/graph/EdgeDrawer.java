@@ -80,9 +80,9 @@ public class EdgeDrawer {
                 new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.WHITE)));
         descriptors.put("road", new EdgeDescriptor(
-                new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.BLACK),
-                new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.WHITE)));
         descriptors.put("pedestrian", new EdgeDescriptor(
                 new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
@@ -176,7 +176,7 @@ public class EdgeDrawer {
             }
             gc.setLineCap(ed.getOuterStroke().getLineCap());
             gc.setLineJoin(ed.getOuterStroke().getLineJoin());
-            gc.setLineWidth(pixelLaneWidth * scale);
+            gc.setLineWidth(ed.getOuterStroke().getLanes()*pixelLaneWidth * scale);
             gc.setStroke(ed.getOuterStroke().getPaint());
 
 //            gc.setLineCap(ed.getInnerStroke().getLineCap());

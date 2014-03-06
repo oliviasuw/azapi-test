@@ -14,4 +14,8 @@ public interface FramesStream {
     void writeFrame(Frame frame);
 
     Frame readFrame();
+    
+//    Frame getFrame(long index);
+//    
+//    long numberOfFrames();
 }

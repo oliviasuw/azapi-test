@@ -92,4 +92,11 @@ public abstract class SimpleScrollableVisualScene extends ScrollPane implements 
         return scaleProperty;
     }
 
+    public void setContainerSize(double x, double y) {
+        pane.setPrefWidth(x);
+        pane.setPrefHeight(y);
+    }
+    
+    
+
 }

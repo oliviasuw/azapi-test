@@ -16,21 +16,18 @@ import javafx.scene.shape.StrokeLineJoin;
  * @author Shl
  */
 public class EdgeStroke {
-    private final int width;
     private final StrokeLineCap lineCap;
     private final StrokeLineJoin lineJoin;
     private final Paint paint;
+    private int lanes;
 
-    EdgeStroke(int width, StrokeLineCap lineCap, StrokeLineJoin lineJoin, Paint paint) {
-        this.width = width;
+    EdgeStroke(int lanes, StrokeLineCap lineCap, StrokeLineJoin lineJoin, Paint paint) {
         this.lineCap = lineCap;
         this.lineJoin = lineJoin;
         this.paint = paint;
+        this.lanes = lanes;
     }
 
-    public int getWidth() {
-        return width;
-    }
 
     public StrokeLineCap getLineCap() {
         return lineCap;
@@ -42,6 +39,10 @@ public class EdgeStroke {
 
     public Paint getPaint() {
         return paint;
+    }
+
+    public int getLanes() {
+        return lanes;
     }
     
     

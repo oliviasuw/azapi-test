@@ -5,6 +5,7 @@
  */
 package data.map.impl.wersdfawer;
 
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,7 +31,11 @@ public class GraphReader {
                 String line = in.nextLine();
                 Scanner lineBreaker = new Scanner(line);
                 String nextToken = lineBreaker.next();
-                if (nextToken.equals("V")) {
+                if (nextToken.equals("S")) {
+                    double sizeX = Double.parseDouble(lineBreaker.next());
+                    double sizeY = Double.parseDouble(lineBreaker.next());
+                    graphData.setBounds(new Point2D.Double(sizeX, sizeY));
+                } else if (nextToken.equals("V")) {
                     String name = lineBreaker.next();
                     nextToken = lineBreaker.next();
                     Collection<Double> ints = parseVertex(lineBreaker, nextToken);

@@ -36,6 +36,8 @@ public class GraphDrawer {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());        
 
         gc.strokeText("tx: " + tx + ", ty: " + ty, 14, canvas.getHeight() - 14);
+        gc.strokeText("scale: " + scale + " meter/pixel", 14, canvas.getHeight() - 25);
+        
 //        for (String vertexName : graphData.getVertexSet()) {
 //            AZVisVertex vertex = (AZVisVertex) graphData.getData(vertexName);
 //            gc.strokeRect((vertex.getX() - tx) * scale, (vertex.getY() - ty) * scale, 5 * scale, 5 * scale);

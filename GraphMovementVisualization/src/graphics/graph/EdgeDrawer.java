@@ -27,8 +27,9 @@ import resources.img.R;
 public class EdgeDrawer {
 
     public static final String ROAD_KEY = "highway";
-    private final int MAIN_THICKNESS = 12;
-    private final int INNER_THICKNESS = 8;
+//    private final int MAIN_THICKNESS = 12;
+//    private final int INNER_THICKNESS = 8;
+    private final double LANE_WIDTH = 3.6; //in meters
     private final EdgeDescriptor defaultDescriptor;
     private final HashMap<String, EdgeDescriptor> descriptors;
 
@@ -37,20 +38,20 @@ public class EdgeDrawer {
         ImagePattern roadImagePattern = new ImagePattern(new Image(R.class.getResourceAsStream("roadTexture.jpg")), 0, 0, 100, 100, false);
 
         descriptors.put("primary", new EdgeDescriptor(
-                new EdgeStroke(MAIN_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.BLACK),
-                new EdgeStroke(INNER_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.WHITE)));
         descriptors.put("secondary", new EdgeDescriptor(
-                new EdgeStroke(MAIN_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.BLACK),
-                new EdgeStroke(INNER_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.GRAY)));
 
         descriptors.put("tertiary", new EdgeDescriptor(
-                new EdgeStroke(MAIN_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         roadImagePattern),
-                new EdgeStroke(INNER_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         roadImagePattern)));
 
 //        descriptors.put("tertiary", new EdgeDescriptor(
@@ -59,50 +60,50 @@ public class EdgeDrawer {
 //                new EdgeStroke(INNER_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
 //                        Color.BLUE)));
         descriptors.put("trunk", new EdgeDescriptor(
-                new EdgeStroke(MAIN_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.BLACK),
-                new EdgeStroke(INNER_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.MAGENTA)));
         descriptors.put("residential", new EdgeDescriptor(
-                new EdgeStroke(MAIN_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.BLACK),
-                new EdgeStroke(INNER_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.YELLOW)));
         descriptors.put("primary_link", new EdgeDescriptor(
-                new EdgeStroke(MAIN_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.BLACK),
-                new EdgeStroke(INNER_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.ORANGE)));
         descriptors.put("service", new EdgeDescriptor(
-                new EdgeStroke(MAIN_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.BLACK),
-                new EdgeStroke(INNER_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.WHITE)));
         descriptors.put("road", new EdgeDescriptor(
-                new EdgeStroke(MAIN_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.BLACK),
-                new EdgeStroke(INNER_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.WHITE)));
         descriptors.put("pedestrian", new EdgeDescriptor(
-                new EdgeStroke(3, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.BLACK),
                 new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.GRAY)));
         descriptors.put("living_street", new EdgeDescriptor(
-                new EdgeStroke(3, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.BLACK),
                 new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.CYAN)));
         descriptors.put("footway", new EdgeDescriptor(
-                new EdgeStroke(3, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.BLACK),
                 new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.GREEN)));
 
         defaultDescriptor = new EdgeDescriptor(
-                new EdgeStroke(MAIN_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.ORANGE),
-                new EdgeStroke(INNER_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.BLACK));
 
     }
@@ -127,17 +128,19 @@ public class EdgeDrawer {
             ed = defaultDescriptor;
         }
 
+        double pixelLaneWidth = LANE_WIDTH;
+
         gc.save();
 
         gc.setLineCap(ed.getOuterStroke().getLineCap());
         gc.setLineJoin(ed.getOuterStroke().getLineJoin());
-        gc.setLineWidth(ed.getOuterStroke().getWidth() * scale);
+        gc.setLineWidth(pixelLaneWidth * scale);
         gc.setStroke(ed.getOuterStroke().getPaint());
         gc.strokeLine((source.getX() - tx) * scale, (source.getY() - ty) * scale, (target.getX() - tx) * scale, (target.getY() - ty) * scale);
 
         gc.setLineCap(ed.getInnerStroke().getLineCap());
         gc.setLineJoin(ed.getInnerStroke().getLineJoin());
-        gc.setLineWidth(ed.getInnerStroke().getWidth() * scale);
+        gc.setLineWidth(pixelLaneWidth * scale);
         gc.setStroke(ed.getInnerStroke().getPaint());
         gc.strokeLine((source.getX() - tx) * scale, (source.getY() - ty) * scale, (target.getX() - tx) * scale, (target.getY() - ty) * scale);
 
@@ -157,28 +160,29 @@ public class EdgeDrawer {
             ed = defaultDescriptor;
         }
 
+        double pixelLaneWidth = LANE_WIDTH ;
+
         gc.save();
         gc.beginPath();
         for (String edgeName : edges) {
-            AZVisVertex source=null;
-            AZVisVertex target=null;
+            AZVisVertex source = null;
+            AZVisVertex target = null;
             try {
-             source = (AZVisVertex) graphData.getData(graphData.getEdgeSource(edgeName));
-             target = (AZVisVertex) graphData.getData(graphData.getEdgeTarget(edgeName));
-            }
-            catch (Exception e) {
+                source = (AZVisVertex) graphData.getData(graphData.getEdgeSource(edgeName));
+                target = (AZVisVertex) graphData.getData(graphData.getEdgeTarget(edgeName));
+            } catch (Exception e) {
                 System.out.println("problem with drawing! cant find some node.");
                 continue;
             }
             gc.setLineCap(ed.getOuterStroke().getLineCap());
             gc.setLineJoin(ed.getOuterStroke().getLineJoin());
-            gc.setLineWidth(ed.getOuterStroke().getWidth() * scale);
+            gc.setLineWidth(pixelLaneWidth * scale);
             gc.setStroke(ed.getOuterStroke().getPaint());
 
-            gc.setLineCap(ed.getInnerStroke().getLineCap());
-            gc.setLineJoin(ed.getInnerStroke().getLineJoin());
-            gc.setLineWidth(ed.getInnerStroke().getWidth() * scale);
-            gc.setStroke(ed.getInnerStroke().getPaint());
+//            gc.setLineCap(ed.getInnerStroke().getLineCap());
+//            gc.setLineJoin(ed.getInnerStroke().getLineJoin());
+//            gc.setLineWidth(pixelLaneWidth * scale);
+//            gc.setStroke(ed.getInnerStroke().getPaint());
 
             gc.moveTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
             gc.lineTo((target.getX() - tx) * scale, (target.getY() - ty) * scale);

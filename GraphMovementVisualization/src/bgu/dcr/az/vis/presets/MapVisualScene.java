@@ -7,7 +7,9 @@ package bgu.dcr.az.vis.presets;
 
 import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import bgu.dcr.az.vis.player.impl.SimpleScrollableVisualScene;
+import bgu.dcr.az.vis.player.impl.entities.DefinedSizeSpriteBasedEntity;
 import bgu.dcr.az.vis.player.impl.entities.SpriteBasedEntity;
+import java.awt.geom.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.input.ScrollEvent;
 import resources.img.R;
@@ -18,19 +20,23 @@ import resources.img.R;
  */
 public class MapVisualScene extends SimpleScrollableVisualScene {
 
-    private static final double MIN_SCALE = 0.2;
-    private static final double MAX_SCALE = 2;
+    private static final double MIN_SCALE = 0.01;
+    private static final double MAX_SCALE = 10;
 
-    private static final double CONTAINER_WIDTH = 8000;
-    private static final double CONTAINER_HEIGHT = 8000;
+    private static double DEFAULT_CONTAINER_WIDTH = 10000;
+    private static double DEFAULT_CONTAINER_HEIGHT = 10000;
 
     public MapVisualScene(int carNum, String mapPath) {
-        super(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+        super(DEFAULT_CONTAINER_WIDTH, DEFAULT_CONTAINER_HEIGHT);
+
         MapCanvasLayer back = new MapCanvasLayer(this, mapPath);
         CanvasLayer front = new CanvasLayer(this);
 
         registerLayer(MapCanvasLayer.class, back, back.getCanvas());
         registerLayer(CanvasLayer.class, front, front.getCanvas());
+
+        Point2D.Double bounds = back.getGraphData().getBounds();
+        super.setContainerSize(bounds.x, bounds.y);
 
         addEventFilter(ScrollEvent.ANY, (ScrollEvent t) -> {
             if (t.isControlDown()) {
@@ -49,7 +55,6 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 //                double newVval = (mousePointY) / (CONTAINER_HEIGHT - getViewportBounds().getHeight());
 //                setHvalue(newHval);
 //                setVvalue(newVval);
-
                 back.drawGraph();
                 t.consume();
             }
@@ -62,9 +67,9 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
         Image greenCarImage = new Image(R.class.getResourceAsStream("car-green.jpg"));
         for (long i = 0; i < carNum; i++) {
-            addEntity(i, new SpriteBasedEntity(i, CanvasLayer.class, greenCarImage));
+            addEntity(i, new DefinedSizeSpriteBasedEntity(i, CanvasLayer.class, greenCarImage, DefinedSizeSpriteBasedEntity.SizeParameter.WIDTH, 1.7));
         }
-        
+
         setPrefWidth(800);
         setPrefHeight(600);
     }

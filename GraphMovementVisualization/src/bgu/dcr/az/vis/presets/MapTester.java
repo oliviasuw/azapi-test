@@ -7,20 +7,15 @@ package bgu.dcr.az.vis.presets;
 
 import bgu.dcr.az.vis.controls.ui.PlayerControls;
 import bgu.dcr.az.vis.player.api.FramesStream;
-import bgu.dcr.az.vis.player.impl.BasicOperationsFrame;
 import bgu.dcr.az.vis.player.impl.BoundedFramesStream;
 import bgu.dcr.az.vis.player.impl.SimplePlayer;
-import bgu.dcr.az.vis.tools.Location;
 import data.events.api.SimulatorEvent;
 import data.events.impl.Tick;
 import data.events.impl.test.EventsTester;
 import java.util.Collection;
 import javafx.application.Application;
-import javafx.scene.Camera;
-import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -34,7 +29,7 @@ public class MapTester extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        vs = new MapVisualScene(3, "graph4.txt");
+        vs = new MapVisualScene(100, "graph7.txt");
         BoundedFramesStream fs = new BoundedFramesStream(10);
         FramesGenerator fg = new FramesGenerator(fs);
         SimplePlayer player = new SimplePlayer(vs, 1000, 0);

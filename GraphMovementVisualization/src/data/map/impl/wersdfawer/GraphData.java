@@ -6,6 +6,7 @@
 
 package data.map.impl.wersdfawer;
 
+import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -24,6 +25,8 @@ public class GraphData {
     //saves edges according to what will become their path descriptors
     private HashMap<String, Collection<String>> tagToEdges = new HashMap();
     private LinkedList<GraphPolygon> polygons = new LinkedList<>();
+    private double defaultScale = 0; //defaultscale in meters/pixels
+    private Point2D.Double bounds;
     
     public Object getData(String name) {
         return data.get(name);
@@ -101,7 +104,13 @@ public class GraphData {
         return polygons;
     }
 
-    
+    public void setBounds(Point2D.Double bounds) {
+        this.bounds = bounds;
+    }
+
+    public Point2D.Double getBounds() {
+        return bounds;
+    }
 
     
     

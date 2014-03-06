@@ -9,12 +9,12 @@ import bgu.dcr.az.mas.ExecutionEnvironment;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.execs.api.Proc;
-import bgu.dcr.az.mas.AgentController;
 import bgu.dcr.az.mas.AgentDistributer;
 import bgu.dcr.az.mas.AgentSpawner;
 import bgu.dcr.az.mas.exp.AlgorithmDef;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.mas.impl.BaseExecution;
+import bgu.dcr.az.mas.impl.BaseMessageRouter;
 import bgu.dcr.az.mas.impl.InitializationException;
 import bgu.dcr.az.mas.impl.misc.StdoutLogger;
 import bgu.dcr.az.mas.misc.Logger;
@@ -29,7 +29,7 @@ import java.util.List;
 public class CPExecution extends BaseExecution<CPData> {
 
     public CPExecution(Experiment containingExperiment, AlgorithmDef a, double runningVariable, AgentSpawner spawner, Problem problem, ExecutionEnvironment env) {
-        super(new CPData(new CPSolution(problem), problem, a, runningVariable), containingExperiment, env, problem.getAgentDistributer(), spawner);
+        super(new CPData(new CPSolution(problem), problem, a, runningVariable), containingExperiment, env, problem.getAgentDistributer(), spawner, new BaseMessageRouter());
     }
 
     @Override

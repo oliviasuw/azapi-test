@@ -19,7 +19,7 @@ public class PrintHelloBehavior extends AbstractBehavior {
 
     @Override
     public void behave() {
-        System.out.println("Agent: " + agent().getId() + " Saying hello!");
+        //System.out.println("Agent: " + agent().getId() + " Saying hello in tick " + agent().tickNumber());
     }
 
 }

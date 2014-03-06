@@ -7,10 +7,10 @@ package bgu.dcr.az.abm.test;
 
 import bgu.dcr.az.abm.api.World;
 import bgu.dcr.az.abm.exen.ABMExecution;
+import bgu.dcr.az.abm.exen.info.TickInfo;
 import bgu.dcr.az.abm.impl.WorldImpl;
 import bgu.dcr.az.execs.MultithreadedScheduler;
 import bgu.dcr.az.execs.api.Scheduler;
-import bgu.dcr.az.mas.Execution;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,12 +29,22 @@ public class TestEngine {
         ExecutorService threadPool = Executors.newFixedThreadPool(4);
         Scheduler scheduler = new MultithreadedScheduler(threadPool);
 
-        Execution ex = new ABMExecution(w, null, 10);
-        ex.execute(scheduler, 4);
+        ABMExecution ex = new ABMExecution(w, null);
+        ex.informationStream().listen(TickInfo.class, t -> {
+            if (t.getTickNumber() % 10000 == 0) {
+                System.out.println("tick: " + t.getTickNumber());
+            }
+            if (t.getTickNumber() == 1000000) {
+                ex.terminate();
+            }
+        });
+
+        ex.execute(scheduler, 2);
+        threadPool.shutdown();
     }
 
     private static World createWorld() {
-        World w = new WorldImpl();
+        WorldImpl w = new WorldImpl();
         new TestWorldGenerator().generate(w, new Random());
         return w;
     }

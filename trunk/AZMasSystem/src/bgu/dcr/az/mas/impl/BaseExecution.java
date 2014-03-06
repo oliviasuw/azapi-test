@@ -21,7 +21,7 @@ import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import bgu.dcr.az.mas.MessageRouter;
 import bgu.dcr.az.mas.ExecutionEnvironment;
 import bgu.dcr.az.mas.exp.Experiment;
-import bgu.dcr.az.mas.impl.stat.StatisticalInfoStreamProc;
+import bgu.dcr.az.mas.impl.stat.InfoStreamProc;
 import bgu.dcr.az.mas.stat.InfoStream;
 import bgu.dcr.az.mas.stat.data.ExecutionInitializationInfo;
 import bgu.dcr.az.mas.stat.data.ExecutionTerminationInfo;
@@ -36,19 +36,21 @@ import java.util.Map;
  */
 public abstract class BaseExecution<T extends HasSolution> implements Execution<T> {
 
+    public static final int INFORMATION_STREAM_PROCESS_ID = -1;
     private final Map<Class<? extends ExecutionService>, ExecutionServiceWithInitializationData> services = new HashMap<>();
 
     private final ExecutionEnvironment env;
     private final T data;
     private final Experiment containingExperiment;
-    private StatisticalInfoStreamProc statisticalStream;
+    private InfoStreamProc statisticalStream;
 
     public BaseExecution(T data, Experiment containingExperiment, ExecutionEnvironment env, ExecutionService... services) {
         this.env = env;
         this.data = data;
         this.containingExperiment = containingExperiment;
+        this.statisticalStream = new InfoStreamProc(INFORMATION_STREAM_PROCESS_ID);
 
-        for (ExecutionService s : services){
+        for (ExecutionService s : services) {
             supply(s);
         }
     }
@@ -56,8 +58,7 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
     @Override
     public ExecutionResult execute(Scheduler sched, int numCores) throws ExperimentExecutionException, InterruptedException {
         ThreadSafeProcTable table = new ThreadSafeProcTable();
-        table.add(statisticalStream = new StatisticalInfoStreamProc(-1));
-        supply(MessageRouter.class, new BaseMessageRouter());
+        table.add(statisticalStream);
 
         try {
 

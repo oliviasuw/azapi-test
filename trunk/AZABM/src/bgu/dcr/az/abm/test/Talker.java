@@ -6,10 +6,12 @@
 
 package bgu.dcr.az.abm.test;
 
+import bgu.dcr.az.abm.api.AgentData;
+
 /**
  *
  * @author bennyl
  */
-public class Talker {
+public class Talker implements AgentData{
     
 }

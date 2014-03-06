@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.abm.api;
 
+import bgu.dcr.az.abm.exen.ABMExecution;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -24,6 +25,13 @@ public interface ABMAgent {
      * @return collection of all agent data
      */
     Collection<AgentData> data();
+
+    /**
+     * replaces the agent data with the given data
+     *
+     * @param data
+     */
+    void setData(AgentData... data);
 
     /**
      * add data for this agent
@@ -69,4 +77,18 @@ public interface ABMAgent {
      * @return the agent id (unique)
      */
     int getId();
+
+    void kill();
+
+    /**
+     * set the execution that this agent runs in
+     *
+     * @param execution
+     */
+    void setExecution(ABMExecution execution);
+
+    /**
+     * @return the current world tick number
+     */
+    int tickNumber();
 }

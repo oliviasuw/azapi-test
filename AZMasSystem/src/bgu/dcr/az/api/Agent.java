@@ -391,7 +391,7 @@ public abstract class Agent extends Agt0DSL {
      * finish the algorithm or revive from idle
      */
     public void onIdleDetected() {
-        throw new UnsupportedOperationException("if you are using IdleDetected feature you must implements Agent.onIdleDetected method");
+        throw new UnsupportedOperationException("if you are using IdleDetected feature you must implements Agent.onIdleDetected method in agent class " + getClass().getSimpleName());
     }
 
     /**

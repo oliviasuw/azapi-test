@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.mas.impl;
 
+import bgu.dcr.az.anop.utils.ReflectionUtils;
 import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.execs.ThreadSafeProcTable;
 import bgu.dcr.az.execs.api.Proc;
@@ -48,7 +49,7 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
         this.containingExperiment = containingExperiment;
 
         for (ExecutionService s : services){
-            supply(s.getClass(), s);
+            supply(s);
         }
     }
 
@@ -104,6 +105,10 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
     @Override
     public final void supply(Class<? extends ExecutionService> serviceKey, ExecutionService service) {
         services.put(serviceKey, new ExecutionServiceWithInitializationData(service));
+    }
+    
+    public final void supply(ExecutionService service){
+        ReflectionUtils.implementedInterfacesOf(service.getClass()).forEach(c -> supply(c, service));
     }
 
     @Override

@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -140,5 +141,15 @@ public class ReflectionUtils {
         }
         
         return result;
+    }
+
+    public static Collection<Class> implementedInterfacesOf(Class c) {
+        Set<Class> interfaces = new HashSet<>();
+        while (c != Object.class){
+            interfaces.addAll(Arrays.asList(c.getInterfaces()));
+            c = c.getSuperclass();
+        }
+        
+        return interfaces;
     }
 }

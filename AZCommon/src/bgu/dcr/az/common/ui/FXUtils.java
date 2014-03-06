@@ -282,7 +282,6 @@ public class FXUtils {
         Bounds eBounds = element.localToScene(element.getBoundsInLocal());
         Bounds sBounds = scroll.localToScene(scroll.getBoundsInLocal());
 
-        System.out.println("SBOUNDS " + sBounds + "\nEBOUNDS" + eBounds);
         if (!forceTop && sBounds.contains(new Point2D(eBounds.getMinX(), eBounds.getMinY()))) {
             return;
         }

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<experiment>
+    <failure-description>
+        <failure-description test-name="CSPs" description="This Execution ended with wrong results: it result was No Solution Found while example of a correct result is: Solution Found With Assignment: {0=1, 1=7, 2=3, 3=1, 4=5, 5=1, 6=2, 7=9, 8=6, 9=8} Cost:0.0" execution-number="22" algorithm="AFC-NG"/>
+    </failure-description>
+    <tests>
+        <test seed="42" name="CSPs" env="async">
+            <correctness-tester>
+                <default-tester/>
+            </correctness-tester>
+            <algorithms>
+                <algorithm name="ABT"/>
+                <algorithm name="AFC"/>
+                <algorithm name="AFC-NG"/>
+                <algorithm name="SBT"/>
+            </algorithms>
+            <problem-generator>
+                <dcsp-unstructured p1="0.64" p2="0.3" d="10" n="10"/>
+            </problem-generator>
+            <loop>
+                <for-loop repeat-count="100" run-var="p2" start="0.1" end="0.9" tick-size="0.1">
+                    <looper>
+                        <for-loop repeat-count="10" run-var="p2" start="0.1" end="0.9" tick-size="0.1">
+                            <looper>
+                                <do-once/>
+                            </looper>
+                        </for-loop>
+                    </looper>
+                </for-loop>
+            </loop>
+            <statistics>
+                <item>Algorithm CPU time spending</item>
+                <item>Number of cores in use</item>
+                <cc-sc/>
+                <msgc-sc type="BY_RUNVAR"/>
+            </statistics>
+        </test>
+    </tests>
+    <Statistics/>
+</experiment>

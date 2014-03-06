@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <experiment>
-    <test seed="42">
-        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100">
-            <!--<for-loop start="0.1" end="0.9" tick-size="0.1" run-var="p2" repeat-count="10" />-->
+<!--    <test seed="42" name="CSPs">
+        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p2" repeat-count="100">
         </for-loop>
     
         <cc-sc/>
         <msgc-sc/>
     
-        <dcsp-unstructured n="10" d="10" p2="0.64"/>        
+        <dcsp-unstructured n="10" d="10" p1="0.64"/>        
         <default-tester/>
+        <algorithm name="ABT"/>
+        <algorithm name="AFC"/>
         <algorithm name="AFC-NG"/>
-        <!--<algorithm name="CONC_FB"/>-->
-        <!--<algorithm name="SBB"/>-->
-    </test>
+        <algorithm name="SBT"/>
+    </test>-->
     
-<!--     <test seed="42">
+<!--    <test seed="42" name="COPs">
         <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100">
             <for-loop start="0.1" end="0.9" tick-size="0.1" run-var="p2" repeat-count="10" />
         </for-loop>
@@ -23,11 +23,30 @@
         <cc-sc/>
         <msgc-sc/>
     
-        <dcsp-unstructured n="5" d="6" p2="0.64"/>        
+        <dcop-unstructured n="7" d="5" max-cost="100"/>        
         <default-tester/>
-        <algorithm name="ABT"/>
-        <algorithm name="CONC_FB"/>
-        <algorithm name="SBB"/>
+        <algorithm name="BnB-ADOPT"/>
     </test>-->
+    <test seed="42" name="Local search">
+        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100">
+        </for-loop>
     
+        <cc-sc/>
+        <msgc-sc/>
+    
+        <dcop-unstructured n="150" d="20" max-cost="100"/>
+        <algorithm name="DSA"/>
+        <algorithm name="DSA-C"/>
+        
+        <algorithm name="MGM1"/>
+        <algorithm name="MGM"/>
+        
+        <algorithm name="MaxSum"/>
+        <algorithm name="MaxSumRandom1"/>
+        <algorithm name="BoundedMaxSum"/>
+        <algorithm name="MaxSumAD"/>
+        <algorithm name="MaxSumADVPR"/>
+        <algorithm name="MaxSumADVP"/>
+    </test>
+
 </experiment>

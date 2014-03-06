@@ -29,7 +29,10 @@ public class MapTester extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        
+        //change to beershevagraph.txt to get beersheva back
         vs = new MapVisualScene(100, "telavivgraph.txt");
+        
         BoundedFramesStream fs = new BoundedFramesStream(10);
         FramesGenerator fg = new FramesGenerator(fs);
         SimplePlayer player = new SimplePlayer(vs, 1000, 0);

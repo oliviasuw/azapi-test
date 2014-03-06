@@ -199,9 +199,9 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
 
         implementors.forEach((i) -> choiceBox.getItems().add(RegisteryUtils.getRegistery().getRegisteredClassName(i)));
 
-        if (parentCollection == null || implementors.size() > 1) {
+        if (!readOnly && (parentCollection == null || implementors.size() > 1)) {
             editorVBox.getChildren().add(implementorsBorderPane);
-        }
+        }        
     }
 
     @Override

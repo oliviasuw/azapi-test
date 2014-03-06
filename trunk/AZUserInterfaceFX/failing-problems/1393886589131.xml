@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<experiment>
+    <failure-description>
+        <failure-description test-name="COPs" description="The Execution crushed with the exception: bgu.dcr.az.api.exp.UnassignedVariableException: calling getAssignment with variable 2 while its is not assigned at bgu.dcr.az.api.tools.Assignment.getAssignment(Assignment.java:98) at ext.sim.agents.dcop.BnBADOPTAgent$TimedAssignment.getAssignment(BnBADOPTAgent.java:397) at ext.sim.agents.dcop.BnBADOPTAgent.backTrack(BnBADOPTAgent.java:147) at ext.sim.agents.dcop.BnBADOPTAgent.handleTERMINATE(BnBADOPTAgent.java:262) at bgu.dcr.autogen.agents.ext_sim_agents_dcop_BnBADOPTAgent.callHandler(ext_sim_agents_dcop_BnBADOPTAgent.java:79) at bgu.dcr.az.mas.impl.BaseAgentController.quota(BaseAgentController.java:148) at bgu.dcr.az.execs.AbstractProc.quota(AbstractProc.java:53) at bgu.dcr.az.execs.MultithreadedScheduler$Core.run(MultithreadedScheduler.java:167) at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) at java.util.concurrent.FutureTask.run(FutureTask.java:266) at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) at java.lang.Thread.run(Thread.java:744) " execution-number="0" algorithm="BnB-ADOPT"/>
+    </failure-description>
+    <tests>
+        <test seed="42" name="COPs" env="async">
+            <correctness-tester>
+                <default-tester/>
+            </correctness-tester>
+            <algorithms>
+                <algorithm name="BnB-ADOPT"/>
+            </algorithms>
+            <problem-generator>
+                <dcop-unstructured p1="0.1" d="5" max-cost="100" n="7"/>
+            </problem-generator>
+            <loop>
+                <for-loop repeat-count="100" run-var="p1" start="0.1" end="0.9" tick-size="0.1">
+                    <looper>
+                        <do-once/>
+                    </looper>
+                </for-loop>
+            </loop>
+            <statistics>
+                <cc-sc/>
+                <item>Number of cores in use</item>
+                <item>Algorithm CPU time spending</item>
+                <msgc-sc type="BY_RUNVAR"/>
+            </statistics>
+        </test>
+    </tests>
+    <Statistics/>
+</experiment>

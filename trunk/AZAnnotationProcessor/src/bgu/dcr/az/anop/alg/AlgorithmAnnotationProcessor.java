@@ -53,6 +53,7 @@ public class AlgorithmAnnotationProcessor extends AbstractProcessor {
 
         Map<String, TypeElement> configurableClasses = ProcessorUtils.extractClassesAnnotatedWith(roundEnv, Algorithm.class);
         for (TypeElement te : configurableClasses.values()) {
+            System.err.println("Processing agent: " + te.getQualifiedName().toString());
             createAlgorithmManipulator(te);
         }
 

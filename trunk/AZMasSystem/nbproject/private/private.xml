@@ -1,133 +1,14 @@
-<<<<<<< .mine
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1">
-        <file>
-            <url>src/bgu/dcr/az/mas/exp/DCRExperimentDef.java</url>
-            <bookmark id="1">
-                <name/>
-                <line>132</line>
-                <key/>
-            </bookmark>
-        </file>
-    </editor-bookmarks>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group name="Misc">
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/ExperimentStatusSnapshotImpl.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/exp/ExperimentStatusSnapshot.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/exen/ExecutionResult.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/BaseAgentController.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPSolution.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPCorrectnessTester.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPAgentController.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/misc/StdoutLogger.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/misc/Logger.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/SimpleAgentSpawner.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPExecution.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/AgentSpawner.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/BaseExecution.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/AgentDistributer.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/OneToManyDistributor.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/Agent.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/Message.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/stat/StatisticsManager.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/stat/StatisticalInfoStreamProc.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/AgentController.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/stat/StatisticsManagerImpl.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/exp/Looper.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/exp/loopers/SingleExecutionLooper.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/exp/loopers/ForLooper.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/stat/MessageCountStatisticCollector.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/stat/AbstractStatisticCollector.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/stat/AdditionalLineChartProperties.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/stat/CCStatisticCollector.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/stat/Plotter.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPExperimentTest.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPExperiment.java</file>
-        </group>
         <group name="AgentZero">
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPData.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/AgentController.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPExecution.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/stat/AbstractStatisticCollector.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/exp/ExperimentUtils.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPExperimentTest.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/Agent.java</file>
         </group>
     </open-files>
 </project-private>
-=======
-<?xml version="1.0" encoding="UTF-8"?>
-<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1">
-        <file>
-            <url>src/bgu/dcr/az/mas/exp/DCRExperimentDef.java</url>
-            <bookmark id="1">
-                <name/>
-                <line>132</line>
-                <key/>
-            </bookmark>
-        </file>
-    </editor-bookmarks>
-    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group name="Misc">
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/ExperimentStatusSnapshotImpl.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/exp/ExperimentStatusSnapshot.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/exen/ExecutionResult.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/BaseAgentController.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPSolution.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPCorrectnessTester.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPAgentController.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/misc/StdoutLogger.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/misc/Logger.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/SimpleAgentSpawner.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPExecution.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/AgentSpawner.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/BaseExecution.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/AgentDistributer.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/OneToManyDistributor.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/Agent.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/Message.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/stat/StatisticsManager.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/stat/StatisticalInfoStreamProc.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/AgentController.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/stat/StatisticsManagerImpl.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/exp/Looper.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/exp/loopers/SingleExecutionLooper.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/exp/loopers/ForLooper.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/stat/MessageCountStatisticCollector.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/stat/AbstractStatisticCollector.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/stat/AdditionalLineChartProperties.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/stat/CCStatisticCollector.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/stat/Plotter.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPExperimentTest.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPExperiment.java</file>
-        </group>
-        <group name="AgentZero">
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPExecution.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPSolution.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/exp/ExperimentStatusSnapshot.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/ExperimentStatusSnapshotImpl.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/SimpleAgentSpawner.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/AgentSpawner.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/exp/Looper.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/exen/ExecutionResult.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPCorrectnessTester.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/Agent.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/stat/CCStatisticCollector.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/stat/StatisticalInfoStreamProc.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/AgentController.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/OneToManyDistributor.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/stat/AbstractStatisticCollector.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/Message.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/AgentDistributer.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/misc/Logger.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/stat/StatisticsManager.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/exp/loopers/ForLooper.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPAgentController.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/BaseExecution.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/api/stat/MessageCountStatisticCollector.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/exp/loopers/SingleExecutionLooper.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/stat/AdditionalLineChartProperties.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/misc/StdoutLogger.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/cp/CPExperiment.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZMasSystem/src/bgu/dcr/az/mas/impl/stat/StatisticsManagerImpl.java</file>
-        </group>
-        <group/>
-    </open-files>
-</project-private>
->>>>>>> .r770

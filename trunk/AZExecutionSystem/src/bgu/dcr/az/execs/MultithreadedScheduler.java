@@ -17,7 +17,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -164,7 +163,7 @@ public class MultithreadedScheduler implements Scheduler {
                     proc = table.acquire();
                     waitingTime += System.currentTimeMillis() - time;
                     if (proc != null) {
-                        proc.quota(systemCalls, false);
+                        proc.quota(systemCalls);
                         table.release(proc.pid());
                         proc = null;
                     } else {
@@ -192,13 +191,7 @@ public class MultithreadedScheduler implements Scheduler {
             if (idleDetectionEnterenceCount.incrementAndGet() == numCores) {
                 idleDetectionEnterenceCount.set(0);
 
-                table.startIdleDetectionResolving(new ProcTable.IdleDetectionResolver() {
-
-                    @Override
-                    public void resolve(Proc p) {
-                        p.quota(systemCalls, true);
-                    }
-                });
+                table.signalIdle();
 
                 idleDetectionEnterenceLock.release(numCores - 1);
             } else {

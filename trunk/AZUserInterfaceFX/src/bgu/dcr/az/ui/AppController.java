@@ -123,7 +123,7 @@ public class AppController {
         ProblemViewScreen pview = new ProblemViewScreen();
         pview.setModel(runningExperiment);
         main.addScreen("Problem", "problem", pview);
-        
+
         java.awt.EventQueue.invokeLater(() -> main.setVisible(true));
     }
 

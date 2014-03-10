@@ -20,6 +20,7 @@ public abstract class AbstractProc implements Proc {
     private SystemCalls systemCalls = null;
     private final int pid;
     private final boolean deamon;
+    private boolean idleSignal = false;
 
     public AbstractProc(int pid) {
         this.pid = pid;
@@ -42,14 +43,17 @@ public abstract class AbstractProc implements Proc {
     }
 
     @Override
-    public final void quota(SystemCalls systemCalls, boolean idleResolvingQuota) {
+    public final void quota(SystemCalls systemCalls) {
         switch (state) {
             case BLOCKING:
                 state = ProcState.RUNNING;
             case RUNNING:
-                if (idleResolvingQuota) {
+                if (idleSignal) {
+                    idleSignal = false;
+//                    System.out.println("Proc " + pid() + " handling idle");
                     onIdleDetected();
                 } else {
+//                    System.out.println("Proc " + pid() + " handling quota");
                     quota();
                 }
                 break;
@@ -113,6 +117,11 @@ public abstract class AbstractProc implements Proc {
     @Override
     public String toString() {
         return "Process " + pid();
+    }
+
+    @Override
+    public void signalIdle() {
+        idleSignal = true;
     }
 
 }

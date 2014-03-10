@@ -28,13 +28,16 @@ public interface Proc {
      * this quota
      *
      * @param systemCalls
-     * @param idleResolvingQuota if this parameter is true then the process
-     * received a quota in order to solve idle state
      */
-    void quota(SystemCalls systemCalls, boolean idleResolvingQuota);
+    void quota(SystemCalls systemCalls);
 
     /**
      * @return the id of this process - the process should never change its id.
      */
     int pid();
+
+    /**
+     * notify the process that the next quata should be used to handle idle
+     */
+    void signalIdle();
 }

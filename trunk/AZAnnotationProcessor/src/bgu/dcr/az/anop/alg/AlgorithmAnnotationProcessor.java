@@ -13,10 +13,13 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.TypeMirror;
 import org.mvel2.ParserContext;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateCompiler;
@@ -89,11 +92,25 @@ public class AlgorithmAnnotationProcessor extends AbstractProcessor {
                     for (VariableElement param : p.getValue().getParameters()) {
                         ParameterInfo pInfo = new ParameterInfo();
                         pInfo.name = param.getSimpleName().toString();
-                        
 //                        ProcessorUtils.note("modifier of type of " + param + "( " + param.asType() + ") are: " + ProcessorUtils.toDeclaredType(param.asType()).asElement().getModifiers());
-                        if (ProcessorUtils.toDeclaredType(param.asType()).asElement().getModifiers().contains(Modifier.PRIVATE)){
+                        // param.asType()
+                        TypeMirror ptype = param.asType();
+                        while (true) {
+//                            ProcessorUtils.note("parsing type: " + ptype);
+                            ArrayType arrayType = ProcessorUtils.getArrayType(ptype);
+
+                            if (arrayType != null) {
+//                                ProcessorUtils.note("is array!");
+                                ptype = arrayType.getComponentType();
+                            } else {
+                                break;
+                            }
+                        }
+
+                        if (ProcessorUtils.toDeclaredType(ptype).asElement().getModifiers().contains(Modifier.PRIVATE)) {
                             ProcessorUtils.error("Exposing private class in public API", param);
                         }
+
                         pInfo.typeFQN = ProcessorUtils.extractClassTypeName(param.asType(), true).replaceAll("\\$", ".");
                         pInfo.index = "" + i;
                         hInfo.params.addLast(pInfo);
@@ -105,7 +122,9 @@ public class AlgorithmAnnotationProcessor extends AbstractProcessor {
             }
             scanned = (TypeElement) ProcessorUtils.toDeclaredType(scanned.getSuperclass()).asElement();
         }
-        ProcessorUtils.writeClass(AUTOGEN_PACKAGE + "." + ctx.get("className"), agentManipulatorTemplate, ctx, te);
+
+        ProcessorUtils.writeClass(AUTOGEN_PACKAGE
+                + "." + ctx.get("className"), agentManipulatorTemplate, ctx, te);
     }
 
     public static class HandlerInfo {

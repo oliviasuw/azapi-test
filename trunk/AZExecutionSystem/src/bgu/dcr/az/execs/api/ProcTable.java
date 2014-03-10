@@ -87,12 +87,9 @@ public interface ProcTable {
     Collection<Integer> allProcessIds();
 
     /**
-     * will loop all the processes that are blocking and give them to the
-     * resolver to attempt to change their status
-     *
-     * @param resolver
+     * wake and signal all processes for idle
      */
-    void startIdleDetectionResolving(IdleDetectionResolver resolver);
+    void signalIdle();
 
     EventListeners<ProcTableListener> listeners();
 

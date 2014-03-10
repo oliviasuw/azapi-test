@@ -1,9 +1,10 @@
 package bgu.dcr.az.api;
 
 import bgu.dcr.az.api.exp.DeepCopyFailedException;
+import bgu.dcr.az.common.tos.ToStringUtils;
 import bgu.dcr.az.utils.DeepCopyUtil;
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -47,6 +48,7 @@ public class Message implements Serializable {
     private long messageId = generateUniqueId();
     private String name; //the message name (= type)
     private int sender; //the sender of the message
+    private int recepient;
 
     /**
      * collection of the message arguments the arguments are unnamed -> TODO:
@@ -60,10 +62,19 @@ public class Message implements Serializable {
      * @param from the agent sending this message
      * @param args
      */
-    public Message(String name, int from, Object[] args) {
+    public Message(String name, int from, Object[] args, int recepient) {
         this.name = name;
         this.sender = from;
         this.args = args;
+        this.recepient = recepient;
+    }
+
+    void setRecepient(int recepient) {
+        this.recepient = recepient;
+    }
+
+    public int getRecepient() {
+        return recepient;
     }
 
     /**
@@ -102,7 +113,7 @@ public class Message implements Serializable {
             }
         }
 
-        Message ret = new Message(getName(), getSender(), cargs);
+        Message ret = new Message(getName(), getSender(), cargs, recepient);
         return ret;
     }
 
@@ -110,9 +121,9 @@ public class Message implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (Object a : args) {
-            sb.append(a.toString()).append(", ");
+            sb.append(ToStringUtils.toString(a)).append(", ");
         }
-        return "[" + getName() + (args.length > 0 ? ": " + sb.deleteCharAt(sb.length() - 2).toString() + "]" : "]");
+        return "[" + getName() + (args.length > 0 ? ": " + sb.substring(0, sb.length() - 2) + "]" : "]");
 
     }
 

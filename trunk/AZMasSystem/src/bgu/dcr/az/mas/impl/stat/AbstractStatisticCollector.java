@@ -40,7 +40,7 @@ public abstract class AbstractStatisticCollector implements StatisticCollector<C
 
     @Override
     public void plot(Plotter ploter, Experiment ex) {
-        if (ex == null) return ;
+//        if (ex == null) return ;
         
         if (manager == null) {
             manager = StatisticsManagerImpl.getInstance();

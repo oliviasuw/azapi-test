@@ -64,6 +64,11 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         getStyleClass().add("configuration-property-editor");
 
         selected = new SimpleBooleanProperty(false);
+        
+        addEventFilter(MouseEvent.MOUSE_RELEASED, eh -> {
+            eh.consume();
+        });
+        
         addEventFilter(MouseEvent.MOUSE_PRESSED, eh -> {
             Node node = FXUtils.getTitledPaneTitleRegion(this);
             
@@ -74,6 +79,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
                 if (!selected.get()) {
                     selected.set(true);
                 } else {
+//                    System.out.println("set expended "  + (!isExpanded()));
                     setExpanded(!isExpanded());
                 }
             }

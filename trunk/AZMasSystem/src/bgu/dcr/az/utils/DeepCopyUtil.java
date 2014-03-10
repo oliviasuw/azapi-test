@@ -9,6 +9,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import org.objenesis.strategy.StdInstantiatorStrategy;
 
 /**
  *
@@ -29,6 +30,7 @@ public class DeepCopyUtil {
                 Kryo k = new Kryo();
                 k.setAsmEnabled(true);
                 k.setRegistrationRequired(false);
+                k.setInstantiatorStrategy(new StdInstantiatorStrategy());
                 k.addDefaultSerializer(DeepCopyable.class, new Serializer() {
 
                     @Override

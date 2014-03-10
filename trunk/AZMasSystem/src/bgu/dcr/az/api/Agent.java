@@ -3,8 +3,6 @@ package bgu.dcr.az.api;
 import bgu.dcr.az.anop.alg.WhenReceived;
 import bgu.dcr.az.api.prob.ImmutableProblem;
 import bgu.dcr.az.api.prob.ProblemType;
-import bgu.dcr.az.api.agt.ReportMediator;
-import bgu.dcr.az.api.agt.SendMediator;
 import bgu.dcr.az.api.ds.ImmutableSet;
 import bgu.dcr.az.api.exp.InvalidValueException;
 import bgu.dcr.az.api.exp.RepeatedCallingException;
@@ -46,9 +44,9 @@ public abstract class Agent extends Agt0DSL {
     public String toString() {
         final String prefix = "Agent " + (getId() < 10 ? "00" : getId() < 100 ? "0" : "") + getId();
 
-        return prefix + "@" + getClass().getName();
+        return prefix + "@" + getClass().getSimpleName();
     }
- 
+
     /**
      * create a default agent - this agent will have id = -1 so you must
      * reassign it
@@ -70,9 +68,8 @@ public abstract class Agent extends Agt0DSL {
      * @param args
      * @return
      */
-    protected Message createMessage(String name, Object[] args) {
-        Message ret = new Message(name, getId(), args);
-        beforeMessageSending(ret);
+    protected Message createMessage(String name, Object[] args, int recepient) {
+        Message ret = new Message(name, getId(), args, recepient);
         return ret;
     }
 
@@ -345,7 +342,11 @@ public abstract class Agent extends Agt0DSL {
      * @param args
      */
     protected void broadcast(String msg, Object... args) {
-        broadcast(createMessage(msg, args));
+        for (int i=0; i<getNumberOfVariables(); i++){
+            if (i != getId()){
+                send(createMessage(msg, args, i)).to(i);
+            }
+        }
     }
 
     /**
@@ -373,7 +374,7 @@ public abstract class Agent extends Agt0DSL {
      * @return continuation class
      */
     protected SendMediator send(String msg, Object... args) {
-        return send(createMessage(msg, args));
+        return send(createMessage(msg, args, -1));
     }
 
     /**
@@ -383,7 +384,7 @@ public abstract class Agent extends Agt0DSL {
      * @return
      */
     protected SendMediator send(Message msg) {
-        return new SendMediator(msg, controller);
+        return new SendMediator(msg, this, controller);
     }
 
     /**
@@ -391,7 +392,7 @@ public abstract class Agent extends Agt0DSL {
      * finish the algorithm or revive from idle
      */
     public void onIdleDetected() {
-        throw new UnsupportedOperationException("if you are using IdleDetected feature you must implements Agent.onIdleDetected method in agent class " + getClass().getSimpleName());
+        throw new UnsupportedOperationException("unexpected idle reached. If you are writing an algorithm that expect idle state you must implement Agent.onIdleDetected method in agent class " + getClass().getSimpleName());
     }
 
     /**

@@ -24,6 +24,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
@@ -90,6 +91,10 @@ public class ProcessorUtils {
         registeredServices.clear();
     }
 
+    public static Types getTypeUtils() {
+        return typeUtils;
+    }
+
     /**
      * extract the methods (ExecutableElements) from the given type element
      * (which represents a class)
@@ -152,6 +157,20 @@ public class ProcessorUtils {
      * @return
      */
     public static String extractClassTypeName(TypeMirror te, boolean parametrized) {
+        String postfix = "";
+
+        ArrayType arrayType = getArrayType(te);
+        while (arrayType != null) {
+            postfix += "[]";
+            te = arrayType.getComponentType();
+            arrayType = getArrayType(te);
+        }
+        
+        PrimitiveType primitiveType = getPrimitiveType(te);
+        if (!postfix.isEmpty() && primitiveType != null){
+            return primitiveType.toString() + postfix;
+        }
+        
         final DeclaredType decte = toDeclaredType(te);
         String result = extractClassTypeName((TypeElement) decte.asElement(), false);
         if (parametrized) {
@@ -162,7 +181,7 @@ public class ProcessorUtils {
             }
         }
 
-        return result;
+        return result + postfix;
     }
 
     /**
@@ -203,6 +222,45 @@ public class ProcessorUtils {
             @Override
             protected DeclaredType defaultAction(TypeMirror e, Void p) {
                 throw new UnsupportedOperationException("given type mirror is not a declared type: " + e);
+            }
+
+        }, null);
+    }
+
+    /**
+     * @param mirror
+     * @return if this type is not an array type
+     */
+    public static ArrayType getArrayType(TypeMirror mirror) {
+        return mirror.accept(new SimpleTypeVisitor7<ArrayType, Void>() {
+
+            @Override
+            public ArrayType visitArray(ArrayType t, Void p) {
+                return t;
+            }
+
+            @Override
+            protected ArrayType defaultAction(TypeMirror e, Void p) {
+                return null;
+            }
+
+        }, null);
+    }
+    /**
+     * @param mirror
+     * @return if this type is not an primitive type
+     */
+    public static PrimitiveType getPrimitiveType(TypeMirror mirror) {
+        return mirror.accept(new SimpleTypeVisitor7<PrimitiveType, Void>() {
+
+            @Override
+            public PrimitiveType visitPrimitive(PrimitiveType t, Void p) {
+                return t;
+            }
+
+            @Override
+            protected PrimitiveType defaultAction(TypeMirror e, Void p) {
+                return null;
             }
 
         }, null);

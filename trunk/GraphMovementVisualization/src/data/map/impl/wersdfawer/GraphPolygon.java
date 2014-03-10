@@ -5,13 +5,9 @@
  */
 package data.map.impl.wersdfawer;
 
-import java.awt.Point;
-import java.awt.Polygon;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
-import javafx.scene.image.Image;
-import resources.img.R;
 
 /**
  *

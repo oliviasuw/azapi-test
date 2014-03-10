@@ -8,6 +8,7 @@ package bgu.dcr.az.abm.test;
 import bgu.dcr.az.abm.api.World;
 import bgu.dcr.az.abm.exen.ABMExecution;
 import bgu.dcr.az.abm.exen.info.TickInfo;
+import bgu.dcr.az.abm.impl.AgentDataManager;
 import bgu.dcr.az.abm.impl.WorldImpl;
 import bgu.dcr.az.execs.MultithreadedScheduler;
 import bgu.dcr.az.execs.api.Scheduler;
@@ -24,6 +25,30 @@ public class TestEngine {
     private static final int NUM_TICKS = 10000;
 
     public static void main(String[] args) throws Exception {
+        
+        AgentDataManager manager = new AgentDataManager();
+        manager.init(null);
+        
+        Talker t0 = manager.createAgentData(0, Talker.class);
+        Talker t1 = manager.createAgentData(1, Talker.class);
+        
+        System.out.println("Changes are " + manager.getDataChanges(Talker.class));
+        
+        t0.setShouldTalk(true);
+        
+        System.out.println("Changes are " + manager.getDataChanges(Talker.class));
+        
+        manager.tick(0);
+        
+        System.out.println("Changes are " + manager.getDataChanges(Talker.class));
+                
+        t0.setShouldTalk(true);
+        t1.setShouldTalk(true);
+        
+        System.out.println("Changes are " + manager.getDataChanges(Talker.class));
+        
+        
+        if (1==1) return;
         World w = createWorld();
 
         ExecutorService threadPool = Executors.newFixedThreadPool(4);
@@ -39,7 +64,7 @@ public class TestEngine {
             }
         });
 
-        ex.execute(scheduler, 2);
+        ex.execute(scheduler, 1);
         threadPool.shutdown();
     }
 

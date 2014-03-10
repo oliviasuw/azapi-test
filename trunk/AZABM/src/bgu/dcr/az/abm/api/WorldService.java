@@ -10,6 +10,8 @@ package bgu.dcr.az.abm.api;
  *
  * @author Eran
  */
-public interface Service {
+public interface WorldService {
     void init(World w);
+    
+    void tick(int tickNumber);
 }

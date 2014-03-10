@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package bgu.dcr.az.abm.api;
 
 /**
@@ -11,5 +10,8 @@ package bgu.dcr.az.abm.api;
  * @author Eran
  */
 public interface AgentData {
-    
+
+    void init(World w, int agentId);
+
+    int getOwnerId();
 }

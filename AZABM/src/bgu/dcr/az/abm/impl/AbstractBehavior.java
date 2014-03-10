@@ -7,7 +7,7 @@ package bgu.dcr.az.abm.impl;
 
 import bgu.dcr.az.abm.api.ABMAgent;
 import bgu.dcr.az.abm.api.Behavior;
-import bgu.dcr.az.abm.api.Service;
+import bgu.dcr.az.abm.api.WorldService;
 import bgu.dcr.az.abm.api.World;
 import com.esotericsoftware.reflectasm.ConstructorAccess;
 import java.util.Arrays;
@@ -84,7 +84,7 @@ public abstract class AbstractBehavior implements Behavior {
                 f.setAccessible(true);
                 return f;
             }).forEach(field -> {
-                if (Service.class.isAssignableFrom(field.getType())) {
+                if (WorldService.class.isAssignableFrom(field.getType())) {
                     this.worldRequirements.add(field.getType());
                 } else {
                     this.agentRequirements.add(field.getType());

@@ -162,6 +162,8 @@ public class CPExperimentTest implements Experiment {
      */
     private ExecutionResult execute(int executionNumber) {
 
+        if (algorithms.isEmpty()) Agt0DSL.panic("cannot run experiment without any algorithm defined. (please add one in test.xml file)");
+        
         int numCores = Runtime.getRuntime().availableProcessors();
         final ExecutorService pool = Executors.newFixedThreadPool(numCores);
         Scheduler scheduler = new MultithreadedScheduler(pool);
@@ -188,7 +190,7 @@ public class CPExperimentTest implements Experiment {
             ConfigurationOfElements conf = new ConfigurationOfElements();
             final int count = looper.count() * algorithms.size();
             for (i = executionNumber == -1 ? 0 : executionNumber; i < count; i++) {
-                System.out.println("Start Running Problem on " + coreAdapters[i % algorithms.size()].getAdaptedNumberOfCores() + " cores");
+                System.out.println("Start Running Problem " + i + " on " + coreAdapters[i % algorithms.size()].getAdaptedNumberOfCores() + " cores");
                 CPExecution exec = createExecutionWithSeed(i, conf, randomSeq.getIthLong(i));
                 result = exec.execute(scheduler, coreAdapters[i % algorithms.size()].getAdaptedNumberOfCores());
 

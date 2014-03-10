@@ -27,26 +27,28 @@
         <default-tester/>
         <algorithm name="BnB-ADOPT"/>
     </test>-->
-    <test seed="42" name="Local search">
+    <test seed="42" name="Local search" env="async">
         <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100">
         </for-loop>
     
         <cc-sc/>
         <msgc-sc/>
     
-        <dcop-unstructured n="150" d="20" max-cost="100"/>
-        <algorithm name="DSA"/>
-        <algorithm name="DSA-C"/>
+        <dcop-unstructured n="12" d="5" max-cost="100"/>
+        <algorithm name="CONC_FB2"/>
+        <algorithm name="CONC_FB"/>
+        <!--<default-tester/>-->
+        <!--<algorithm name="DSA-C"/>-->
         
-        <algorithm name="MGM1"/>
-        <algorithm name="MGM"/>
+        <!--<algorithm name="MGM1"/>-->
+        <!--<algorithm name="MGM"/>-->
         
-        <algorithm name="MaxSum"/>
+<!--        <algorithm name="MaxSum"/>
         <algorithm name="MaxSumRandom1"/>
         <algorithm name="BoundedMaxSum"/>
         <algorithm name="MaxSumAD"/>
         <algorithm name="MaxSumADVPR"/>
-        <algorithm name="MaxSumADVP"/>
+        <algorithm name="MaxSumADVP"/>-->
     </test>
 
 </experiment>

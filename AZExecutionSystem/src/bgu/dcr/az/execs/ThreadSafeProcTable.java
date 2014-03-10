@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -31,7 +32,7 @@ public class ThreadSafeProcTable implements ProcTable {
     private final AtomicInteger blockingProcesses = new AtomicInteger(0);
     private final AtomicInteger totalNumberOfProcesses = new AtomicInteger(0);
     private final AtomicInteger nextProceId = new AtomicInteger(0);
-    
+
 //signaling cores in blocked in pending queue that there is an idle
     private final ProcessInfo currentIdleSignal = new ProcessInfo(null);
     private final AtomicInteger estimatedWaitingCores = new AtomicInteger(0);
@@ -212,24 +213,28 @@ public class ThreadSafeProcTable implements ProcTable {
     }
 
     @Override
-    public void startIdleDetectionResolving(IdleDetectionResolver resolver) {
-//        blockingProcesses.set(0);
-        int numWake = totalNumberOfProcesses.get();
+    public void signalIdle() {
+//        int numWake = totalNumberOfProcesses.get();
 
         for (ProcessInfo p : processInfos.values()) {
             wake(p);
+            p.process.signalIdle();
         }
 
-        try {
-            for (int i = 0; i < numWake; i++) {
-                Proc p = acquire();
-                resolver.resolve(p);
-                release(p.pid());
-            }
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ThreadSafeProcTable.class.getName()).log(Level.SEVERE, null, ex);
-            Thread.currentThread().interrupt();
-        }
+//        IntStream.range(0, numWake).forEach(i -> {
+//        try {
+//
+//            for (int i = 0; i < numWake; i++) {
+//                Proc p = acquire();
+//                resolver.resolve(p);
+//                release(p.pid());
+//            }
+//
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(ThreadSafeProcTable.class.getName()).log(Level.SEVERE, null, ex);
+//            Thread.currentThread().interrupt();
+//        }
+//        });
     }
 
     @Override

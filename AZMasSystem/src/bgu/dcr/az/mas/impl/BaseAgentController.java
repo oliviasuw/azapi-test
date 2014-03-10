@@ -44,6 +44,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
     protected final Logger logger;
 
     private int tick;
+    private boolean giveupBeforeComplete = true;
 
     public BaseAgentController(int id, Execution<?> ex) throws ClassNotFoundException, ConfigurationException, InitializationException {
         super(id);
@@ -88,6 +89,10 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 
         router.register(this, controlled);
         this.tick = 0;
+    }
+
+    public void setGiveupBeforeComplete(boolean giveupBeforeComplete) {
+        this.giveupBeforeComplete = giveupBeforeComplete;
     }
 
     protected Map<Integer, AgentWithManipulator> getControlledAgents() {
@@ -165,7 +170,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
             }
             
             //Half eager implementation
-            if (!mq.isEmpty() && ThreadLocalRandom.current().nextBoolean()){
+            if (giveupBeforeComplete && !mq.isEmpty() && ThreadLocalRandom.current().nextBoolean()){
                 return;
             }
         }

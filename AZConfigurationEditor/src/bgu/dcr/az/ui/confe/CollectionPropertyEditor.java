@@ -59,7 +59,7 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
     private Property collectionProperty;
     private boolean readOnly;
     private boolean editEnabled;
-    
+
     private Predicate filter;
 
     private final BooleanProperty selected;
@@ -74,6 +74,11 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         this.parent = parent;
         getStyleClass().add("collection-property-editor");
         selected = new SimpleBooleanProperty(false);
+
+        addEventFilter(MouseEvent.MOUSE_RELEASED, eh -> {
+            eh.consume();
+        });
+
         addEventFilter(MouseEvent.MOUSE_PRESSED, eh -> {
 
             Node node = FXUtils.getTitledPaneTitleRegion(this);

@@ -39,7 +39,9 @@ public class CPExecution extends BaseExecution<CPData> {
         AgentDistributer distributer = require(AgentDistributer.class);
         for (int i = 0; i < distributer.getNumberOfAgentControllers(); i++) {
             try {
-                controllers.add(new CPAgentController(i, this));
+                final CPAgentController controller = new CPAgentController(i, this);
+                controller.setGiveupBeforeComplete(getEnvironment() == ExecutionEnvironment.async);
+                controllers.add(controller);
             } catch (ClassNotFoundException | ConfigurationException ex) {
                 throw new InitializationException("could not initialize agent, see cause", ex);
             }

@@ -18,12 +18,10 @@ import bgu.dcr.az.ui.statistics.AlgorithmCPUTimeStatisticCollector;
 import bgu.dcr.az.ui.statistics.NumberOfCoresInUseStatisticCollector;
 import bgu.dcr.az.ui.statistics.RealtimeJFXPlotter;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Predicate;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -34,7 +32,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 
 /**
@@ -69,7 +66,7 @@ public class StatusScreenCtl implements Initializable {
     RealtimeJFXPlotter barChartPlotter;
 
     ConfigurationEditor experimentView;
-    UIPoke pieChartPlotterPoke;
+    UIPoke plotterPoke;
 
     /**
      * Initializes the controller class.
@@ -79,7 +76,7 @@ public class StatusScreenCtl implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        pieChartPlotterPoke = new UIPoke(this::updateStatistics, 1000);
+        plotterPoke = new UIPoke(this::updateStatistics, 1000);
 
         experimentView = new ConfigurationEditor();
         BorderPane.setAlignment(experimentView, Pos.TOP_CENTER);
@@ -148,7 +145,7 @@ public class StatusScreenCtl implements Initializable {
             public void onNumberOfFinishedExecutionsChanged(int numberOfFinishedExecutions) {
                 progressBar.setProgress((double) numberOfFinishedExecutions / numExecutions);
                 updateTestsList();
-                pieChartPlotterPoke.poke();
+                plotterPoke.poke();
                 Platform.runLater(() -> executionNumberLabel.setText("Execution " + numberOfFinishedExecutions + " of " + numExecutions));
             }
 

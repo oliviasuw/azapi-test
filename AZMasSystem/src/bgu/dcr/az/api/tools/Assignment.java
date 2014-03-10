@@ -10,6 +10,7 @@ import bgu.dcr.az.api.exp.UnassignedVariableException;
 import bgu.dcr.az.api.prob.Problem;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -65,19 +66,21 @@ public class Assignment implements Serializable, DeepCopyable {
      * remove var's assignment
      *
      * @param var
+     * @return the removed assigned value
      */
-    public void unassign(int var) {
-        assignment.remove(var);
+    public Integer unassign(int var) {
         cachedCost = -1;
+        return assignment.remove(var);
     }
 
     /**
      * same as unassign(agt.getId());
      *
      * @param agt
+     * @return the removed assigned value
      */
-    public void unassign(Agent agt) {
-        unassign(agt.getId());
+    public Integer unassign(Agent agt) {
+        return unassign(agt.getId());
     }
 
     /**
@@ -354,5 +357,22 @@ public class Assignment implements Serializable, DeepCopyable {
     @Override
     public Assignment deepCopy() {
         return new Assignment(this);
+    }
+
+    /**
+     * @param problem
+     * @return a collection of all the variables that does not have an
+     * assignment in this cpa
+     */
+    public Collection<Integer> getUnassignedVariables(ImmutableProblem problem) {
+        Set<Integer> result = new HashSet<>();
+        ImmutableSet<Integer> assigned = assignedVariables();
+        for (int i = 0; i < problem.getNumberOfVariables(); i++) {
+            if (!assigned.contains(i)) {
+                result.add(i);
+            }
+        }
+
+        return result;
     }
 }

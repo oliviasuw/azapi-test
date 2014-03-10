@@ -105,28 +105,25 @@ public class ConfigurationEditor extends ScrollPane {
 //                        tnode.setExpanded(true);
 //                    });
 //        }
-
-        if (selectedNode != newSelection) {
-            if (newSelection != null && selectedNode != null) {
+        if (newSelection != null && selectedNode != newSelection) {
+//            System.out.println("Selecting " + newSelection + " while selected is " + selectedNode) ;
+            
+            if (selectedNode != null) {
                 if (selectedNode instanceof Selectable) {
                     ((Selectable) selectedNode).selectedProperty().set(false);
                 }
                 selectedNode.getStyleClass().remove("selected");
             }
 
-            if (newSelection != null) {
-                selectedNode = newSelection;
-                if (newSelection instanceof Selectable) {
-                    newSelection.setExpanded(true);
-                    ((Selectable) newSelection).selectedProperty().set(true);
-                }
-                newSelection.getStyleClass().add("selected");
+            selectedNode = newSelection;
+            if (newSelection instanceof Selectable) {
+                newSelection.setExpanded(true);
+                ((Selectable) newSelection).selectedProperty().set(true);
             }
-
-        }
-
-        if (newSelection != null) {
-            FXUtils.ensureVisibility(this, newSelection, false);
+            newSelection.getStyleClass().add("selected");
+//            if (newSelection != null) {
+                FXUtils.ensureVisibility(this, newSelection, false);
+//            }
         }
 
         if (n == internal) {

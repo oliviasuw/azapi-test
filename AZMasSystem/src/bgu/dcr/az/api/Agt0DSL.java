@@ -7,6 +7,7 @@ package bgu.dcr.az.api;
 import bgu.dcr.az.api.exp.PanicException;
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
 /**
@@ -21,7 +22,6 @@ public class Agt0DSL {
 
     private static final Pattern nummericPattern = Pattern.compile("[-+]?\\d+(\\.\\d*)?$");
     private static final Pattern integericPattern = Pattern.compile("[-+]?\\d+$");
-    private Random rnd = new Random(42);
 
     /**
      * returns a collection of numbers in the range of start to end (includes
@@ -52,7 +52,8 @@ public class Agt0DSL {
      */
     public int randomInteger(int min, int max){
         if (max <= min) return min;
-        return rnd.nextInt(max-min) + min;
+        
+        return ThreadLocalRandom.current().nextInt(max-min) + min;
     }
 
     /**
@@ -63,7 +64,7 @@ public class Agt0DSL {
      */
     public double randomDouble(double min, double max){
         if (max <= min) return min;
-        return rnd.nextDouble() * (max-min) + min;
+        return ThreadLocalRandom.current().nextDouble() * (max-min) + min;
     }
         
     /**
@@ -74,7 +75,7 @@ public class Agt0DSL {
      */
     public float randomFloat(float min, float max){
         if (max <= min) return min;
-        return rnd.nextFloat() * (max-min) + min;
+        return ThreadLocalRandom.current().nextFloat() * (max-min) + min;
     }
     
     /**
@@ -85,7 +86,7 @@ public class Agt0DSL {
      */
     public long randomLong(long min, long max){
         if (max <= min) return min;
-        return abs(rnd.nextLong()) % (max-min) + min;
+        return abs(ThreadLocalRandom.current().nextLong()) % (max-min) + min;
     }
     
     /**
@@ -118,10 +119,6 @@ public class Agt0DSL {
      */
     public double abs(double num){
         return Math.abs(num);
-    }
-    
-    public void randomize(long seed) {
-        rnd = new Random(seed);
     }
 
     /**
@@ -328,9 +325,9 @@ public class Agt0DSL {
         System.arraycopy(a, 0, copy, 0, a.length);
 
         int n = a.length;
-        rnd.nextInt();
+        ThreadLocalRandom.current().nextInt();
         for (int i = 0; i < n; i++) {
-            int change = i + rnd.nextInt(n - i);
+            int change = i + ThreadLocalRandom.current().nextInt(n - i);
             swap(copy, i, change);
         }
 
@@ -339,9 +336,9 @@ public class Agt0DSL {
 
     private <T> void _shuffle(T[] a) {
         int n = a.length;
-        rnd.nextInt();
+        ThreadLocalRandom.current().nextInt();
         for (int i = 0; i < n; i++) {
-            int change = i + rnd.nextInt(n - i);
+            int change = i + ThreadLocalRandom.current().nextInt(n - i);
             swap(a, i, change);
         }
     }
@@ -634,7 +631,7 @@ public class Agt0DSL {
         if (c.isEmpty()) {
             return null;
         }
-        return c.get(rnd.nextInt(c.size()));
+        return c.get(ThreadLocalRandom.current().nextInt(c.size()));
     }
 
     /**
@@ -659,7 +656,7 @@ public class Agt0DSL {
         if (c.length == 0) {
             return null;
         }
-        return c[rnd.nextInt(c.length)];
+        return c[ThreadLocalRandom.current().nextInt(c.length)];
     }
 
     /**

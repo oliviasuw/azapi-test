@@ -42,6 +42,23 @@ public class ConfigurableTypeInfoImpl implements TypeInfo {
         className = new String(chars);
 
         try {
+            String prefix = "";
+            while (className.endsWith("[]")) {
+                prefix += "[";
+                className = className.substring(0, className.length() - "[]".length());
+            }
+            if (!prefix.isEmpty()) {
+                switch(className) {
+                    case "int": className = prefix + "I"; break;
+                    case "short": className = prefix + "S"; break;
+                    case "long": className = prefix + "J"; break;
+                    case "char": className = prefix + "C"; break;
+                    case "double": className = prefix + "D"; break;
+                    case "float": className = prefix + "F"; break;
+                    case "byte": className = prefix + "B"; break;
+                    case "boolean": className = prefix + "Z"; break;
+                }
+            }
             this.clazz = Class.forName(className);
         } catch (Exception e) {
             e.printStackTrace();

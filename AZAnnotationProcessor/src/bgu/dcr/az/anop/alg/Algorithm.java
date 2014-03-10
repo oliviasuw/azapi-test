@@ -27,7 +27,9 @@ public @interface Algorithm {
     /**
      * if this set to true the algorithm requires an idle detector
      * @See bgu.csp.az.api.tools.IdleDetector
+     * @deprecated do not use - this will be ignored.
      */
+    @Deprecated
     boolean useIdleDetector() default false;
 
 }

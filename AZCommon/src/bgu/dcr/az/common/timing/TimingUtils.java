@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.comtimingtils;
+package bgu.dcr.az.common.timing;
 
 import java.util.Timer;
 import java.util.TimerTask;

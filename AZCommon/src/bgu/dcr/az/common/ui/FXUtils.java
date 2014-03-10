@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.common.ui;
 
-import bgu.dcr.az.comtimingtils.TimingUtils;
+import bgu.dcr.az.common.timing.TimingUtils;
 import com.sun.javafx.scene.control.skin.TitledPaneSkin;
 import java.io.File;
 import java.io.IOException;

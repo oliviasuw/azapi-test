@@ -34,15 +34,9 @@
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/problem/ProblemViewScreen.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/problem/ConstraintCalcConsole.java</file>
         </group>
-        <group name="AgentZero">
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/BasicStatisticsScreenCtl.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/statistics/RealtimeJFXPlotter.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/test.xml</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/status/SubExperimentListCell.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/status/StatusScreenCtl.java</file>
-        </group>
         <group>
             <file>file:/D:/Projects/AgentZero/AZUserInterfaceFX/src/bgu/dcr/az/ui/test.xml</file>
         </group>
+        <group name="AgentZero"/>
     </open-files>
 </project-private>

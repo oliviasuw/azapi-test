@@ -5,13 +5,7 @@
         <group name="Misc">
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZExecutionSystem/src/bgu/dcr/az/execs/api/Proc.java</file>
         </group>
-        <group name="AgentZero">
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZExecutionSystem/src/bgu/dcr/az/execs/api/ProcTable.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZExecutionSystem/src/bgu/dcr/az/execs/api/Proc.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZExecutionSystem/src/bgu/dcr/az/execs/MultithreadedScheduler.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZExecutionSystem/src/bgu/dcr/az/execs/AbstractProc.java</file>
-            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZExecutionSystem/src/bgu/dcr/az/execs/ThreadSafeProcTable.java</file>
-        </group>
         <group/>
+        <group name="AgentZero"/>
     </open-files>
 </project-private>

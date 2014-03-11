@@ -161,7 +161,7 @@ public class CPExperimentTest implements Experiment {
      * @return
      */
     private ExecutionResult execute(int executionNumber) {
-
+        
         if (algorithms.isEmpty()) Agt0DSL.panic("cannot run experiment without any algorithm defined. (please add one in test.xml file)");
         
         int numCores = Runtime.getRuntime().availableProcessors();

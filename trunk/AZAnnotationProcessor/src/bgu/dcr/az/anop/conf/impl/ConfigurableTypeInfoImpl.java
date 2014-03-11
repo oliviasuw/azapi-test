@@ -57,6 +57,7 @@ public class ConfigurableTypeInfoImpl implements TypeInfo {
                     case "float": className = prefix + "F"; break;
                     case "byte": className = prefix + "B"; break;
                     case "boolean": className = prefix + "Z"; break;
+                    default: className = prefix + "L" + className; break;
                 }
             }
             this.clazz = Class.forName(className);

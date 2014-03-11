@@ -60,5 +60,5 @@ public interface Experiment extends Iterable<Experiment> {
      * of the execution
      */
     Collection<StatisticCollector> getStatistics();
-
+    
 }

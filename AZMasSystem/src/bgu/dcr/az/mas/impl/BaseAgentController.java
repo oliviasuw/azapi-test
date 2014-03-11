@@ -42,6 +42,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
     private final Queue<AZIPMessage>[] messageQueue;
     protected final Execution execution;
     protected final Logger logger;
+    private Agent activeAgent;
 
     private int tick;
     private boolean giveupBeforeComplete = true;
@@ -102,8 +103,10 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
     @Override
     protected void start() {
         for (AgentWithManipulator a : controlledAgents.values()) {
-            a.a.start();
+            activeAgent = a.a;
+            activeAgent.start();
         }
+        activeAgent = null;
     }
 
     @Override
@@ -148,16 +151,18 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
                     }
                     return;
                 }
-                Message newM = a.a.setCurrentMessage(m.getData());
+                activeAgent = a.a;
+                Message newM = activeAgent.setCurrentMessage(m.getData());
                 if (newM != null) {
-                    a.am.callHandler(a.a, newM.getName(), newM.getArgs());
+                    a.am.callHandler(activeAgent, newM.getName(), newM.getArgs());
                 }
 
-                if (a.a.isFinished()) {
-
+                if (activeAgent.isFinished()) {
                     removeControlledAgent(a);
+                    activeAgent = null;
                     return;
                 }
+                activeAgent = null;
 
                 if (mq.isEmpty()) {
                     sleep();
@@ -168,9 +173,9 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
                 sleep();
                 return;
             }
-            
+
             //Half eager implementation
-            if (giveupBeforeComplete && !mq.isEmpty() && ThreadLocalRandom.current().nextBoolean()){
+            if (giveupBeforeComplete && !mq.isEmpty() && ThreadLocalRandom.current().nextBoolean()) {
                 return;
             }
         }
@@ -224,6 +229,10 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
         if (execution.getEnvironment() == ExecutionEnvironment.async) {
             wakeup(pid());
         }
+    }
+
+    protected Agent getActiveAgent() {
+        return activeAgent;
     }
 
     @Override

@@ -17,11 +17,13 @@ import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import bgu.dcr.az.mas.exp.ExperimentStatusSnapshot;
 import bgu.dcr.az.mas.impl.ExperimentStatusSnapshotImpl;
+import bgu.dcr.az.mas.impl.InitializationException;
 import bgu.dcr.az.mas.stat.StatisticCollector;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,6 +52,7 @@ public class CPExperiment implements Experiment {
 
     /**
      * the set of tests
+     *
      * @propertyName tests
      * @return
      */
@@ -86,6 +89,9 @@ public class CPExperiment implements Experiment {
                 return executeFailingExecution();
             }
 
+            suppliedServices.values().stream()
+                    .distinct().forEach(s -> s.initialize(this));
+            
             for (CPExperimentTest t : tests) {
                 status.currentExecutedSubExperimentName = t.getName();
                 status.currentExecutedSubExperimentStatus = t.status();
@@ -93,6 +99,9 @@ public class CPExperiment implements Experiment {
                 for (Map.Entry<Class, ExecutionService> e : suppliedServices.entrySet()) {
                     t.supply(e.getKey(), e.getValue());
                 }
+
+                suppliedServices.values().stream()
+                    .distinct().forEach(s -> s.initialize(t));
 
                 result = t.execute();
 
@@ -221,8 +230,9 @@ public class CPExperiment implements Experiment {
 
     /**
      * available statistics
+     *
      * @icon #remove.png
-     * @return 
+     * @return
      */
     @Override
     public Collection<StatisticCollector> getStatistics() {

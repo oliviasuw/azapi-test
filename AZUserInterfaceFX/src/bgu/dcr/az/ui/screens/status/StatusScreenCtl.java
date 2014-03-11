@@ -14,9 +14,6 @@ import bgu.dcr.az.ui.AppController;
 import bgu.dcr.az.ui.ExperimentStatusEventListener;
 import bgu.dcr.az.ui.confe.ConfigurationEditor;
 import bgu.dcr.az.ui.screens.dialogs.Notification;
-import bgu.dcr.az.ui.statistics.AlgorithmCPUTimeStatisticCollector;
-import bgu.dcr.az.ui.statistics.NumberOfCoresInUseStatisticCollector;
-import bgu.dcr.az.ui.statistics.RealtimeJFXPlotter;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -155,13 +152,17 @@ public class StatusScreenCtl implements Initializable {
     private void updateStatistics() {
         String selectedTest = getSelectedTestName();
         if (selectedTest != null && pieChartPlotter != null) {
-            AlgorithmCPUTimeStatisticCollector stat = AppController.getAlgorithmCPUTimeStatistics().get(selectedTest);
-            stat.plot(pieChartPlotter, null);
+            AlgorithmCPUTimeStatisticCollector stat = AppController.getRuntimeStatistics().getAlgorithmCPUTimeStatistic(selectedTest);
+            if (stat != null) {
+                stat.plot(pieChartPlotter, null);
+            }
         }
 
         if (selectedTest != null && barChartPlotter != null) {
-            NumberOfCoresInUseStatisticCollector stat = AppController.getCoresInUseStatistics().get(selectedTest);
-            stat.plot(barChartPlotter, null);
+            NumberOfCoresInUseStatisticCollector stat = AppController.getRuntimeStatistics().getNumberOfCoresInUseStatistic(selectedTest);
+            if (stat != null) {
+                stat.plot(barChartPlotter, null);
+            }
         }
     }
 

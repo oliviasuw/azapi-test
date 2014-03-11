@@ -17,6 +17,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+//import java.util.concurrent.atomic.LongAdder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
@@ -29,13 +30,14 @@ public class ThreadSafeProcTable implements ProcTable {
 
     private final Map<Integer, ProcessInfo> processInfos = new ConcurrentHashMap<>();
     private final LinkedBlockingQueue<ProcessInfo> pendingProcesses = new LinkedBlockingQueue<>();
+    
     private final AtomicInteger blockingProcesses = new AtomicInteger(0);
     private final AtomicInteger totalNumberOfProcesses = new AtomicInteger(0);
     private final AtomicInteger nextProceId = new AtomicInteger(0);
 
 //signaling cores in blocked in pending queue that there is an idle
     private final ProcessInfo currentIdleSignal = new ProcessInfo(null);
-    private final AtomicInteger estimatedWaitingCores = new AtomicInteger(0);
+    //private final AtomicInteger estimatedWaitingCores = new AtomicInteger(0);
     private final AtomicInteger numberOfDeamons = new AtomicInteger(0);
 
     EventListeners<ProcTableListener> listeners = EventListeners.create(ProcTableListener.class);
@@ -48,17 +50,16 @@ public class ThreadSafeProcTable implements ProcTable {
     @Override
     public Proc acquire() throws InterruptedException {
         while (true) {
-            estimatedWaitingCores.incrementAndGet();
+            //estimatedWaitingCores.incrementAndGet();
 
             if (isInIdleState() || isEmpty()) {
-
                 pendingProcesses.add(currentIdleSignal); //to release the next agent
                 return null;
             }
 
 //            System.out.println("Acquire with: " + blockingProcesses.get() + " Blocked / " + totalNumberOfProcesses.get());
             ProcessInfo next = pendingProcesses.take();
-            estimatedWaitingCores.decrementAndGet();
+            //estimatedWaitingCores.decrementAndGet();
             if (isIdleSignal(next)) {
                 continue;
             }
@@ -108,7 +109,6 @@ public class ThreadSafeProcTable implements ProcTable {
                 }
 
             } catch (InterruptedException ex) {
-//                Logger.getLogger(ThreadSafeProcTable.class.getName()).log(Level.SEVERE, null, ex);
                 Thread.currentThread().interrupt();
             }
         }

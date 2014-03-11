@@ -34,10 +34,11 @@
         <cc-sc/>
         <msgc-sc/>
     
-        <dcop-unstructured n="12" d="5" max-cost="100"/>
-        <algorithm name="CONC_FB2"/>
-        <!--<algorithm name="SBB"/>-->
-        <algorithm name="CONC_FB"/>
+        <dcop-unstructured n="20" d="5" max-cost="100"/>
+        <!--<algorithm name="CONC_FB2"/>-->
+        <algorithm name="ABT"/>
+        <algorithm name="AFC-NG"/>
+        <!--<algorithm name="CONC_FB"/>-->
         <!--<default-tester/>-->
         <!--<algorithm name="DSA-C"/>-->
         

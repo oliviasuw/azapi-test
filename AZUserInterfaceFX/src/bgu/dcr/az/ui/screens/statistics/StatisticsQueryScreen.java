@@ -20,7 +20,6 @@ import bgu.dcr.az.orm.api.FieldMetadata;
 import bgu.dcr.az.orm.api.TableMetadata;
 import bgu.dcr.az.orm.util.UncheckedSQLException;
 import bgu.dcr.az.ui.screens.dialogs.MessageDialog;
-import bgu.dcr.az.ui.screens.statistics.DataJTableModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;

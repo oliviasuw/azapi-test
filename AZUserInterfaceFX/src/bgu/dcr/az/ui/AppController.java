@@ -19,8 +19,9 @@ import bgu.dcr.az.ui.screens.log.LogScreen;
 import bgu.dcr.az.ui.screens.problem.ProblemViewScreen;
 import bgu.dcr.az.ui.screens.statistics.BasicStatisticsScreenCtl;
 import bgu.dcr.az.ui.screens.status.StatusScreenCtl;
-import bgu.dcr.az.ui.statistics.AlgorithmCPUTimeStatisticCollector;
-import bgu.dcr.az.ui.statistics.NumberOfCoresInUseStatisticCollector;
+import bgu.dcr.az.ui.screens.status.AlgorithmCPUTimeStatisticCollector;
+import bgu.dcr.az.ui.screens.status.NumberOfCoresInUseStatisticCollector;
+import bgu.dcr.az.ui.screens.status.RuntimeStatisticsService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,9 +47,8 @@ public class AppController {
     private static CPExperiment runningExperiment;
     private static ExperimentStatusUpdateServer updateServer;
     private static ExperimentStatusEventObserver eventServer;
-    private static Map<String, AlgorithmCPUTimeStatisticCollector> algorithmCPUTimeStatistics = new HashMap<>();
-    private static Map<String, NumberOfCoresInUseStatisticCollector> coresInUseStatistics = new HashMap<>();
     private static MainWindow main;
+    private static RuntimeStatisticsService runtimeStatistics;
 
     /**
      * @param args the command line arguments
@@ -59,17 +59,10 @@ public class AppController {
         eventServer = new ExperimentStatusEventObserver();
         updateServer.listeners().add(eventServer);
 
+        runtimeStatistics = new RuntimeStatisticsService();
+        runningExperiment.supply(RuntimeStatisticsService.class, runtimeStatistics);
+
         addProgressNotificationListener();
-
-        for (CPExperimentTest test : runningExperiment.getTests()) {
-            final AlgorithmCPUTimeStatisticCollector collector = new AlgorithmCPUTimeStatisticCollector();
-            algorithmCPUTimeStatistics.put(test.getName(), collector);
-            test.getStatistics().add(collector);
-
-            final NumberOfCoresInUseStatisticCollector nccollector = new NumberOfCoresInUseStatisticCollector();
-            coresInUseStatistics.put(test.getName(), nccollector);
-            test.getStatistics().add(nccollector);
-        }
 
         long time = System.currentTimeMillis();
         startTestingUI();
@@ -91,15 +84,8 @@ public class AppController {
         return runningExperiment;
     }
 
-    /**
-     * @return map of algorithm cpu time statistics per test name
-     */
-    public static Map<String, AlgorithmCPUTimeStatisticCollector> getAlgorithmCPUTimeStatistics() {
-        return algorithmCPUTimeStatistics;
-    }
-
-    public static Map<String, NumberOfCoresInUseStatisticCollector> getCoresInUseStatistics() {
-        return coresInUseStatistics;
+    public static RuntimeStatisticsService getRuntimeStatistics() {
+        return runtimeStatistics;
     }
 
     public static void startTestingUI() throws IOException {

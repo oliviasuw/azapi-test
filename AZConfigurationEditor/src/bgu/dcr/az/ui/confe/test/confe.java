@@ -10,6 +10,7 @@ import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
 import bgu.dcr.az.ui.confe.ConfigurationEditor;
 import bgu.dcr.az.ui.confe.TitledPaneTreeNavigator;
+import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,6 +74,7 @@ public class confe extends Application {
         stage.setMinWidth(800);
         stage.setMinHeight(600);
         stage.show();
+        
     }
 
     /**

@@ -12,9 +12,11 @@ import bgu.dcr.az.mas.cp.CPRecord;
 import bgu.dcr.az.mas.impl.stat.AbstractStatisticCollector;
 import bgu.dcr.az.mas.stat.AdditionalLineChartProperties;
 import bgu.dcr.az.mas.stat.data.ExecutionTerminationInfo;
+import bgu.dcr.az.mas.stat.data.MessageReceivedInfo;
 import bgu.dcr.az.mas.stat.data.MessageSentInfo;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.QueryDatabase;
+import com.google.common.primitives.Longs;
 
 /**
  *
@@ -23,25 +25,27 @@ import bgu.dcr.az.orm.api.QueryDatabase;
 @Register("nccc-sc")
 public class NCCCStatisticCollector extends AbstractStatisticCollector {
 
-    int[] currentcc;
-    
+    private long[] lastCCs;
+    private long[] currentNccc;
+
     @Override
     protected void initialize(Execution<CPData> ex, DefinitionDatabase database) {
-        database.defineTable("CC", CCRecord.class);
+        database.defineTable("NCCC", NCCCRecord.class);
 
-        currentcc = new int[ex.data().getProblem().getNumberOfAgents()];
-        
+        lastCCs = new long[ex.data().getProblem().getNumberOfAgents()];
+        currentNccc = new long[ex.data().getProblem().getNumberOfAgents()];
+
         ex.informationStream().listen(MessageSentInfo.class, m -> {
-            
+            currentNccc[m.getSender()] += (m.getConstraintChecks() - lastCCs[m.getSender()]);
+            lastCCs[m.getSender()] = m.getConstraintChecks();
         });
-        
-        ex.informationStream().listen(ExecutionTerminationInfo.class, t -> {
-            long cc = 0;
-            for (long c : ex.data().getCcCount()) {
-                cc += c;
-            }
 
-            write(new CCRecord(cc));
+        ex.informationStream().listen(MessageReceivedInfo.class, m -> {
+            currentNccc[m.getRecepient()] = Math.max(currentNccc[m.getSender()], currentNccc[m.getRecepient()]);
+        });
+
+        ex.informationStream().listen(ExecutionTerminationInfo.class, t -> {
+            write(new NCCCRecord(Longs.max(currentNccc)));
         });
     }
 
@@ -52,22 +56,22 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector {
 
     @Override
     protected void plot(QueryDatabase database, CPExperimentTest test) {
-        String sql = "select AVG(cc) as avg, rVar, ALGORITHM_INSTANCE from CC where TEST = ? group by ALGORITHM_INSTANCE, rVar order by rVar";
+        String sql = "select AVG(nccc) as avg, rVar, ALGORITHM_INSTANCE from NCCC where TEST = ? group by ALGORITHM_INSTANCE, rVar order by rVar";
 
         AdditionalLineChartProperties properties = new AdditionalLineChartProperties();
         properties.setTitle(getName());
         properties.setLogarithmicScale(true);
         properties.setXAxisLabel(test.getLooper().getRunningVariableName());
-        properties.setYAxisLabel("AVG(CC)");
+        properties.setYAxisLabel("AVG(NCCC)");
         plotLineChart(database.query(sql, test.getName()), "rvar", "avg", "ALGORITHM_INSTANCE", properties);
     }
 
-    public static class CCRecord extends CPRecord {
+    public static class NCCCRecord extends CPRecord {
 
-        double cc;
+        double nccc;
 
-        public CCRecord(double cc) {
-            this.cc = cc;
+        public NCCCRecord(double nccc) {
+            this.nccc = nccc;
         }
 
     }

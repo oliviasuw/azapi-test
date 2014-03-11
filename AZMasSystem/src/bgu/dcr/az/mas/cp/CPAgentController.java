@@ -12,9 +12,11 @@ import bgu.dcr.az.api.Agt0DSL;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.api.tools.Assignment;
+import bgu.dcr.az.mas.AZIPMessage;
 import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.impl.BaseAgentController;
 import bgu.dcr.az.mas.impl.InitializationException;
+import bgu.dcr.az.mas.stat.data.MessageReceivedInfo;
 import bgu.dcr.az.mas.stat.data.MessageSentInfo;
 import java.util.LinkedList;
 
@@ -107,8 +109,17 @@ public class CPAgentController extends BaseAgentController {
         if (execution.informationStream().hasListeners(MessageSentInfo.class)) {
             execution.informationStream().write(new MessageSentInfo(m.getSender(), recepientAgent, m.getName(), execution.data().getCcCount()[m.getSender()]));
         }
-        
+
         super.send(m, recepientAgent);
+    }
+
+    @Override
+    public void receive(AZIPMessage message) {
+        if (execution.informationStream().hasListeners(MessageReceivedInfo.class)) {
+            execution.informationStream().write(new MessageReceivedInfo(message.getData().getSender(), message.getData().getRecepient(), message.getData().getName()));
+        }
+
+        super.receive(message);
     }
 
 }

@@ -1,0 +1,42 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package bgu.dcr.az.mas.stat.data;
+
+/**
+ *
+ * @author Zovadi
+ */
+public class MessageSentInfo {
+    private final int sender;
+    private final int recepient;
+    private final String name;
+    private final long ccs;
+
+    public MessageSentInfo(int sender, int recepient, String name, long ccs) {
+        this.sender = sender;
+        this.recepient = recepient;
+        this.name = name;
+        this.ccs = ccs;
+    }
+
+    public int getSender() {
+        return sender;
+    }
+
+    public int getRecepient() {
+        return recepient;
+    }
+
+    public String getMessageName() {
+        return name;
+    }
+
+    public long getConstraintChecks() {
+        return ccs;
+    }
+    
+}

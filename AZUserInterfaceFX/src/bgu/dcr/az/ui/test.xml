@@ -36,6 +36,7 @@
     
         <dcop-unstructured n="12" d="5" max-cost="100"/>
         <algorithm name="CONC_FB2"/>
+        <!--<algorithm name="SBB"/>-->
         <algorithm name="CONC_FB"/>
         <!--<default-tester/>-->
         <!--<algorithm name="DSA-C"/>-->

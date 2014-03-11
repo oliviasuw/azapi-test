@@ -10,10 +10,11 @@ import bgu.dcr.az.api.exp.UnassignedVariableException;
 import bgu.dcr.az.api.prob.Problem;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  *
@@ -21,18 +22,18 @@ import java.util.Set;
  */
 public class Assignment implements Serializable, DeepCopyable {
 
-    private LinkedHashMap<Integer, Integer> assignment;
+    private Map<Integer, Integer> assignment;
     private transient int cachedCost = -1;
 
     /**
      * construction of a new empty assignment
      */
     public Assignment() {
-        this.assignment = new LinkedHashMap<>();
+        this.assignment = new TreeMap<>();
     }
 
     public Assignment(Map<Integer, Integer> assignment) {
-        this.assignment = new LinkedHashMap<>(assignment);
+        this.assignment = new TreeMap<>(assignment);
     }
 
     public Assignment(int... of) {
@@ -44,7 +45,7 @@ public class Assignment implements Serializable, DeepCopyable {
     }
 
     private Assignment(Assignment a) {
-        this.assignment = new LinkedHashMap<>();
+        this.assignment = new TreeMap<>();
         for (Entry<Integer, Integer> e : a.assignment.entrySet()) {
             this.assignment.put(e.getKey(), e.getValue());
         }
@@ -375,4 +376,15 @@ public class Assignment implements Serializable, DeepCopyable {
 
         return result;
     }
+
+    /**
+     * TODO: REMOVE!!!
+     * @return 
+     */
+    @Deprecated
+    public TreeMap<Integer, Integer> getAssignment() {
+        return (TreeMap)assignment;
+    }
+    
+    
 }

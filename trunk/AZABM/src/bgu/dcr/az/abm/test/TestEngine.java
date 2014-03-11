@@ -48,6 +48,9 @@ public class TestEngine {
         System.out.println("Changes are " + manager.getDataChanges(Talker.class));
         
         
+        System.out.println("class of t1: " + t1.getClass().getName());
+        System.out.println("class of t0: " + t0.getClass().getName());
+        
         if (1==1) return;
         World w = createWorld();
 

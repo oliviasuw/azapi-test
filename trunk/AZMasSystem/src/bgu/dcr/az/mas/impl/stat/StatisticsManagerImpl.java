@@ -32,6 +32,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     private H2EmbeddedDatabaseManager db = null;
     private Collection<StatisticCollector> registered = new LinkedList<>();
+    private Collection<StatisticCollector> autoRegistered = new LinkedList<>();
 
     public static StatisticsManagerImpl getInstance() {
         if (instance == null) {
@@ -55,6 +56,10 @@ public class StatisticsManagerImpl implements StatisticsManager {
         registered.add(stat);
     }
 
+    public void addAutoRegisterFor(StatisticCollector stat) {
+        autoRegistered.add(stat);
+    }
+
     @Override
     public void initialize(Execution ex) throws InitializationException {
         if (db == null) {
@@ -68,6 +73,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
         DefinitionDatabase ddb = db.createDefinitionDatabase();
         registered.forEach(r -> r.initialize(this, ex, ddb));
+        autoRegistered.forEach(r -> r.initialize(this, ex, ddb));
     }
 
     public void clearRegistrations() {

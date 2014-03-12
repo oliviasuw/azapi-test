@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.ui.screens.status;
+package bgu.dcr.az.ui.statistics;
 
 import bgu.dcr.az.mas.stat.AdditionalBarChartProperties;
 import bgu.dcr.az.mas.stat.AdditionalLineChartProperties;

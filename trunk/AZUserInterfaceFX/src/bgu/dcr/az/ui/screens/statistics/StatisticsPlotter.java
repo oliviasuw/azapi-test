@@ -5,17 +5,11 @@
  */
 package bgu.dcr.az.ui.screens.statistics;
 
-import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.mas.stat.AdditionalBarChartProperties;
 import bgu.dcr.az.mas.stat.AdditionalLineChartProperties;
 import bgu.dcr.az.mas.stat.Plotter;
 import bgu.dcr.az.orm.api.Data;
 import bgu.dcr.az.orm.api.RecordAccessor;
-import bgu.dcr.az.pivot.model.impl.TableDataWrapper;
-import bgu.dcr.az.pivot.ui.PivotDataTableView;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.collections.FXCollections;
@@ -78,13 +72,11 @@ public class StatisticsPlotter implements Plotter {
 
         ValueAxis yAxis;
 
-//        if (properties.isLogarithmicScale()) {
-//
-//            yAxis = new LogarithmicNumberAxis();
-//        } else {
-        yAxis = new LogarithmicAxis();
-//        yAxis = new NumberAxis();
-//        }
+        if (properties.isLogarithmicScale()) {
+            yAxis = new LogarithmicNumberAxis();
+        } else {
+            yAxis = new NumberAxis();
+        }
 
         if (properties.getYAxisLabel() != null) {
             yAxis.setLabel(properties.getYAxisLabel());
@@ -104,6 +96,7 @@ public class StatisticsPlotter implements Plotter {
     private void fillXYData(Data data, XYChart chart, String seriesField, String xField, String yField, boolean xIsCategory, boolean yIsCategory) {
         Map<String, XYChart.Series> series = new HashMap<>();
 //        ArrayList<XYChart.Data> result = new ArrayList<>();
+        double maxY = 0;
 
         for (RecordAccessor r : data) {
             final String seriesName = seriesField == null ? "" : r.getString(seriesField);
@@ -117,6 +110,8 @@ public class StatisticsPlotter implements Plotter {
             Object x = xIsCategory ? r.getString(xField) : r.getDouble(xField);
             Object y = yIsCategory ? r.getString(yField) : r.getDouble(yField);
 
+            maxY = Math.max(maxY, (Double) y);
+
             s.getData().add(new XYChart.Data<>(x, y));
         }
 
@@ -126,7 +121,9 @@ public class StatisticsPlotter implements Plotter {
                             -> ((Double) ((XYChart.Data) o1).getXValue()).compareTo((Double) ((XYChart.Data) o2).getXValue())));
         }
 
-//        ((ValueAxis)chart.getYAxis()).setUpperBound(series.values());
+        if (chart.getYAxis() instanceof LogarithmicNumberAxis) {
+            ((LogarithmicNumberAxis) chart.getYAxis()).setLogarithmizedUpperBound(maxY);
+        }
         series.values().forEach(chart.getData()::add);
     }
 

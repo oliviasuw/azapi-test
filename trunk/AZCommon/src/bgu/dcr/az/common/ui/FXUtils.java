@@ -92,6 +92,22 @@ public class FXUtils {
         }
     }
 
+    /**
+     * if you are calling this function it must be that the controller class
+     * resides in the same package as the fxml file and that this class is of
+     * the pattern {@code <NAME>Ctl} or {@code <Name>Controller} and the fxml
+     * file is named {@code <Name>.fxml}
+     *
+     * @param <T>
+     * @param ctl
+     * @return
+     */
+    public static <T> PaneWithCTL<T> loadPane(final Class<T> ctl) {
+        final String cname = ctl.getSimpleName();
+        String fxml = cname.substring(0, cname.length() - (cname.endsWith("Ctl") ? "Ctl" : "Controller").length()) + ".fxml";
+        return loadPane(ctl, fxml);
+    }
+
     public static <T> PaneWithCTL<T> loadPane(final Class<T> ctl, final String fxml) {
         final Semaphore lock = new Semaphore(0);
         final PaneWithCTL[] result = {new PaneWithCTL<>()};

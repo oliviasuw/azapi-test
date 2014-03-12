@@ -22,6 +22,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -53,14 +54,19 @@ public class BasicStatisticsScreenCtl implements Initializable {
     @FXML
     BorderPane statConfigurationPanel;
 
+    @FXML
+    Hyperlink advancedModeButton;
+
     StatisticsPlotter plotter;
     private StatisticCollector selectedStatisticCollector;
+    MainStatisticScreen statisticScreen;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        advancedModeButton.setOnAction(a -> statisticScreen.toAdvancedMode());
         plotter = new StatisticsPlotter(resultsContainer);
 
         resultsContainer.setCenter(FXMessagePanel.createNoDataPanel("No Data To Show Currently"));
@@ -84,6 +90,10 @@ public class BasicStatisticsScreenCtl implements Initializable {
         showChartButton.setOnAction(e -> plot());
         showTableButton.setOnAction(e -> plotTable());
 
+    }
+
+    public void setStatisticScreen(MainStatisticScreen statisticScreen) {
+        this.statisticScreen = statisticScreen;
     }
 
     private StatisticCollector getSelectedStatisticCollector() {

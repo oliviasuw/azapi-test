@@ -18,6 +18,7 @@ import bgu.dcr.az.ui.screens.dialogs.Notification;
 import bgu.dcr.az.ui.screens.log.LogScreen;
 import bgu.dcr.az.ui.screens.problem.ProblemViewScreen;
 import bgu.dcr.az.ui.screens.statistics.BasicStatisticsScreenCtl;
+import bgu.dcr.az.ui.screens.statistics.MainStatisticScreen;
 import bgu.dcr.az.ui.screens.status.StatusScreenCtl;
 import bgu.dcr.az.ui.screens.status.AlgorithmCPUTimeStatisticCollector;
 import bgu.dcr.az.ui.screens.status.NumberOfCoresInUseStatisticCollector;
@@ -26,6 +27,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javax.swing.JFrame;
 import nu.xom.ParsingException;
@@ -101,9 +104,12 @@ public class AppController {
         main.addScreen("Log", "log", lscreen);
         runningExperiment.supply(Logger.class, lscreen);
 
-        FXUtils.JFXPanelWithCTL<BasicStatisticsScreenCtl> statisticsScreen = FXUtils.load(BasicStatisticsScreenCtl.class, "BasicStatisticsScreen.fxml");
-        statisticsScreen.getController().setModel(runningExperiment);
-        FXUtils.startCSSLiveReloader(statisticsScreen.getScene(), "C:\\Users\\User\\Desktop\\Projects\\AgentZero\\trunk\\AZUserInterfaceFX\\src\\bgu\\dcr\\az\\ui\\azstyle.css");
+        JFXPanel statisticsScreen = new JFXPanel();// new MainStatisticScreen();
+        FXUtils.invokeInUI(() -> {
+            statisticsScreen.setScene(new Scene(new MainStatisticScreen()));
+            statisticsScreen.getScene().getStylesheets().add(AppController.class.getResource("azstyle.css").toExternalForm());
+        });
+        //FXUtils.startCSSLiveReloader(statisticsScreen.getScene(), "C:\\Users\\User\\Desktop\\Projects\\AgentZero\\trunk\\AZUserInterfaceFX\\src\\bgu\\dcr\\az\\ui\\azstyle.css");
         main.addScreen("Statistics", "statistics", statisticsScreen);
 
         ProblemViewScreen pview = new ProblemViewScreen();

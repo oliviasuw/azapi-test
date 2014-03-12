@@ -41,13 +41,17 @@ public abstract class AbstractStatisticCollector implements StatisticCollector<C
     @Override
     public void plot(Plotter ploter, Experiment ex) {
 //        if (ex == null) return ;
-        
+
         if (manager == null) {
             manager = StatisticsManagerImpl.getInstance();
         }
-        
+
         this.plotter = ploter;
-        plot(manager.database().createQueryDatabase(), (CPExperimentTest) ex);
+        if (manager == null) {
+            plot((QueryDatabase) null, (CPExperimentTest) ex);
+        } else {
+            plot(manager.database().createQueryDatabase(), (CPExperimentTest) ex);
+        }
         this.plotter = null;
     }
 

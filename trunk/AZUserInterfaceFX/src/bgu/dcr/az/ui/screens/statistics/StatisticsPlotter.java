@@ -5,11 +5,17 @@
  */
 package bgu.dcr.az.ui.screens.statistics;
 
+import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.mas.stat.AdditionalBarChartProperties;
 import bgu.dcr.az.mas.stat.AdditionalLineChartProperties;
 import bgu.dcr.az.mas.stat.Plotter;
 import bgu.dcr.az.orm.api.Data;
 import bgu.dcr.az.orm.api.RecordAccessor;
+import bgu.dcr.az.pivot.model.impl.TableDataWrapper;
+import bgu.dcr.az.pivot.ui.PivotDataTableView;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.collections.FXCollections;
@@ -76,7 +82,8 @@ public class StatisticsPlotter implements Plotter {
 //
 //            yAxis = new LogarithmicNumberAxis();
 //        } else {
-        yAxis = new NumberAxis();
+        yAxis = new LogarithmicAxis();
+//        yAxis = new NumberAxis();
 //        }
 
         if (properties.getYAxisLabel() != null) {
@@ -119,6 +126,7 @@ public class StatisticsPlotter implements Plotter {
                             -> ((Double) ((XYChart.Data) o1).getXValue()).compareTo((Double) ((XYChart.Data) o2).getXValue())));
         }
 
+//        ((ValueAxis)chart.getYAxis()).setUpperBound(series.values());
         series.values().forEach(chart.getData()::add);
     }
 

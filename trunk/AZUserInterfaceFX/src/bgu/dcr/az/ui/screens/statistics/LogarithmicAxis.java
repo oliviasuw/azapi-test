@@ -127,6 +127,7 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 //The getTickMarkLabel is only used to convert the number value to a string that will be displayed under the tickMark. Here I choose to use a number formatter.
     @Override
     protected String getTickMarkLabel(Number value) {
+        //jyhgjhg
         NumberFormat formatter = NumberFormat.getInstance();
         formatter.setMaximumIntegerDigits(10);
         formatter.setMinimumIntegerDigits(1);

@@ -17,6 +17,8 @@ import bgu.dcr.az.mas.stat.data.MessageSentInfo;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.QueryDatabase;
 import com.google.common.primitives.Longs;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -27,6 +29,7 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector {
 
     private long[] lastCCs;
     private long[] currentNccc;
+    private Map<Long, Long> messageNccc;
 
     @Override
     protected void initialize(Execution<CPData> ex, DefinitionDatabase database) {
@@ -34,14 +37,16 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector {
 
         lastCCs = new long[ex.data().getProblem().getNumberOfAgents()];
         currentNccc = new long[ex.data().getProblem().getNumberOfAgents()];
+        messageNccc = new HashMap<>();
 
         ex.informationStream().listen(MessageSentInfo.class, m -> {
             currentNccc[m.getSender()] += (m.getConstraintChecks() - lastCCs[m.getSender()]);
             lastCCs[m.getSender()] = m.getConstraintChecks();
+            messageNccc.put(m.getMessageId(), currentNccc[m.getSender()]);
         });
 
         ex.informationStream().listen(MessageReceivedInfo.class, m -> {
-            currentNccc[m.getRecepient()] = Math.max(currentNccc[m.getSender()], currentNccc[m.getRecepient()]);
+            currentNccc[m.getRecepient()] = Math.max(messageNccc.remove(m.getMessageId()), currentNccc[m.getRecepient()]);
         });
 
         ex.informationStream().listen(ExecutionTerminationInfo.class, t -> {

@@ -207,13 +207,6 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
     }
 
     @Override
-    public void broadcast(Message m) {
-        for (int i = 0; i < numAgents; i++) {
-            send(m, i);
-        }
-    }
-
-    @Override
     public int getTickNumber() {
         return tick;
     }

@@ -107,7 +107,7 @@ public class CPAgentController extends BaseAgentController {
     public void send(Message m, int recepientAgent) {
 
         if (execution.informationStream().hasListeners(MessageSentInfo.class)) {
-            execution.informationStream().write(new MessageSentInfo(m.getSender(), recepientAgent, m.getName(), execution.data().getCcCount()[m.getSender()]));
+            execution.informationStream().write(new MessageSentInfo(m.getMessageId(), m.getSender(), recepientAgent, m.getName(), execution.data().getCcCount()[m.getSender()]));
         }
 
         super.send(m, recepientAgent);
@@ -116,7 +116,7 @@ public class CPAgentController extends BaseAgentController {
     @Override
     public void receive(AZIPMessage message) {
         if (execution.informationStream().hasListeners(MessageReceivedInfo.class)) {
-            execution.informationStream().write(new MessageReceivedInfo(message.getData().getSender(), message.getData().getRecepient(), message.getData().getName()));
+            execution.informationStream().write(new MessageReceivedInfo(message.getData().getMessageId(), message.getData().getSender(), message.getData().getRecepient(), message.getData().getName()));
         }
 
         super.receive(message);

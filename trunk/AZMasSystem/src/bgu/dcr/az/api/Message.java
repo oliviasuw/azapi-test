@@ -44,7 +44,7 @@ public class Message implements Serializable {
     }
 
     // MESSAGE FIEDLS 
-    private long messageId = generateUniqueId();
+    private final long messageId ;
     private String name; //the message name (= type)
     private int sender; //the sender of the message
     private int recepient;
@@ -66,10 +66,19 @@ public class Message implements Serializable {
         this.sender = from;
         this.args = args;
         this.recepient = recepient;
+        messageId = generateUniqueId();
     }
-
-    void setRecepient(int recepient) {
+    
+    private Message(String name, int from, Object[] args, int recepient, long messageId) {
+        this.name = name;
+        this.sender = from;
+        this.args = args;
         this.recepient = recepient;
+        this.messageId = messageId;
+    }
+    
+    public long getMessageId() {
+        return messageId;
     }
 
     public int getRecepient() {
@@ -112,7 +121,7 @@ public class Message implements Serializable {
             }
         }
 
-        Message ret = new Message(getName(), getSender(), cargs, recepient);
+        Message ret = new Message(getName(), getSender(), cargs, recepient, messageId);
         return ret;
     }
 

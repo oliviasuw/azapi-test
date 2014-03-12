@@ -11,16 +11,22 @@ package bgu.dcr.az.mas.stat.data;
  * @author Zovadi
  */
 public class MessageReceivedInfo {
+    private final long messageId;
     private final int sender;
     private final int recepient;
     private final String name;
 
-    public MessageReceivedInfo(int sender, int recepient, String name) {
+    public MessageReceivedInfo(long messageId, int sender, int recepient, String name) {
+        this.messageId = messageId;
         this.sender = sender;
         this.recepient = recepient;
         this.name = name;
     }
 
+    public long getMessageId() {
+        return messageId;
+    }
+    
     public int getSender() {
         return sender;
     }

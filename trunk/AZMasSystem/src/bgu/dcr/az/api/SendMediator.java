@@ -16,14 +16,24 @@ import java.util.Set;
  */
 public class SendMediator {
 
-    private Message msg;
-    private CPAgentController controller;
+    Object[] args;
+    String messageName;
     private Agent agent;
+    private CPAgentController controller;
 
-    public SendMediator(Message msg, Agent agent, CPAgentController controller) {
-        this.msg = msg;
+    public SendMediator(Agent agent, CPAgentController controller) {
         this.controller = controller;
         this.agent = agent;
+        args = null;
+        messageName = null;
+    }
+
+    void setArgs(Object[] args) {
+        this.args = args;
+    }
+
+    void setMessageName(String messageName) {
+        this.messageName = messageName;
     }
 
     /**
@@ -33,7 +43,7 @@ public class SendMediator {
      */
     public void to(int... agents) {
         for (int a : agents) {
-            msg.setRecepient(a);
+            Message msg = new Message(messageName, agent.getId(), args, a);
             agent.beforeMessageSending(msg);
             controller.send(msg, a);
         }
@@ -55,14 +65,14 @@ public class SendMediator {
      * send the message to the next agent in the defined order
      */
     public void toNextAgent() {
-        to(msg.getSender() + 1);
+        to(agent.getId() + 1);
     }
 
     /**
      * send the message to the previous agent in the defined order
      */
     public void toPreviousAgent() {
-        to(msg.getSender() - 1);
+        to(agent.getId() - 1);
     }
 
     /**
@@ -70,7 +80,7 @@ public class SendMediator {
      * the defined order
      */
     public void toAllAgentsAfterMe() {
-        for (int i = msg.getSender() + 1; i < controller.getGlobalProblem().getNumberOfVariables(); i++) {
+        for (int i = agent.getId() + 1; i < controller.getGlobalProblem().getNumberOfVariables(); i++) {
             to(i);
         }
     }
@@ -83,7 +93,7 @@ public class SendMediator {
      */
     public void toNeighbores() {
         Set<Integer> neighbors;
-        neighbors = controller.getGlobalProblem().getNeighbors(msg.getSender());
+        neighbors = controller.getGlobalProblem().getNeighbors(agent.getId());
         for (int n : neighbors) {
             to(n);
         }
@@ -97,6 +107,17 @@ public class SendMediator {
     public void toAll(Collection<Integer> all) {
         for (Integer i : all) {
             to(i);
+        }
+    }
+
+    /**
+     * send this message to all other agents (excluding the sending agent!)
+     */
+    public void broadcast() {
+        for (int i = 0; i < agent.getNumberOfVariables(); i++) {
+            if (i != agent.getId()) {
+                to(i);
+            }
         }
     }
 }

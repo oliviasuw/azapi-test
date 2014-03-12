@@ -39,6 +39,7 @@ public abstract class Agent extends Agt0DSL {
     private PlatformOps pops; //Hidden Platform Operation 
     private long[] ccCount;
     private long[] messageCount;
+    private SendMediator sender;
 
     @Override
     public String toString() {
@@ -55,22 +56,6 @@ public abstract class Agent extends Agt0DSL {
         this.id = -1;
         this.pops = new PlatformOps();
 
-    }
-
-    /**
-     * creates a message object from the given parameters and attach some
-     * metadata to it.. you can override this method to add some more metadata
-     * of your own on each message that your agent sends or even modify the
-     * message being sent just use super.createMessage(...) to retrieve a new
-     * message and then modify it as you please
-     *
-     * @param name
-     * @param args
-     * @return
-     */
-    protected Message createMessage(String name, Object[] args, int recepient) {
-        Message ret = new Message(name, getId(), args, recepient);
-        return ret;
     }
 
     /**
@@ -342,21 +327,7 @@ public abstract class Agent extends Agt0DSL {
      * @param args
      */
     protected void broadcast(String msg, Object... args) {
-        for (int i=0; i<getNumberOfVariables(); i++){
-            if (i != getId()){
-                send(createMessage(msg, args, i)).to(i);
-            }
-        }
-    }
-
-    /**
-     * broadcast a new message - prefer using broadcast(String msg, Object...
-     * args)
-     *
-     * @param msg
-     */
-    protected void broadcast(Message msg) {
-        controller.broadcast(msg);
+        send(msg, args).broadcast();
     }
 
     /**
@@ -374,17 +345,9 @@ public abstract class Agent extends Agt0DSL {
      * @return continuation class
      */
     protected SendMediator send(String msg, Object... args) {
-        return send(createMessage(msg, args, -1));
-    }
-
-    /**
-     * send a new message - prefer using send(String msg, Object... args)
-     *
-     * @param msg
-     * @return
-     */
-    protected SendMediator send(Message msg) {
-        return new SendMediator(msg, this, controller);
+        sender.setArgs(args);
+        sender.setMessageName(msg);
+        return sender;
     }
 
     /**
@@ -514,6 +477,7 @@ public abstract class Agent extends Agt0DSL {
             Agent.this.prob = new AgentProblem();
             Agent.this.ccCount = execution.data().getCcCount();
             Agent.this.messageCount = execution.data().getMessagesCount();
+            Agent.this.sender = new SendMediator(Agent.this, controller);
         }
 
     }

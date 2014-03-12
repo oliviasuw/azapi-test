@@ -23,13 +23,6 @@ public interface AgentController extends Proc{
     void send(Message m, int recepientAgent);
 
     /**
-     * send message m to all existing agents
-     *
-     * @param m
-     */
-    void broadcast(Message m);
-
-    /**
      * receive a message from the message router, this message should be
      * distributed eventually to one of your agents
      *

@@ -17,6 +17,8 @@ import bgu.dcr.az.mas.stat.data.MessageSentInfo;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.QueryDatabase;
 import com.google.common.primitives.Longs;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -26,19 +28,22 @@ import com.google.common.primitives.Longs;
 public class NCSCStatisticCollector extends AbstractStatisticCollector {
 
     private long[] currentNcsc;
+    private Map<Long, Long> messageNcsc;
 
     @Override
     protected void initialize(Execution<CPData> ex, DefinitionDatabase database) {
         database.defineTable("NCSC", NCSCRecord.class);
 
         currentNcsc = new long[ex.data().getProblem().getNumberOfAgents()];
+        messageNcsc = new HashMap<>();
 
         ex.informationStream().listen(MessageSentInfo.class, m -> {
             currentNcsc[m.getSender()]++;
+            messageNcsc.put(m.getMessageId(), currentNcsc[m.getSender()]);
         });
 
         ex.informationStream().listen(MessageReceivedInfo.class, m -> {
-            currentNcsc[m.getRecepient()] = Math.max(currentNcsc[m.getSender()], currentNcsc[m.getRecepient()]);
+            currentNcsc[m.getRecepient()] = Math.max(messageNcsc.remove(m.getMessageId()), currentNcsc[m.getRecepient()]);
         });
 
         ex.informationStream().listen(ExecutionTerminationInfo.class, t -> {

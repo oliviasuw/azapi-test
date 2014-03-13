@@ -1,4 +1,4 @@
-.root{    
+.root, .az-root{    
     -az-gray30 : rgb(30,30,30);
     -az-gray35 : rgb(35,35,35);
     -az-gray200: rgb(200,200,200);
@@ -7,6 +7,13 @@
     -az-dark-table-cell-even-color: rgb(33,33,33);
     -az-dark-table-cell-text : rgb(150, 200,220);
     -az-dark-table-header : rgb(180,180,180);
+
+    -az-section-header-color: rgb(110,110,110);
+    -az-section-header-fgcolor: white;
+
+    -az-toolbar-color: derive(-az-section-header-color, -30%);
+
+    -az-button-color: rgb(180,180,180);
 }
 
 /*
@@ -19,6 +26,28 @@ CLEANUP
 
 .table-view:focused {
     -fx-background-insets: 0;
+}
+
+.tool-bar {
+    -fx-background-insets: 0;
+    -fx-padding: 4;
+    -fx-spacing: 2;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.button {
+    -fx-background-color: -az-button-color;
+    -fx-background-insets: 3 3 4 3;
+    -fx-background-radius: 0.25em; /* 3px */
+    -fx-padding: 8 12 8 12; 
+}
+
+/*
+DARK ADJUSMENTS
+*/
+
+.tool-bar {
+    -fx-background-color: -az-toolbar-color;
 }
 
 /* 
@@ -46,6 +75,33 @@ DARK TABLE
 
 .table-view.dark .column-header {
     -fx-background-color: -az-dark-table-header;
+
     -fx-padding: 0;
 }
 
+/* 
+SECTION HEADER LABELES
+*/
+
+.label.section-header {
+    -fx-padding: 4;
+    -fx-background-color: -az-section-header-color;
+    -fx-text-fill: -az-section-header-fgcolor;
+}
+
+/*
+BUTTON BARS
+*/
+
+.tool-bar.button-bar {
+    -fx-spacing: 0;
+    -fx-padding: 4;
+}
+
+.tool-bar.button-bar .button{
+    -fx-padding: 3 5 3 5; 
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-border-color: red, blue;
+    -fx-border-width: 0 1 0 0, 0 1 0 0;
+}

@@ -10,6 +10,7 @@ import com.sun.javafx.scene.control.skin.TitledPaneSkin;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -62,7 +63,7 @@ public class FXUtils {
 
     }
 
-    public static <T> JFXPanelWithCTL<T> load(final Class<T> ctl, final String fxml) {
+    public static <T> JFXPanelWithCTL<T> loadFXMLForSwing(final Class<T> ctl, final String fxml) {
         try {
             final JFXPanelWithCTL result = new JFXPanelWithCTL();
             final Semaphore lock = new Semaphore(0);
@@ -92,6 +93,23 @@ public class FXUtils {
         }
     }
 
+    public static JFXPanel jfxToSwing(Class<? extends Pane> paneClass, String... stylesheets) {
+        JFXPanel panel = new JFXPanel();
+        invokeInUI(() -> {
+            try {
+                Pane p = paneClass.newInstance();
+                Scene scene = new Scene(p);
+                panel.setScene(scene);
+                scene.getStylesheets().addAll(Arrays.asList(stylesheets));
+
+            } catch (InstantiationException | IllegalAccessException ex) {
+                Logger.getLogger(FXUtils.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        return panel;
+    }
+
     /**
      * if you are calling this function it must be that the controller class
      * resides in the same package as the fxml file and that this class is of
@@ -102,19 +120,19 @@ public class FXUtils {
      * @param ctl
      * @return
      */
-    public static <T> PaneWithCTL<T> loadPane(final Class<T> ctl) {
+    public static <T> PaneWithCTL<T> loadFXML(final Class<T> ctl) {
         final String cname = ctl.getSimpleName();
         String fxml = cname.substring(0, cname.length() - (cname.endsWith("Ctl") ? "Ctl" : "Controller").length()) + ".fxml";
-        return loadPane(ctl, fxml);
+        return loadFXML(ctl, fxml);
     }
 
-    public static <T> PaneWithCTL<T> loadPane(final Class<T> ctl, final String fxml) {
+    public static <T> PaneWithCTL<T> loadFXML(final Class<T> ctl, final String fxml) {
         final Semaphore lock = new Semaphore(0);
         final PaneWithCTL[] result = {new PaneWithCTL<>()};
 
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(() -> {
-                result[0] = loadPane(ctl, fxml);
+                result[0] = loadFXML(ctl, fxml);
                 lock.release();
             });
             try {

@@ -55,6 +55,7 @@ public class BasicStatisticsScreenCtl implements Initializable {
 
     StatisticsPlotter plotter;
     private StatisticCollector selectedStatisticCollector;
+    private MainStatisticScreen statisticScreen;
 
     /**
      * Initializes the controller class.
@@ -177,6 +178,10 @@ public class BasicStatisticsScreenCtl implements Initializable {
             return "Test " + exp.getName();
         }
 
+    }
+
+    public void setStatisticScreen(MainStatisticScreen statisticScreen) {
+        this.statisticScreen = statisticScreen;
     }
 
 }

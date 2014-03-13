@@ -9,14 +9,15 @@ package bgu.dcr.az.api;
  * @author bennyl
  */
 public class ContinuationMediator {
-    
+
     Continuation continuation;
-    
+
     /**
      * provide a continuation to call to after the operation completed
+     *
      * @param c
      */
-    public void andWhenDoneDo(Continuation c){
+    public void andWhenDoneDo(Continuation c) {
         this.continuation = c;
     }
 
@@ -24,7 +25,9 @@ public class ContinuationMediator {
      * execute the defined continuation
      */
     public void executeContinuation() {
-        this.continuation.doContinue();
+        if (this.continuation != null) {
+            this.continuation.doContinue();
+        }
     }
-    
+
 }

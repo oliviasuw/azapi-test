@@ -36,7 +36,7 @@ public abstract class Agent extends Agt0DSL {
     private ImmutableProblem prob; // The Agent Local Problem
     private boolean finished = false; //The Status of the current Agent - TODO: TRANSFORM INTO A STATUS ENUM SO WE CAN BE ABLE TO QUERY THE AGENT ABOUT IT CURRENT STATUS
     private Message currentMessage = null; //The Current Message (The Last Message That was taken from the mailbox)
-    private PlatformOps pops; //Hidden Platform Operation 
+    private final PlatformOps pops; //Hidden Platform Operation 
     private long[] ccCount;
     private long[] messageCount;
     private SendMediator sender;
@@ -442,7 +442,7 @@ public abstract class Agent extends Agt0DSL {
     public class PlatformOps {
 
         private int numberOfSetIdCalls = 0;
-        private Map metadata = new HashMap();
+        private final Map metadata = new HashMap();
 
         public ImmutableProblem getProblem() {
             return prob;

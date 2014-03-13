@@ -47,7 +47,7 @@ public class Message implements Serializable {
     private final long messageId ;
     private String name; //the message name (= type)
     private int sender; //the sender of the message
-    private int recepient;
+    private final int recepient;
 
     /**
      * collection of the message arguments the arguments are unnamed -> TODO:
@@ -60,6 +60,8 @@ public class Message implements Serializable {
      * @param name the message name / type
      * @param from the agent sending this message
      * @param args
+     * @param recepient
+     * @param context
      */
     public Message(String name, int from, Object[] args, int recepient) {
         this.name = name;
@@ -132,7 +134,6 @@ public class Message implements Serializable {
             sb.append(ToStringUtils.toString(a)).append(", ");
         }
         return "[" + getName() + (args.length > 0 ? ": " + sb.substring(0, sb.length() - 2) + "]" : "]");
-
     }
 
     /**

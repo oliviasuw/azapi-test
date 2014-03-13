@@ -1,9 +1,8 @@
 package bgu.dcr.az.api;
 
-import bgu.dcr.az.api.Message;
 import bgu.dcr.az.mas.cp.CPAgentController;
 import java.util.Collection;
-import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * a middle way object used to send a message you should never directly create
@@ -16,10 +15,10 @@ import java.util.Set;
  */
 public class SendMediator {
 
-    Object[] args;
-    String messageName;
-    private Agent agent;
-    private CPAgentController controller;
+    private Object[] args;
+    private String messageName;
+    private final Agent agent;
+    private final CPAgentController controller;
 
     public SendMediator(Agent agent, CPAgentController controller) {
         this.controller = controller;
@@ -80,9 +79,7 @@ public class SendMediator {
      * the defined order
      */
     public void toAllAgentsAfterMe() {
-        for (int i = agent.getId() + 1; i < controller.getGlobalProblem().getNumberOfVariables(); i++) {
-            to(i);
-        }
+        IntStream.range(agent.getId() + 1, agent.getNumberOfVariables()).forEach(this::to);
     }
 
     /**
@@ -92,11 +89,7 @@ public class SendMediator {
      * @param p
      */
     public void toNeighbores() {
-        Set<Integer> neighbors;
-        neighbors = controller.getGlobalProblem().getNeighbors(agent.getId());
-        for (int n : neighbors) {
-            to(n);
-        }
+        controller.getGlobalProblem().getNeighbors(agent.getId()).forEach(this::to);
     }
 
     /**
@@ -105,19 +98,13 @@ public class SendMediator {
      * @param all
      */
     public void toAll(Collection<Integer> all) {
-        for (Integer i : all) {
-            to(i);
-        }
+        all.forEach(this::to);
     }
 
     /**
      * send this message to all other agents (excluding the sending agent!)
      */
     public void broadcast() {
-        for (int i = 0; i < agent.getNumberOfVariables(); i++) {
-            if (i != agent.getId()) {
-                to(i);
-            }
-        }
+        IntStream.range(0, agent.getNumberOfVariables()).filter(i -> i != agent.getId()).forEach(this::to);
     }
 }

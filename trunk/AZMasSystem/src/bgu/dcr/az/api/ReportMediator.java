@@ -4,7 +4,6 @@
  */
 package bgu.dcr.az.api;
 
-import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.mas.cp.CPAgentController;
 
 /**

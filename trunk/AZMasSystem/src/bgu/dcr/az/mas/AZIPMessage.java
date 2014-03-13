@@ -6,6 +6,7 @@
 package bgu.dcr.az.mas;
 
 import bgu.dcr.az.api.Message;
+import bgu.dcr.az.mas.impl.Context;
 
 /**
  * Agent-Zero-Inner Protocol message
@@ -17,11 +18,13 @@ public class AZIPMessage {
     private final Message data;
     private final int controllerRecepient;
     private final int agentRecepient;
+    private final Context context;
 
-    public AZIPMessage(Message data, int controllerRecepient, int agentRecepient) {
+    public AZIPMessage(Message data, int controllerRecepient, int agentRecepient, Context context) {
         this.data = data;
         this.controllerRecepient = controllerRecepient;
         this.agentRecepient = agentRecepient;
+        this.context = context;
     }
 
     public Message getData() {
@@ -34,6 +37,10 @@ public class AZIPMessage {
 
     public int getAgentRecepient() {
         return agentRecepient;
+    }
+
+    public Context getContext() {
+        return context;
     }
 
 }

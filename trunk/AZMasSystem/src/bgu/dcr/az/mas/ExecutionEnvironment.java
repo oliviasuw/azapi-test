@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package bgu.dcr.az.mas;
 
 /**
@@ -11,5 +10,6 @@ package bgu.dcr.az.mas;
  * @author bennyl
  */
 public enum ExecutionEnvironment {
-    async,sync;
+
+    async, sync;
 }

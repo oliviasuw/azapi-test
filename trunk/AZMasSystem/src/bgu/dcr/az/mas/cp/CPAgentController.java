@@ -75,32 +75,29 @@ public class CPAgentController extends BaseAgentController {
     @Override
     protected void handleIdle() {
         LinkedList<AgentWithManipulator> killedAgents = new LinkedList<>();
-        for (AgentWithManipulator a : getControlledAgents().values()) {
-            a.a.onIdleDetected();
-            if (a.a.isFinished()) {
-                killedAgents.add(a);
+        for (LinkedList<AgentWithManipulator> a : getControlledAgents().values()) {
+            AgentWithManipulator agent = a.getLast();
+            agent.a.onIdleDetected();
+            if (agent.a.isFinished()) {
+                killedAgents.add(agent);
             }
         }
-
-        for (AgentWithManipulator k : killedAgents) {
-            removeControlledAgent(k);
-        }
-
+        
+        killedAgents.forEach(this::removeControlledAgent);
     }
 
     @Override
     protected void beforeNextTick() {
         LinkedList<AgentWithManipulator> killedAgents = new LinkedList<>();
-        for (AgentWithManipulator a : getControlledAgents().values()) {
-            a.a.onMailBoxEmpty();
-            if (a.a.isFinished()) {
-                killedAgents.add(a);
+        for (LinkedList<AgentWithManipulator> a : getControlledAgents().values()) {
+            final AgentWithManipulator agent = a.getLast();
+            agent.a.onMailBoxEmpty();
+            if (agent.a.isFinished()) {
+                killedAgents.add(agent);
             }
         }
 
-        for (AgentWithManipulator k : killedAgents) {
-            removeControlledAgent(k);
-        }
+        killedAgents.forEach(this::removeControlledAgent);        
     }
 
     @Override

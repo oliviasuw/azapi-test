@@ -32,6 +32,11 @@ public class FieldMetadataImpl implements FieldMetadata {
     }
 
     @Override
+    public String toString() {
+        return name + ": " + type.getSimpleName();
+    }
+    
+    @Override
     public Class type() {
         return type;
     }

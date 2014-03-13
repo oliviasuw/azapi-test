@@ -14,6 +14,11 @@
     -az-toolbar-color: derive(-az-section-header-color, -30%);
 
     -az-button-color: rgb(180,180,180);
+
+    -az-treeview-background: rgb(222,227,233);
+    
+    -az-treeview-selected-cell-color: rgb(83,135,182);
+    -az-treeview-selected-cell-fgcolor: rgb(230,230,230);
 }
 
 /*
@@ -22,6 +27,9 @@ CLEANUP
 
 .table-view {
     -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+    -fx-padding:0;
 }
 
 .table-view:focused {
@@ -29,6 +37,7 @@ CLEANUP
 }
 
 .tool-bar {
+    -fx-background-color: -az-toolbar-color;
     -fx-background-insets: 0;
     -fx-padding: 4;
     -fx-spacing: 2;
@@ -40,30 +49,55 @@ CLEANUP
     -fx-background-insets: 3 3 4 3;
     -fx-background-radius: 0.25em; /* 3px */
     -fx-padding: 8 12 8 12; 
+    -fx-cursor: hand;
 }
 
-/*
-DARK ADJUSMENTS
-*/
-
-.tool-bar {
-    -fx-background-color: -az-toolbar-color;
+.button:hover {
+    -fx-background-color: derive(-az-button-color, 20%);
 }
+
+
+.scroll-bar:vertical {
+    -fx-background-color: -az-treeview-background;
+    -fx-padding: 0;
+}
+
+.scroll-bar:vertical > .thumb {
+    -fx-background-color: rgb(100,100,100); 
+
+}
+
+.tree-view{
+    -fx-background-color: -az-treeview-background;
+    -fx-background-insets: 0;
+}
+
+.tree-view  .tree-cell{
+    -fx-background-color: -az-treeview-background;
+    -fx-text-fill: rgb(30,30,30);
+    -fx-padding: 3;
+}
+
+.tree-view  .tree-cell:selected {
+    -fx-background-color: rgb(83,135,182);
+    -fx-text-fill: rgb(230,230,230);
+}
+
 
 /* 
 DARK TABLE
 */
 
 .table-view.dark {
-    -fx-background-insets: 1;    
+    -fx-background-insets: 0;    
     -fx-table-cell-border-color: -az-dark-table-header;
+    -fx-background-color: -az-dark-table-cell-even-color;
 }
 
 .table-view.dark .table-row-cell {
     -fx-background-color: -az-dark-table-cell-even-color;
     -fx-text-fill: -az-dark-table-cell-text;
 }
-
 
 .table-view.dark .table-row-cell:odd {
     -fx-background-color: -az-dark-table-cell-odd-color;
@@ -75,9 +109,34 @@ DARK TABLE
 
 .table-view.dark .column-header {
     -fx-background-color: -az-dark-table-header;
-
     -fx-padding: 0;
 }
+
+.table-view.dark.section-header .column-header {
+    -fx-background-color: -az-section-header-color;
+    -fx-padding: 0;
+}
+
+.table-view.dark.section-header .column-header .text{
+    -fx-fill: #c0cfe6;
+}
+
+/* This is shown when the table has no rows and/or no columns. */
+.table-view.dark .placeholder .label {
+    -fx-text-fill: white;
+    -fx-fill: white;
+}
+
+/* The column header row is made up of a number of column-header, one for each
+   TableColumn, and a 'filler' area that extends from the right-most column
+   to the edge of the tableview, or up to the 'column control' button. */
+.table-view.dark .filler{
+    -fx-background-color: -az-dark-table-header;
+}
+.table-view.dark.section-header .filler{
+    -fx-background-color: -az-section-header-color;
+}
+
 
 /* 
 SECTION HEADER LABELES
@@ -102,6 +161,13 @@ BUTTON BARS
     -fx-padding: 3 5 3 5; 
     -fx-background-color: transparent;
     -fx-text-fill: white;
-    -fx-border-color: red, blue;
-    -fx-border-width: 0 1 0 0, 0 1 0 0;
+    -fx-border-color: derive(-az-section-header-color, 20%), derive(-az-section-header-color,10%);
+    -fx-border-width: 0 2 0 0, 0 1 0 0;
+    -fx-cursor: hand;
+}
+
+.tool-bar.button-bar .button:hover{
+    -fx-background-color: -az-treeview-selected-cell-color;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0 0 0 0;
 }

@@ -10,7 +10,8 @@
         <ncsc-sc/>
     
         <dcsp-unstructured n="10" d="10" p1="0.3"/>        
-        <default-tester/>
+
+        <!--<default-tester/>-->
         <algorithm name="SBT"/>
         <algorithm name="ABT"/>
         <algorithm name="AFC"/>

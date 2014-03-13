@@ -110,6 +110,8 @@ public class FXUtils {
         return panel;
     }
 
+    
+    
     /**
      * if you are calling this function it must be that the controller class
      * resides in the same package as the fxml file and that this class is of
@@ -129,7 +131,7 @@ public class FXUtils {
     public static <T> PaneWithCTL<T> loadFXML(final Class<T> ctl, final String fxml) {
         final Semaphore lock = new Semaphore(0);
         final PaneWithCTL[] result = {new PaneWithCTL<>()};
-
+        
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(() -> {
                 result[0] = loadFXML(ctl, fxml);

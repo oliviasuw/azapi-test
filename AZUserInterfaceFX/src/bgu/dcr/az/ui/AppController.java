@@ -8,10 +8,13 @@ package bgu.dcr.az.ui;
 import bc.dsl.SwingDSL;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.api.exen.ExecutionResult;
+import bgu.dcr.az.common.timing.TimingUtils;
 import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.mas.cp.CPExperiment;
 import bgu.dcr.az.mas.exp.ExperimentUtils;
+import bgu.dcr.az.mas.impl.stat.StatisticsManagerImpl;
 import bgu.dcr.az.mas.misc.Logger;
+import bgu.dcr.az.orm.api.EmbeddedDatabaseManager;
 import bgu.dcr.az.ui.screens.MainWindow;
 import bgu.dcr.az.ui.screens.dialogs.Notification;
 import bgu.dcr.az.ui.screens.log.LogScreen;
@@ -62,8 +65,11 @@ public class AppController {
         long time = System.currentTimeMillis();
         startTestingUI();
         System.out.println("Time To Build UI: " + (System.currentTimeMillis() - time));
-        final ExecutionResult executionResults = runningExperiment.execute();
-        System.out.println("DONE " + executionResults);
+
+        TimingUtils.schedule(() -> {
+            final ExecutionResult executionResults = runningExperiment.execute();
+            System.out.println("DONE " + executionResults);
+        }, 100); //give the ui time to draw itself...
 
     }
 
@@ -85,6 +91,7 @@ public class AppController {
 
     public static void startTestingUI() throws IOException {
         String agentZeroStyleSheet = AppController.class.getResource("azstyle.css").toExternalForm();
+        String agentZeroStyleSheet_DEBUG = "/home/bennyl/Desktop/Agent Zero/azapi-test/AZUserInterfaceFX/src/bgu/dcr/az/ui/azstyle.css";
 
         SwingDSL.configureLookAndFeel();
         main = new MainWindow();
@@ -99,6 +106,10 @@ public class AppController {
         runningExperiment.supply(Logger.class, lscreen);
 
         JFXPanel statisticScreen = FXUtils.jfxToSwing(MainStatisticScreen.class, agentZeroStyleSheet);
+//        JFXPanel statisticScreen = FXUtils.jfxToSwing(MainStatisticScreen.class);
+//        FXUtils.invokeInUI(() -> {
+//            FXUtils.startCSSLiveReloader(statisticScreen.getScene(), agentZeroStyleSheet_DEBUG);
+//        });
         main.addScreen("Statistics", "statistics", statisticScreen);
 
         ProblemViewScreen pview = new ProblemViewScreen();
@@ -134,6 +145,10 @@ public class AppController {
 
     public static void focusMainScreen() {
         main.requestFocus();
+    }
+
+    public static EmbeddedDatabaseManager getDatabaseManager() {
+        return StatisticsManagerImpl.getInstance().database();
     }
 
 }

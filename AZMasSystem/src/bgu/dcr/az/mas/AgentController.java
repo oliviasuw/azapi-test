@@ -7,6 +7,7 @@ package bgu.dcr.az.mas;
 
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.execs.api.Proc;
+import bgu.dcr.az.mas.impl.Context;
 
 /**
  *
@@ -52,5 +53,5 @@ public interface AgentController extends Proc{
      * @return 
      */
     int getControllerId();
-    
+        
 }

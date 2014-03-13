@@ -11,6 +11,7 @@ import bgu.dcr.az.mas.impl.InitializationException;
 /**
  *
  * @author User
+ * @param <T>
  */
 public interface ExecutionService<T> {
 
@@ -18,7 +19,6 @@ public interface ExecutionService<T> {
      * called before each experiment execution
      *
      * @param ex
-     * @throws InitializationException
      */
     default void initialize(Experiment ex) {
     }

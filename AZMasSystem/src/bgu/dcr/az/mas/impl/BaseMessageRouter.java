@@ -21,9 +21,9 @@ public class BaseMessageRouter implements MessageRouter {
     private AgentController[] routingTable;
 
     @Override
-    public void route(Message m, int agent) {
+    public void route(Message m, int agent, Context context) {
         AgentController controller = routingTable[agent];
-        controller.receive(new AZIPMessage(m.copy(), controller.getControllerId(), agent));
+        controller.receive(new AZIPMessage(m.copy(), controller.getControllerId(), agent, context));
     }
 
     @Override

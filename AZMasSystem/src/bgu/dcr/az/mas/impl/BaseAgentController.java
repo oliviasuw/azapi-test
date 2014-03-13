@@ -10,6 +10,7 @@ import bgu.dcr.az.anop.algo.AgentManipulator;
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.Agt0DSL;
+import bgu.dcr.az.api.ContinuationMediator;
 import bgu.dcr.az.api.Message;
 import bgu.dcr.az.execs.AbstractProc;
 import bgu.dcr.az.mas.AZIPMessage;
@@ -23,6 +24,7 @@ import bgu.dcr.az.mas.impl.ds.FastSingletonMap;
 import bgu.dcr.az.mas.misc.Logger;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -36,10 +38,11 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class BaseAgentController extends AbstractProc implements AgentController {
 
     private final MessageRouter router;
-    private int numAgents;
-    private final Map<Integer, AgentWithManipulator> controlledAgents;
+    private final int numAgents;
+    private final Map<Integer, LinkedList<AgentWithManipulator>> controlledAgents;
     private final Set<Integer> finishedAgents;
     private final Queue<AZIPMessage>[] messageQueue;
+    private final Queue<AZIPMessage> delayedMessageQueue;
     protected final Execution execution;
     protected final Logger logger;
     private Agent activeAgent;
@@ -53,6 +56,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 
         this.execution = ex;
         this.router = ex.require(MessageRouter.class);
+        this.delayedMessageQueue = new ConcurrentLinkedQueue();
 
         switch (ex.getEnvironment()) {
             case async:
@@ -85,7 +89,12 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
             Agent agent = manipulator.create();
             initializeAgent(agent, manipulator, aId, ex);
             AgentWithManipulator awm = new AgentWithManipulator(agent, manipulator);
-            controlledAgents.put(aId, awm);
+            LinkedList<AgentWithManipulator> agentStack = controlledAgents.get(aId);
+            if (agentStack == null) {
+                agentStack = new LinkedList<>();
+                controlledAgents.put(aId, agentStack);
+            }
+            agentStack.add(awm);
         }
 
         router.register(this, controlled);
@@ -96,14 +105,14 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
         this.giveupBeforeComplete = giveupBeforeComplete;
     }
 
-    protected Map<Integer, AgentWithManipulator> getControlledAgents() {
+    protected Map<Integer, LinkedList<AgentWithManipulator>> getControlledAgents() {
         return controlledAgents;
     }
 
     @Override
     protected void start() {
-        for (AgentWithManipulator a : controlledAgents.values()) {
-            activeAgent = a.a;
+        for (LinkedList<AgentWithManipulator> a : controlledAgents.values()) {
+            activeAgent = a.getLast().a;
             activeAgent.start();
         }
         activeAgent = null;
@@ -144,7 +153,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
             AZIPMessage m = mq.poll();
 
             if (m != null) {
-                AgentWithManipulator a = controlledAgents.get(m.getAgentRecepient());
+                AgentWithManipulator a = controlledAgents.get(m.getAgentRecepient()).getLast();
                 if (a == null) {
                     if (!finishedAgents.contains(m.getAgentRecepient())) {
                         Agt0DSL.panic("AgentController: " + pid() + " got unexpected message for agent: " + m.getAgentRecepient());
@@ -199,10 +208,17 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 
     @Override
     public void send(Message m, int recepientAgent) {
+        Context senderContext = controlledAgents.get(m.getSender()).getLast().getCurrentContext();
+
         if (controlledAgents.containsKey(recepientAgent)) {
-            nextMessageQueue().add(new AZIPMessage(m.copy(), pid(), recepientAgent));
+            final AZIPMessage aMessage = new AZIPMessage(m.copy(), pid(), recepientAgent, senderContext);
+            if (senderContext == controlledAgents.get(recepientAgent).getLast().getCurrentContext()) {
+                nextMessageQueue().add(aMessage);
+            } else {
+                delayedMessageQueue.add(aMessage);
+            }
         } else {
-            router.route(m, recepientAgent);
+            router.route(m, recepientAgent, senderContext);
         }
     }
 
@@ -218,9 +234,13 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 
     @Override
     public void receive(AZIPMessage message) {
-        nextMessageQueue().add(message);
-        if (execution.getEnvironment() == ExecutionEnvironment.async) {
-            wakeup(pid());
+        if (message.getContext() == controlledAgents.get(message.getData().getRecepient()).getLast().getCurrentContext()) {
+            nextMessageQueue().add(message);
+            if (execution.getEnvironment() == ExecutionEnvironment.async) {
+                wakeup(pid());
+            }
+        } else {
+            delayedMessageQueue.add(message);
         }
     }
 
@@ -233,16 +253,34 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
         return pid();
     }
 
+//    public ContinuationMediator nest(Agent agent) {
+//        LinkedList<AgentWithManipulator> agentStack = controlledAgents.get(agent.getId());
+//        if (agentStack == null) {
+//            agentStack = new LinkedList<>();
+//            controlledAgents.put(agent.getId(), agentStack);
+//        }
+//        agentStack.add(null)
+//    }
+
     protected abstract void initializeAgent(Agent agent, AgentManipulator manipulator, int aId, Execution ex);
 
     protected static class AgentWithManipulator {
 
         public Agent a;
         public AgentManipulator am;
+        private Context currentContext;
 
         public AgentWithManipulator(Agent a, AgentManipulator am) {
             this.a = a;
             this.am = am;
+        }
+
+        public Context getCurrentContext() {
+            return currentContext;
+        }
+
+        public void setCurrentContext(Context context) {
+            currentContext = context;
         }
 
     }

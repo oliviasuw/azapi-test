@@ -15,6 +15,7 @@ import bgu.dcr.az.mas.stat.InfoStream;
 /**
  *
  * @author User
+ * @param <T>
  */
 public interface Execution<T> {
 

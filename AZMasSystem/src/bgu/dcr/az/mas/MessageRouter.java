@@ -6,7 +6,7 @@
 package bgu.dcr.az.mas;
 
 import bgu.dcr.az.api.Message;
-import java.util.Queue;
+import bgu.dcr.az.mas.impl.Context;
 
 /**
  * a message router holds the collection of all the agents controllers and is
@@ -19,6 +19,6 @@ public interface MessageRouter extends ExecutionService {
 
     void register(AgentController controller, int... agentIds);
 
-    void route(Message m, int agent);
+    void route(Message m, int agent, Context context);
 
 }

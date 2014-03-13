@@ -10,21 +10,18 @@ import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.api.exen.ExecutionResult;
 import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.mas.cp.CPExperiment;
-import bgu.dcr.az.mas.cp.CPExperimentTest;
 import bgu.dcr.az.mas.exp.ExperimentUtils;
 import bgu.dcr.az.mas.misc.Logger;
 import bgu.dcr.az.ui.screens.MainWindow;
 import bgu.dcr.az.ui.screens.dialogs.Notification;
 import bgu.dcr.az.ui.screens.log.LogScreen;
 import bgu.dcr.az.ui.screens.problem.ProblemViewScreen;
-import bgu.dcr.az.ui.screens.statistics.BasicStatisticsScreenCtl;
+import bgu.dcr.az.ui.screens.statistics.MainStatisticScreen;
 import bgu.dcr.az.ui.screens.status.StatusScreenCtl;
-import bgu.dcr.az.ui.statistics.AlgorithmCPUTimeStatisticCollector;
-import bgu.dcr.az.ui.statistics.NumberOfCoresInUseStatisticCollector;
+import bgu.dcr.az.ui.screens.status.RuntimeStatisticsService;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import javafx.scene.image.Image;
 import javax.swing.JFrame;
 import nu.xom.ParsingException;
@@ -46,9 +43,8 @@ public class AppController {
     private static CPExperiment runningExperiment;
     private static ExperimentStatusUpdateServer updateServer;
     private static ExperimentStatusEventObserver eventServer;
-    private static Map<String, AlgorithmCPUTimeStatisticCollector> algorithmCPUTimeStatistics = new HashMap<>();
-    private static Map<String, NumberOfCoresInUseStatisticCollector> coresInUseStatistics = new HashMap<>();
     private static MainWindow main;
+    private static RuntimeStatisticsService runtimeStatisticsService;
 
     /**
      * @param args the command line arguments
@@ -60,16 +56,8 @@ public class AppController {
         updateServer.listeners().add(eventServer);
 
         addProgressNotificationListener();
-
-        for (CPExperimentTest test : runningExperiment.getTests()) {
-            final AlgorithmCPUTimeStatisticCollector collector = new AlgorithmCPUTimeStatisticCollector();
-            algorithmCPUTimeStatistics.put(test.getName(), collector);
-            test.getStatistics().add(collector);
-
-            final NumberOfCoresInUseStatisticCollector nccollector = new NumberOfCoresInUseStatisticCollector();
-            coresInUseStatistics.put(test.getName(), nccollector);
-            test.getStatistics().add(nccollector);
-        }
+        runtimeStatisticsService = new RuntimeStatisticsService();
+        runningExperiment.supply(RuntimeStatisticsService.class, runtimeStatisticsService);
 
         long time = System.currentTimeMillis();
         startTestingUI();
@@ -91,23 +79,18 @@ public class AppController {
         return runningExperiment;
     }
 
-    /**
-     * @return map of algorithm cpu time statistics per test name
-     */
-    public static Map<String, AlgorithmCPUTimeStatisticCollector> getAlgorithmCPUTimeStatistics() {
-        return algorithmCPUTimeStatistics;
-    }
-
-    public static Map<String, NumberOfCoresInUseStatisticCollector> getCoresInUseStatistics() {
-        return coresInUseStatistics;
+    public static RuntimeStatisticsService getRuntimeStatisticsService() {
+        return runtimeStatisticsService;
     }
 
     public static void startTestingUI() throws IOException {
+        String agentZeroStyleSheet = AppController.class.getResource("azstyle.css").toExternalForm();
+
         SwingDSL.configureLookAndFeel();
         main = new MainWindow();
         main.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        FXUtils.JFXPanelWithCTL<StatusScreenCtl> statusScreenFX = FXUtils.load(StatusScreenCtl.class, "StatusScreen.fxml");
+        FXUtils.JFXPanelWithCTL<StatusScreenCtl> statusScreenFX = FXUtils.loadFXMLForSwing(StatusScreenCtl.class, "StatusScreen.fxml");
         main.addScreen("Status", "status", statusScreenFX);
         statusScreenFX.getController().setModel(runningExperiment);
 
@@ -115,10 +98,8 @@ public class AppController {
         main.addScreen("Log", "log", lscreen);
         runningExperiment.supply(Logger.class, lscreen);
 
-        FXUtils.JFXPanelWithCTL<BasicStatisticsScreenCtl> statisticsScreen = FXUtils.load(BasicStatisticsScreenCtl.class, "BasicStatisticsScreen.fxml");
-        statisticsScreen.getController().setModel(runningExperiment);
-        FXUtils.startCSSLiveReloader(statisticsScreen.getScene(), "C:\\Users\\User\\Desktop\\Projects\\AgentZero\\trunk\\AZUserInterfaceFX\\src\\bgu\\dcr\\az\\ui\\azstyle.css");
-        main.addScreen("Statistics", "statistics", statisticsScreen);
+        JFXPanel statisticScreen = FXUtils.jfxToSwing(MainStatisticScreen.class, agentZeroStyleSheet);
+        main.addScreen("Statistics", "statistics", statisticScreen);
 
         ProblemViewScreen pview = new ProblemViewScreen();
         pview.setModel(runningExperiment);

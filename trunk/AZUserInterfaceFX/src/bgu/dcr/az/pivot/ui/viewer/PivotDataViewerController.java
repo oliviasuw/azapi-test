@@ -65,7 +65,7 @@ public class PivotDataViewerController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        FXUtils.PaneWithCTL<PivotViewController> p = FXUtils.loadPane(PivotViewController.class, "PivotViewFXML.fxml");
+        FXUtils.PaneWithCTL<PivotViewController> p = FXUtils.loadFXML(PivotViewController.class, "PivotViewFXML.fxml");
         pivotController = p.getController();
 
         pivotContainer.setCenter(p.getPane());

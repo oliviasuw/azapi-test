@@ -14,6 +14,19 @@ import java.util.TimerTask;
  */
 public class TimingUtils {
 
+    public static Timer schedule(Runnable r, long delay) {
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                r.run();
+            }
+        }, delay);
+        
+        return t;
+    }
+
     /**
      * schedule a repeating task, return the timer object responsible for this
      * task.

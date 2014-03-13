@@ -36,7 +36,13 @@
         </group>
         <group name="AgentZero"/>
         <group>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZUserInterfaceFX/src/bgu/dcr/az/pivot/ui/viewer/PivotDataViewerController.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/AdvancedStatisticScreenController.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/BasicStatisticsScreenCtl.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZUserInterfaceFX/src/bgu/dcr/az/ui/azstyle.css</file>
             <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZUserInterfaceFX/nbproject/project.properties</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/MainStatisticScreen.java</file>
+            <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZUserInterfaceFX/src/bgu/dcr/az/ui/test.xml</file>
         </group>
     </open-files>
 </project-private>

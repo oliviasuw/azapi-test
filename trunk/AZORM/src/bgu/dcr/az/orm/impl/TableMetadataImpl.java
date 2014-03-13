@@ -41,12 +41,13 @@ public class TableMetadataImpl implements TableMetadata {
     public static Map<String, TableMetadata> from(DatabaseMetaData md) throws SQLException {
         Map<String, TableMetadata> result = new HashMap<>();
 
-        try (ResultSet tables = md.getTables("PUBLIC", null, "%", null)) {
+        try (ResultSet tables = md.getTables(null, "PUBLIC", null, null)) {
             while (tables.next()) {
                 String name = tables.getString("TABLE_NAME");
+                
                 LinkedList<FieldMetadata> fieldMetadataList = new LinkedList<>();
                 TableMetadataImpl table = new TableMetadataImpl(name, null);
-                try (ResultSet fields = md.getColumns("PUBLIC", null, name, null)) {
+                try (ResultSet fields = md.getColumns(null, "PUBLIC", name, null)) {
                     while (fields.next()) {
                         int type = fields.getInt("DATA_TYPE");
                         String columnName = fields.getString("COLUMN_NAME");
@@ -62,4 +63,10 @@ public class TableMetadataImpl implements TableMetadata {
 
         return result;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
 }

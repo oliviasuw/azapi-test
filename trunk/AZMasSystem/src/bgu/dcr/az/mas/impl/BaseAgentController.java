@@ -20,6 +20,7 @@ import bgu.dcr.az.mas.AgentSpawner;
 import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.ExecutionEnvironment;
 import bgu.dcr.az.mas.MessageRouter;
+import bgu.dcr.az.mas.impl.Context.ContextGenerator;
 import bgu.dcr.az.mas.impl.ds.FastSingletonMap;
 import bgu.dcr.az.mas.misc.Logger;
 import java.util.HashMap;
@@ -39,12 +40,13 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 
     private final MessageRouter router;
     private final int numAgents;
-    private final Map<Integer, LinkedList<AgentWithManipulator>> controlledAgents;
+    private final Map<Integer, AgentContextStack> controlledAgents;
     private final Set<Integer> finishedAgents;
     private final Queue<AZIPMessage>[] messageQueue;
     private final Queue<AZIPMessage> delayedMessageQueue;
     protected final Execution execution;
     protected final Logger logger;
+    private final ContextGenerator cGen;
     private Agent activeAgent;
 
     private int tick;
@@ -53,7 +55,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
     public BaseAgentController(int id, Execution<?> ex) throws ClassNotFoundException, ConfigurationException, InitializationException {
         super(id);
         logger = ex.require(Logger.class);
-
+        this.cGen = ex.require(ContextGenerator.class);
         this.execution = ex;
         this.router = ex.require(MessageRouter.class);
         this.delayedMessageQueue = new ConcurrentLinkedQueue();
@@ -87,14 +89,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
         for (int aId : controlled) {
             AgentManipulator manipulator = RegisteryUtils.getRegistery().getAgentManipulator(spawner.getAgentType(aId));
             Agent agent = manipulator.create();
-            initializeAgent(agent, manipulator, aId, ex);
-            AgentWithManipulator awm = new AgentWithManipulator(agent, manipulator);
-            LinkedList<AgentWithManipulator> agentStack = controlledAgents.get(aId);
-            if (agentStack == null) {
-                agentStack = new LinkedList<>();
-                controlledAgents.put(aId, agentStack);
-            }
-            agentStack.add(awm);
+            nest(agent, aId, null);
         }
 
         router.register(this, controlled);
@@ -105,14 +100,14 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
         this.giveupBeforeComplete = giveupBeforeComplete;
     }
 
-    protected Map<Integer, LinkedList<AgentWithManipulator>> getControlledAgents() {
+    protected Map<Integer, AgentContextStack> getControlledAgents() {
         return controlledAgents;
     }
 
     @Override
     protected void start() {
-        for (LinkedList<AgentWithManipulator> a : controlledAgents.values()) {
-            activeAgent = a.getLast().a;
+        for (AgentContextStack a : controlledAgents.values()) {
+            activeAgent = a.current().a;
             activeAgent.start();
         }
         activeAgent = null;
@@ -153,7 +148,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
             AZIPMessage m = mq.poll();
 
             if (m != null) {
-                AgentWithManipulator a = controlledAgents.get(m.getAgentRecepient()).getLast();
+                AgentWithManipulator a = controlledAgents.get(m.getAgentRecepient()).current();
                 if (a == null) {
                     if (!finishedAgents.contains(m.getAgentRecepient())) {
                         Agt0DSL.panic("AgentController: " + pid() + " got unexpected message for agent: " + m.getAgentRecepient());
@@ -167,7 +162,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
                 }
 
                 if (activeAgent.isFinished()) {
-                    removeControlledAgent(a);
+                    controlledAgents.get(activeAgent.getId()).current().finilize();
                     activeAgent = null;
                     return;
                 }
@@ -199,8 +194,12 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
     }
 
     protected void removeControlledAgent(AgentWithManipulator a) {
-        controlledAgents.remove(a.a.getId());
-        finishedAgents.add(a.a.getId());
+        removeControlledAgent(a.a);
+    }
+
+    protected void removeControlledAgent(Agent a) {
+        controlledAgents.remove(a.getId());
+        finishedAgents.add(a.getId());
         if (controlledAgents.isEmpty()) {
             terminate();
         }
@@ -208,11 +207,11 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 
     @Override
     public void send(Message m, int recepientAgent) {
-        Context senderContext = controlledAgents.get(m.getSender()).getLast().getCurrentContext();
+        Context senderContext = controlledAgents.get(m.getSender()).current().getContext();
 
         if (controlledAgents.containsKey(recepientAgent)) {
             final AZIPMessage aMessage = new AZIPMessage(m.copy(), pid(), recepientAgent, senderContext);
-            if (senderContext == controlledAgents.get(recepientAgent).getLast().getCurrentContext()) {
+            if (senderContext == controlledAgents.get(recepientAgent).current().getContext()) {
                 nextMessageQueue().add(aMessage);
             } else {
                 delayedMessageQueue.add(aMessage);
@@ -234,7 +233,14 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 
     @Override
     public void receive(AZIPMessage message) {
-        if (message.getContext() == controlledAgents.get(message.getData().getRecepient()).getLast().getCurrentContext()) {
+        AgentContextStack agentStack = controlledAgents.get(message.getData().getRecepient());
+        AgentWithManipulator awm = null;
+
+        if (agentStack == null || (awm = agentStack.current()) == null) {
+            return;
+        }
+
+        if (message.getContext() == awm.getContext()) {
             nextMessageQueue().add(message);
             if (execution.getEnvironment() == ExecutionEnvironment.async) {
                 wakeup(pid());
@@ -253,14 +259,67 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
         return pid();
     }
 
-//    public ContinuationMediator nest(Agent agent) {
-//        LinkedList<AgentWithManipulator> agentStack = controlledAgents.get(agent.getId());
-//        if (agentStack == null) {
-//            agentStack = new LinkedList<>();
-//            controlledAgents.put(agent.getId(), agentStack);
-//        }
-//        agentStack.add(null)
-//    }
+    /**
+     * Replaces the active agent with a given one, saves the last agent
+     * configuration to stack. Tries to automatically generate the current
+     * context (if contextId is null) by generating current stack of nested
+     * calls or (if contextId is not null) uses it as context id.
+     *
+     * @param agent
+     * @param contextId
+     * @return
+     * @throws ClassNotFoundException
+     */
+    public ContinuationMediator nest(Agent agent, String contextId) throws ClassNotFoundException {
+        return nest(agent, activeAgent.getId(), contextId);
+    }
+
+    private ContinuationMediator nest(Agent agent, int aId, String contextId) throws ClassNotFoundException {
+        AgentContextStack agentStack = controlledAgents.get(aId);
+        if (agentStack == null) {
+            agentStack = new AgentContextStack();
+            controlledAgents.put(aId, agentStack);
+        }
+        AgentContextStack fAgentStack = agentStack;
+        ContinuationMediator mediator = new ContinuationMediator() {
+            @Override
+            public void executeContinuation() {
+                fAgentStack.pop();
+                activeAgent = null;
+
+                if (fAgentStack.isEmpty()) {
+                    removeControlledAgent(agent);
+                } else {
+                    activeAgent = fAgentStack.current().a;
+                }
+
+                if (activeAgent != null) {
+                    for (int i = 0; i < delayedMessageQueue.size(); i++) {
+                        AZIPMessage m = delayedMessageQueue.poll();
+                        if (m == null) {
+                            break;
+                        }
+                        receive(m);
+                    }
+                }
+
+                super.executeContinuation();
+            }
+        };
+        AgentManipulator manipulator = RegisteryUtils.getRegistery().getAgentManipulator(agent.getClass());
+        initializeAgent(agent, manipulator, aId, execution);
+        if (contextId == null) {
+            contextId = agentStack.isEmpty()
+                    ? manipulator.getAlgorithmName()
+                    : agentStack.current().getContext().getContextRepresentation() + "_" + manipulator.getAlgorithmName();
+        }
+        Context context = cGen.getContext(contextId);
+        AgentWithManipulator awm = new AgentWithManipulator(agent, manipulator, context, mediator);
+        agentStack.push(awm);
+        activeAgent = agent;
+
+        return mediator;
+    }
 
     protected abstract void initializeAgent(Agent agent, AgentManipulator manipulator, int aId, Execution ex);
 
@@ -268,21 +327,47 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 
         public Agent a;
         public AgentManipulator am;
-        private Context currentContext;
+        private final Context context;
+        private final ContinuationMediator continuation;
 
-        public AgentWithManipulator(Agent a, AgentManipulator am) {
+        public AgentWithManipulator(Agent a, AgentManipulator am, Context context, ContinuationMediator continuation) {
             this.a = a;
             this.am = am;
+            this.context = context;
+            this.continuation = continuation;
         }
 
-        public Context getCurrentContext() {
-            return currentContext;
+        public Context getContext() {
+            return context;
         }
 
-        public void setCurrentContext(Context context) {
-            currentContext = context;
+        public void finilize() {
+            continuation.executeContinuation();
         }
-
     }
 
+    protected static class AgentContextStack {
+
+        private final ConcurrentLinkedQueue<AgentWithManipulator> stack;
+
+        public AgentContextStack() {
+            stack = new ConcurrentLinkedQueue<>();
+        }
+
+        public boolean isEmpty() {
+            return stack.isEmpty();
+        }
+
+        public AgentWithManipulator current() {
+            return stack.peek();
+        }
+
+        public void push(AgentWithManipulator awm) {
+            stack.add(awm);
+        }
+
+        public AgentWithManipulator pop() {
+            return stack.poll();
+        }
+    }
 }

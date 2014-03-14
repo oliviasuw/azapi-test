@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<experiment>
+    <failure-description>
+        <failure-description test-name="0" description="The Execution crushed with the exception: bgu.dcr.az.api.exp.PanicException: ONOES! at bgu.dcr.az.api.Agt0DSL.panic(Agt0DSL.java:693) at bgu.dcr.az.api.Agt0DSL.panic(Agt0DSL.java:671) at bgu.dcr.az.algos.SBBAgent.beforeMessageProcessing(SBBAgent.java:29) at bgu.dcr.az.api.Agent.setCurrentMessage(Agent.java:463) at bgu.dcr.az.mas.impl.BaseAgentController.quota(BaseAgentController.java:146) at bgu.dcr.az.execs.AbstractProc.quota(AbstractProc.java:53) at bgu.dcr.az.execs.MultithreadedScheduler$Core.run(MultithreadedScheduler.java:167) at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) at java.util.concurrent.FutureTask.run(FutureTask.java:266) at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) at java.lang.Thread.run(Thread.java:744) " execution-number="1" algorithm="SBB"/>
+    </failure-description>
+    <tests>
+        <test seed="42" name="0" env="async">
+            <algorithms>
+                <algorithm name="ABT"/>
+                <algorithm name="SBB"/>
+            </algorithms>
+            <problem-generator>
+                <dcsp-unstructured p1="0.1" p2="0.64" d="6" n="5"/>
+            </problem-generator>
+            <loop>
+                <for-loop repeat-count="100" run-var="p1" start="0.1" end="0.9" tick-size="0.1">
+                    <looper>
+                        <do-once/>
+                    </looper>
+                </for-loop>
+            </loop>
+            <statistics>
+                <cc-sc/>
+                <item>Algorithm CPU time spending</item>
+                <item>Number of cores in use</item>
+                <msgc-sc type="BY_RUNVAR"/>
+            </statistics>
+        </test>
+    </tests>
+    <Statistics/>
+</experiment>

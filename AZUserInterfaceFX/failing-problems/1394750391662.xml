@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<experiment>
+    <failure-description>
+        <failure-description test-name="CSPs" description="This Execution ended with wrong results: it result was Solution Found With Assignment: {0=2, 1=0, 2=0, 3=0, 4=0, 5=0, 6=0, 7=2, 8=0, 9=2} Cost:1.0 while example of a correct result is: Solution Found With Assignment: {0=0, 1=0, 2=0, 3=0, 4=0, 5=0, 6=0, 7=3, 8=0, 9=2} Cost:0.0" execution-number="14" algorithm="CONC_BT"/>
+    </failure-description>
+    <tests>
+        <test seed="42" name="CSPs" env="async">
+            <correctness-tester>
+                <default-tester/>
+            </correctness-tester>
+            <algorithms>
+                <algorithm name="SBT"/>
+                <algorithm name="ABT"/>
+                <algorithm name="AFC"/>
+                <algorithm name="AFC-NG"/>
+                <algorithm name="CONC_BT"/>
+            </algorithms>
+            <problem-generator>
+                <dcsp-unstructured p1="0.3" p2="0.1" d="10" n="10"/>
+            </problem-generator>
+            <loop>
+                <for-loop repeat-count="100" run-var="p2" start="0.1" end="0.9" tick-size="0.1">
+                    <looper>
+                        <do-once/>
+                    </looper>
+                </for-loop>
+            </loop>
+            <statistics>
+                <cc-sc/>
+                <ncsc-sc/>
+                <msgc-sc type="BY_RUNVAR"/>
+                <nccc-sc/>
+            </statistics>
+        </test>
+    </tests>
+    <Statistics/>
+</experiment>

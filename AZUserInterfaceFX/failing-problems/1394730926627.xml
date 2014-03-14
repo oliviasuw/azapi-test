@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<experiment>
+    <failure-description>
+        <failure-description test-name="CSPs" description="The Execution crushed with the exception: bgu.dcr.az.mas.exp.ExperimentExecutionException: cannot execute experiment - configuration problem, see cause at bgu.dcr.az.mas.cp.CPExperimentTest.execute(CPExperimentTest.java:209) at bgu.dcr.az.mas.cp.CPExperimentTest.execute(CPExperimentTest.java:155) at bgu.dcr.az.mas.cp.CPExperiment.execute(CPExperiment.java:106) at bgu.dcr.az.ui.AppController.main(AppController.java:65) Caused by: bgu.dcr.az.api.exp.PanicException: cannot find agent with algorithem name = SBT at bgu.dcr.az.api.Agt0DSL.panic(Agt0DSL.java:690) at bgu.dcr.az.api.Agt0DSL.panic(Agt0DSL.java:668) at bgu.dcr.az.mas.cp.CPExperimentTest.createExecutionWithSeed(CPExperimentTest.java:271) at bgu.dcr.az.mas.cp.CPExperimentTest.execute(CPExperimentTest.java:194) ... 3 more " execution-number="0" algorithm="SBT"/>
+    </failure-description>
+    <tests>
+        <test seed="42" name="CSPs" env="async">
+            <correctness-tester>
+                <default-tester/>
+            </correctness-tester>
+            <algorithms>
+                <algorithm name="SBT"/>
+                <algorithm name="ABT"/>
+                <algorithm name="AFC"/>
+                <algorithm name="AFC-NG"/>
+                <algorithm name="CONC_BT"/>
+            </algorithms>
+            <problem-generator>
+                <dcsp-unstructured p1="0.3" p2="0.1" d="10" n="10"/>
+            </problem-generator>
+            <loop>
+                <for-loop repeat-count="100" run-var="p2" start="0.1" end="0.9" tick-size="0.1">
+                    <looper>
+                        <do-once/>
+                    </looper>
+                </for-loop>
+            </loop>
+            <statistics>
+                <msgc-sc type="BY_RUNVAR"/>
+                <nccc-sc/>
+                <ncsc-sc/>
+                <cc-sc/>
+            </statistics>
+        </test>
+    </tests>
+    <Statistics/>
+</experiment>

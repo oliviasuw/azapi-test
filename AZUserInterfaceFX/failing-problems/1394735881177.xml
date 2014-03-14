@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<experiment>
+    <failure-description>
+        <failure-description test-name="CSPs" description="The Execution crushed with the exception: bgu.dcr.az.api.exp.PanicException: attempting to remove unexisting search process: 0@0 at bgu.dcr.az.api.Agt0DSL.panic(Agt0DSL.java:690) at bgu.dcr.az.api.Agt0DSL.panic(Agt0DSL.java:668) at bgu.dcr.az.tools.SearchProcessStore.remove(SearchProcessStore.java:97) at bgu.dcr.az.tools.SearchProcessStore.remove(SearchProcessStore.java:84) at ext.sim.agents.dcsp.ConcBT.backtrack(ConcBT.java:81) at ext.sim.agents.dcsp.ConcBT.assignCPA(ConcBT.java:66) at ext.sim.agents.dcsp.ConcBT.handleCPA(ConcBT.java:114) at bgu.dcr.autogen.agents.ext_sim_agents_dcsp_ConcBT.callHandler(ext_sim_agents_dcsp_ConcBT.java:79) at bgu.dcr.az.mas.impl.BaseAgentController.quota(BaseAgentController.java:157) at bgu.dcr.az.execs.AbstractProc.quota(AbstractProc.java:57) at bgu.dcr.az.execs.MultithreadedScheduler$Core.run(MultithreadedScheduler.java:166) at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) at java.util.concurrent.FutureTask.run(FutureTask.java:266) at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) at java.lang.Thread.run(Thread.java:744) " execution-number="494" algorithm="CONC_BT"/>
+    </failure-description>
+    <tests>
+        <test seed="42" name="CSPs" env="async">
+            <correctness-tester>
+                <default-tester/>
+            </correctness-tester>
+            <algorithms>
+                <algorithm name="SBT"/>
+                <algorithm name="ABT"/>
+                <algorithm name="AFC"/>
+                <algorithm name="AFC-NG"/>
+                <algorithm name="CONC_BT"/>
+            </algorithms>
+            <problem-generator>
+                <dcsp-unstructured p1="0.3" p2="0.5" d="10" n="10"/>
+            </problem-generator>
+            <loop>
+                <for-loop repeat-count="100" run-var="p2" start="0.1" end="0.9" tick-size="0.1">
+                    <looper>
+                        <do-once/>
+                    </looper>
+                </for-loop>
+            </loop>
+            <statistics>
+                <cc-sc/>
+                <ncsc-sc/>
+                <msgc-sc type="BY_RUNVAR"/>
+                <nccc-sc/>
+            </statistics>
+        </test>
+    </tests>
+    <Statistics/>
+</experiment>

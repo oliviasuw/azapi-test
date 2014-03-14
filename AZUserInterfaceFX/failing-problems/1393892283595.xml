@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<experiment>
+    <failure-description>
+        <failure-description test-name="0" description="The Execution crushed with the exception: java.lang.NullPointerException at bgu.dcr.az.algos.ABTAgent.checkAgentView(ABTAgent.java:123) at bgu.dcr.az.algos.ABTAgent.start(ABTAgent.java:43) at bgu.dcr.az.mas.impl.BaseAgentController.start(BaseAgentController.java:100) at bgu.dcr.az.execs.AbstractProc.quota(AbstractProc.java:58) at bgu.dcr.az.execs.MultithreadedScheduler$Core.run(MultithreadedScheduler.java:167) at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) at java.util.concurrent.FutureTask.run(FutureTask.java:266) at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) at java.lang.Thread.run(Thread.java:744) " execution-number="0" algorithm="ABT"/>
+    </failure-description>
+    <tests>
+        <test seed="42" name="0" env="async">
+            <correctness-tester>
+                <default-tester/>
+            </correctness-tester>
+            <algorithms>
+                <algorithm name="ABT"/>
+            </algorithms>
+            <problem-generator>
+                <dcsp-unstructured p1="0.1" p2="0.64" d="3" n="4"/>
+            </problem-generator>
+            <loop>
+                <for-loop repeat-count="1000" run-var="p1" start="0.1" end="0.9" tick-size="0.1">
+                    <looper>
+                        <do-once/>
+                    </looper>
+                </for-loop>
+            </loop>
+            <statistics>
+                <cc-sc/>
+                <item>Number of cores in use</item>
+                <msgc-sc type="BY_RUNVAR"/>
+                <item>Algorithm CPU time spending</item>
+            </statistics>
+        </test>
+    </tests>
+    <Statistics/>
+</experiment>

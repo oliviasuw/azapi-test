@@ -1,0 +1,3 @@
+03-14 09:21:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "NCSC4" not found; SQL statement:
+select  * from NCSC4 [42102-175]

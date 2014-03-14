@@ -2,9 +2,11 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group name="AgentZero"/>
+        <group name="AgentZero">
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZCommon/src/bgu/dcr/az/common/tos/ToStringUtils.java</file>
+        </group>
         <group>
-            <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZCommon/src/bgu/dcr/az/common/ui/FXUtils.java</file>
+            <file>file:/D:/Projects/AgentZero/AZCommon/src/bgu/dcr/az/common/ui/FXUtils.java</file>
         </group>
     </open-files>
 </project-private>

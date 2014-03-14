@@ -16,7 +16,7 @@
         <algorithm name="ABT"/>
         <algorithm name="AFC"/>
         <algorithm name="AFC-NG"/>
-        <algorithm name="CONC_BT"/>
+        <!--<algorithm name="CONC_BT"/>-->
     </test>
     
 <!--    <test seed="42" name="COPs">

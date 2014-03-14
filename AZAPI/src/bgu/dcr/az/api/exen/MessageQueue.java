@@ -4,9 +4,6 @@
  */
 package bgu.dcr.az.api.exen;
 
-import bgu.dcr.az.api.Message;
-import java.util.List;
-
 /**
  *
  * @author bennyl

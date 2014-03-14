@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<experiment>
+    <failure-description>
+        <failure-description test-name="Local search" description="The Execution crushed with the exception: bgu.dcr.az.mas.exp.ExperimentExecutionException: cannot execute experiment - configuration problem, see cause at bgu.dcr.az.mas.cp.CPExperimentTest.execute(CPExperimentTest.java:209) at bgu.dcr.az.mas.cp.CPExperimentTest.execute(CPExperimentTest.java:155) at bgu.dcr.az.mas.cp.CPExperiment.execute(CPExperiment.java:102) at bgu.dcr.az.ui.AppController.main(AppController.java:70) Caused by: java.lang.NullPointerException at bgu.dcr.az.ui.screens.status.RuntimeStatisticsService.initialize(RuntimeStatisticsService.java:27) at bgu.dcr.az.mas.impl.BaseExecution$ExecutionServiceWithInitializationData.initialize(BaseExecution.java:154) at bgu.dcr.az.mas.impl.BaseExecution.execute(BaseExecution.java:66) at bgu.dcr.az.mas.cp.CPExperimentTest.execute(CPExperimentTest.java:195) ... 3 more " execution-number="0" algorithm="ABT"/>
+    </failure-description>
+    <tests>
+        <test seed="42" name="Local search" env="async">
+            <algorithms>
+                <algorithm name="ABT"/>
+                <algorithm name="AFC-NG"/>
+            </algorithms>
+            <problem-generator>
+                <dcop-unstructured p1="0.1" d="5" max-cost="100" n="20"/>
+            </problem-generator>
+            <loop>
+                <for-loop repeat-count="100" run-var="p1" start="0.1" end="0.9" tick-size="0.1">
+                    <looper>
+                        <do-once/>
+                    </looper>
+                </for-loop>
+            </loop>
+            <statistics>
+                <cc-sc/>
+                <msgc-sc type="BY_RUNVAR"/>
+            </statistics>
+        </test>
+    </tests>
+    <Statistics/>
+</experiment>

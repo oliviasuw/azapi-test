@@ -28,6 +28,7 @@ import javafx.embed.swing.JFXPanel;
 import javafx.scene.image.Image;
 import javax.swing.JFrame;
 import nu.xom.ParsingException;
+import org.controlsfx.dialog.Dialogs;
 import resources.img.ResourcesImg;
 
 /**
@@ -149,6 +150,19 @@ public class AppController {
 
     public static EmbeddedDatabaseManager getDatabaseManager() {
         return StatisticsManagerImpl.getInstance().database();
+    }
+
+    public static void showErrorDialog(Exception ex, String title) {
+        Throwable e = ex;
+        while (e != null && e.getMessage().equals("see cause")) {
+            e = e.getCause();
+        }
+
+        if (e == null) {
+            e = ex;
+        }
+
+        Dialogs.create().title(title).masthead(null).showException(e);
     }
 
 }

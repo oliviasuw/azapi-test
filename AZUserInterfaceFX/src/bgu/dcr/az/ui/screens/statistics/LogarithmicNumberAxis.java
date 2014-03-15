@@ -115,8 +115,10 @@ public class LogarithmicNumberAxis extends ValueAxis<Number> {
                 tickPositions.add(Math.pow(10, i));
             }
 
-            if (tickPositions.getLast().doubleValue() != upperBound) {
-                tickPositions.add(upperBound);
+            if (!tickPositions.isEmpty()) {
+                if (tickPositions.getLast().doubleValue() != upperBound) {
+                    tickPositions.add(upperBound);
+                }
             }
         }
 

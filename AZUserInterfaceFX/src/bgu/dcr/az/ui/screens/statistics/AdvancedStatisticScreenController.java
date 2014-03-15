@@ -71,8 +71,8 @@ public class AdvancedStatisticScreenController implements Initializable {
         queryDB = dbm.createQueryDatabase();
 
         simpleModeButton.setOnAction(a -> statisticsScreen.toSimpleMode());
-        initializeTableTree();
         initializeEditor();
+        initializeTableTree();
         initializeResultTable();
     }
 
@@ -109,6 +109,9 @@ public class AdvancedStatisticScreenController implements Initializable {
     }
 
     private void initializeEditor() {
+        
+        editor.getEngine().loadContent("<html> <body style='bacground-color:black;'/> </html>");
+        
         editor.getEngine().getLoadWorker().stateProperty().addListener((v, o, n) -> {
             if (n == Worker.State.SUCCEEDED) {
                 editorModel = (JSObject) editor.getEngine().executeScript("window.editor");

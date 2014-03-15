@@ -31,6 +31,7 @@ public class StatisticsPlotter implements Plotter {
 
     private final BorderPane pane;
     private boolean asTable = false;
+    private Data currentlyPlottedData;
 
     public StatisticsPlotter(BorderPane pane) {
         this.pane = pane;
@@ -42,6 +43,8 @@ public class StatisticsPlotter implements Plotter {
 
     @Override
     public void plotPieChart(Data data, String valueField, String seriesField, String title, String valueFieldLabel, String seriesFieldLabel) {
+        currentlyPlottedData = data;
+        
         if (asTable) {
             plotTable(data);
             return;
@@ -61,6 +64,8 @@ public class StatisticsPlotter implements Plotter {
 
     @Override
     public void plotLineChart(Data data, String xField, String yField, String seriesField, AdditionalLineChartProperties properties) {
+        currentlyPlottedData = data;
+        
         if (asTable) {
             plotTable(data);
             return;
@@ -129,6 +134,8 @@ public class StatisticsPlotter implements Plotter {
 
     @Override
     public void plotBarChart(Data data, String categoryField, String valueField, String seriesField, AdditionalBarChartProperties properties) {
+        currentlyPlottedData = data;
+        
         if (asTable) {
             plotTable(data);
             return;
@@ -173,14 +180,24 @@ public class StatisticsPlotter implements Plotter {
 
     @Override
     public void plotLineChart(Data data, String xField, String yField, String seriesField) {
+        currentlyPlottedData = data;
+        
         AdditionalLineChartProperties properties = new AdditionalLineChartProperties();
         plotLineChart(data, xField, yField, seriesField, properties);
     }
 
     private void plotTable(Data data) {
+        currentlyPlottedData = data;
+        
         final TableView table = StatisticViewUtils.createTable(data);
         table.getStyleClass().add("dark");
         pane.setCenter(table);
     }
 
+    public Data getCurrentlyPlottedData() {
+        return currentlyPlottedData;
+    }
+
+    
+    
 }

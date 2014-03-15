@@ -6,9 +6,11 @@
 package bgu.dcr.az.common.ui;
 
 import bgu.dcr.az.common.timing.TimingUtils;
+import bgu.dcr.az.common.unchecks.UncheckedInterruptedException;
 import com.sun.javafx.scene.control.skin.TitledPaneSkin;
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -32,12 +34,41 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 /**
  *
  * @author User
  */
 public class FXUtils {
+
+    /**
+     * load the given class view fxml and then show it in a new window, setting
+     * its modality as given
+     *
+     * @param aClass
+     * @param modal
+     */
+    public static <T> T showInNewWindow(Class<T> aClass, boolean modal, String title, String... stylesheets) {
+        PaneWithCTL<T> root = loadFXML(aClass);
+        invokeInUI(() -> {
+            Stage stage = new Stage();
+            stage.setTitle(title);
+            Scene scene = new Scene(root.getPane());
+            scene.getStylesheets().addAll(Arrays.asList(stylesheets));
+            stage.setScene(scene);
+            stage.initModality(modal ? Modality.APPLICATION_MODAL : Modality.NONE);
+
+            if (modal) {
+                stage.showAndWait();
+            } else {
+                stage.show();
+            }
+        });
+
+        return root.getController();
+    }
 
     public static class JFXPanelWithCTL<T> extends JFXPanel {
 
@@ -106,12 +137,10 @@ public class FXUtils {
                 Logger.getLogger(FXUtils.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-        
+
         return panel;
     }
 
-    
-    
     /**
      * if you are calling this function it must be that the controller class
      * resides in the same package as the fxml file and that this class is of
@@ -131,7 +160,7 @@ public class FXUtils {
     public static <T> PaneWithCTL<T> loadFXML(final Class<T> ctl, final String fxml) {
         final Semaphore lock = new Semaphore(0);
         final PaneWithCTL[] result = {new PaneWithCTL<>()};
-        
+
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(() -> {
                 result[0] = loadFXML(ctl, fxml);
@@ -286,6 +315,27 @@ public class FXUtils {
             r.run();
         } else {
             Platform.runLater(r);
+        }
+    }
+
+    public static void invokeInUINow(Runnable r) {
+        if (Platform.isFxApplicationThread()) {
+            r.run();
+        } else {
+            Semaphore s = new Semaphore(0);
+            Platform.runLater(() -> {
+                try {
+                    r.run();
+                } finally {
+                    s.release();
+                }
+            });
+            
+            try {
+                s.acquire();
+            } catch (InterruptedException ex) {
+                throw new UncheckedInterruptedException(ex);
+            }
         }
     }
 

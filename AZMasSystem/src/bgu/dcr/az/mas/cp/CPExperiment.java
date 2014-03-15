@@ -16,6 +16,7 @@ import bgu.dcr.az.mas.ExecutionService;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import bgu.dcr.az.mas.exp.ExperimentStatusSnapshot;
+import bgu.dcr.az.mas.impl.Context;
 import bgu.dcr.az.mas.impl.ExperimentStatusSnapshotImpl;
 import bgu.dcr.az.mas.impl.InitializationException;
 import bgu.dcr.az.mas.stat.StatisticCollector;
@@ -81,7 +82,8 @@ public class CPExperiment implements Experiment {
     @Override
     public ExecutionResult execute() {
         try {
-
+            supply(Context.ContextGenerator.class, new Context.ContextGenerator());// for nested agents
+            
             status.start();
 
             int singleExecutionMode = failureDescription == null ? -1 : failureDescription.getFailingExecutionNumber();
@@ -91,7 +93,7 @@ public class CPExperiment implements Experiment {
 
             suppliedServices.values().stream()
                     .distinct().forEach(s -> s.initialize(this));
-            
+
             for (CPExperimentTest t : tests) {
                 status.currentExecutedSubExperimentName = t.getName();
                 status.currentExecutedSubExperimentStatus = t.status();
@@ -101,7 +103,7 @@ public class CPExperiment implements Experiment {
                 }
 
                 suppliedServices.values().stream()
-                    .distinct().forEach(s -> s.initialize(t));
+                        .distinct().forEach(s -> s.initialize(t));
 
                 result = t.execute();
 

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.*?>
+
+<GridPane id="pivot-view" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="405.0" prefWidth="622.0" styleClass="az-root" stylesheets="@../../../azstyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bgu.dcr.az.ui.screens.statistiscs.pivot.PivotDataViewerController">
+  <children>
+    <BorderPane fx:id="pivotContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+    <BorderPane id="vizualizersContainer" fx:id="vizualizerContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="1" GridPane.rowIndex="1" /><Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Data Manipulation">
+<styleClass>
+<String fx:value="label" />
+<String fx:value="section-header" />
+</styleClass></Label>
+
+    <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" styleClass="section-header" GridPane.columnIndex="1">
+<center><SegmentedButton fx:id="visualizationTypeButtons" maxHeight="-Infinity" maxWidth="-Infinity" BorderPane.alignment="CENTER" GridPane.columnIndex="1" />
+</center></BorderPane>
+  </children>
+  <columnConstraints>
+    <ColumnConstraints hgrow="NEVER" maxWidth="250.0" minWidth="250.0" prefWidth="250.0" />
+    <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="-1.0" />
+  </columnConstraints>
+  <rowConstraints>
+<RowConstraints maxHeight="41.0" minHeight="25.0" percentHeight="0.0" prefHeight="34.0" vgrow="SOMETIMES" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
+    <RowConstraints maxHeight="1.7976931348623157E308" minHeight="141.0" prefHeight="281.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+</GridPane>

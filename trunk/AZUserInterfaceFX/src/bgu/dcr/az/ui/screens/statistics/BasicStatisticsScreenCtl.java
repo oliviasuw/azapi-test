@@ -55,7 +55,7 @@ public class BasicStatisticsScreenCtl implements Initializable {
     BorderPane statConfigurationPanel;
 
     @FXML
-    Hyperlink advancedLink;
+    Button advancedLink;
 
     StatisticsPlotter plotter;
     private StatisticCollector selectedStatisticCollector;

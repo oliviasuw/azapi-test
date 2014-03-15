@@ -1,6 +1,7 @@
 .root, .az-root{    
     -az-gray30 : rgb(30,30,30);
     -az-gray35 : rgb(35,35,35);
+    -az-gray50 : rgb(50,50,50);
     -az-gray200: rgb(200,200,200);
 
     -az-dark-table-cell-odd-color: -az-gray30;
@@ -19,11 +20,17 @@
     
     -az-treeview-selected-cell-color: rgb(83,135,182);
     -az-treeview-selected-cell-fgcolor: rgb(230,230,230);
+    
+    -az-data-visualization-color: -az-gray30;
 }
 
 /*
 CLEANUP
 */
+
+.no-padding {
+    -fx-padding: 0;
+}
 
 .table-view {
     -fx-background-radius: 0;
@@ -83,6 +90,18 @@ CLEANUP
     -fx-text-fill: rgb(230,230,230);
 }
 
+.web-view {
+    -fx-background-color: red;
+    -fx-fill: red;
+}
+
+.no-data {
+    -fx-background-color: -az-data-visualization-color;
+}
+
+.no-data .label {
+    -fx-text-fill: white;
+}
 
 /* 
 DARK TABLE
@@ -133,31 +152,54 @@ DARK TABLE
 .table-view.dark .filler{
     -fx-background-color: -az-dark-table-header;
 }
+
 .table-view.dark.section-header .filler{
     -fx-background-color: -az-section-header-color;
 }
 
-
-/* 
-SECTION HEADER LABELES
+/*
+SECTIONS
 */
-
 .label.section-header {
     -fx-padding: 4;
     -fx-background-color: -az-section-header-color;
     -fx-text-fill: -az-section-header-fgcolor;
 }
 
+.titled-pane.section {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+
+.titled-pane.section  > .title{
+    -fx-background-color: rgb(100, 100, 100);
+    -fx-background-radius: 0 0 0 0, 0 0 0 0, 0 0 0 0;
+    -fx-padding: 4;
+}
+
+.titled-pane.section  > .title .text{
+    -fx-fill:#f3f3f3;
+}
+
+.titled-pane.section  > .content{
+    -fx-background-color: rgb(220, 220, 220);
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+}
+
 /*
 BUTTON BARS
 */
 
-.tool-bar.button-bar {
+.button-bar {
     -fx-spacing: 0;
     -fx-padding: 4;
 }
 
-.tool-bar.button-bar .button{
+.button-bar .button{
     -fx-padding: 3 5 3 5; 
     -fx-background-color: transparent;
     -fx-text-fill: white;
@@ -166,8 +208,87 @@ BUTTON BARS
     -fx-cursor: hand;
 }
 
-.tool-bar.button-bar .button:hover{
+.button-bar .button:hover{
     -fx-background-color: -az-treeview-selected-cell-color;
     -fx-background-radius: 0;
     -fx-background-insets: 0 0 0 0;
+}
+
+/*
+DATA VISUALIZATION 
+*/
+.vis-viewer {
+    -fx-background-color: -az-data-visualization-color;
+    -fx-background-insets: 0 5 5 5;
+    -fx-background-radius: 6;
+    -fx-padding: 8;
+}
+
+.vis-viewer .chart-title {
+    -fx-text-fill: white;
+}
+
+.vis-viewer .chart-legend {
+    -fx-background-color:  transparent;
+    -fx-padding: 0px;
+}
+
+.vis-viewer  .chart-legend-item {
+    -fx-text-fill: black;
+}
+
+
+.vis-viewer .chart-pie {
+    -fx-background-insets: 0;
+    -fx-border-color: rgb(200,200,200);
+    -fx-text-fill: white;
+}
+
+
+.vis-viewer  .chart-pie-label {
+    -fx-fill: white;
+}
+
+.vis-viewer  .axis {
+    -fx-tick-label-fill: rgb(200,200,200);
+}
+
+.vis-viewer .axis-label {
+    -fx-text-fill: white;
+}
+
+.vis-viewer .axis-tick-mark {
+    -fx-stroke: rgb(200,200,200);
+}
+.vis-viewer  .axis-minor-tick-mark {
+    -fx-stroke: rgb(200,200,200);
+}
+
+/*
+SCREENS
+*/
+
+#basic-statistic-screen {
+    -fx-background-color: -az-toolbar-color;
+    -fx-padding: 0 0 0 5;
+}
+
+#basic-statistic-screen #first-section .title{
+    -fx-background-radius: 6 6 0 0;
+}
+
+#basic-statistic-screen #last-section .content{
+    -fx-background-radius: 0 0 6 6;
+    -fx-background-insets: 0 0 5 0;
+    -fx-background-color: -az-gray50;
+}
+
+/*the little circles*/
+#basic-statistic-screen .step-indicator-circle {
+    -fx-fill: rgb(80,80,80);
+    -fx-stroke: rgb(240,240,240);
+}
+
+#basic-statistic-screen .section-container .no-data {
+    -fx-background-color: -az-gray50;
 }

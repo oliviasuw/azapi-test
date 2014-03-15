@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -276,48 +277,19 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
     private ContinuationMediator nest(Agent agent, int aId, String contextId) throws ClassNotFoundException {
         AgentContextStack agentStack = controlledAgents.get(aId);
         if (agentStack == null) {
-            agentStack = new AgentContextStack();
+            agentStack = new AgentContextStack(aId);
             controlledAgents.put(aId, agentStack);
         }
-        AgentContextStack fAgentStack = agentStack;
-        ContinuationMediator mediator = new ContinuationMediator() {
-            @Override
-            public void executeContinuation() {
-                fAgentStack.pop();
-                activeAgent = null;
 
-                if (fAgentStack.isEmpty()) {
-                    removeControlledAgent(agent);
-                } else {
-                    activeAgent = fAgentStack.current().a;
-                }
-
-                if (activeAgent != null) {
-                    for (int i = 0; i < delayedMessageQueue.size(); i++) {
-                        AZIPMessage m = delayedMessageQueue.poll();
-                        if (m == null) {
-                            break;
-                        }
-                        receive(m);
-                    }
-                }
-
-                super.executeContinuation();
-            }
-        };
-        AgentManipulator manipulator = RegisteryUtils.getRegistery().getAgentManipulator(agent.getClass());
-        initializeAgent(agent, manipulator, aId, execution);
         if (contextId == null) {
             contextId = agentStack.isEmpty()
-                    ? manipulator.getAlgorithmName()
-                    : agentStack.current().getContext().getContextRepresentation() + "_" + manipulator.getAlgorithmName();
+                    ? agent.getClass().getSimpleName()
+                    : agentStack.current().getContext().getContextRepresentation() + "_" + agent.getClass().getSimpleName();
         }
-        Context context = cGen.getContext(contextId);
-        AgentWithManipulator awm = new AgentWithManipulator(agent, manipulator, context, mediator);
-        agentStack.push(awm);
-        activeAgent = agent;
 
-        return mediator;
+        agentStack.saveAndUpdateTo(agent, contextId);
+
+        return agentStack.current().getContinuationMediator();
     }
 
     protected abstract void initializeAgent(Agent agent, AgentManipulator manipulator, int aId, Execution ex);
@@ -340,17 +312,23 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
             return context;
         }
 
+        public ContinuationMediator getContinuationMediator() {
+            return continuation;
+        }
+
         public void finilize() {
             continuation.executeContinuation();
         }
     }
 
-    protected static class AgentContextStack {
+    protected class AgentContextStack {
 
-        private final ConcurrentLinkedQueue<AgentWithManipulator> stack;
+        private final int aId;
+        private final ConcurrentLinkedDeque<AgentWithManipulator> stack;
 
-        public AgentContextStack() {
-            stack = new ConcurrentLinkedQueue<>();
+        public AgentContextStack(int aId) {
+            stack = new ConcurrentLinkedDeque<>();
+            this.aId = aId;
         }
 
         public boolean isEmpty() {
@@ -361,12 +339,51 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
             return stack.peek();
         }
 
-        public void push(AgentWithManipulator awm) {
-            stack.add(awm);
+        public void saveAndUpdateTo(Agent agent, String contextId) throws ClassNotFoundException {
+            ContinuationMediator mediator = new ContinuationMediator() {
+                @Override
+                public void executeContinuation() {
+                    restore();
+                    super.executeContinuation();
+                }
+            };
+            AgentManipulator manipulator = RegisteryUtils.getRegistery().getAgentManipulator(agent.getClass());
+            initializeAgent(agent, manipulator, aId, execution);
+
+            if (isEmpty()) {
+                System.out.println("Spawned " + agent);
+            } else {
+                System.out.println("Request to nest new Agent for algorithm " + agent.getClass().getSimpleName() + " inside " + activeAgent + " with context " + current().getContext().getContextRepresentation());
+            }
+
+            Context context = cGen.getContext(contextId);
+            AgentWithManipulator awm = new AgentWithManipulator(agent, manipulator, context, mediator);
+            stack.addFirst(awm);
+            if (activeAgent != null) {
+                agent.start();
+            }
+            activeAgent = agent;
         }
 
-        public AgentWithManipulator pop() {
-            return stack.poll();
+        public void restore() {
+            AgentWithManipulator lastAgent = stack.poll();
+            BaseAgentController.this.activeAgent = null;
+
+            if (stack.isEmpty()) {
+                removeControlledAgent(lastAgent.a);
+            } else {
+                activeAgent = current().a;
+            }
+
+            if (activeAgent != null) {
+                for (int i = 0; i < delayedMessageQueue.size(); i++) {
+                    AZIPMessage m = delayedMessageQueue.poll();
+                    if (m == null) {
+                        break;
+                    }
+                    receive(m);
+                }
+            }
         }
     }
 }

@@ -130,7 +130,7 @@
   </left>
 <top><ToolBar prefWidth="200.0" styleClass="button-bar" BorderPane.alignment="CENTER" xmlns:fx="http://javafx.com/fxml">
   <items>
-    <Button fx:id="advancedLink" mnemonicParsing="false" text="To Advanced Mode" />
+    <Button fx:id="advancedLink" mnemonicParsing="false" text="To Advanced Mode" /><Button fx:id="pivotResultsButton" mnemonicParsing="false" text="Pivot Results" />
   </items>
 </ToolBar>
 </top>

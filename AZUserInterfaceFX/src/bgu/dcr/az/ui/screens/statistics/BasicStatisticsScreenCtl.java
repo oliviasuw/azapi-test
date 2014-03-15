@@ -7,11 +7,13 @@ package bgu.dcr.az.ui.screens.statistics;
 
 import bgu.dcr.az.anop.conf.ConfigurationException;
 import bgu.dcr.az.anop.conf.ConfigurationUtils;
+import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.common.ui.panels.FXMessagePanel;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.mas.stat.StatisticCollector;
 import bgu.dcr.az.ui.confe.ConfigurationEditor;
 import bgu.dcr.az.ui.screens.dialogs.Notification;
+import bgu.dcr.az.ui.screens.statistiscs.pivot.PivotDataViewerController;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -57,7 +59,10 @@ public class BasicStatisticsScreenCtl implements Initializable {
     @FXML
     Button advancedLink;
 
-    StatisticsPlotter plotter;
+    @FXML
+    Button pivotResultsButton;
+
+    private StatisticsPlotter plotter;
     private StatisticCollector selectedStatisticCollector;
     private MainStatisticScreen statisticScreen;
 
@@ -67,6 +72,17 @@ public class BasicStatisticsScreenCtl implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         advancedLink.setOnAction(a -> statisticScreen.toAdvancedMode());
+        pivotResultsButton.setOnAction(a -> {
+
+            if (plotter.getCurrentlyPlottedData() == null) {
+                Notification.Notifier.INSTANCE.notifyError("No way jose", "There is no analysis results");
+                return;
+            }
+
+            FXUtils.showInNewWindow(PivotDataViewerController.class, true, "Pivot")
+                    .setModel(plotter.getCurrentlyPlottedData());
+        });
+
         plotter = new StatisticsPlotter(resultsContainer);
 
         resultsContainer.setCenter(FXMessagePanel.createNoDataPanel("No Data To Show Currently"));

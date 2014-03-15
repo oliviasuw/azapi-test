@@ -14,13 +14,15 @@
 
     -az-toolbar-color: derive(-az-section-header-color, -30%);
 
-    -az-button-color: rgb(180,180,180);
-
     -az-treeview-background: rgb(222,227,233);
-    
+
     -az-treeview-selected-cell-color: rgb(83,135,182);
     -az-treeview-selected-cell-fgcolor: rgb(230,230,230);
-    
+
+    -az-button-color: rgb(180,180,180);
+    -az-toggle-button-selected-color: rgb(170,70,70);
+    -az-toggle-button-selected-fgcolor: white;
+
     -az-data-visualization-color: -az-gray30;
 }
 
@@ -59,8 +61,36 @@ CLEANUP
     -fx-cursor: hand;
 }
 
-.button:hover {
-    -fx-background-color: derive(-az-button-color, 20%);
+.toggle-button {
+    -fx-background-color: -az-button-color;
+    -fx-padding: 4 6 4 6; 
+    -fx-background-insets: 0;
+    -fx-cursor: hand;
+}
+
+
+.segmented-button .toggle-button.left-pill, .toggle-button.center-pill {
+    -fx-border-color : derive(-az-button-color, -20%);
+    -fx-border-width: 0 1 0 0;
+    -fx-background-insets: 0;
+}
+
+.toggle-button:selected, .toggle-button.center-pill:selected {
+    -fx-background-color: -az-toggle-button-selected-color;
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+}
+.toggle-button:selected .text, .toggle-button.center-pill:selected .text {
+    -fx-text-fill: -az-toggle-button-selected-fgcolor;
+}
+.toggle-button.left-pill:selected, .toggle-button.center-pill:selected {
+    -fx-background-color: -az-toggle-button-selected-color;
+    -fx-border-width: 0 1 0 0;
+    -fx-background-insets: 0;
+}
+
+.button:hover, .toggle-button:hover {
+    -fx-background-color: derive(-az-button-color, 40%);
 }
 
 
@@ -160,7 +190,7 @@ DARK TABLE
 /*
 SECTIONS
 */
-.label.section-header {
+.section-header {
     -fx-padding: 4;
     -fx-background-color: -az-section-header-color;
     -fx-text-fill: -az-section-header-fgcolor;

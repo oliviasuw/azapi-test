@@ -1,14 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package bgu.dcr.az.ui.screens.statistics;
 
-/**
- *
- * @author User
- */
 import com.sun.javafx.charts.ChartLayoutAnimator;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -22,7 +13,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.chart.ValueAxis;
 import javafx.util.Duration;
 
-//http://blog.dooapp.com/logarithmic-scale-strikes-back-in-javafx-20        
+//http://blog.dooapp.com/logarithmic-scale-strikes-back-in-javafx-20
+//Edited by Vadim Levit & Benny Lutati for usage in AgentZero (https://code.google.com/p/azapi-test/)
 public class LogarithmicNumberAxis extends ValueAxis<Number> {
 
     private Object currentAnimationID;
@@ -41,11 +33,8 @@ public class LogarithmicNumberAxis extends ValueAxis<Number> {
 
     public LogarithmicNumberAxis(double lowerBound, double upperBound) {
         super(lowerBound, upperBound);
-        try {
-            validateBounds(lowerBound, upperBound);
-            bindLogBoundsToDefaultBounds();
-        } catch (IllegalLogarithmicRangeException e) {
-        }
+        validateBounds(lowerBound, upperBound);
+        bindLogBoundsToDefaultBounds();
     }
 
     public void setLogarithmizedUpperBound(double d) {
@@ -91,7 +80,7 @@ public class LogarithmicNumberAxis extends ValueAxis<Number> {
     private void validateBounds(double lowerBound, double upperBound) throws IllegalLogarithmicRangeException {
         if (lowerBound < 0 || upperBound < 0 || lowerBound > upperBound) {
             throw new IllegalLogarithmicRangeException(
-                    "The logarithmic range should be include to ]0,Double.MAX_VALUE] and the lowerBound should be less than the upperBound");
+                    "The logarithmic range should be in [0,Double.MAX_VALUE] and the lowerBound should be less than the upperBound");
         }
     }
 
@@ -125,7 +114,13 @@ public class LogarithmicNumberAxis extends ValueAxis<Number> {
         return tickPositions;
     }
 
-//The getRange provides the current range of the axis. A basic implementation is to return an array of the lowerBound and upperBound properties defined into the ValueAxis class.
+    /**
+     * The getRange provides the current range of the axis. A basic
+     * implementation is to return an array of the lowerBound and upperBound
+     * properties defined into the ValueAxis class.
+     *
+     * @return
+     */
     @Override
     protected double[] getRange() {
         return new double[]{
@@ -134,7 +129,14 @@ public class LogarithmicNumberAxis extends ValueAxis<Number> {
         };
     }
 
-//The getTickMarkLabel is only used to convert the number value to a string that will be displayed under the tickMark. Here I choose to use a number formatter.
+    /**
+     * The getTickMarkLabel is only used to convert the number value to a string
+     * that will be displayed under the tickMark. Here I choose to use a number
+     * formatter.
+     *
+     * @param value
+     * @return
+     */
     @Override
     protected String getTickMarkLabel(Number value) {
         //jyhgjhg
@@ -144,21 +146,17 @@ public class LogarithmicNumberAxis extends ValueAxis<Number> {
         return formatter.format(value);
     }
 
-//The method setRange is used to update the range when data are added into the chart. There is two possibilities, the axis is animated or not. The simplest case is to set the lower and upper bound properties directly with the new values.
+    /**
+     * The method setRange is used to update the range when data are added into
+     * the chart. There is two possibilities, the axis is animated or not. The
+     * simplest case is to set the lower and upper bound properties directly
+     * with the new values.
+     *
+     * @param range
+     * @param animate
+     */
     @Override
     protected void setRange(Object range, boolean animate) {
-        /*if (range != null) {
-         Number lowerBound = ((Number[]) range)[0];
-         Number upperBound = ((Number[]) range)[1];
-         currentLowerBound.
-         try {
-         validateBounds(lowerBound.doubleValue(), upperBound.doubleValue());
-         } catch (IllegalLogarithmicRangeException e) {
-         }
-
-         lowerBoundProperty().set(lowerBound.doubleValue());
-         upperBoundProperty().set(upperBound.doubleValue());
-         }*/
         if (range != null) {
             final double[] rangeProps = (double[]) range;
             final double lowerBound = rangeProps[0];
@@ -183,7 +181,13 @@ public class LogarithmicNumberAxis extends ValueAxis<Number> {
         }
     }
 
-//We are almost done but we forgot to override 2 important methods that are used to perform the matching between data and the axis (and the reverse).
+    /**
+     * We are almost done but we forgot to override 2 important methods that are
+     * used to perform the matching between data and the axis (and the reverse).
+     *
+     * @param displayPosition
+     * @return
+     */
     @Override
     public Number getValueForDisplay(double displayPosition) {
         double delta = logUpperBound.get() - logLowerBound.get();
@@ -213,7 +217,7 @@ public class LogarithmicNumberAxis extends ValueAxis<Number> {
      * @author Kevin Senechal mailto: kevin.senechal@dooapp.com
      *
      */
-    public class IllegalLogarithmicRangeException extends Exception {
+    public class IllegalLogarithmicRangeException extends RuntimeException {
 
         /**
          * @param string

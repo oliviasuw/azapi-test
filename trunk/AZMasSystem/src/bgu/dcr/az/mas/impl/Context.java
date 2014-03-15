@@ -8,6 +8,7 @@ package bgu.dcr.az.mas.impl;
 import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.ExecutionService;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -30,18 +31,22 @@ public class Context {
     public String getContextRepresentation() {
         return contextRepresentation;
     }
-    
+
     public static class ContextGenerator implements ExecutionService {
 
-        private HashMap<String, Context> contextMapper;
+        private ConcurrentHashMap<String, Context> contextMapper;
         private long contextId;
 
-        public synchronized Context getContext(String repr) {
+        public Context getContext(String repr) {
             Context context = contextMapper.get(repr);
 
             if (context == null) {
                 context = new Context(repr, contextId++);
-                contextMapper.put(repr, context);
+
+                Context old = contextMapper.putIfAbsent(repr, context);
+                if (old != null) {
+                    context = old;
+                }
             }
 
             return context;
@@ -49,7 +54,7 @@ public class Context {
 
         @Override
         public void initialize(Execution ex) throws InitializationException {
-            contextMapper = new HashMap<>();
+            contextMapper = new ConcurrentHashMap<>();
             contextId = 0;
         }
     }

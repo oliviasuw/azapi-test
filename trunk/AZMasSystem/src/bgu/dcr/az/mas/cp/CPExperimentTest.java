@@ -26,6 +26,7 @@ import bgu.dcr.az.mas.exp.ExperimentExecutionException;
 import bgu.dcr.az.mas.exp.ExperimentStatusSnapshot;
 import bgu.dcr.az.mas.exp.Looper;
 import bgu.dcr.az.mas.exp.loopers.SingleExecutionLooper;
+import bgu.dcr.az.mas.impl.Context;
 import bgu.dcr.az.mas.impl.ExperimentStatusSnapshotImpl;
 import bgu.dcr.az.mas.impl.stat.StatisticsManagerImpl;
 import bgu.dcr.az.mas.stat.StatisticCollector;
@@ -271,6 +272,7 @@ public class CPExperimentTest implements Experiment {
             Agt0DSL.panic("cannot find agent with algorithem name = " + adef.getName());
         }
         AgentSpawner spawner = new SimpleAgentSpawner(registeredClassByName);
+
         CPExecution exec = new CPExecution(this, adef, looper.getRunningVariableValue(i / algorithms.size()), spawner, p, executionEnvironment);
 
         final StatisticsManagerImpl statm = StatisticsManagerImpl.getInstance();

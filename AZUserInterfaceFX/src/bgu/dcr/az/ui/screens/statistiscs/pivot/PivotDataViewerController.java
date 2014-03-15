@@ -8,7 +8,6 @@ package bgu.dcr.az.ui.screens.statistiscs.pivot;
 import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.orm.api.Data;
 import bgu.dcr.az.pivot.model.TableData;
-import bgu.dcr.az.pivot.model.impl.AbstractPivot;
 import bgu.dcr.az.pivot.model.impl.SimplePivot;
 import bgu.dcr.az.ui.screens.dialogs.Notification;
 import java.net.URL;

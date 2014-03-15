@@ -79,8 +79,11 @@ public class BasicStatisticsScreenCtl implements Initializable {
                 return;
             }
 
-            FXUtils.showInNewWindow(PivotDataViewerController.class, true, "Pivot")
-                    .setModel(plotter.getCurrentlyPlottedData());
+            FXUtils.fxmlWindow(PivotDataViewerController.class)
+                    .modal(true)
+                    .title("Pivot Analysis")
+                    .initialize(c -> c.setModel(plotter.getCurrentlyPlottedData()))
+                    .show();
         });
 
         plotter = new StatisticsPlotter(resultsContainer);

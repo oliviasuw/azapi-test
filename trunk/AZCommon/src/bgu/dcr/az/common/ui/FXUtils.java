@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,20 +45,53 @@ import javafx.stage.Stage;
  */
 public class FXUtils {
 
-    /**
-     * load the given class view fxml and then show it in a new window, setting
-     * its modality as given
-     *
-     * @param aClass
-     * @param modal
-     */
-    public static <T> T showInNewWindow(Class<T> aClass, boolean modal, String title, String... stylesheets) {
-        PaneWithCTL<T> root = loadFXML(aClass);
-        invokeInUI(() -> {
+    public static class WindowBuilder<T> {
+
+        private boolean modal = false;
+        private String title = "";
+        private Consumer<T> controllerInitializer = null;
+        private List<String> stylesheets = new LinkedList<>();
+        private Class<T> controllerClass;
+
+        private WindowBuilder(Class<T> controllerClass) {
+            this.controllerClass = controllerClass;
+        }
+
+        public WindowBuilder<T> modal(boolean modal) {
+            this.modal = modal;
+            return this;
+        }
+
+        public WindowBuilder<T> title(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public WindowBuilder<T> stylesheets(List<String> stylesheets) {
+            this.stylesheets = stylesheets;
+            return this;
+        }
+
+        public WindowBuilder<T> stylesheets(String... stylesheets) {
+            this.stylesheets = Arrays.asList(stylesheets);
+            return this;
+        }
+
+        public WindowBuilder<T> initialize(Consumer<T> controllerInitializer) {
+            this.controllerInitializer = controllerInitializer;
+            return this;
+        }
+
+        public void show() {
+            PaneWithCTL<T> root = loadFXML(controllerClass);
+            if (controllerInitializer != null) {
+                controllerInitializer.accept(root.getController());
+            }
+
             Stage stage = new Stage();
             stage.setTitle(title);
             Scene scene = new Scene(root.getPane());
-            scene.getStylesheets().addAll(Arrays.asList(stylesheets));
+            scene.getStylesheets().addAll(stylesheets);
             stage.setScene(scene);
             stage.initModality(modal ? Modality.APPLICATION_MODAL : Modality.NONE);
 
@@ -65,11 +100,13 @@ public class FXUtils {
             } else {
                 stage.show();
             }
-        });
-
-        return root.getController();
+        }
     }
 
+    public static <T> WindowBuilder<T> fxmlWindow(Class<T> controller){
+        return new WindowBuilder<>(controller);
+    }
+    
     public static class JFXPanelWithCTL<T> extends JFXPanel {
 
         T ctl;
@@ -109,8 +146,10 @@ public class FXUtils {
 //                    ScenicView.show(scene);
                     scene.setFill(Paint.valueOf("transparent"));
                     result.setScene(scene);
+
                 } catch (IOException ex) {
-                    Logger.getLogger(FXUtils.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(FXUtils.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 } finally {
                     lock.release();
                 }
@@ -134,7 +173,8 @@ public class FXUtils {
                 scene.getStylesheets().addAll(Arrays.asList(stylesheets));
 
             } catch (InstantiationException | IllegalAccessException ex) {
-                Logger.getLogger(FXUtils.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FXUtils.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         });
 
@@ -168,8 +208,10 @@ public class FXUtils {
             });
             try {
                 lock.acquire();
+
             } catch (InterruptedException ex) {
-                Logger.getLogger(FXUtils.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FXUtils.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             try {
@@ -178,8 +220,10 @@ public class FXUtils {
                 Pane pane = (Pane) loader.load(ctl.getResource(fxml).openStream());
                 result[0].ctl = loader.getController();
                 result[0].pane = pane;
+
             } catch (IOException ex) {
-                Logger.getLogger(FXUtils.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FXUtils.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         }
         return result[0];
@@ -330,7 +374,7 @@ public class FXUtils {
                     s.release();
                 }
             });
-            
+
             try {
                 s.acquire();
             } catch (InterruptedException ex) {
@@ -352,8 +396,10 @@ public class FXUtils {
                         reloadSceneStylesheet(scene);
                     }
                 }, 1000);
+
             } catch (MalformedURLException ex) {
-                Logger.getLogger(FXUtils.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FXUtils.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         });
     }

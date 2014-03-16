@@ -10,14 +10,12 @@ import bgu.dcr.az.common.unchecks.UncheckedInterruptedException;
 import com.sun.javafx.scene.control.skin.TitledPaneSkin;
 import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -103,10 +101,10 @@ public class FXUtils {
         }
     }
 
-    public static <T> WindowBuilder<T> fxmlWindow(Class<T> controller){
+    public static <T> WindowBuilder<T> fxmlWindow(Class<T> controller) {
         return new WindowBuilder<>(controller);
     }
-    
+
     public static class JFXPanelWithCTL<T> extends JFXPanel {
 
         T ctl;
@@ -347,8 +345,10 @@ public class FXUtils {
      *
      * @param scene
      */
-    public static void reloadSceneStylesheet(Scene scene) {
+    public static void reloadSceneStylesheet(Parent p) {
         Platform.runLater(() -> {
+            Scene scene = p.getScene();
+            if (scene == null) return;
             com.sun.javafx.css.StyleManager.getInstance().forget(scene);
             scene.getRoot().impl_reapplyCSS();
         });
@@ -383,17 +383,29 @@ public class FXUtils {
         }
     }
 
-    public static void startCSSLiveReloader(Scene scene, String cssFile) {
+    /**
+     * return an url to a css file with the given name inside the jar at the
+     * same package as the given anchor
+     *
+     * @param anchor
+     * @param cssFileName
+     * @return
+     */
+    public static String css(Class anchor, String cssFileName) {
+        return anchor.getResource(cssFileName.endsWith(".css") ? cssFileName : cssFileName + ".css").toExternalForm();
+    }
+    
+    public static void startCSSLiveReloader(Parent parent, String cssFile) {
         invokeInUI(() -> {
             try {
                 File f = new File(cssFile);
                 long[] lastKnownModification = {0};
-                scene.getStylesheets().add(f.toURI().toURL().toExternalForm());
+                parent.getStylesheets().add(f.toURI().toURL().toExternalForm());
                 TimingUtils.scheduleRepeating(() -> {
                     if (f.lastModified() != lastKnownModification[0]) {
                         lastKnownModification[0] = f.lastModified();
                         System.err.println("RELOADING CSS...");
-                        reloadSceneStylesheet(scene);
+                        reloadSceneStylesheet(parent);
                     }
                 }, 1000);
 

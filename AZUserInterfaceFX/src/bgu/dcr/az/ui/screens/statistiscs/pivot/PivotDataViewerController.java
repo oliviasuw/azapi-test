@@ -11,6 +11,7 @@ import bgu.dcr.az.pivot.model.TableData;
 import bgu.dcr.az.pivot.model.impl.SimplePivot;
 import bgu.dcr.az.ui.screens.dialogs.Notification;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 import javafx.concurrent.Service;
 import javafx.concurrent.WorkerStateEvent;
@@ -19,6 +20,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import org.controlsfx.control.SegmentedButton;
 
@@ -35,6 +37,9 @@ public class PivotDataViewerController implements Initializable {
     @FXML
     ScrollPane vizualizersPreviewContainerParent;
 
+    @FXML
+    GridPane container;
+    
     @FXML
     HBox vizualizersPreviewContainer;
 
@@ -53,6 +58,17 @@ public class PivotDataViewerController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
+        for (Iterator<String> it = container.getStylesheets().iterator(); it.hasNext();) {
+            String s = it.next();
+            
+            if (s.contains("azstyle")){
+                it.remove();
+            }
+        }
+        
+        FXUtils.startCSSLiveReloader(container, "C:\\Users\\User\\Desktop\\Projects\\AgentZero\\trunk\\AZUserInterfaceFX\\src\\bgu\\dcr\\az\\ui\\azstyle.css"); 
+        
         initializePivotControlls();
         initializeVisualizationTypeButtons();
 
@@ -66,9 +82,9 @@ public class PivotDataViewerController implements Initializable {
     }
 
     public void setModel(Data data) {
-        
+
         model = new SimplePivot(data);
-        
+
         pivotController.setModel(model);
         if (model != null) {
             model.getListeners().add(pivot -> updateViewModel());
@@ -88,6 +104,13 @@ public class PivotDataViewerController implements Initializable {
     }
 
     private void setChartModel(TableData data) {
+//        FXUtils.invokeInUI(() -> {
+            PivotDataTableView table = new PivotDataTableView(true);
+            table.getStyleClass().add("dark");
+            table.setModel(data);
+            vizualizerContainer.setCenter(table);
+//        });
+//
 //        Platform.runLater(new Runnable() {
 //            @Override
 //            public void run() {

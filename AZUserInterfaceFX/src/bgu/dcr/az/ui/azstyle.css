@@ -15,7 +15,6 @@
     -az-toolbar-color: derive(-az-section-header-color, -30%);
 
     -az-treeview-background: rgb(222,227,233);
-
     -az-treeview-selected-cell-color: rgb(83,135,182);
     -az-treeview-selected-cell-fgcolor: rgb(230,230,230);
 
@@ -30,6 +29,30 @@
 CLEANUP
 */
 
+.scroll-pane,
+.split-pane,
+.list-view,
+.tree-view,
+.table-view, 
+.tree-table-view,
+.scroll-pane:focused,
+.split-pan:focused,
+.list-view:focused,
+.tree-view:focused,
+.table-view:focused, 
+.tree-table-view:active{
+    -fx-background-color: -fx-box-border, -fx-control-inner-background;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+}
+
+.split-pane > * {
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+}
+
 .no-padding {
     -fx-padding: 0;
 }
@@ -37,8 +60,23 @@ CLEANUP
 .table-view {
     -fx-background-radius: 0;
     -fx-border-width: 0;
+}
+
+.check-box {
     -fx-background-insets: 0;
-    -fx-padding:0;
+    -fx-background-radius: 2.5;
+    -fx-border-width: 0;
+    -fx-border-insets: 0;
+    -fx-padding: 0;
+}
+
+.check-box > .box {
+    -fx-background-radius: 2.5;
+    -fx-background-insets: 0;
+    -fx-border-width: 1;
+    -fx-border-color: -az-button-color;
+    -fx-border-radius: 2.5;
+    -fx-background-color: derive(-az-button-color, 50%);
 }
 
 .table-view:focused {
@@ -68,6 +106,10 @@ CLEANUP
     -fx-cursor: hand;
 }
 
+
+.segmented-button .toggle-button {
+    -fx-padding: 4 16 4 16; 
+}
 
 .segmented-button .toggle-button.left-pill, .toggle-button.center-pill {
     -fx-border-color : derive(-az-button-color, -20%);
@@ -322,3 +364,69 @@ SCREENS
 #basic-statistic-screen .section-container .no-data {
     -fx-background-color: -az-gray50;
 }
+
+/*
+PIVOT VIEW 
+-pview-fields-color: rgb(60,65,68);
+*/
+
+#pivot-view {
+    -pview-fields-color: rgb(60,65,68);
+    
+    -pview-fields-fgcolor: white;
+    
+    -pview-checkbox-color: derive(-pview-fields-color, 35%);
+    -pview-checkbox-mark-color: derive(-pview-fields-color, -30%);
+    
+}
+
+/* all the pivot controlls */
+#pivot-view .pivot-controlls .list-view, 
+#pivot-view .pivot-controlls .tree-view {
+    -fx-background-color: -pview-fields-color;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+#pivot-view .pivot-controlls .text, #pivot-view .pivot-controlls .label {
+    -fx-text-fill: -pview-fields-fgcolor;
+}
+
+#pivot-view .pivot-controlls .list-cell,
+#pivot-view .pivot-controlls .tree-cell{
+    -fx-background-color: -pview-fields-color;
+}
+
+#pivot-view .vis-viewer {
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+}
+
+#pivot-view .pivot-controlls .check-box > .box {
+    -fx-padding: 1;
+    -fx-border-width: 0;    
+    -fx-background-radius: 0;
+    -fx-border-color: derive(-pview-checkbox-color, -15%);
+    -fx-background-color: -pview-checkbox-color;
+}
+
+
+#pivot-view .pivot-controlls  .check-box > .box > .mark {
+    -fx-background-color: derive(-pview-checkbox-color, 30%);
+    -fx-background-insets: 1.5;
+    -fx-background-radius: 0;
+    
+    -fx-shape: null;    
+}
+
+#pivot-view .pivot-controlls  .check-box:selected > .box > .mark {
+    -fx-background-color: -pview-checkbox-mark-color;
+}
+
+#pivot-view .pivot-controlls .split-pane > .split-pane-divider {
+   -fx-background-color: rgb(130,130,130);
+   -fx-background-insets: 0, 0 1 0 1;
+}
+
+

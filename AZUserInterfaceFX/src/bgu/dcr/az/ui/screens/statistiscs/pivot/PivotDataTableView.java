@@ -41,11 +41,11 @@ public class PivotDataTableView extends TableView {
 //            table.minHeightProperty().bind(heightProperty().subtract(2));
 //            table.minWidthProperty().bind(widthProperty().subtract(2));
 
-//            setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
             getColumns().addAll(generateColumns(data));
             ObservableList<Object> list = FXCollections.observableArrayList();
             data.spliterator().forEachRemaining(f -> list.add(f));
             setItems(list);
+            setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 //            autosize();
         }
     }

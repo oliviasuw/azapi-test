@@ -34,7 +34,6 @@
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/problem/ProblemViewScreen.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/problem/ConstraintCalcConsole.java</file>
         </group>
-        <group name="AgentZero"/>
         <group>
             <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZUserInterfaceFX/src/bgu/dcr/az/pivot/ui/viewer/PivotDataViewerController.java</file>
             <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/AdvancedStatisticScreenController.java</file>
@@ -43,6 +42,21 @@
             <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZUserInterfaceFX/nbproject/project.properties</file>
             <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/MainStatisticScreen.java</file>
             <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZUserInterfaceFX/src/bgu/dcr/az/ui/test.xml</file>
+        </group>
+        <group name="AgentZero">
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/StatisticViewUtils.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/basicstatisticsscreen.css</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/AppController.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistiscs/pivot/PivotDataTableView.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/AdvancedStatisticScreenController.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistiscs/pivot/PivotViewController.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/azstyle.css</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/LogarithmicNumberAxis.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistiscs/pivot/PivotView.fxml</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/test.xml</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistics/MainStatisticScreen.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/statistiscs/pivot/PivotDataViewerController.java</file>
+            <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/screens/status/StatusScreenCtl.java</file>
         </group>
     </open-files>
 </project-private>

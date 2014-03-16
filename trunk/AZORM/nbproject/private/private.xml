@@ -11,12 +11,12 @@
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZORM/src/bgu/dcr/az/orm/api/RecordAccessor.java</file>
             <file>file:/C:/Users/User/Desktop/Projects/AgentZero/trunk/AZORM/src/bgu/dcr/az/orm/impl/Record.java</file>
         </group>
-        <group name="AgentZero"/>
         <group>
             <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZORM/src/bgu/dcr/az/orm/impl/TableMetadataImpl.java</file>
             <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZORM/src/bgu/dcr/az/orm/api/EmbeddedDatabaseManager.java</file>
             <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZORM/src/bgu/dcr/az/orm/impl/H2EmbeddedDatabaseManager.java</file>
             <file>file:/home/bennyl/Desktop/Agent%20Zero/azapi-test/AZORM/src/bgu/dcr/az/orm/api/TableMetadata.java</file>
         </group>
+        <group name="AgentZero"/>
     </open-files>
 </project-private>

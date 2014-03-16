@@ -67,7 +67,7 @@ public class PivotDataViewerController implements Initializable {
             }
         }
         
-        FXUtils.startCSSLiveReloader(container, "C:\\Users\\User\\Desktop\\Projects\\AgentZero\\trunk\\AZUserInterfaceFX\\src\\bgu\\dcr\\az\\ui\\azstyle.css"); 
+//        FXUtils.startCSSLiveReloader(container, "C:\\Users\\User\\Desktop\\Projects\\AgentZero\\trunk\\AZUserInterfaceFX\\src\\bgu\\dcr\\az\\ui\\azstyle.css"); 
         
         initializePivotControlls();
         initializeVisualizationTypeButtons();

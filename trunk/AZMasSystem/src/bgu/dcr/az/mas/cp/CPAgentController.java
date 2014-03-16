@@ -26,16 +26,16 @@ import java.util.LinkedList;
  */
 public class CPAgentController extends BaseAgentController {
 
-    private final CPExecution execution;
+    private final CPExecution exec;
 
     public CPAgentController(int id, CPExecution ex) throws ClassNotFoundException, ConfigurationException, InitializationException {
         super(id, ex);
 
-        this.execution = ex;
+        this.exec = ex;
     }
 
     public Problem getGlobalProblem() {
-        return execution.data().getProblem();
+        return exec.data().getProblem();
     }
 
     public void report(String who, Agent a, Object[] data) {
@@ -43,15 +43,15 @@ public class CPAgentController extends BaseAgentController {
     }
 
     public void assign(int id, int value) {
-        execution.data().getSolution().assign(id, value);
+        exec.data().getSolution().assign(id, value);
     }
 
     public void unassign(int id) {
-        execution.data().getSolution().unassign(id);
+        exec.data().getSolution().unassign(id);
     }
 
     public Integer getAssignment(int id) {
-        Integer result = execution.data().getSolution().assignmentOf(id);
+        Integer result = exec.data().getSolution().assignmentOf(id);
         if (result == null) {
             Agt0DSL.panic("attempting to get assignment when no such exists ( agent: " + id + ")");
         }
@@ -60,7 +60,7 @@ public class CPAgentController extends BaseAgentController {
     }
 
     public void assignAll(Assignment a) {
-        execution.data().getSolution().assignAll(a);
+        exec.data().getSolution().assignAll(a);
     }
 
     @Override
@@ -69,14 +69,14 @@ public class CPAgentController extends BaseAgentController {
     }
 
     public void reportNoSolution() {
-        execution.data().getSolution().setStateNoSolution();
+        exec.data().getSolution().setStateNoSolution();
     }
 
     @Override
     protected void handleIdle() {
-        LinkedList<AgentWithManipulator> killedAgents = new LinkedList<>();
-        for (AgentContextStack a : getControlledAgents().values()) {
-            AgentWithManipulator agent = a.current();
+        LinkedList<AgentState> killedAgents = new LinkedList<>();
+        for (AgentStateStack a : getControlledAgents().values()) {
+            AgentState agent = a.current();
             agent.a.onIdleDetected();
             if (agent.a.isFinished()) {
                 killedAgents.add(agent);
@@ -88,9 +88,9 @@ public class CPAgentController extends BaseAgentController {
 
     @Override
     protected void beforeNextTick() {
-        LinkedList<AgentWithManipulator> killedAgents = new LinkedList<>();
-        for (AgentContextStack a : getControlledAgents().values()) {
-            final AgentWithManipulator agent = a.current();
+        LinkedList<AgentState> killedAgents = new LinkedList<>();
+        for (AgentStateStack a : getControlledAgents().values()) {
+            final AgentState agent = a.current();
             agent.a.onMailBoxEmpty();
             if (agent.a.isFinished()) {
                 killedAgents.add(agent);
@@ -103,8 +103,8 @@ public class CPAgentController extends BaseAgentController {
     @Override
     public void send(Message m, int recepientAgent) {
 
-        if (execution.informationStream().hasListeners(MessageSentInfo.class)) {
-            execution.informationStream().write(new MessageSentInfo(m.getMessageId(), m.getSender(), recepientAgent, m.getName(), execution.data().getCcCount()[m.getSender()]));
+        if (exec.informationStream().hasListeners(MessageSentInfo.class)) {
+            exec.informationStream().write(new MessageSentInfo(m.getMessageId(), m.getSender(), recepientAgent, m.getName(), exec.data().getCcCount()[m.getSender()]));
         }
 
         super.send(m, recepientAgent);
@@ -112,8 +112,8 @@ public class CPAgentController extends BaseAgentController {
 
     @Override
     public void receive(AZIPMessage message) {
-        if (execution.informationStream().hasListeners(MessageReceivedInfo.class)) {
-            execution.informationStream().write(new MessageReceivedInfo(message.getData().getMessageId(), message.getData().getSender(), message.getData().getRecepient(), message.getData().getName()));
+        if (exec.informationStream().hasListeners(MessageReceivedInfo.class)) {
+            exec.informationStream().write(new MessageReceivedInfo(message.getData().getMessageId(), message.getData().getSender(), message.getData().getRecepient(), message.getData().getName()));
         }
 
         super.receive(message);

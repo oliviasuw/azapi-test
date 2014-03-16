@@ -14,8 +14,6 @@ import bgu.dcr.az.mas.cp.CPData;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Agent is the main building block for a CP algorithms, it includes the
@@ -43,11 +41,11 @@ public abstract class Agent extends Agt0DSL {
     private long[] messageCount;
     private SendMediator sender;
 
-    public final ContinuationMediator nest(Agent agent) {
-        return nest(agent, null);
+    public final ContinuationMediator exec(Agent agent) {
+        return exec(agent, null);
     }
 
-    public final ContinuationMediator nest(Agent agent, String contextId) {
+    public final ContinuationMediator exec(Agent agent, String contextId) {
         try {
             return controller.nest(agent, contextId);
         } catch (ClassNotFoundException ex) {

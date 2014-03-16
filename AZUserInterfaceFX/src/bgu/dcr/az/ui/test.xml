@@ -9,13 +9,13 @@
         <nccc-sc/>
         <ncsc-sc/>
     
-        <dcsp-unstructured n="10" d="10" p1="0.3"/>        
+        <dcsp-unstructured n="15" d="5" p1="0.2"/>        
 
         <!--<default-tester/>-->
         <algorithm name="SBT"/>
-        <algorithm name="ABT"/>
-        <algorithm name="AFC"/>
-        <algorithm name="AFC-NG"/>
+        <!--<algorithm name="ABT"/>-->
+        <!--<algorithm name="AFC"/>-->
+        <!--<algorithm name="AFC-NG"/>-->
         <!--<algorithm name="CONC_BT"/>-->
     </test>
     

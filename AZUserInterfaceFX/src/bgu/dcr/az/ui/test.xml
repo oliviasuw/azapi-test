@@ -19,18 +19,16 @@
         <!--<algorithm name="CONC_BT"/>-->
     </test>
     
-<!--    <test seed="42" name="COPs">
-        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100">
-            <for-loop start="0.1" end="0.9" tick-size="0.1" run-var="p2" repeat-count="10" />
-        </for-loop>
+    <test seed="42" name="COPs">
+        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="10" />
     
         <cc-sc/>
         <msgc-sc/>
     
         <dcop-unstructured n="7" d="5" max-cost="100"/>        
         <default-tester/>
-        <algorithm name="BnB-ADOPT"/>
-    </test>-->
+        <algorithm name="SBB"/>
+    </test>
 <!--    <test seed="42" name="Local search" env="async">
         <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100">
         </for-loop>

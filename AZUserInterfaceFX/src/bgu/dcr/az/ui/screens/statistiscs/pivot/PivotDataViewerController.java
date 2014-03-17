@@ -59,16 +59,6 @@ public class PivotDataViewerController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         
-        for (Iterator<String> it = container.getStylesheets().iterator(); it.hasNext();) {
-            String s = it.next();
-            
-            if (s.contains("azstyle")){
-                it.remove();
-            }
-        }
-        
-//        FXUtils.startCSSLiveReloader(container, "C:\\Users\\User\\Desktop\\Projects\\AgentZero\\trunk\\AZUserInterfaceFX\\src\\bgu\\dcr\\az\\ui\\azstyle.css"); 
-        
         initializePivotControlls();
         initializeVisualizationTypeButtons();
 

@@ -18,7 +18,7 @@ import bgu.dcr.az.orm.api.EmbeddedDatabaseManager;
 import bgu.dcr.az.ui.screens.MainWindow;
 import bgu.dcr.az.ui.screens.dialogs.Notification;
 import bgu.dcr.az.ui.screens.log.LogScreen;
-import bgu.dcr.az.ui.screens.problem.ProblemViewScreen;
+import bgu.dcr.az.ui.screens.problem.fx.ProblemViewScreenCtl;
 import bgu.dcr.az.ui.screens.statistics.MainStatisticScreen;
 import bgu.dcr.az.ui.screens.status.StatusScreenCtl;
 import bgu.dcr.az.ui.screens.status.RuntimeStatisticsService;
@@ -112,9 +112,10 @@ public class AppController {
 //            FXUtils.startCSSLiveReloader(statisticScreen.getScene(), agentZeroStyleSheet_DEBUG);
 //        });
         main.addScreen("Statistics", "statistics", statisticScreen);
-
-        ProblemViewScreen pview = new ProblemViewScreen();
-        pview.setModel(runningExperiment);
+//        ProblemViewScreen pview = new ProblemViewScreen();
+//        pview.setModel(runningExperiment);
+        FXUtils.JFXPanelWithCTL<ProblemViewScreenCtl> pview = FXUtils.loadFXMLForSwing(ProblemViewScreenCtl.class, "ProblemViewScreen.fxml");
+        pview.getController().setModel(runningExperiment);
         main.addScreen("Problem", "problem", pview);
 
         java.awt.EventQueue.invokeLater(() -> main.setVisible(true));

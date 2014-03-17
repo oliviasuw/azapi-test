@@ -10,6 +10,7 @@ import bc.ui.swing.visuals.Visual;
 import bgu.dcr.az.api.prob.ImmutableProblem;
 import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.common.ui.FXUtils;
+import bgu.dcr.az.common.ui.panels.FXMessagePanel;
 import bgu.dcr.az.mas.cp.CPExperimentTest;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.ui.screens.dialogs.MessageDialog;
@@ -21,14 +22,15 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -52,6 +54,9 @@ public class ProblemViewScreenCtl implements Initializable {
     private final static Image AGENT2_ICON = ResourcesImg.png("agent2");
     private final static Image CONSTRAINTS_ICON = ResourcesImg.png("all-constraints");
     private final static Image PROBLEM_ICON = ResourcesImg.png("problem");
+
+    private final static int COLUMN_WIDTH = 50;
+    private final static int COLUMN_HEIGHT = 25;
 
     @FXML
     private BorderPane data;
@@ -107,7 +112,7 @@ public class ProblemViewScreenCtl implements Initializable {
 
             Object value = ((TreeItem) nv).getValue();
             if (PROBLEM.equals(value)) {
-                System.out.println(PROBLEM);
+                data.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
             } else if (CONSTRAINT_MATRIX.equals(value)) {
                 showConstraintsMatrix();
             } else {
@@ -117,15 +122,16 @@ public class ProblemViewScreenCtl implements Initializable {
                     AgentInfo aj = (AgentInfo) value;
                     showConstraintsCosts(ai.getId(), aj.getId());
                 } else {
-                    System.out.println("FIX THIS!!!!!!!!!!!!!");
+                    data.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
                 }
             }
         });
 
+        data.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
+
 //        problemChooser.setMinHeight(0);
 //        problemChooser.setPrefHeight(0);
 //        problemChooser.setMaxHeight(0);
-
 //        Pane header = (Pane) table.lookup("TableHeaderRow");
 //        header.setVisible(false);
 //        table.setLayoutY(-header.getHeight());
@@ -139,21 +145,43 @@ public class ProblemViewScreenCtl implements Initializable {
         TableColumn[] columns = new TableColumn[numVars + 1];
         for (int i = 0; i < columns.length; i++) {
             columns[i] = new TableColumn("" + i);
+            columns[i].setMinWidth(COLUMN_WIDTH);
+            columns[i].setPrefWidth(COLUMN_WIDTH);
+            columns[i].setMaxWidth(COLUMN_WIDTH);
+            columns[i].setCellFactory(p -> {
+                return new TableCell() {
+                    @Override
+                    protected void updateItem(Object t, boolean bln) {
+                        super.updateItem(t, bln); //To change body of generated methods, choose Tools | Templates.
+                        if (t != null) {
+                            ConstraintTypes e = (ConstraintTypes) t;
+                            setAlignment(Pos.CENTER);
+                            setText(e.toString());
+                            getStyleClass().clear();
+                            getStyleClass().add(e.getStyleClass());
+                            setMinHeight(COLUMN_HEIGHT);
+                            setPrefHeight(COLUMN_HEIGHT);
+                            setMaxHeight(COLUMN_HEIGHT);
+                        }
+                    }
+
+                };
+            });
             int fi = i;
             columns[i].setCellValueFactory(new PropertyValueFactory<Integer, Object>("") {
                 @Override
                 public ObservableValue<Object> call(TableColumn.CellDataFeatures<Integer, Object> cdf) {
                     int j = cdf.getValue();
                     if (j == 0 && fi == 0) {
-                        return new SimpleObjectProperty<>("");
+                        return new SimpleObjectProperty<>(ConstraintTypes.Header.setHeaderName(""));
                     }
                     if (j == 0) {
-                        return new SimpleObjectProperty<>("" + (fi - 1));
+                        return new SimpleObjectProperty<>(ConstraintTypes.Header.setHeaderName("" + (fi - 1)));
                     }
                     if (fi == 0) {
-                        return new SimpleObjectProperty<>("" + (j - 1));
+                        return new SimpleObjectProperty<>(ConstraintTypes.Header.setHeaderName("" + (j - 1)));
                     }
-                    return new SimpleObjectProperty<>(p.isConstrained(fi - 1, j - 1) ? "1" : "0");
+                    return new SimpleObjectProperty<>(ConstraintTypes.Data.setDataValue(p.isConstrained(fi - 1, j - 1) ? 1 : 0));
                 }
             });
             table.getColumns().add(i, columns[i]);
@@ -161,6 +189,10 @@ public class ProblemViewScreenCtl implements Initializable {
         ObservableList<Object> rows = FXCollections.observableArrayList();
         IntStream.range(0, numVars + 1).forEach(rows::add);
         table.setItems(rows);
+        table.setMinSize((numVars + 1) * COLUMN_WIDTH + 15, (numVars + 1) * COLUMN_HEIGHT);
+        table.setPrefSize((numVars + 1) * COLUMN_WIDTH + 15, (numVars + 1) * COLUMN_HEIGHT);
+        table.setMaxSize((numVars + 1) * COLUMN_WIDTH + 15, (numVars + 1) * COLUMN_HEIGHT);
+        data.setCenter(table);
     }
 
     private void showConstraintsCosts(int ai, int aj) {
@@ -171,21 +203,43 @@ public class ProblemViewScreenCtl implements Initializable {
         TableColumn[] columns = new TableColumn[aiDomainSize + 1];
         for (int i = 0; i < columns.length; i++) {
             columns[i] = new TableColumn("" + i);
+            columns[i].setMinWidth(COLUMN_WIDTH);
+            columns[i].setPrefWidth(COLUMN_WIDTH);
+            columns[i].setMaxWidth(COLUMN_WIDTH);
+            columns[i].setCellFactory(p -> {
+                return new TableCell() {
+                    @Override
+                    protected void updateItem(Object t, boolean bln) {
+                        super.updateItem(t, bln); //To change body of generated methods, choose Tools | Templates.
+                        if (t != null) {
+                            ConstraintTypes e = (ConstraintTypes) t;
+                            setAlignment(Pos.CENTER);
+                            setText(e.toString());
+                            getStyleClass().clear();
+                            getStyleClass().add(e.getStyleClass());
+                            setMinHeight(COLUMN_HEIGHT);
+                            setPrefHeight(COLUMN_HEIGHT);
+                            setMaxHeight(COLUMN_HEIGHT);                            
+                        }
+                    }
+
+                };
+            });
             int fi = i;
             columns[i].setCellValueFactory(new PropertyValueFactory<Integer, Object>("") {
                 @Override
                 public ObservableValue<Object> call(TableColumn.CellDataFeatures<Integer, Object> cdf) {
                     int j = cdf.getValue();
                     if (j == 0 && fi == 0) {
-                        return new SimpleObjectProperty<>("" + aj + " / " + ai);
+                        return new SimpleObjectProperty<>(ConstraintTypes.Header.setHeaderName("" + aj + " / " + ai));
                     }
                     if (j == 0) {
-                        return new SimpleObjectProperty<>("" + (fi - 1));
+                        return new SimpleObjectProperty<>(ConstraintTypes.Header.setHeaderName("" + (fi - 1)));
                     }
                     if (fi == 0) {
-                        return new SimpleObjectProperty<>("" + (j - 1));
+                        return new SimpleObjectProperty<>(ConstraintTypes.Header.setHeaderName("" + (j - 1)));
                     }
-                    return new SimpleObjectProperty<>("" + p.getConstraintCost(ai, fi - 1, aj, j - 1));
+                    return new SimpleObjectProperty<>(ConstraintTypes.Data.setDataValue(p.getConstraintCost(ai, fi - 1, aj, j - 1)));
                 }
             });
             table.getColumns().add(i, columns[i]);
@@ -193,6 +247,10 @@ public class ProblemViewScreenCtl implements Initializable {
         ObservableList<Object> rows = FXCollections.observableArrayList();
         IntStream.range(0, ajDomainSize + 1).forEach(rows::add);
         table.setItems(rows);
+        table.setMinSize((aiDomainSize + 1) * COLUMN_WIDTH + 15, (ajDomainSize + 1) * COLUMN_HEIGHT);
+        table.setPrefSize((aiDomainSize + 1) * COLUMN_WIDTH + 15, (ajDomainSize + 1) * COLUMN_HEIGHT);
+        table.setMaxSize((aiDomainSize + 1) * COLUMN_WIDTH + 15, (ajDomainSize + 1) * COLUMN_HEIGHT);        
+        data.setCenter(table);
     }
 
     public void setModel(Experiment exp) {
@@ -242,9 +300,6 @@ public class ProblemViewScreenCtl implements Initializable {
         tree.setRoot(root);
 
         TreeItem cMatrix = new TreeItem(CONSTRAINT_MATRIX, new ImageView(CONSTRAINTS_ICON));
-        cMatrix.addEventHandler(EventType.ROOT, eh -> {
-            System.out.println("HERE");
-        });
         root.getChildren().add(cMatrix);
 
         int varNum = p.getNumberOfVariables();
@@ -284,6 +339,46 @@ public class ProblemViewScreenCtl implements Initializable {
 
         public String getName() {
             return name;
+        }
+    }
+
+    private static enum ConstraintTypes {
+
+        Header {
+                    @Override
+                    String getStyleClass() {
+                        return "Header";
+                    }
+
+                    @Override
+                    public String toString() {
+                        return this.name;
+                    }
+                }, Data {
+                    @Override
+                    String getStyleClass() {
+                        return "Data";
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "" + value;
+                    }
+                };
+
+        String name;
+        int value;
+
+        abstract String getStyleClass();
+
+        ConstraintTypes setHeaderName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        ConstraintTypes setDataValue(int value) {
+            this.value = value;
+            return this;
         }
     }
 

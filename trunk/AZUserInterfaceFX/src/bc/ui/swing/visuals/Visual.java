@@ -7,6 +7,10 @@ package bc.ui.swing.visuals;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JComboBox;
@@ -89,15 +93,18 @@ public class Visual {
         return text;
     }
 
-    public static void populate(JComboBox cbox, List<Visual> visuals){
-        DefaultComboBoxModel boxModel = new DefaultComboBoxModel(visuals.toArray());
-        cbox.setModel(boxModel);
+    public static void populate(ComboBox cbox, List<Visual> visuals) {
+        ObservableList model = FXCollections.observableArrayList(visuals);
+        cbox.setItems(model);
+        if (!model.isEmpty()) {
+            cbox.setValue(model.get(0));
+        }
     }
-    
-    public static Object getSelected(JComboBox cbox){
-        return ((Visual) cbox.getSelectedItem()).getItem();
+
+    public static Object getSelected(ComboBox cbox) {
+        return ((Visual) cbox.getValue()).getItem();
     }
-    
+
     public static LinkedList<Visual> adapt(Collection items) {
         LinkedList<Visual> ret = new LinkedList<>();
         for (Object i : items) {

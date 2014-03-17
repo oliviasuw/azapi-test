@@ -83,10 +83,10 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
     }
 
     public void setModel(Experiment exp) {
-        Visual.populate(testSelect, Visual.adapt(exp.subExperiments(), it -> {
-            CPExperimentTest r = (CPExperimentTest) it;
-            return new Visual(it, r.getName(), "", null);
-        }));
+//        Visual.populate(testSelect, Visual.adapt(exp.subExperiments(), it -> {
+//            CPExperimentTest r = (CPExperimentTest) it;
+//            return new Visual(it, r.getName(), "", null);
+//        }));
 
         if (exp.numberOfExecutions() == 0) {
             remove(contentPan);
@@ -109,7 +109,7 @@ public class ProblemViewScreen extends javax.swing.JPanel implements ConstraintS
                 Integer pnum = null;
                 CPExperimentTest c = null;
                 try {
-                    c = (CPExperimentTest) Visual.getSelected(testSelect);
+//                    c = (CPExperimentTest) Visual.getSelected(testSelect);
                     pnum = (Integer) pnumSelect.getValue();
                     Problem p = c.getProblem(pnum);
                     showProblem(p);

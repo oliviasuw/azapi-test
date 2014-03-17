@@ -175,9 +175,27 @@ CLEANUP
     -fx-text-fill: white;
 }
 
+
+
 /* 
-DARK TABLE
+TABLES
 */
+
+/*NO HEADERS*/
+.table-view.no-headers .column-header{ 
+    visibility : collapse;
+    -fx-scale-y: 0;
+}
+
+.table-view.no-headers .column-header-background{ 
+    -fx-border-color: red;
+    -fx-border-width: 1;
+    visibility : collapse;
+    -fx-scale-y: 0;
+}
+
+
+/*DARK*/
 
 .table-view.dark {
     -fx-background-insets: 0;    

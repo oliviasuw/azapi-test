@@ -15,6 +15,8 @@ import bgu.dcr.az.mas.cp.CPExperimentTest;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.ui.screens.dialogs.MessageDialog;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.stream.IntStream;
 import javafx.application.Platform;
@@ -41,6 +43,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import resources.img.ResourcesImg;
 
 /**
@@ -56,13 +59,22 @@ public class ProblemViewScreenCtl implements Initializable {
     private final static Image PROBLEM_ICON = ResourcesImg.png("problem");
 
     private final static int COLUMN_WIDTH = 50;
-    private final static int COLUMN_HEIGHT = 25;
+    private final static int ROW_HEIGHT = 25;
 
     @FXML
-    private BorderPane data;
+    private BorderPane container;
+
+    @FXML
+    private GridPane caption;
+
+    @FXML
+    private FlowPane problemChooser;
 
     @FXML
     private SplitPane split;
+
+    @FXML
+    private BorderPane data;
 
     @FXML
     private Label problemViewingDescription;
@@ -85,9 +97,6 @@ public class ProblemViewScreenCtl implements Initializable {
     @FXML
     private TableView table;
 
-    @FXML
-    private FlowPane problemChooser;
-
     private ConstraintCalcConsoleCtl calc;
 
     public static final String PROBLEM = "Problem";
@@ -99,6 +108,57 @@ public class ProblemViewScreenCtl implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+        for (Iterator<String> it = container.getStylesheets().iterator(); it.hasNext();) {
+            String s = it.next();
+
+            if (s.contains("azstyle")) {
+                it.remove();
+            }
+        }
+
+        FXUtils.startCSSLiveReloader(container, "/home/bennyl/Desktop/Agent Zero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/azstyle.css");
+        TextField t = pnumSelect;
+        problemChooser.getChildren().remove(pnumSelect);
+        pnumSelect = new TextField() {
+            @Override
+            public void replaceText(int start, int end, String text) {
+                final String origin = getText();
+                String updated = origin.substring(0, start) + text + origin.substring(end);
+                if (!updated.isEmpty()) {
+                    try {
+                        int num = Integer.parseInt(updated);
+                        CPExperimentTest c = (CPExperimentTest) Visual.getSelected(testSelect);
+                        if (num > c.getLooper().count()) {
+                            return;
+                        }
+                    } catch (Exception ex) {
+                    }
+                }
+                super.replaceText(start, end, text);
+            }
+
+            @Override
+            public void replaceSelection(String text) {
+                if (!text.isEmpty()) {
+                    try {
+                        int num = Integer.parseInt(text);
+                        CPExperimentTest c = (CPExperimentTest) Visual.getSelected(testSelect);
+                        if (num > c.getLooper().count()) {
+                            return;
+                        }
+                    } catch (Exception ex) {
+                    }
+                }
+                super.replaceSelection(text);
+            }
+        };
+
+        viewProblemBtn.setOnAction(eh -> switchProblemView());
+
+        pnumSelect.getStyleClass().addAll(t.getStyleClass());
+        problemChooser.getChildren().addAll(3, Arrays.asList(pnumSelect));
+
         FXUtils.PaneWithCTL<ConstraintCalcConsoleCtl> calculator = FXUtils.loadFXML(ConstraintCalcConsoleCtl.class);
         calc = calculator.getController();
 
@@ -126,8 +186,6 @@ public class ProblemViewScreenCtl implements Initializable {
                 }
             }
         });
-
-        data.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
 
 //        problemChooser.setMinHeight(0);
 //        problemChooser.setPrefHeight(0);
@@ -159,9 +217,9 @@ public class ProblemViewScreenCtl implements Initializable {
                             setText(e.toString());
                             getStyleClass().clear();
                             getStyleClass().add(e.getStyleClass());
-                            setMinHeight(COLUMN_HEIGHT);
-                            setPrefHeight(COLUMN_HEIGHT);
-                            setMaxHeight(COLUMN_HEIGHT);
+                            setMinHeight(ROW_HEIGHT);
+                            setPrefHeight(ROW_HEIGHT);
+                            setMaxHeight(ROW_HEIGHT);
                         }
                     }
 
@@ -189,9 +247,9 @@ public class ProblemViewScreenCtl implements Initializable {
         ObservableList<Object> rows = FXCollections.observableArrayList();
         IntStream.range(0, numVars + 1).forEach(rows::add);
         table.setItems(rows);
-        table.setMinSize((numVars + 1) * COLUMN_WIDTH + 15, (numVars + 1) * COLUMN_HEIGHT);
-        table.setPrefSize((numVars + 1) * COLUMN_WIDTH + 15, (numVars + 1) * COLUMN_HEIGHT);
-        table.setMaxSize((numVars + 1) * COLUMN_WIDTH + 15, (numVars + 1) * COLUMN_HEIGHT);
+        table.setMinSize((numVars + 1) * COLUMN_WIDTH + 4, (numVars + 2) * ROW_HEIGHT + 4);
+        table.setPrefSize((numVars + 1) * COLUMN_WIDTH + 4, (numVars + 2) * ROW_HEIGHT + 4);
+        table.setMaxSize((numVars + 1) * COLUMN_WIDTH + 4, (numVars + 2) * ROW_HEIGHT + 4);
         data.setCenter(table);
     }
 
@@ -217,9 +275,9 @@ public class ProblemViewScreenCtl implements Initializable {
                             setText(e.toString());
                             getStyleClass().clear();
                             getStyleClass().add(e.getStyleClass());
-                            setMinHeight(COLUMN_HEIGHT);
-                            setPrefHeight(COLUMN_HEIGHT);
-                            setMaxHeight(COLUMN_HEIGHT);                            
+                            setMinHeight(ROW_HEIGHT);
+                            setPrefHeight(ROW_HEIGHT);
+                            setMaxHeight(ROW_HEIGHT);
                         }
                     }
 
@@ -247,9 +305,9 @@ public class ProblemViewScreenCtl implements Initializable {
         ObservableList<Object> rows = FXCollections.observableArrayList();
         IntStream.range(0, ajDomainSize + 1).forEach(rows::add);
         table.setItems(rows);
-        table.setMinSize((aiDomainSize + 1) * COLUMN_WIDTH + 15, (ajDomainSize + 1) * COLUMN_HEIGHT);
-        table.setPrefSize((aiDomainSize + 1) * COLUMN_WIDTH + 15, (ajDomainSize + 1) * COLUMN_HEIGHT);
-        table.setMaxSize((aiDomainSize + 1) * COLUMN_WIDTH + 15, (ajDomainSize + 1) * COLUMN_HEIGHT);        
+        table.setMinSize((aiDomainSize + 1) * COLUMN_WIDTH + 4, (ajDomainSize + 2) * ROW_HEIGHT + 4);
+        table.setPrefSize((aiDomainSize + 1) * COLUMN_WIDTH + 4, (ajDomainSize + 2) * ROW_HEIGHT + 4);
+        table.setMaxSize((aiDomainSize + 1) * COLUMN_WIDTH + 4, (ajDomainSize + 2) * ROW_HEIGHT + 4);
         data.setCenter(table);
     }
 
@@ -263,9 +321,15 @@ public class ProblemViewScreenCtl implements Initializable {
             if (exp.numberOfExecutions() == 0) {
                 DataPanel msg = new DataPanel();
                 msg.setNoDataText("There are no problems to view");
-                data.setCenter(null);
+                container.setTop(null);
+                container.setLeft(null);
+                container.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
             } else {
                 pnumSelect.setText("1");
+                container.setTop(caption);
+                container.setLeft(tree);
+                container.setCenter(split);
+
                 switchProblemView();
             }
         });
@@ -280,6 +344,7 @@ public class ProblemViewScreenCtl implements Initializable {
             Problem p = c.getProblem(pnum);
             showProblem(p);
             problemViewingDescription.setText("Showing problem " + pnum + " of test " + c.getName());
+            data.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
         } catch (Exception ex) {
             MessageDialog.showFail("cannot load problem (did you defined a problem generator?): ", ex.getMessage());
         }

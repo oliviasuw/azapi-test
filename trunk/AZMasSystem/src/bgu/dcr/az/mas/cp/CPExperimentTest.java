@@ -162,9 +162,11 @@ public class CPExperimentTest implements Experiment {
      * @return
      */
     private ExecutionResult execute(int executionNumber) {
-        
-        if (algorithms.isEmpty()) Agt0DSL.panic("cannot run experiment without any algorithm defined. (please add one in test.xml file)");
-        
+
+        if (algorithms.isEmpty()) {
+            Agt0DSL.panic("cannot run experiment without any algorithm defined. (please add one in test.xml file)");
+        }
+
         int numCores = Runtime.getRuntime().availableProcessors();
         final ExecutorService pool = Executors.newFixedThreadPool(numCores);
         Scheduler scheduler = new MultithreadedScheduler(pool);
@@ -185,7 +187,7 @@ public class CPExperimentTest implements Experiment {
         }
 
         int i = 0;
-        try {           
+        try {
             status.start();
 
             ConfigurationOfElements conf = new ConfigurationOfElements();
@@ -230,15 +232,22 @@ public class CPExperimentTest implements Experiment {
     public Problem getProblem(int i) throws ConfigurationException {
         try {
             ConfigurationOfElements conf = new ConfigurationOfElements();
-            for (int j = 0; j < conf.configurableElements.length; j++) {
-                conf.configurableElements[j] = conf.configurationsOfElements[j].create();
-            }
-
-            RandomSequance seq = new RandomSequance(seed);
+            looper.configure(i, conf.configurationsOfElements);
 
             conf.apply();
             Problem p = new Problem();
+            RandomSequance seq = new RandomSequance(seed);
             pgen.generate(p, new Random(seq.getIthLong(i)));
+
+//            for (int j = 0; j < conf.configurableElements.length; j++) {
+//                conf.configurableElements[j] = conf.configurationsOfElements[j].create();
+//            }
+//
+//            RandomSequance seq = new RandomSequance(seed);
+//
+//            conf.apply();
+//            Problem p = new Problem();
+//            pgen.generate(p, new Random(seq.getIthLong(i)));
             return p;
         } catch (ClassNotFoundException ex) {
             throw new ConfigurationException("cannot create configuration, see cause", ex);
@@ -268,7 +277,7 @@ public class CPExperimentTest implements Experiment {
 
         AlgorithmDef adef = algorithms.get(i % algorithms.size());
         final Class registeredClassByName = RegisteryUtils.getRegistery().getRegisteredClassByName("ALGORITHM." + adef.getName());
-        if (registeredClassByName == null){
+        if (registeredClassByName == null) {
             Agt0DSL.panic("cannot find agent with algorithem name = " + adef.getName());
         }
         AgentSpawner spawner = new SimpleAgentSpawner(registeredClassByName);

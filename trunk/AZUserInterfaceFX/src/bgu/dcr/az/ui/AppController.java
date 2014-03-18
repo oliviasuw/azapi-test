@@ -18,7 +18,7 @@ import bgu.dcr.az.orm.api.EmbeddedDatabaseManager;
 import bgu.dcr.az.ui.screens.MainWindow;
 import bgu.dcr.az.ui.screens.dialogs.Notification;
 import bgu.dcr.az.ui.screens.log.LogScreen;
-import bgu.dcr.az.ui.screens.problem.fx.ProblemViewScreenCtl;
+import bgu.dcr.az.ui.screens.problem.ProblemViewScreenCtl;
 import bgu.dcr.az.ui.screens.statistics.MainStatisticScreen;
 import bgu.dcr.az.ui.screens.status.StatusScreenCtl;
 import bgu.dcr.az.ui.screens.status.RuntimeStatisticsService;

@@ -145,7 +145,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         jLabel1.setForeground(new java.awt.Color(175, 203, 245));
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/img/logo35.png"))); // NOI18N
-        jLabel1.setText("Grinshpon Edition");
+        jLabel1.setText("Grinshpoun Edition");
         jLabel1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

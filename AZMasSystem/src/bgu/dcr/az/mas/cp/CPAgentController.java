@@ -16,8 +16,10 @@ import bgu.dcr.az.mas.AZIPMessage;
 import bgu.dcr.az.mas.Execution;
 import bgu.dcr.az.mas.impl.BaseAgentController;
 import bgu.dcr.az.mas.impl.InitializationException;
-import bgu.dcr.az.mas.stat.data.MessageReceivedInfo;
-import bgu.dcr.az.mas.stat.data.MessageSentInfo;
+import bgu.dcr.az.mas.stat.data.ExternalMessageReceivedInfo;
+import bgu.dcr.az.mas.stat.data.InternalMessageReceivedInfo;
+import bgu.dcr.az.mas.stat.data.ExternalMessageSentInfo;
+import bgu.dcr.az.mas.stat.data.InternalMessageSentInfo;
 import java.util.LinkedList;
 
 /**
@@ -102,9 +104,14 @@ public class CPAgentController extends BaseAgentController {
 
     @Override
     public void send(Message m, int recepientAgent) {
-
-        if (exec.informationStream().hasListeners(MessageSentInfo.class)) {
-            exec.informationStream().write(new MessageSentInfo(m.getMessageId(), m.getSender(), recepientAgent, m.getName(), exec.data().getCcCount()[m.getSender()]));
+        if (!isControlling(m.getRecepient())) {
+            if (exec.informationStream().hasListeners(ExternalMessageSentInfo.class)) {
+                exec.informationStream().write(new ExternalMessageSentInfo(m.getMessageId(), pid(), recepientAgent, m.getName(), exec.data().getCcCount()[pid()]));
+            }
+        } else {
+            if (exec.informationStream().hasListeners(InternalMessageSentInfo.class)) {
+                exec.informationStream().write(new InternalMessageSentInfo(m.getMessageId(), m.getSender(), recepientAgent, m.getName(), exec.data().getCcCount()[pid()]));
+            }
         }
 
         super.send(m, recepientAgent);
@@ -112,8 +119,14 @@ public class CPAgentController extends BaseAgentController {
 
     @Override
     public void receive(AZIPMessage message) {
-        if (exec.informationStream().hasListeners(MessageReceivedInfo.class)) {
-            exec.informationStream().write(new MessageReceivedInfo(message.getData().getMessageId(), message.getData().getSender(), message.getData().getRecepient(), message.getData().getName()));
+        if (!isControlling(message.getData().getSender())) {
+            if (exec.informationStream().hasListeners(ExternalMessageReceivedInfo.class)) {
+                exec.informationStream().write(new ExternalMessageReceivedInfo(message.getData().getMessageId(), message.getData().getSender(), pid(), message.getData().getName()));
+            }
+        } else {
+            if (exec.informationStream().hasListeners(InternalMessageReceivedInfo.class)) {
+                exec.informationStream().write(new InternalMessageReceivedInfo(message.getData().getMessageId(), message.getData().getSender(), message.getData().getRecepient(), message.getData().getName()));
+            }
         }
 
         super.receive(message);

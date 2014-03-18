@@ -10,19 +10,17 @@ package bgu.dcr.az.mas.stat.data;
  *
  * @author Zovadi
  */
-public class MessageSentInfo {
+public class InternalMessageReceivedInfo {
     private final long messageId;
     private final int sender;
     private final int recepient;
     private final String name;
-    private final long ccs;
 
-    public MessageSentInfo(long messageId, int sender, int recepient, String name, long ccs) {
+    public InternalMessageReceivedInfo(long messageId, int sender, int recepient, String name) {
         this.messageId = messageId;
         this.sender = sender;
         this.recepient = recepient;
         this.name = name;
-        this.ccs = ccs;
     }
 
     public long getMessageId() {
@@ -39,10 +37,6 @@ public class MessageSentInfo {
 
     public String getMessageName() {
         return name;
-    }
-
-    public long getConstraintChecks() {
-        return ccs;
     }
     
 }

@@ -40,7 +40,7 @@ public class Problem implements ImmutableProblem {
     public OneToManyDistributor getAgentDistributer() {
         return distributer;
     }
-    
+
     /**
      * Changes current allocation of variables to agents. After performing this
      * operation the agent with given id will own a given set of variables. In
@@ -52,7 +52,7 @@ public class Problem implements ImmutableProblem {
      */
     public void setVariablesOwnedByAgent(int agentId, int... vars) {
         if (getNumberOfAgents() == getNumberOfVariables()) {
-            throw new RuntimeException("Since the amount of agents equals to amount of variables, only ");
+            throw new RuntimeException("Since the amount of agents equals to amount of variables, only One-T-One variable allocation allowed");
         }
 
         distributer.assignVariablesToAgent(agentId, vars);

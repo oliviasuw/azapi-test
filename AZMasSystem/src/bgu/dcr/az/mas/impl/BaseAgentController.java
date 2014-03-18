@@ -67,7 +67,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
         distributor = ex.require(AgentDistributer.class);
         spawner = execution.require(AgentSpawner.class);
         int[] controlled = distributor.getControlledAgentsIds(id);
-        
+
         if (controlled.length == 1) {
             controlledAgents = new FastSingletonMap<>();
         } else {
@@ -92,7 +92,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
     @Override
     protected void start() {
         int[] controlled = distributor.getControlledAgentsIds(pid());
-        
+
         for (int aId : controlled) {
             try {
                 AgentManipulator manipulator = RegisteryUtils.getRegistery().getAgentManipulator(spawner.getAgentType(aId));
@@ -102,7 +102,10 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
                 Agt0DSL.panic("cannot start agent " + aId + ", see cause.", ex);
             }
         }
+    }
 
+    public boolean isControlling(int aid) {
+        return controlledAgents.keySet().contains(aid);
     }
 
     @Override
@@ -145,7 +148,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
                     }
                     return;
                 }
-                
+
                 Message newM = activeAgent.a.setCurrentMessage(m);
                 if (newM != null) {
                     activeAgent.am.callHandler(activeAgent.a, newM.getName(), newM.getArgs());
@@ -323,7 +326,6 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 //            } else {
 //                System.out.println("Request to nest new Agent for algorithm " + agent.getClass().getSimpleName() + " inside " + activeAgent.a + " with context " + current().getContext().getContextRepresentation() + " with context " + contextId);
 //            }
-
             Context context = cGen.getContext(contextId);
             AgentState nestedAgent = new AgentState(agent, manipulator, context, mediator);
             stack.addFirst(nestedAgent);
@@ -421,7 +423,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
                         temporalMessageQueue = temp;
                         continue;
                     }
-                    
+
                     m = delayedMessageQueue.poll();
                 }
 

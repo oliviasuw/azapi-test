@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.ui.screens.problem.fx;
+package bgu.dcr.az.ui.screens.problem;
 
 import bgu.dcr.az.api.prob.ImmutableProblem;
 import bgu.dcr.az.api.tools.Assignment;
@@ -132,7 +132,7 @@ public class ConstraintCalcConsoleCtl implements Initializable {
 
     public static interface ConstraintShowListener {
 
-        boolean onConstraintShowRequested(int i, int j);
+        void onConstraintShowRequested(int i, int j);
     }
 
 }

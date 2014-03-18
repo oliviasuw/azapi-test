@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.ui.screens.problem.fx;
+package bgu.dcr.az.ui.screens.problem;
 
 import bc.ui.swing.useful.DataPanel;
 import bc.ui.swing.visuals.Visual;
@@ -16,7 +16,6 @@ import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.ui.screens.dialogs.MessageDialog;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.stream.IntStream;
 import javafx.application.Platform;
@@ -43,7 +42,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import resources.img.ResourcesImg;
 
 /**
@@ -65,10 +64,13 @@ public class ProblemViewScreenCtl implements Initializable {
     private BorderPane container;
 
     @FXML
-    private GridPane caption;
+    private VBox caption;
 
     @FXML
-    private FlowPane problemChooser;
+    private FlowPane top;
+
+    @FXML
+    private FlowPane bot;
 
     @FXML
     private SplitPane split;
@@ -102,6 +104,7 @@ public class ProblemViewScreenCtl implements Initializable {
     public static final String PROBLEM = "Problem";
     public static final String CONSTRAINT_MATRIX = "Constraints Matrix";
     private ImmutableProblem p;
+    private SlidingAnimator slider;
 
     /**
      * Initializes the controller class.
@@ -109,17 +112,17 @@ public class ProblemViewScreenCtl implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        for (Iterator<String> it = container.getStylesheets().iterator(); it.hasNext();) {
-            String s = it.next();
-
-            if (s.contains("azstyle")) {
-                it.remove();
-            }
-        }
-
-        FXUtils.startCSSLiveReloader(container, "/home/bennyl/Desktop/Agent Zero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/azstyle.css");
+//        for (Iterator<String> it = container.getStylesheets().iterator(); it.hasNext();) {
+//            String s = it.next();
+//
+//            if (s.contains("azstyle")) {
+//                it.remove();
+//            }
+//        }
+//
+//        FXUtils.startCSSLiveReloader(container, "/home/bennyl/Desktop/Agent Zero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/azstyle.css");
         TextField t = pnumSelect;
-        problemChooser.getChildren().remove(pnumSelect);
+        top.getChildren().remove(pnumSelect);
         pnumSelect = new TextField() {
             @Override
             public void replaceText(int start, int end, String text) {
@@ -154,10 +157,8 @@ public class ProblemViewScreenCtl implements Initializable {
             }
         };
 
-        viewProblemBtn.setOnAction(eh -> switchProblemView());
-
         pnumSelect.getStyleClass().addAll(t.getStyleClass());
-        problemChooser.getChildren().addAll(3, Arrays.asList(pnumSelect));
+        top.getChildren().addAll(3, Arrays.asList(pnumSelect));
 
         FXUtils.PaneWithCTL<ConstraintCalcConsoleCtl> calculator = FXUtils.loadFXML(ConstraintCalcConsoleCtl.class);
         calc = calculator.getController();
@@ -187,13 +188,15 @@ public class ProblemViewScreenCtl implements Initializable {
             }
         });
 
-//        problemChooser.setMinHeight(0);
-//        problemChooser.setPrefHeight(0);
-//        problemChooser.setMaxHeight(0);
-//        Pane header = (Pane) table.lookup("TableHeaderRow");
-//        header.setVisible(false);
-//        table.setLayoutY(-header.getHeight());
-//        table.autosize();
+        testSelect.valueProperty().addListener((p, ov, nv) -> pnumSelect.setText("1"));
+        slider = new SlidingAnimator(top, bot);
+        container.setTop(slider);
+
+        changeProblemHyperlink.setOnAction(eh -> slider.scrollDown());
+        viewProblemBtn.setOnAction(eh -> {
+            slider.scrollUp();
+            switchProblemView();
+        });
     }
 
     private void showConstraintsMatrix() {
@@ -326,7 +329,7 @@ public class ProblemViewScreenCtl implements Initializable {
                 container.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
             } else {
                 pnumSelect.setText("1");
-                container.setTop(caption);
+                container.setTop(slider);
                 container.setLeft(tree);
                 container.setCenter(split);
 

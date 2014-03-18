@@ -433,7 +433,9 @@ public abstract class Agent extends Agt0DSL {
      */
     public final Message setCurrentMessage(Message currentMessage) {
         this.currentMessage = currentMessage;
-        messageCount[id]++;
+        if (!controller.isControlling(currentMessage.getSender()) && !SYS_TERMINATION_MESSAGE.equals(currentMessage.getName())) {
+            messageCount[controller.pid()]++;
+        }
         return beforeMessageProcessing(currentMessage);
     }
 
@@ -600,7 +602,7 @@ public abstract class Agent extends Agt0DSL {
         public int calculateCost(Assignment a) {
             controller.getGlobalProblem().calculateCost(getAgentId(), a, queryTemp);
 
-            ccCount[id] += queryTemp.getCheckCost();
+            ccCount[controller.pid()] += queryTemp.getCheckCost();
             return queryTemp.getCost();
         }
     }

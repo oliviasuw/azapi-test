@@ -5,13 +5,10 @@
  */
 package bgu.dcr.az.mas.cp;
 
-import bgu.dcr.az.api.Agent;
 import bgu.dcr.az.api.DeepCopyable;
 import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.mas.exp.AlgorithmDef;
 import bgu.dcr.az.mas.impl.HasSolution;
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  *

@@ -12,8 +12,8 @@ import bgu.dcr.az.mas.cp.CPRecord;
 import bgu.dcr.az.mas.impl.stat.AbstractStatisticCollector;
 import bgu.dcr.az.mas.stat.AdditionalLineChartProperties;
 import bgu.dcr.az.mas.stat.data.ExecutionTerminationInfo;
-import bgu.dcr.az.mas.stat.data.MessageReceivedInfo;
-import bgu.dcr.az.mas.stat.data.MessageSentInfo;
+import bgu.dcr.az.mas.stat.data.ExternalMessageReceivedInfo;
+import bgu.dcr.az.mas.stat.data.ExternalMessageSentInfo;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.QueryDatabase;
 import com.google.common.primitives.Longs;
@@ -39,22 +39,27 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector {
         currentNccc = new long[ex.data().getProblem().getNumberOfAgents()];
         messageNccc = new HashMap<>();
 
-        ex.informationStream().listen(MessageSentInfo.class, m -> {
+        ex.informationStream().listen(ExternalMessageSentInfo.class, m -> {
             currentNccc[m.getSender()] += (m.getConstraintChecks() - lastCCs[m.getSender()]);
             lastCCs[m.getSender()] = m.getConstraintChecks();
             messageNccc.put(m.getMessageId(), currentNccc[m.getSender()]);
         });
 
-        ex.informationStream().listen(MessageReceivedInfo.class, m -> {
+        ex.informationStream().listen(ExternalMessageReceivedInfo.class, m -> {
             currentNccc[m.getRecepient()] = Math.max(messageNccc.remove(m.getMessageId()), currentNccc[m.getRecepient()]);
         });
 
         ex.informationStream().listen(ExecutionTerminationInfo.class, t -> {
+            long[] ccCount = ex.data().getCcCount();
+            for (int i = 0; i < ccCount.length; i++) {
+                currentNccc[i] += (ccCount[i] - lastCCs[i]);
+            }
             write(new NCCCRecord(Longs.max(currentNccc)));
         });
     }
 
     @Override
+
     public String getName() {
         return "Non Concurrent Constraint Checks";
     }

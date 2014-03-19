@@ -7,17 +7,20 @@ package bgu.dcr.az.ui.screens.problem;
 
 import bc.ui.swing.useful.DataPanel;
 import bc.ui.swing.visuals.Visual;
-import bgu.dcr.az.api.prob.ImmutableProblem;
 import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.common.ui.panels.FXMessagePanel;
 import bgu.dcr.az.mas.cp.CPExperimentTest;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.ui.screens.dialogs.MessageDialog;
+import bgu.dcr.az.ui.screens.problem.graph.GraphDrawer;
+import bgu.dcr.az.ui.screens.problem.graph.ProblemGraph;
+import bgu.dcr.az.ui.screens.problem.graph.SpringLayout;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.stream.IntStream;
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -103,7 +106,7 @@ public class ProblemViewScreenCtl implements Initializable {
 
     public static final String PROBLEM = "Problem";
     public static final String CONSTRAINT_MATRIX = "Constraints Matrix";
-    private ImmutableProblem p;
+    private Problem p;
     private SlidingAnimator slider;
 
     /**
@@ -173,7 +176,24 @@ public class ProblemViewScreenCtl implements Initializable {
 
             Object value = ((TreeItem) nv).getValue();
             if (PROBLEM.equals(value)) {
-                data.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
+                ProblemGraph pg = new ProblemGraph(ProblemViewScreenCtl.this.p);
+                SpringLayout sl = new SpringLayout(100, 0, 250, 0.001);
+                final GraphDrawer gd = new GraphDrawer();
+                data.setCenter(gd);
+                AnimationTimer at = new AnimationTimer() {
+                    long last = 0;
+
+                    @Override
+                    public void handle(long l) {
+                        if (l - last > 1000000) {
+                            sl.executeStep(pg);
+                            gd.draw(pg);
+                        }
+                        last = l;
+                    }
+                };
+                at.start();
+                //data.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
             } else if (CONSTRAINT_MATRIX.equals(value)) {
                 showConstraintsMatrix();
             } else {
@@ -353,7 +373,7 @@ public class ProblemViewScreenCtl implements Initializable {
         }
     }
 
-    private void showProblem(final ImmutableProblem p) {
+    private void showProblem(Problem p) {
         if (p.type().isBinary()) {
             this.p = p;
             prepareTree();
@@ -388,7 +408,7 @@ public class ProblemViewScreenCtl implements Initializable {
 
         public AgentInfo(int id) {
             this.id = id;
-            this.name = "Agent " + id;
+            this.name = "Variable " + id;
         }
 
         public AgentInfo(String name) {

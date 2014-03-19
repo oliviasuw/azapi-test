@@ -11,12 +11,12 @@
     
         <dcsp-unstructured n="15" d="5" p1="0.2"/>        
 
-        <!--<default-tester/>-->
+        <default-tester/>
         <algorithm name="SBT"/>
-        <!--<algorithm name="ABT"/>-->
-        <!--<algorithm name="AFC"/>-->
-        <!--<algorithm name="AFC-NG"/>-->
-        <!--<algorithm name="CONC_BT"/>-->
+        <algorithm name="ABT"/>
+        <algorithm name="AFC"/>
+        <algorithm name="AFC-NG"/>
+        <algorithm name="CONC_BT"/>
     </test>
     
     <test seed="42" name="COPs">
@@ -24,8 +24,10 @@
     
         <cc-sc/>
         <msgc-sc/>
-    
-        <dcop-unstructured n="7" d="5" max-cost="100"/>        
+        <nccc-sc/>
+        <ncsc-sc/>
+        
+        <mv-dcop-unstructured vars-per-agent="2" n="7" d="5" max-cost="100"/>        
         <default-tester/>
         <algorithm name="SBB"/>
     </test>

@@ -48,7 +48,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import resources.img.ResourcesImg;
 
@@ -113,12 +113,24 @@ public class ProblemViewScreenCtl implements Initializable {
     private Problem p;
     private SlidingAnimator slider;
 
+    private BorderPane graphLayoutsPane;
+    private ComboBox graphLayoutCombo;
+    private SlidingAnimator graphLayoutAnimator;
+
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        graphLayoutsPane = new BorderPane();
+        graphLayoutCombo = new ComboBox();
+        graphLayoutCombo.getItems().addAll(new ProblemSpringLayout(), new ProblemCircleLayout(), new ProblemFRLayout(), new ProblemISOMLayout(), new ProblemKKLayout());
+        graphLayoutCombo.getSelectionModel().selectFirst();
+        BorderPane.setAlignment(graphLayoutCombo, Pos.CENTER);
+        graphLayoutAnimator = new SlidingAnimator(graphLayoutCombo, null, false);
+        graphLayoutsPane.setTop(graphLayoutAnimator);
 
+        graphLayoutCombo.setOnAction(eh -> showProblemGraph());
 //        for (Iterator<String> it = container.getStylesheets().iterator(); it.hasNext();) {
 //            String s = it.next();
 //
@@ -180,7 +192,7 @@ public class ProblemViewScreenCtl implements Initializable {
 
             Object value = ((TreeItem) nv).getValue();
             if (PROBLEM.equals(value)) {
-                showProblemGraph(value);
+                showProblemGraph();
             } else if (CONSTRAINT_MATRIX.equals(value)) {
                 showConstraintsMatrix();
             } else {
@@ -191,13 +203,13 @@ public class ProblemViewScreenCtl implements Initializable {
                     showConstraintsCosts(ai.getId(), aj.getId());
                 } else {
 //                    data.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
-                    showProblemGraph(value);
+                    showProblemGraph();
                 }
             }
         });
 
         testSelect.valueProperty().addListener((p, ov, nv) -> pnumSelect.setText("1"));
-        slider = new SlidingAnimator(top, bot);
+        slider = new SlidingAnimator(top, bot, true);
         container.setTop(slider);
 
         changeProblemHyperlink.setOnAction(eh -> slider.scrollDown());
@@ -207,29 +219,42 @@ public class ProblemViewScreenCtl implements Initializable {
         });
     }
 
-    private void showProblemGraph(Object value) {
-        ProblemKKLayout gl = new ProblemKKLayout();
-//        new ProblemISOMLayout();
-//        new ProblemFRLayout();
-//        new ProblemCircleLayout();
-//        new ProblemSpringLayout();
+    private void showProblemGraph() {
+        Object value = ((TreeItem) tree.getSelectionModel().getSelectedItems().get(0)).getValue();
+        ProblemGraphLayout gl = (ProblemGraphLayout) graphLayoutCombo.getSelectionModel().getSelectedItem();
 
-//        Object value = ((TreeItem) tree.getSelectionModel().getSelectedItems().get(0)).getValue();
         if (PROBLEM.equals(value)) {
             gl.setProblem(ProblemViewScreenCtl.this.p);
         } else {
             gl.setProblem(p, ((AgentInfo) value).id);
         }
 
+        if (!graphLayoutCombo.isShowing()) {
+            graphLayoutAnimator.scrollUp();
+        }
+
         showProblemLayout(gl);
     }
 
     private void showProblemLayout(ProblemGraphLayout gl) {
-        Pane screen = new Pane();
+        StackPane screen = new StackPane();
+        screen.setOnMouseMoved(eh -> {
+            if (eh.getY() < 50) {
+                graphLayoutAnimator.scrollDown();
+            } else {
+                if (!graphLayoutCombo.isShowing()) {
+                    graphLayoutAnimator.scrollUp();
+                }
+            }
+        });
+        screen.setOnMouseExited(eh -> {
+            if (!graphLayoutCombo.isShowing()) {
+                graphLayoutAnimator.scrollUp();
+            }
+        });
         data.setCenter(screen);
-        gl.setProblem(ProblemViewScreenCtl.this.p);
         final GraphDrawer gd = new GraphDrawer();
-        screen.getChildren().add(gd);
+        screen.getChildren().addAll(gd, graphLayoutsPane);
 
         gl.steps(1000);
         gd.draw(gl);

@@ -221,6 +221,10 @@ TABLES
     -fx-padding: 0;
 }
 
+.table-view.dark.headers-grid .column-header {
+    -fx-border-color: derive(-az-dark-table-header, -10%);
+}
+
 .table-view.dark.section-header .column-header {
     -fx-background-color: -az-section-header-color;
     -fx-padding: 0;
@@ -390,12 +394,12 @@ PIVOT VIEW
 
 #pivot-view {
     -pview-fields-color: rgb(60,65,68);
-    
+
     -pview-fields-fgcolor: white;
-    
+
     -pview-checkbox-color: derive(-pview-fields-color, 35%);
     -pview-checkbox-mark-color: derive(-pview-fields-color, -30%);
-    
+
 }
 
 /* all the pivot controlls */
@@ -410,16 +414,37 @@ PIVOT VIEW
     -fx-text-fill: -pview-fields-fgcolor;
 }
 
+#pivot-view .label.section-header {
+    -fx-alignment: CENTER;
+}
+
 #pivot-view .pivot-controlls .list-cell,
 #pivot-view .pivot-controlls .tree-cell{
     -fx-background-color: -pview-fields-color;
 }
 
-#pivot-view .vis-viewer {
-    -fx-background-insets: 0;
-    -fx-background-radius: 0;
-    -fx-padding: 0;
+#pivot-view .pivot-controlls .list-view, 
+#pivot-view .pivot-controlls .tree-view, 
+#pivot-view .pivot-controlls .tree-table-view{
+    -fx-border-width: 2;
+    -fx-border-color: -az-section-header-color;
+    -fx-background-insets: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 3;
 }
+
+#pivot-view .vis-viewer {
+    -fx-background-insets: 0, 0 5 2 5 ;
+    -fx-background-color: -az-section-header-color, -az-dark-table-cell-even-color;
+    -fx-background-radius: 0, 5;
+    -fx-padding: 10;
+}
+
+#pivot-view .pivot-controlls > * {
+    -fx-background-color: -az-section-header-color;
+}
+
 
 #pivot-view .pivot-controlls .check-box > .box {
     -fx-padding: 1;
@@ -434,7 +459,7 @@ PIVOT VIEW
     -fx-background-color: derive(-pview-checkbox-color, 30%);
     -fx-background-insets: 1.5;
     -fx-background-radius: 0;
-    
+
     -fx-shape: null;    
 }
 
@@ -443,8 +468,8 @@ PIVOT VIEW
 }
 
 #pivot-view .pivot-controlls .split-pane > .split-pane-divider {
-   -fx-background-color: rgb(130,130,130);
-   -fx-background-insets: 0, 0 1 0 1;
+    -fx-background-color: rgb(130,130,130);
+    -fx-background-insets: 0, 0 1 0 1;
 }
 
 

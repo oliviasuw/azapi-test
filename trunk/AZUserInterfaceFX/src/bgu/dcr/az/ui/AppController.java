@@ -22,6 +22,7 @@ import bgu.dcr.az.ui.screens.problem.ProblemViewScreenCtl;
 import bgu.dcr.az.ui.screens.statistics.MainStatisticScreen;
 import bgu.dcr.az.ui.screens.status.StatusScreenCtl;
 import bgu.dcr.az.ui.screens.status.RuntimeStatisticsService;
+import java.io.FileInputStream;
 import java.io.IOException;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -54,7 +55,11 @@ public class AppController {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
-        runningExperiment = loadExperiment();
+        if (args.length == 1) {
+            runningExperiment = (CPExperiment) ExperimentUtils.loadExperiment(new FileInputStream(args[0]));
+        } else {
+            runningExperiment = loadExperiment();
+        }
         updateServer = new ExperimentStatusUpdateServer(UPDATE_INTERVAL, runningExperiment);
         eventServer = new ExperimentStatusEventObserver();
         updateServer.listeners().add(eventServer);

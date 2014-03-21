@@ -13,6 +13,7 @@ import bgu.dcr.az.common.ui.panels.FXMessagePanel;
 import bgu.dcr.az.mas.cp.CPExperimentTest;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.ui.screens.dialogs.MessageDialog;
+import bgu.dcr.az.ui.screens.problem.graph.Eades84Layout;
 import bgu.dcr.az.ui.screens.problem.graph.GraphDrawer;
 import bgu.dcr.az.ui.screens.problem.graph.ProblemGraph;
 import bgu.dcr.az.ui.screens.problem.graph.SpringLayout;
@@ -176,8 +177,20 @@ public class ProblemViewScreenCtl implements Initializable {
 
             Object value = ((TreeItem) nv).getValue();
             if (PROBLEM.equals(value)) {
-                ProblemGraph pg = new ProblemGraph(ProblemViewScreenCtl.this.p);
-                SpringLayout sl = new SpringLayout(100, 0, 250, 0.001);
+//                ProblemGraph pg = new ProblemGraph(ProblemViewScreenCtl.this.p);
+//                SpringLayout sl = new SpringLayout(-100000, -50, 250, 0.001);
+                Eades84Layout ll = new Eades84Layout();
+                Problem pr = ProblemViewScreenCtl.this.p;
+                for (int i = 0; i < pr.getNumberOfVariables(); i++) {
+                    ll.addNode("", 0, "" + i);
+                }
+                for (int i = 0; i < pr.getNumberOfVariables(); i++) {
+                    for (int j = 0; j < i; j++) {
+                        if (pr.isConstrained(i, j)) {
+                            ll.addEdge("", 0, "" + i + "_" + j, "" + i, "" + j, false);
+                        }
+                    }
+                }
                 final GraphDrawer gd = new GraphDrawer();
                 data.setCenter(gd);
                 AnimationTimer at = new AnimationTimer() {
@@ -186,8 +199,10 @@ public class ProblemViewScreenCtl implements Initializable {
                     @Override
                     public void handle(long l) {
                         if (l - last > 1000000) {
-                            sl.executeStep(pg);
-                            gd.draw(pg);
+//                            sl.executeStep(pg);
+//                            gd.draw(pg);
+                            ll.compute();
+                            gd.draw(pr, ll);
                         }
                         last = l;
                     }

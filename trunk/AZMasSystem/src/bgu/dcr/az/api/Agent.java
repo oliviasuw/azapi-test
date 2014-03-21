@@ -460,6 +460,10 @@ public abstract class Agent extends Agt0DSL {
             return prob;
         }
 
+        public CPAgentController getController() {
+            return controller;
+        }
+
         public Map getMetadata() {
             return metadata;
         }

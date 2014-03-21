@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Level;
 
 /**
  *
@@ -42,7 +41,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
 
     private final MessageRouter router;
     private final int numAgents;
-    private Map<Integer, AgentStateStack> controlledAgents;
+    private final Map<Integer, AgentStateStack> controlledAgents;
     private final Set<Integer> finishedAgents;
     private final Mailbox mailbox;
     protected final Execution<?> execution;
@@ -99,7 +98,7 @@ public abstract class BaseAgentController extends AbstractProc implements AgentC
                 Agent agent = manipulator.create();
                 nest(agent, aId, null);
             } catch (Exception ex) {
-                Agt0DSL.panic("cannot start agent " + aId + ", see cause.", ex);
+                Agt0DSL.panic("Cannot start agent " + aId + ", see cause.", ex);
             }
         }
     }

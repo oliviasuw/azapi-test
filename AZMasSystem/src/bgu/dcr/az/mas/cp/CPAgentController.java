@@ -36,6 +36,10 @@ public class CPAgentController extends BaseAgentController {
         this.exec = ex;
     }
 
+    public Execution<?> getExecution() {
+        return execution;
+    }
+
     public Problem getGlobalProblem() {
         return exec.data().getProblem();
     }

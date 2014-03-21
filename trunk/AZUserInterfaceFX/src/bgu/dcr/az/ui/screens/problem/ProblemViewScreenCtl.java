@@ -13,15 +13,17 @@ import bgu.dcr.az.common.ui.panels.FXMessagePanel;
 import bgu.dcr.az.mas.cp.CPExperimentTest;
 import bgu.dcr.az.mas.exp.Experiment;
 import bgu.dcr.az.ui.screens.dialogs.MessageDialog;
-import bgu.dcr.az.ui.screens.problem.graph.Eades84Layout;
 import bgu.dcr.az.ui.screens.problem.graph.GraphDrawer;
-import bgu.dcr.az.ui.screens.problem.graph.ProblemGraph;
-import bgu.dcr.az.ui.screens.problem.graph.SpringLayout;
+import bgu.dcr.az.ui.screens.problem.graph.ProblemCircleLayout;
+import bgu.dcr.az.ui.screens.problem.graph.ProblemFRLayout;
+import bgu.dcr.az.ui.screens.problem.graph.ProblemGraphLayout;
+import bgu.dcr.az.ui.screens.problem.graph.ProblemISOMLayout;
+import bgu.dcr.az.ui.screens.problem.graph.ProblemKKLayout;
+import bgu.dcr.az.ui.screens.problem.graph.ProblemSpringLayout;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.stream.IntStream;
-import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -46,6 +48,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import resources.img.ResourcesImg;
 
@@ -177,38 +180,7 @@ public class ProblemViewScreenCtl implements Initializable {
 
             Object value = ((TreeItem) nv).getValue();
             if (PROBLEM.equals(value)) {
-//                ProblemGraph pg = new ProblemGraph(ProblemViewScreenCtl.this.p);
-//                SpringLayout sl = new SpringLayout(-100000, -50, 250, 0.001);
-                Eades84Layout ll = new Eades84Layout();
-                Problem pr = ProblemViewScreenCtl.this.p;
-                for (int i = 0; i < pr.getNumberOfVariables(); i++) {
-                    ll.addNode("", 0, "" + i);
-                }
-                for (int i = 0; i < pr.getNumberOfVariables(); i++) {
-                    for (int j = 0; j < i; j++) {
-                        if (pr.isConstrained(i, j)) {
-                            ll.addEdge("", 0, "" + i + "_" + j, "" + i, "" + j, false);
-                        }
-                    }
-                }
-                final GraphDrawer gd = new GraphDrawer();
-                data.setCenter(gd);
-                AnimationTimer at = new AnimationTimer() {
-                    long last = 0;
-
-                    @Override
-                    public void handle(long l) {
-                        if (l - last > 1000000) {
-//                            sl.executeStep(pg);
-//                            gd.draw(pg);
-                            ll.compute();
-                            gd.draw(pr, ll);
-                        }
-                        last = l;
-                    }
-                };
-                at.start();
-                //data.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
+                showProblemGraph(value);
             } else if (CONSTRAINT_MATRIX.equals(value)) {
                 showConstraintsMatrix();
             } else {
@@ -218,7 +190,8 @@ public class ProblemViewScreenCtl implements Initializable {
                     AgentInfo aj = (AgentInfo) value;
                     showConstraintsCosts(ai.getId(), aj.getId());
                 } else {
-                    data.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
+//                    data.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
+                    showProblemGraph(value);
                 }
             }
         });
@@ -232,6 +205,61 @@ public class ProblemViewScreenCtl implements Initializable {
             slider.scrollUp();
             switchProblemView();
         });
+    }
+
+    private void showProblemGraph(Object value) {
+        ProblemKKLayout gl = new ProblemKKLayout();
+//        new ProblemISOMLayout();
+//        new ProblemFRLayout();
+//        new ProblemCircleLayout();
+//        new ProblemSpringLayout();
+
+//        Object value = ((TreeItem) tree.getSelectionModel().getSelectedItems().get(0)).getValue();
+        if (PROBLEM.equals(value)) {
+            gl.setProblem(ProblemViewScreenCtl.this.p);
+        } else {
+            gl.setProblem(p, ((AgentInfo) value).id);
+        }
+
+        showProblemLayout(gl);
+    }
+
+    private void showProblemLayout(ProblemGraphLayout gl) {
+        Pane screen = new Pane();
+        data.setCenter(screen);
+        gl.setProblem(ProblemViewScreenCtl.this.p);
+        final GraphDrawer gd = new GraphDrawer();
+        screen.getChildren().add(gd);
+
+        gl.steps(1000);
+        gd.draw(gl);
+
+        screen.widthProperty().addListener((p, ov, nv) -> {
+            gl.setDimentions(nv.doubleValue(), screen.getHeight());
+            gl.steps(1000);
+            gd.setDimentions(nv.doubleValue(), screen.getHeight());
+            gd.draw(gl);
+        });
+        screen.heightProperty().addListener((p, ov, nv) -> {
+            gl.setDimentions(screen.getWidth(), nv.doubleValue());
+            gl.steps(1000);
+            gd.setDimentions(screen.getWidth(), nv.doubleValue());
+            gd.draw(gl);
+        });
+
+//        AnimationTimer at = new AnimationTimer() {
+//            long last = 0;
+//
+//            @Override
+//            public void handle(long l) {
+//                if (l - last > 10000000) {
+//                    gl.step();
+//                    gd.draw(gl);
+//                }
+//                last = l;
+//            }
+//        };
+//        at.start();        
     }
 
     private void showConstraintsMatrix() {
@@ -377,12 +405,12 @@ public class ProblemViewScreenCtl implements Initializable {
         Integer pnum = null;
         CPExperimentTest c = null;
         try {
+            data.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
             c = (CPExperimentTest) Visual.getSelected(testSelect);
             pnum = Integer.parseInt(pnumSelect.getText());
             Problem p = c.getProblem(pnum);
             showProblem(p);
             problemViewingDescription.setText("Showing problem " + pnum + " of test " + c.getName());
-            data.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
         } catch (Exception ex) {
             MessageDialog.showFail("cannot load problem (did you defined a problem generator?): ", ex.getMessage());
         }
@@ -391,8 +419,8 @@ public class ProblemViewScreenCtl implements Initializable {
     private void showProblem(Problem p) {
         if (p.type().isBinary()) {
             this.p = p;
-            prepareTree();
             calc.setProblem(p);
+            prepareTree();
 //            problemChangePan.setVisible(false);
         }
     }
@@ -414,6 +442,8 @@ public class ProblemViewScreenCtl implements Initializable {
             }
             root.getChildren().add(a1);
         }
+
+        tree.getSelectionModel().select(root);
     }
 
     private static class AgentInfo {

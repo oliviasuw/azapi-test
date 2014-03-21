@@ -6,6 +6,7 @@
 package bgu.dcr.az.ui.screens.problem.graph;
 
 import bgu.dcr.az.api.prob.Problem;
+import java.util.Collection;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.VPos;
@@ -29,14 +30,12 @@ public abstract class ProblemGraphLayout {
     private final Color TEXT_COLOR = Color.RED;
     private final Color EDGE_COLOR = Color.AQUA;
 
-    private Problem problem;
-
     private final DoubleProperty widthProperty = new SimpleDoubleProperty();
     private final DoubleProperty heightProperty = new SimpleDoubleProperty();
 
-    protected abstract void setup();
+    protected abstract void setup(Problem problem);
 
-    protected abstract void setup(int var);
+    protected abstract void setup(Problem problem, int var);
 
     public void setDimentions(double width, double height) {
         widthProperty.set(width);
@@ -47,18 +46,16 @@ public abstract class ProblemGraphLayout {
     protected abstract void _setDimentions(double width, double height);
 
     public void setProblem(Problem problem) {
-        this.problem = problem;
-        setup();
+        setup(problem);
     }
 
     public void setProblem(Problem problem, int var) {
-        this.problem = problem;
-        setup(var);
+        setup(problem, var);
     }
 
-    public Problem getProblem() {
-        return problem;
-    }
+    public abstract Collection<Object> getVertices();
+
+    public abstract Collection<Object> getNeighborsVertices(Object vertex);
 
     public abstract void step();
 
@@ -80,7 +77,7 @@ public abstract class ProblemGraphLayout {
         double miny = Double.POSITIVE_INFINITY;
         double maxy = Double.NEGATIVE_INFINITY;
 
-        for (int i = 0; i < problem.getNumberOfVariables(); i++) {
+        for (Object i : getVertices()) {
             Point u = getLocation(i);
             minx = Math.min(minx, u.x);
             maxx = Math.max(maxx, u.x);
@@ -91,23 +88,21 @@ public abstract class ProblemGraphLayout {
         double scalex = (width - PADDING * 2) / (maxx - minx);
         double scaley = (height - PADDING * 2) / (maxy - miny);
 
-        for (int i = 0; i < problem.getNumberOfVariables(); i++) {
-            for (int j = 0; j < i; j++) {
-                if (problem.isConstrained(i, j)) {
-                    Point u = getLocation(i);
-                    Point v = getLocation(j);
+        for (Object i : getVertices()) {
+            for (Object j : getNeighborsVertices(i)) {
+                Point u = getLocation(i);
+                Point v = getLocation(j);
 
-                    gc.setStroke(EDGE_COLOR);
-                    final double ux = PADDING + (u.x - minx) * scalex;
-                    final double uy = PADDING + (u.y - miny) * scaley;
-                    final double vx = PADDING + (v.x - minx) * scalex;
-                    final double vy = PADDING + (v.y - miny) * scaley;
-                    gc.strokeLine(ux, uy, vx, vy);
-                }
+                gc.setStroke(EDGE_COLOR);
+                final double ux = PADDING + (u.x - minx) * scalex;
+                final double uy = PADDING + (u.y - miny) * scaley;
+                final double vx = PADDING + (v.x - minx) * scalex;
+                final double vy = PADDING + (v.y - miny) * scaley;
+                gc.strokeLine(ux, uy, vx, vy);
             }
         }
 
-        for (int i = 0; i < problem.getNumberOfVariables(); i++) {
+        for (Object i : getVertices()) {
             Point u = getLocation(i);
             double x = PADDING + (u.x - minx) * scalex;
             double y = PADDING + (u.y - miny) * scaley;
@@ -126,7 +121,7 @@ public abstract class ProblemGraphLayout {
 
     }
 
-    public abstract Point getLocation(int var);
+    public abstract Point getLocation(Object var);
 
     protected static class Point {
 

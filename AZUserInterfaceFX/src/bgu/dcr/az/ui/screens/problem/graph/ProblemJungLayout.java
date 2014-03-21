@@ -5,10 +5,12 @@
  */
 package bgu.dcr.az.ui.screens.problem.graph;
 
+import bgu.dcr.az.api.prob.Problem;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import java.awt.Dimension;
+import java.util.Collection;
 
 /**
  *
@@ -34,17 +36,17 @@ public abstract class ProblemJungLayout extends ProblemGraphLayout {
     protected abstract AbstractLayout generateLayout(Graph g);
 
     @Override
-    protected void setup() {
+    protected void setup(Problem problem) {
         g = new UndirectedSparseGraph();
 
-        for (int i = 0; i < getProblem().getNumberOfVariables(); i++) {
+        for (int i = 0; i < problem.getNumberOfVariables(); i++) {
             g.addVertex(i);
         }
 
-        for (int i = 0; i < getProblem().getNumberOfVariables(); i++) {
+        for (int i = 0; i < problem.getNumberOfVariables(); i++) {
             g.addVertex(i);
             for (int j = 0; j < i; j++) {
-                if (getProblem().isConstrained(i, j)) {
+                if (problem.isConstrained(i, j)) {
                     g.addEdge("" + i + "_" + j, i, j);
                 }
             }
@@ -57,13 +59,13 @@ public abstract class ProblemJungLayout extends ProblemGraphLayout {
     }
 
     @Override
-    protected void setup(int var) {
+    protected void setup(Problem problem, int var) {
         g = new UndirectedSparseGraph();
 
         g.addVertex(var);
-        getProblem().getNeighbors(var).stream().forEach(g::addVertex);
+        problem.getNeighbors(var).stream().forEach(g::addVertex);
 
-        getProblem().getNeighbors(var).stream().forEach(v -> {
+        problem.getNeighbors(var).stream().forEach(v -> {
             g.addEdge("" + var + "_" + v, var, v);
         });
 
@@ -76,11 +78,21 @@ public abstract class ProblemJungLayout extends ProblemGraphLayout {
     }
 
     @Override
-    public Point getLocation(int var) {
+    public Point getLocation(Object var) {
         Point p = new Point();
         p.x = layout.getX(var);
         p.y = layout.getY(var);
         return p;
+    }
+
+    @Override
+    public Collection<Object> getVertices() {
+        return g.getVertices();
+    }
+
+    @Override
+    public Collection<Object> getNeighborsVertices(Object vertex) {
+        return g.getNeighbors(vertex);
     }
 
 }

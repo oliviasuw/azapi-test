@@ -12,6 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -30,7 +31,12 @@ public class SlidingAnimator extends StackPane {
     private Timeline timelineUp;
     private Timeline timelineDown;
 
-    public SlidingAnimator(Node top, Node bot) {
+    private boolean isDown;
+    private final boolean shouldBounce;
+
+    public SlidingAnimator(Node top, Node bot, boolean shouldBounce) {
+        this.shouldBounce = shouldBounce;
+
         configureBox(top, bot);
 
         setUpAnimation();
@@ -45,16 +51,18 @@ public class SlidingAnimator extends StackPane {
             boxBounds = new Rectangle2D(0, 0, nv.doubleValue(), boxBounds.getWidth());
             setUpAnimation();
         });
+
+        isDown = false;
     }
 
     private void configureBox(Node top, Node bot) {
-     // BOTTOM PANE 
+        // BOTTOM PANE 
         bottomPane = new StackPane();
-        bottomPane.getChildren().add(bot);
+        bottomPane.getChildren().add(bot == null ? new Pane() : bot);
 
         // TOP PANE 
         topPane = new StackPane();
-        topPane.getChildren().add(top);
+        topPane.getChildren().add(top == null ? new Pane() : top);
 
 //        container.getChildren().addAll(bottomPane, topPane);
         getChildren().addAll(bottomPane, topPane);
@@ -92,7 +100,9 @@ public class SlidingAnimator extends StackPane {
         final KeyValue kvDwn2 = new KeyValue(clipRect.translateYProperty(), 0);
         final KeyValue kvDwn3 = new KeyValue(topPane.translateYProperty(), 0);
         final KeyValue kvDwn4 = new KeyValue(bottomPane.translateYProperty(), -boxBounds.getHeight());
-        final KeyFrame kfDwn = new KeyFrame(Duration.millis(200), onFinishedDwn, kvDwn1, kvDwn2, kvDwn3, kvDwn4);
+        final KeyFrame kfDwn = shouldBounce
+                ? new KeyFrame(Duration.millis(200), onFinishedDwn, kvDwn1, kvDwn2, kvDwn3, kvDwn4)
+                : new KeyFrame(Duration.millis(200), kvDwn1, kvDwn2, kvDwn3, kvDwn4);
         timelineDown.getKeyFrames().add(kfDwn);
 
         // Animation for bouncing effect.
@@ -115,15 +125,23 @@ public class SlidingAnimator extends StackPane {
         final KeyValue kvUp2 = new KeyValue(clipRect.translateYProperty(), boxBounds.getHeight());
         final KeyValue kvUp3 = new KeyValue(topPane.translateYProperty(), -boxBounds.getHeight());
         final KeyValue kvUp4 = new KeyValue(bottomPane.translateYProperty(), 0);
-        final KeyFrame kfUp = new KeyFrame(Duration.millis(200), onFinishedUp, kvUp1, kvUp2, kvUp3, kvUp4);
+        final KeyFrame kfUp = shouldBounce
+                ? new KeyFrame(Duration.millis(200), onFinishedUp, kvUp1, kvUp2, kvUp3, kvUp4)
+                : new KeyFrame(Duration.millis(200), kvUp1, kvUp2, kvUp3, kvUp4);
         timelineUp.getKeyFrames().add(kfUp);
     }
 
     public void scrollDown() {
-        timelineDown.play();
+        if (!isDown) {
+            timelineDown.play();
+            isDown = true;
+        }
     }
 
     public void scrollUp() {
-        timelineUp.play();
+        if (isDown) {
+            timelineUp.play();
+            isDown = false;
+        }
     }
 }

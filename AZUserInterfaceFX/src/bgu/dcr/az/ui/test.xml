@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <experiment>
     <test seed="42" name="CSPs">
-        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p2" repeat-count="100">
+        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100">
         </for-loop>
     
         <cc-sc/>
@@ -9,14 +9,14 @@
         <nccc-sc/>
         <ncsc-sc/>
     
-        <dcsp-unstructured n="15" d="5" p1="0.2"/>        
+        <dcsp-unstructured n="15" d="5" p2="0.5"/>        
 
         <default-tester/>
         <algorithm name="SBT"/>
         <algorithm name="ABT"/>
         <algorithm name="AFC"/>
         <algorithm name="AFC-NG"/>
-        <algorithm name="CONC_BT"/>
+        <!--<algorithm name="CONC_BT"/>-->
     </test>
     
     <test seed="42" name="COPs">

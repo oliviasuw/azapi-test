@@ -96,7 +96,7 @@ public class PivotDataViewerController implements Initializable {
     private void setChartModel(TableData data) {
 //        FXUtils.invokeInUI(() -> {
             PivotDataTableView table = new PivotDataTableView(true);
-            table.getStyleClass().add("dark");
+            table.getStyleClass().addAll("dark", "headers-grid");
             table.setModel(data);
             vizualizerContainer.setCenter(table);
 //        });

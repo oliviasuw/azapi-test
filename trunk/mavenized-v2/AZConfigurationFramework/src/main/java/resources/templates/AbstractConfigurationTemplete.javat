@@ -1,0 +1,151 @@
+package bgu.dcr.autogen;
+
+import bgu.dcr.az.anop.conf.Configuration;
+import bgu.dcr.az.anop.conf.TypeInfo;
+import bgu.dcr.az.anop.conf.Property;
+import bgu.dcr.az.anop.conf.VisualData;
+import bgu.dcr.az.anop.conf.impl.AbstractConfiguration;
+import bgu.dcr.az.anop.conf.ConfigurationUtils;
+import bgu.dcr.az.anop.conf.impl.PropertyImpl;
+import bgu.dcr.az.anop.conf.impl.VisualDataImpl;
+import bgu.dcr.az.anop.utils.JavaTypeParser;
+import bgu.dcr.az.anop.conf.ConfigurationException;
+import java.util.HashMap;
+import java.util.Collection;
+import java.util.Map;
+import bgu.dcr.az.anop.conf.JavaDocInfo;
+import bgu.dcr.az.anop.utils.JavaDocParser;
+
+
+
+@code{  
+    // SOME HELPER FUNCTIONS
+    def lc(string) {
+        CodeUtils.camelCaseToLowerLine(string).toUpperCase();
+    }
+
+    def castify(type) {
+        x = type.replaceAll("\\$", ".");
+        i = x.indexOf("<");
+        if (i > 0) x = x.substring(0, i);
+        return x;
+    }
+}
+public class @{className} extends AbstractConfiguration{
+
+    public static final TypeInfo TYPE_INFO = JavaTypeParser.parse("@{typeInfo}");
+    @foreach{p : properties}
+    public static final TypeInfo @{lc(p.declaredName)}_TYPE_INFO = JavaTypeParser.parse("@{p.typeFQN}");
+    public static final JavaDocInfo @{lc(p.declaredName)}_JAVADOC_INFO = JavaDocParser.parse("@{p.javadoc}");
+    @end{}
+    public static final JavaDocInfo JAVADOC = JavaDocParser.parse("@{escapedJavadoc}");
+
+    @if{extension != null}
+    private @{extensionConfiurationClass} parent;
+    @end{}
+    public @{className}() {
+        this.properties = new HashMap<>();
+        
+        //fill properties
+        VisualData vd = null;
+        @foreach{p : properties}
+        @if{p.setter != empty}
+        properties.put("@{p.name}", new PropertyImpl("@{p.name}", this, @{lc(p.declaredName)}_TYPE_INFO , @{lc(p.declaredName)}_JAVADOC_INFO));
+        @else{}
+        if (Collection.class.isAssignableFrom(@{lc(p.declaredName)}_TYPE_INFO.getType())){
+            properties.put("@{p.name}", new PropertyImpl("@{p.name}", this, @{lc(p.declaredName)}_TYPE_INFO , @{lc(p.declaredName)}_JAVADOC_INFO));
+        }
+        @end{} @end{}
+        @if{extension != null}
+        parent = new @{extensionConfiurationClass}();
+        this.properties.putAll(parent.propertiesMap());
+        @end{}
+
+        this.type = TYPE_INFO;
+        @if{haveVariables}
+        scanVariables();
+        @end{}
+    }
+
+    @Override
+    public Object create() throws ConfigurationException {
+        @{configuredClassName} result = new @{configuredClassName}();
+
+        configure(result);
+        
+        return result;
+    }
+
+    @Override
+    public Configuration loadFrom(Object obj) throws ConfigurationException{
+        @{configuredClassName} o = (@{configuredClassName}) obj;
+        Property property = null;
+        Object propertyValue = null;
+
+        @if{extension != null}
+        //loading configurations from parent
+        parent.loadFrom(obj);
+        @end{}
+
+        @foreach{p : properties}
+        property = properties.get("@{p.name}");
+        if (property != null){
+            propertyValue = (Object) o.@{p.getter}();
+            if (propertyValue != null){
+                try{          
+                    property.set(ConfigurationUtils.toPropertyValue(propertyValue));
+                } catch (Exception ex){
+                    throw new ConfigurationException("cannot configure property @{p.name}", ex);
+                }
+            }
+        }
+        @end{}
+
+        @if{haveVariables}
+        loadFromVariables(o);
+        @end{}
+
+        return this;
+    }
+
+    @Override
+    public void configure(Object obj) throws ConfigurationException {
+        @{configuredClassName} o = (@{configuredClassName}) obj;
+        Property property = null;
+        @if{extension != null}
+        parent.configure(obj);
+        @end{}
+        @foreach{p : properties}
+        property = properties.get("@{p.name}");
+        if (property != null && property.get() != null){
+            try{          
+                @if{p.setter != empty}
+                o.@{p.setter}( property.get().<@{castify(p.type)}>create(property.typeInfo()));
+                @else{}
+                if (((Object) o.@{p.getter}()) == null) {
+                    throw new ConfigurationException(String.format("property %s doesnt have setter and no default value to fill", "@{p.name}"));
+                }
+
+                if (Collection.class.isAssignableFrom(property.typeInfo().getType())){
+                    Collection collection = ((Collection) (Object) o.@{p.getter}());
+                    collection.clear();
+                    collection.addAll( property.get().<Collection>create(property.typeInfo()));
+                } else if (Map.class.isAssignableFrom(property.typeInfo().getType())){
+                    Map map = ((Map) (Object) o.@{p.getter}());
+                    map.clear();
+                    map.putAll( property.get().<Map>create(property.typeInfo()));
+                } else {
+                    throw new ConfigurationException("does not know how to handle property");
+                }
+                @end{}
+            } catch (Exception ex){
+                throw new ConfigurationException("cannot configure property @{p.name}", ex);
+            }
+        }
+        @end{}
+
+        @if{haveVariables}
+        configureVariables(o);
+        @end{}
+    }    
+}

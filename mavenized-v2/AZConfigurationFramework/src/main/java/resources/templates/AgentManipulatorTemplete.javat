@@ -1,0 +1,58 @@
+package @{package};
+
+import bgu.dcr.az.anop.algo.ParameterInfo;
+import bgu.dcr.az.anop.algo.impl.AbstractAgentManipulator;
+import bgu.dcr.az.anop.algo.impl.HanlerInfoImpl;
+import bgu.dcr.az.anop.algo.impl.ParameterInfoImpl;
+import bgu.dcr.az.anop.conf.JavaDocInfo;
+import bgu.dcr.az.anop.utils.JavaDocParser;
+import bgu.dcr.az.anop.utils.JavaTypeParser;
+import java.util.LinkedList;
+
+@code{  
+    // SOME HELPER FUNCTIONS
+    def lc(string) {
+        CodeUtils.camelCaseToLowerLine(string).toUpperCase();
+    }
+
+    def castify(type) {
+        type.replaceAll("\\$", ".");
+    }
+}    
+public class @{className} extends AbstractAgentManipulator{
+    @foreach{h : handlers}
+    public static final ParameterInfo[] @{lc(h.declaredName)}_PARAM_INFO = {
+        @foreach{param : h.params}
+        new ParameterInfoImpl("@{param.name}", JavaTypeParser.parse("@{param.typeFQN}"))
+        @end{","}
+    };
+    public static final JavaDocInfo @{lc(h.declaredName)}_JAVADOC_INFO = JavaDocParser.parse("@{h.javadoc}");    
+    @end{}
+    
+    public @{className}() {
+        super.algorithmName = "@{algorithmName}";
+        super.configurationDelegate = new @{configurationDelegateClassName}();
+        super.handlers = new LinkedList<>();
+        
+        @foreach{h : handlers} 
+        handlers.add(new HanlerInfoImpl(@{lc(h.declaredName)}_JAVADOC_INFO, "@{h.of}", @{lc(h.declaredName)}_PARAM_INFO));
+        @end{}
+    }
+
+    @Override
+    public void callHandler(Object agentInstance, String name, Object[] arguments) {
+        @{classNameFQN} agent = (@{classNameFQN})agentInstance;
+        
+        switch(name) {
+            @foreach{h : handlers} 
+            case "@{h.of}":
+                agent.@{h.declaredName}(@foreach{p : h.params}(@{p.typeFQN})arguments[@{p.index}]@end{", "});
+                break;
+            @end{}
+            default:
+                throw new RuntimeException("Unsupported message: " + name + " received to " + agentInstance);
+        }
+
+    }
+    
+}

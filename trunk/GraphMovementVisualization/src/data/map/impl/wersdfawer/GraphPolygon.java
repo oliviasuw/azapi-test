@@ -19,6 +19,8 @@ public class GraphPolygon {
     private final HashMap<String, String> params;
     private Point2D.Double center = null;
     private double area;
+    private double width;
+    private double height;
 
     GraphPolygon(Collection<String> pNodes, HashMap<String, String> params) {
         this.nodes = pNodes;
@@ -65,6 +67,8 @@ public class GraphPolygon {
         Point2D ans = centerOfMass(polyPoints);
         this.center = new Point2D.Double(ans.getX(), ans.getY());
         this.area = area(polyPoints);
+        setWidth(polyPoints);
+        setHeight(polyPoints);
     }
 
     private double area(Point2D[] polyPoints) {
@@ -102,4 +106,44 @@ public class GraphPolygon {
         res.setLocation(cx, cy);
         return res;
     }
+
+    private void setWidth(Point2D[] polyPoints) {
+        double min = Double.MAX_VALUE;
+        double max = 0;
+        for (Point2D polyPoint : polyPoints) {
+            double x = polyPoint.getX();
+            if (x < min) {
+                min = x;
+            }
+            if (x>max) {
+                max = x;
+            }
+        }
+        this.width = max - min;
+    }
+
+    private void setHeight(Point2D[] polyPoints) {
+        double min = Double.MAX_VALUE;
+        double max = 0;
+        for (Point2D polyPoint : polyPoints) {
+            double y = polyPoint.getY();
+            if (y < min) {
+                min = y;
+            }
+            if (y>max) {
+                max = y;
+            }
+        }    
+        this.height = max - min;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+    
+    
 }

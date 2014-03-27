@@ -21,13 +21,18 @@ public class BuildingImageDrawer implements PolygonImageDrawer {
     private final String key = "building";
     private final HashMap<String, Image> images;
     private final Image defaultImage;
+    private static final int MAX_BUILDING_HEIGHT = 100; 
     
     public BuildingImageDrawer() {
         images = new HashMap<>();
 
 //        images.put("yes", new Image(R.class.getResourceAsStream("building")) );
 //
-//        images.put("university", new Image(R.class.getResourceAsStream("building")));
+        images.put("university", new Image(R.class.getResourceAsStream("university.png")));
+        images.put("school", new Image(R.class.getResourceAsStream("university.png")));
+        images.put("office", new Image(R.class.getResourceAsStream("office.png")));
+        
+
 
         defaultImage = new Image(R.class.getResourceAsStream("building.png"));
     }
@@ -45,7 +50,9 @@ public class BuildingImageDrawer implements PolygonImageDrawer {
         double tx = canvas.getTranslateX();
         double ty = canvas.getTranslateY();
         
-        polygon.setCenter(graphData);
+        if (polygon.getCenter()==null) {
+            polygon.setCenter(graphData);
+        }
         double centerX = polygon.getCenter().x;
         double centerY = polygon.getCenter().y;
         
@@ -54,9 +61,15 @@ public class BuildingImageDrawer implements PolygonImageDrawer {
             image = defaultImage;
         }
         double subScale = Math.sqrt(Math.abs(polygon.getArea()));
-        System.out.println(subScale);
+//        System.out.println(subScale);
 //        gc.drawImage(image, (centerX -tx -(image.getWidth() / 2.0)) * scale, (centerY -ty -(image.getHeight() / 2.0)) * scale, image.getWidth()*scale, image.getHeight()*scale);
-        gc.drawImage(image, (centerX -tx -(scale*subScale / 2.0)) * scale, (centerY -ty -(scale*subScale / 2.0)) * scale, scale *subScale, scale*subScale);
+        double newW = scale*subScale;
+        double newH = (image.getHeight() / image.getWidth()) * newW;
+        if (newH > MAX_BUILDING_HEIGHT) {
+            newW = newW/newH * MAX_BUILDING_HEIGHT;
+            newH = MAX_BUILDING_HEIGHT;
+        }
+        gc.drawImage(image, (centerX -tx -(subScale / 2.0)) * scale, (centerY -ty -2*((newH/scale) / 2.0)) * scale, newW, newH);
     }
 
     

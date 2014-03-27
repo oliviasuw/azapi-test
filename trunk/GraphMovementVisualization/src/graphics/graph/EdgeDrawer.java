@@ -4,12 +4,15 @@
  */
 package graphics.graph;
 
+import bgu.dcr.az.vis.presets.MapVisualScene;
+import com.bbn.openmap.util.quadtree.QuadTree;
 import data.map.impl.wersdfawer.AZVisVertex;
 import data.map.impl.wersdfawer.GraphData;
 import data.map.impl.wersdfawer.GraphPolygon;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Vector;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -27,6 +30,7 @@ import resources.img.R;
 public class EdgeDrawer {
 
     public static final String ROAD_KEY = "highway";
+    public static final String GRASS_KEY = "landuse";
 //    private final int MAIN_THICKNESS = 12;
 //    private final int INNER_THICKNESS = 8;
     private final double LANE_WIDTH = 3.6; //in meters
@@ -36,7 +40,7 @@ public class EdgeDrawer {
     public EdgeDrawer() {
         descriptors = new HashMap<>();
         ImagePattern roadImagePattern = new ImagePattern(new Image(R.class.getResourceAsStream("roadTexture.jpg")), 0, 0, 100, 100, false);
-
+        
         descriptors.put("primary", new EdgeDescriptor(
                 new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
                         Color.BLACK),
@@ -148,83 +152,54 @@ public class EdgeDrawer {
 
     }
 
-    public void draw(Canvas canvas, GraphData graphData, Collection<String> edges, double scale) {
+    public void draw(Canvas canvas, GraphData graphData, QuadTree edges, double scale) {
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
         double tx = canvas.getTranslateX();
         double ty = canvas.getTranslateY();
+//        double factor = 1/scale;
+        double epsilonW = graphData.getMaxEdgeWidth()/2;
+        double epsilonH = graphData.getMaxEdgeHeight()/2;
+//        System.out.println("h: " + epsilonH + " w: "+epsilonW);
+        Vector edgevec = edges.get((float) ((ty + canvas.getHeight() + epsilonH)*scale), (float) ((tx-epsilonW)*scale), (float) ((ty-epsilonH)*scale), (float) ((tx + canvas.getWidth()+epsilonW)*scale));
 
-        HashMap<String, String> edgeData = (HashMap<String, String>) graphData.getData(edges.iterator().next());
-        EdgeDescriptor ed = descriptors.get(edgeData.get(ROAD_KEY));
-        if (ed == null) {
-            ed = defaultDescriptor;
-        }
-
-        double pixelLaneWidth = LANE_WIDTH ;
-
-        gc.save();
-        gc.beginPath();
-        for (String edgeName : edges) {
-            AZVisVertex source = null;
-            AZVisVertex target = null;
-            try {
-                source = (AZVisVertex) graphData.getData(graphData.getEdgeSource(edgeName));
-                target = (AZVisVertex) graphData.getData(graphData.getEdgeTarget(edgeName));
-            } catch (Exception e) {
-                System.out.println("problem with drawing! cant find some node.");
-                continue;
+        if (edgevec.size() > 0) {
+            HashMap<String, String> edgeData = (HashMap<String, String>) graphData.getData((String) edgevec.get(0));
+            EdgeDescriptor ed = descriptors.get(edgeData.get(ROAD_KEY));
+            if (ed == null) {
+                ed = defaultDescriptor;
             }
-            gc.setLineCap(ed.getOuterStroke().getLineCap());
-            gc.setLineJoin(ed.getOuterStroke().getLineJoin());
-            gc.setLineWidth(ed.getOuterStroke().getLanes()*pixelLaneWidth * scale);
-            gc.setStroke(ed.getOuterStroke().getPaint());
+
+            double pixelLaneWidth = LANE_WIDTH;
+
+            gc.save();
+            gc.beginPath();
+            for (Object edgeObj : edgevec) {
+                String edgeName = (String) edgeObj;
+                AZVisVertex source = null;
+                AZVisVertex target = null;
+                try {
+                    source = (AZVisVertex) graphData.getData(graphData.getEdgeSource(edgeName));
+                    target = (AZVisVertex) graphData.getData(graphData.getEdgeTarget(edgeName));
+                } catch (Exception e) {
+                    System.out.println("problem with drawing! cant find some node.");
+                    continue;
+                }
+                gc.setLineCap(ed.getOuterStroke().getLineCap());
+                gc.setLineJoin(ed.getOuterStroke().getLineJoin());
+                gc.setLineWidth(ed.getOuterStroke().getLanes() * pixelLaneWidth * scale);
+                gc.setStroke(ed.getOuterStroke().getPaint());
 
 //            gc.setLineCap(ed.getInnerStroke().getLineCap());
 //            gc.setLineJoin(ed.getInnerStroke().getLineJoin());
 //            gc.setLineWidth(pixelLaneWidth * scale);
 //            gc.setStroke(ed.getInnerStroke().getPaint());
-
-            gc.moveTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
-            gc.lineTo((target.getX() - tx) * scale, (target.getY() - ty) * scale);
+                gc.moveTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
+                gc.lineTo((target.getX() - tx) * scale, (target.getY() - ty) * scale);
+            }
+            gc.stroke();
+            gc.restore();
         }
-        gc.stroke();
-        gc.restore();
-
-    }
-
-    public void draw(Canvas canvas, GraphData graphData, GraphPolygon polygon, double scale) {
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        double tx = canvas.getTranslateX();
-        double ty = canvas.getTranslateY();
-        gc.save();
-        gc.setFill(Color.RED);
-        gc.beginPath();
-        Iterator<String> it = polygon.getNodes().iterator();
-        String node = it.next();
-        AZVisVertex source = (AZVisVertex) graphData.getData(node);
-
-        gc.moveTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
-//        double[] xs = new double[polygon.getNodes().size()];
-//        double[] ys = new double[polygon.getNodes().size()];
-
-//        xs[0] = (source.getX() - tx) * scale;
-//        ys[0] = (source.getY() - ty) * scale;
-        int i = 1;
-        while (it.hasNext()) {
-            node = it.next();
-            source = (AZVisVertex) graphData.getData(node);
-            gc.lineTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
-
-//            xs[i] = (source.getX() - tx) * scale;
-//            ys[i] = (source.getY() - ty) * scale;
-//            i++;
-        }
-        gc.closePath();
-        gc.fill();
-//        gc.fillPolygon(xs, ys, polygon.getNodes().size());
-
-        gc.restore();
-
     }
 
 }

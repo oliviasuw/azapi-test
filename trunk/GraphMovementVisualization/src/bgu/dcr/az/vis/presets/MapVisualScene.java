@@ -20,8 +20,8 @@ import resources.img.R;
  */
 public class MapVisualScene extends SimpleScrollableVisualScene {
 
-    private static final double MIN_SCALE = 0.01;
-    private static final double MAX_SCALE = 10;
+    public static final double MIN_SCALE = 0.01;
+    public static final double MAX_SCALE = 10;
 
     private static double DEFAULT_CONTAINER_WIDTH = 10000;
     private static double DEFAULT_CONTAINER_HEIGHT = 10000;

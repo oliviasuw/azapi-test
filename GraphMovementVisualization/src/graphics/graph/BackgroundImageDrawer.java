@@ -48,8 +48,9 @@ public class BackgroundImageDrawer {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         double tx = canvas.getTranslateX();
         double ty = canvas.getTranslateY();
-        
-        polygon.setCenter(graphData);
+        if (polygon.getCenter()==null) {
+            polygon.setCenter(graphData);
+        }
         double centerX = polygon.getCenter().x;
         double centerY = polygon.getCenter().y;
         

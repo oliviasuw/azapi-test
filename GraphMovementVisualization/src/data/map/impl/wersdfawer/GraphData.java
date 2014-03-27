@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package data.map.impl.wersdfawer;
 
+import bgu.dcr.az.vis.tools.Location;
+import com.bbn.openmap.util.quadtree.QuadTree;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,48 +19,67 @@ import org.jgrapht.graph.SimpleWeightedGraph;
  * @author Shl
  */
 public class GraphData {
-    
+
     private HashMap<String, Object> data = new HashMap<>();
     private SimpleWeightedGraph<String, String> graph = new SimpleWeightedGraph<>(String.class);
-    
+
     //saves edges according to what will become their path descriptors
-    private HashMap<String, Collection<String>> tagToEdges = new HashMap();
-    private LinkedList<GraphPolygon> polygons = new LinkedList<>();
+    private HashMap<String, QuadTree> tagToEdges = new HashMap<String, QuadTree>();
+//    private HashMap<String, Collection<String>> tagToEdges = new HashMap();
+
+    private QuadTree polygons = new QuadTree(0, 100000, 100000, 0, 1000000);
+    private double maxPolygonWidth = Double.MIN_VALUE;
+    private double maxPolygonHeight = Double.MIN_VALUE;
+    private double maxEdgeWidth = Double.MIN_VALUE;
+    private double maxEdgeHeight = Double.MIN_VALUE;
+//    private LinkedList<GraphPolygon> polygons = new LinkedList<>();
+
     private double defaultScale = 0; //defaultscale in meters/pixels
     private Point2D.Double bounds;
-    
+
     public Object getData(String name) {
         return data.get(name);
     }
-    
+
 //        
 //    public Object addData(String name, Object toPut) {
 //        return data.put(name, toPut);
 //    }
-
     public void addVertex(String name, Object vertexData) {
         data.put(name, vertexData);
-        graph.addVertex(name);  
+        graph.addVertex(name);
     }
 
     public void addEdge(String name, String from, String to, Object edgeData) {
         data.put(name, edgeData);
-                System.out.println("from " + from + " to " + to);
+        System.out.println("from " + from + " to " + to);
 
         try {
             graph.addEdge(from, to, name);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("");
         }
-        
+
         //adding the edge type to the hashmap
         HashMap<String, String> edgeDataReal = (HashMap<String, String>) edgeData;
         String firstTag = edgeDataReal.values().iterator().next();
         if (tagToEdges.get(firstTag) == null) {
-            tagToEdges.put(firstTag, new LinkedList<>());
+//            tagToEdges.put(firstTag, new LinkedList<>());
+            tagToEdges.put(firstTag, new QuadTree(0, 100000, 100000, 0, 1000000));
         }
-        tagToEdges.get(firstTag).add(name);
+//        tagToEdges.get(firstTag).add(name);
+
+        AZVisVertex source = (AZVisVertex) this.getData(from);
+        tagToEdges.get(firstTag).put((float) source.getY(), (float) source.getX(), name);
+        AZVisVertex target = (AZVisVertex) this.getData(to);
+        double edgeWidth = Math.abs(target.getX() - source.getX());
+        double edgeHeight = Math.abs(target.getY() - source.getY());
+        if (edgeWidth > maxEdgeWidth) {
+            maxEdgeWidth = edgeWidth;
+        }
+        if (edgeHeight > maxEdgeHeight) {
+            maxEdgeHeight = edgeHeight;
+        }
         
     }
 
@@ -78,16 +98,15 @@ public class GraphData {
     public String getEdgeTarget(String edgeName) {
         return graph.getEdgeTarget(edgeName);
     }
-    
+
     public Set<String> getEdgesOf(String vertexName) {
         return graph.edgesOf(vertexName);
     }
-    
-    
-    public HashMap<String, Collection<String>> getTagToEdge() {
+
+    public HashMap<String, QuadTree> getTagToEdge() {
         return tagToEdges;
     }
-        
+
 //    public Set<String> getOutgoingEdgesOf(String edgeName) {
 //        return graph.outgoingEdgesOf(edgeName);
 //    }
@@ -95,12 +114,24 @@ public class GraphData {
 //    public Set<String> getIncomingEdgesOf(String edgeName) {
 //        return graph.incomingEdgesOf(edgeName);
 //    }
-
     void addPolygon(Collection<String> pNodes, HashMap<String, String> params) {
-       polygons.add(new GraphPolygon(pNodes, params));
+        GraphPolygon graphPolygon = new GraphPolygon(pNodes, params);
+        graphPolygon.setCenter(this);
+//        polygons.add(graphPolygon);
+
+        polygons.put((float) graphPolygon.getCenter().y, (float) graphPolygon.getCenter().x, graphPolygon);
+        double height = graphPolygon.getHeight();
+        double width = graphPolygon.getWidth();
+        if (height > maxPolygonHeight) {
+            maxPolygonHeight = height;
+        }
+        if (width > maxPolygonWidth) {
+            maxPolygonWidth = width;
+        }
+
     }
 
-    public LinkedList<GraphPolygon> getPolygons() {
+    public QuadTree getPolygons() {
         return polygons;
     }
 
@@ -112,7 +143,25 @@ public class GraphData {
         return bounds;
     }
 
+//    public QuadTree getEdgeQuadTree() {
+//        return edgeQuadTree;
+//    }
+    public double getMaxPolygonWidth() {
+        return maxPolygonWidth;
+    }
+
+    public double getMaxPolygonHeight() {
+        return maxPolygonHeight;
+    }
+
+    public double getMaxEdgeWidth() {
+        return maxEdgeWidth;
+    }
+
+    public double getMaxEdgeHeight() {
+        return maxEdgeHeight;
+    }
     
     
-    
+
 }

@@ -3,26 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.orm.util;
+package bgu.dcr.az.execs.exceptions;
 
 /**
  *
  * @author User
  */
-public class UncheckedSQLException extends RuntimeException {
+public class UnmetRequirementException extends RuntimeException {
 
-    public UncheckedSQLException() {
+    public UnmetRequirementException() {
     }
 
-    public UncheckedSQLException(String message) {
+    public UnmetRequirementException(String message) {
         super(message);
     }
 
-    public UncheckedSQLException(String message, Throwable cause) {
+    public UnmetRequirementException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public UncheckedSQLException(Throwable cause) {
+    public UnmetRequirementException(Throwable cause) {
         super(cause);
     }
 

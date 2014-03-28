@@ -6,14 +6,14 @@
 package bgu.dcr.az.ui;
 
 import bc.dsl.SwingDSL;
-import bgu.dcr.az.anop.conf.ConfigurationException;
-import bgu.dcr.az.api.exen.ExecutionResult;
+import bgu.dcr.az.execs.api.experiments.ExecutionResult;
 import bgu.dcr.az.common.timing.TimingUtils;
 import bgu.dcr.az.common.ui.FXUtils;
-import bgu.dcr.az.mas.cp.CPExperiment;
-import bgu.dcr.az.mas.exp.ExperimentUtils;
-import bgu.dcr.az.mas.impl.stat.StatisticsManagerImpl;
-import bgu.dcr.az.mas.misc.Logger;
+import bgu.dcr.az.conf.api.ConfigurationException;
+import bgu.dcr.az.execs.statistics.StatisticsManagerImpl;
+import bgu.dcr.az.dcr.api.modules.Logger;
+import bgu.dcr.az.dcr.execution.CPExperiment;
+import bgu.dcr.az.execs.experiments.ExperimentUtils;
 import bgu.dcr.az.orm.api.EmbeddedDatabaseManager;
 import bgu.dcr.az.ui.screens.MainWindow;
 import bgu.dcr.az.ui.screens.dialogs.Notification;

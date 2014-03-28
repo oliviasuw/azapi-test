@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.ui.screens.problem.graph;
 
-import bgu.dcr.az.api.prob.Problem;
+import bgu.dcr.az.dcr.api.problems.Problem;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;

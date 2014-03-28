@@ -5,9 +5,9 @@
  */
 package bgu.dcr.az.ui.screens.problem;
 
-import bgu.dcr.az.api.prob.ImmutableProblem;
-import bgu.dcr.az.api.tools.Assignment;
 import bgu.dcr.az.common.events.EventListeners;
+import bgu.dcr.az.dcr.api.Assignment;
+import bgu.dcr.az.dcr.api.problems.ImmutableProblem;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;

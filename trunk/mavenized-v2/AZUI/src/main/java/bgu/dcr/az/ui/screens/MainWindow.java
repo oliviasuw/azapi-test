@@ -11,7 +11,7 @@
 package bgu.dcr.az.ui.screens;
 
 import bc.dsl.SwingDSL;
-import bgu.dcr.az.mas.exp.Experiment;
+import bgu.dcr.az.execs.api.experiments.Experiment;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;

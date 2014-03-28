@@ -22,6 +22,7 @@
                 <includes>
                     <include>**/*.xml</include>
                     <include>**/*.css</include>
+                    <include>**/*.png</include>
                     <include>**/*.fxml</include>
                 </includes>                
             </resource>
@@ -77,11 +78,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>AZDCRAPI</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
             <version>LATEST</version>
@@ -106,6 +102,16 @@
             <artifactId>AZAlgorithmsTest</artifactId>
             <version>${project.version}</version>
         </dependency>-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>AZDCR</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>AZDCRAlgorithms</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     
 </project>

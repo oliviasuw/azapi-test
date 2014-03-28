@@ -5,11 +5,11 @@
  */
 package bgu.dcr.az.ui.screens.status;
 
-import bgu.dcr.az.mas.Execution;
-import bgu.dcr.az.mas.cp.CPData;
-import bgu.dcr.az.mas.cp.CPExperimentTest;
-import bgu.dcr.az.mas.impl.stat.AbstractStatisticCollector;
-import bgu.dcr.az.mas.stat.data.ExecutionTerminationInfo;
+import bgu.dcr.az.dcr.execution.CPData;
+import bgu.dcr.az.dcr.execution.CPExperimentTest;
+import bgu.dcr.az.dcr.modules.statistics.AbstractStatisticCollector;
+import bgu.dcr.az.execs.api.experiments.Execution;
+import bgu.dcr.az.execs.statistics.info.ExecutionTerminationInfo;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.QueryDatabase;
 import bgu.dcr.az.orm.api.DataUtils;

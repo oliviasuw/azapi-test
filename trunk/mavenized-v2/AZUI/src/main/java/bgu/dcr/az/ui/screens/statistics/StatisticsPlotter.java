@@ -5,9 +5,9 @@
  */
 package bgu.dcr.az.ui.screens.statistics;
 
-import bgu.dcr.az.mas.stat.AdditionalBarChartProperties;
-import bgu.dcr.az.mas.stat.AdditionalLineChartProperties;
-import bgu.dcr.az.mas.stat.Plotter;
+import bgu.dcr.az.execs.api.statistics.AdditionalBarChartProperties;
+import bgu.dcr.az.execs.api.statistics.AdditionalLineChartProperties;
+import bgu.dcr.az.execs.api.statistics.Plotter;
 import bgu.dcr.az.orm.api.Data;
 import bgu.dcr.az.orm.api.RecordAccessor;
 import java.util.HashMap;

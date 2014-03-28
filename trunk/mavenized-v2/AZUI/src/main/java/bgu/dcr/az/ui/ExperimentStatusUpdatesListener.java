@@ -6,7 +6,7 @@
 
 package bgu.dcr.az.ui;
 
-import bgu.dcr.az.mas.exp.ExperimentStatusSnapshot;
+import bgu.dcr.az.execs.api.experiments.ExperimentStatusSnapshot;
 
 /**
  *

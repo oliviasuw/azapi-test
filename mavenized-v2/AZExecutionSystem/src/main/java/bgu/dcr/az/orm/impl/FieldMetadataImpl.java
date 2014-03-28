@@ -7,7 +7,7 @@ package bgu.dcr.az.orm.impl;
 
 import bgu.dcr.az.orm.api.FieldMetadata;
 import bgu.dcr.az.orm.api.TableMetadata;
-import bgu.dcr.az.orm.util.SQLUtils;
+import bgu.dcr.az.execs.util.SQLUtils;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;

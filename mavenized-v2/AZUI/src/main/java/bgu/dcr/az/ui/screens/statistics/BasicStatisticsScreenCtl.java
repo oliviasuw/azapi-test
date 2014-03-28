@@ -5,13 +5,13 @@
  */
 package bgu.dcr.az.ui.screens.statistics;
 
-import bgu.dcr.az.anop.conf.ConfigurationException;
-import bgu.dcr.az.anop.conf.ConfigurationUtils;
 import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.common.ui.panels.FXMessagePanel;
-import bgu.dcr.az.mas.exp.Experiment;
-import bgu.dcr.az.mas.stat.StatisticCollector;
-import bgu.dcr.az.ui.confe.ConfigurationEditor;
+import bgu.dcr.az.conf.api.ConfigurationException;
+import bgu.dcr.az.conf.ui.ConfigurationEditor;
+import bgu.dcr.az.conf.utils.ConfigurationUtils;
+import bgu.dcr.az.execs.api.experiments.Experiment;
+import bgu.dcr.az.execs.api.statistics.StatisticCollector;
 import bgu.dcr.az.ui.screens.dialogs.Notification;
 import bgu.dcr.az.ui.screens.statistiscs.pivot.PivotDataViewerController;
 import java.net.URL;

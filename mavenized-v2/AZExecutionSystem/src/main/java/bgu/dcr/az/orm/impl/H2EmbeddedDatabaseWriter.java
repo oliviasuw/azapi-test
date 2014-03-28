@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.orm.impl;
 
-import bgu.dcr.az.anop.utils.ReflectionUtils;
+import bgu.dcr.az.common.reflections.ReflectionUtils;
 import bgu.dcr.az.orm.api.DBRecord;
 import java.lang.reflect.Field;
 import java.sql.Connection;

@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.ui.screens.problem.graph;
 
-import bgu.dcr.az.api.prob.Problem;
+import bgu.dcr.az.dcr.api.problems.Problem;
 import java.util.Collection;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;

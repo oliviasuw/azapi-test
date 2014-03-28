@@ -5,14 +5,14 @@
  */
 package bgu.dcr.az.ui.screens.status;
 
-import bgu.dcr.az.anop.conf.ConfigurationException;
-import bgu.dcr.az.anop.conf.ConfigurationUtils;
 import bgu.dcr.az.common.ui.UIPoke;
-import bgu.dcr.az.mas.exp.Experiment;
-import bgu.dcr.az.mas.stat.StatisticCollector;
+import bgu.dcr.az.conf.api.ConfigurationException;
+import bgu.dcr.az.conf.ui.ConfigurationEditor;
+import bgu.dcr.az.conf.utils.ConfigurationUtils;
+import bgu.dcr.az.execs.api.experiments.Experiment;
+import bgu.dcr.az.execs.api.statistics.StatisticCollector;
 import bgu.dcr.az.ui.AppController;
 import bgu.dcr.az.ui.ExperimentStatusEventListener;
-import bgu.dcr.az.ui.confe.ConfigurationEditor;
 import bgu.dcr.az.ui.screens.dialogs.Notification;
 import java.net.URL;
 import java.util.LinkedList;
@@ -205,7 +205,7 @@ public class StatusScreenCtl implements Initializable {
         if (selection != null) {
             try {
                 experimentView.setModel(ConfigurationUtils.load(selection), true,
-                        p -> p.parent() == null || !StatisticCollector.class.isAssignableFrom(p.parent().typeInfo().getType()));
+                        p -> p.parent() == null || !StatisticCollector.class.isAssignableFrom(p.parent().configuredType()));
 
             } catch (ClassNotFoundException | ConfigurationException ex) {
                 Notification.exception(ex);

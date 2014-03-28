@@ -5,11 +5,11 @@
  */
 package bgu.dcr.az.ui.screens.status;
 
-import bgu.dcr.az.mas.Execution;
-import bgu.dcr.az.mas.ExecutionService;
-import bgu.dcr.az.mas.exp.Experiment;
-import bgu.dcr.az.mas.impl.InitializationException;
-import bgu.dcr.az.mas.stat.StatisticCollector;
+import bgu.dcr.az.execs.api.experiments.Execution;
+import bgu.dcr.az.execs.api.experiments.ExecutionService;
+import bgu.dcr.az.execs.api.experiments.Experiment;
+import bgu.dcr.az.execs.exceptions.InitializationException;
+import bgu.dcr.az.execs.api.statistics.StatisticCollector;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -12,9 +12,9 @@ package bgu.dcr.az.ui.screens.log;
 
 //import bc.dsl.PageDSL;
 import bgu.dcr.az.common.ui.UIPoke;
-import bgu.dcr.az.mas.Execution;
-import bgu.dcr.az.mas.cp.CPData;
-import bgu.dcr.az.mas.impl.InitializationException;
+import bgu.dcr.az.dcr.execution.CPData;
+import bgu.dcr.az.execs.api.experiments.Execution;
+import bgu.dcr.az.execs.exceptions.InitializationException;
 import java.awt.Color;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Scanner;
@@ -32,7 +32,7 @@ import javax.swing.text.StyledEditorKit;
  *
  * @author bennyl
  */
-public class LogScreen extends javax.swing.JPanel implements bgu.dcr.az.mas.misc.Logger {
+public class LogScreen extends javax.swing.JPanel implements bgu.dcr.az.dcr.api.modules.Logger {
 
     private ConcurrentLinkedQueue<LogLine> pendingLogLines = new ConcurrentLinkedQueue<>();
     private Scanner sc = null;

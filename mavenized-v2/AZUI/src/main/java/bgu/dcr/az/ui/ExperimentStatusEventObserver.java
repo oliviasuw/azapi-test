@@ -6,8 +6,8 @@
 package bgu.dcr.az.ui;
 
 import bgu.dcr.az.common.events.EventListeners;
-import bgu.dcr.az.mas.exp.ExperimentStatusSnapshot;
-import bgu.dcr.az.mas.impl.ExperimentStatusSnapshotImpl;
+import bgu.dcr.az.execs.api.experiments.ExperimentStatusSnapshot;
+import bgu.dcr.az.execs.experiments.ExperimentStatusSnapshotImpl;
 
 /**
  *

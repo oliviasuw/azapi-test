@@ -6,8 +6,8 @@
 package bgu.dcr.az.ui;
 
 import bgu.dcr.az.common.events.EventListeners;
-import bgu.dcr.az.mas.exp.Experiment;
-import bgu.dcr.az.mas.exp.ExperimentStatusSnapshot;
+import bgu.dcr.az.execs.api.experiments.Experiment;
+import bgu.dcr.az.execs.api.experiments.ExperimentStatusSnapshot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.Timer;

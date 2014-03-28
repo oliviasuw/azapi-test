@@ -1,0 +1,65 @@
+@code{
+    def propertyRequestedName(p){
+        rname = p.javadoc.tag("propertyName");
+        if (rname.isEmpty()){
+            return p.name;
+        }
+        return rname.get(0);
+    }
+    
+    super = lookupSuperClassWithAnnotation("bgu.dcr.az.conf.registery.Register");
+    if (super == null) {
+        super = "AbstractConfiguration";
+    } else {
+        super = super.underscoredFQN;
+    }
+}
+package bgu.dcr.az.conf.autogen;
+
+import bgu.dcr.az.conf.AbstractConfiguration;
+import bgu.dcr.az.conf.PropertyImpl;
+import bgu.dcr.az.conf.api.JavaDocInfo;
+import bgu.dcr.az.conf.api.TypeInfo;
+import bgu.dcr.az.conf.registery.Registery;
+import bgu.dcr.az.conf.utils.JavaDocParser;
+import bgu.dcr.az.conf.utils.JavaTypeParser;
+import com.esotericsoftware.reflectasm.ConstructorAccess;
+import com.esotericsoftware.reflectasm.MethodAccess;
+
+public class @{underscoredFQN} extends @{super}{
+    
+    //store type info for each property
+    @foreach{p : properties}public static final TypeInfo @{p.name.toUpperCase()}_TYPE = JavaTypeParser.parse("@{p.type}");@end{"\n    "}
+    
+    //store javadoc for each property
+    @foreach{p : properties}public static final JavaDocInfo @{p.name.toUpperCase()}_DOC = JavaDocParser.parse("@{p.javadoc}");@end{"\n    "}
+
+    //store configured class javadoc
+    public static JavaDocInfo DOC = JavaDocParser.parse("@{javadoc}");
+
+    //store accessors for fast access
+    public static final MethodAccess METHOD_ACCESSOR = MethodAccess.get(@{getFQN()}.class);
+    public static final ConstructorAccess CONSTRUCTOR_ACCESSOR = ConstructorAccess.get(@{getFQN()}.class);
+
+    //store access index for each property
+    @foreach{p : properties}public static final int @{p.name.toUpperCase()}_GIDX = METHOD_ACCESSOR.getIndex("get@{p.name}");@end{"\n    "}
+    @foreach{p : properties}public static final int @{p.name.toUpperCase()}_SIDX = @if{p.readOnly}-1@else{}METHOD_ACCESSOR.getIndex("set@{p.name}")@end{};@end{"\n    "}
+
+    //registration on class loading time
+    static {
+        Registery.get().register(@{getFQN()}.class, "@{getAnnotation("bgu.dcr.az.conf.registery.Register").value}");
+    }
+
+    public @{underscoredFQN}() {
+        super.type = @{getFQN()}.class;
+        super.javadoc = DOC;
+        super.accessor = METHOD_ACCESSOR;
+        super.cAccessor = CONSTRUCTOR_ACCESSOR;
+
+        //insert my properties
+        @foreach{p : properties}properties.put("@{propertyRequestedName(p)}", new PropertyImpl("@{propertyRequestedName(p)}", this, @{p.name.toUpperCase()}_TYPE, @{p.name.toUpperCase()}_DOC, @{p.name.toUpperCase()}_GIDX, @{p.name.toUpperCase()}_SIDX));@end{"\n        "}
+
+        @if{!lookupFieldsWithAnnotation("bgu.dcr.az.conf.api.Variable").isEmpty()}scanVariables();@end{}
+    }
+    
+}

@@ -29,14 +29,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>AZConfigurationFramework</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>LATEST</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>AZConfigurationFramework2</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

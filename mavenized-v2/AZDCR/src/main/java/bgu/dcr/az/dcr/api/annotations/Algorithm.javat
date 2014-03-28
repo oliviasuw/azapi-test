@@ -1,0 +1,71 @@
+@code{
+    def clean(s){
+        return s.replaceAll("\\W", "\\$");
+    }
+
+    def handlerName(m){
+        return m.name.toUpperCase() + "_" + clean(m.getAnnotation("*WhenReceived").value.toUpperCase());
+    }
+
+    def argName(m, a){
+        return handlerName(m) + "_" + a.name.toUpperCase();
+    }
+
+    handlers = lookupMethodWithAnnotation("*WhenReceived");
+
+    mySuper = "AgentManipulator";
+    if (super.isInstanceOf("bgu.dcr.az.dcr.api.Agent")) {
+        mySuper = super.underscoredFQN;
+        if (!super.hasAnnotation("*Algorithm")){
+            error("agent (" + simpleName + ") cannot inherit from an agent that does not annotated with @Algorithm annotation");
+        }
+    } 
+
+    a = getAnnotation("bgu.dcr.az.dcr.api.annotations.Algorithm");
+    generateClass("bgu.dcr.az.conf.registery.Register", "ALGORITHM." + a.value);
+}
+package bgu.dcr.az.dcr.autogen;
+
+import bgu.dcr.az.dcr.api.Agent;
+import static bgu.dcr.az.conf.autogen.@{underscoredFQN}.*;
+import bgu.dcr.az.dcr.execution.manipulators.AgentManipulator;
+import bgu.dcr.az.conf.api.JavaDocInfo;
+import bgu.dcr.az.conf.utils.JavaDocParser;
+import bgu.dcr.az.conf.utils.JavaTypeParser;
+import bgu.dcr.az.dcr.execution.manipulators.ParameterInfo;
+import bgu.dcr.az.dcr.Agt0DSL;
+import bgu.dcr.az.dcr.execution.manipulators.HandlerInfo;
+
+public class @{underscoredFQN} extends @{mySuper}{
+    
+    //store message related methods
+    @foreach{m : handlers}public static final int @{handlerName(m)}_IDX = METHOD_ACCESSOR.getIndex("@{m.name}", new Class[]{@foreach{a:m.arguments}@{a.erasureType}.class@end{", "}});@end{"\n    "}
+
+    //store handler javadoc
+    @foreach{m : handlers}public static final JavaDocInfo @{handlerName(m)}_DOC = JavaDocParser.parse("@{m.javadoc}");@end{"\n    "}
+
+    //store handler parameter info
+    @foreach{m : handlers}@foreach{a : m.arguments}public static final ParameterInfo @{argName(m, a)} = new ParameterInfo("@{a.name}", JavaTypeParser.parse("@{a.type}"));@end{"\n    "}@end{"\n    "}
+
+    //store handler info
+    @foreach{m : handlers}public static final HandlerInfo @{handlerName(m)}_HINFO = new HandlerInfo(@{handlerName(m)}_DOC, "@{m.getAnnotation("*WhenReceived").value}", new ParameterInfo[]{@foreach{a : m.arguments}@{argName(m, a)}@end{", "}});@end{"\n    "}
+
+    public @{underscoredFQN}(){
+        super.configurationDelegate = new bgu.dcr.az.conf.autogen.@{underscoredFQN}();
+        super.algorithmName = "@{getAnnotation("*Algorithm").value}";
+
+        @foreach{m : handlers}super.handlers.add(@{handlerName(m)}_HINFO);@end{"\n        "}
+    }
+
+    @Override
+    public void handle(Agent a, String messageName, Object[] arguments) {
+        switch (messageName){
+            @foreach{m : handlers}case "@{m.getAnnotation("*WhenReceived").value}":
+                METHOD_ACCESSOR.invoke(a, @{handlerName(m)}_IDX, arguments);
+                break;@end{"\n            "}
+            default:
+                super.handle(a, messageName, arguments);
+        }
+    }
+
+}

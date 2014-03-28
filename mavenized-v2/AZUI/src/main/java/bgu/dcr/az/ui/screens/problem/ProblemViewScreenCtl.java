@@ -7,11 +7,11 @@ package bgu.dcr.az.ui.screens.problem;
 
 import bc.ui.swing.useful.DataPanel;
 import bc.ui.swing.visuals.Visual;
-import bgu.dcr.az.api.prob.Problem;
 import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.common.ui.panels.FXMessagePanel;
-import bgu.dcr.az.mas.cp.CPExperimentTest;
-import bgu.dcr.az.mas.exp.Experiment;
+import bgu.dcr.az.dcr.api.problems.Problem;
+import bgu.dcr.az.dcr.execution.CPExperimentTest;
+import bgu.dcr.az.execs.api.experiments.Experiment;
 import bgu.dcr.az.ui.screens.dialogs.MessageDialog;
 import bgu.dcr.az.ui.screens.problem.graph.GraphDrawer;
 import bgu.dcr.az.ui.screens.problem.graph.ProblemCircleLayout;

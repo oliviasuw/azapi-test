@@ -5,8 +5,8 @@
  */
 package bgu.dcr.az.ui.screens.status;
 
-import bgu.dcr.az.mas.exp.Experiment;
-import bgu.dcr.az.mas.exp.ExperimentStatusSnapshot;
+import bgu.dcr.az.execs.api.experiments.Experiment;
+import bgu.dcr.az.execs.api.experiments.ExperimentStatusSnapshot;
 import bgu.dcr.az.ui.AppController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

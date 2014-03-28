@@ -27,7 +27,10 @@
         <nccc-sc/>
         <ncsc-sc/>
         
-        <dcop-unstructured n="15" d="5" max-cost="100"/>        
+        <multi-var-problem vars-per-agent="5">
+            <dcop-unstructured n="5" d="5" max-cost="100"/>
+        </multi-var-problem>
+        
         <default-tester/>
 <!--        <algorithm name="SBB"/>-->
         <algorithm name="CONC_FB2"/>

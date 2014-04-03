@@ -6,7 +6,8 @@ package bgu.dcr.az.dcr.api.problems.cpack;
 
 import bgu.dcr.az.dcr.api.Assignment;
 import bgu.dcr.az.dcr.api.problems.ConstraintCheckResult;
-import bgu.dcr.az.dcr.api.problems.KAryConstraint;
+import bgu.dcr.az.dcr.api.problems.constraints.BinaryConstraint;
+import bgu.dcr.az.dcr.api.problems.constraints.KAryConstraint;
 import java.util.Set;
 
 /**
@@ -22,9 +23,11 @@ public interface ConstraintsPackage {
      * @param a
      * @param cost
      */
-    public void setConstraintCost(int owner, KAryConstraint constraint);
+    public void setConstraint(int owner, KAryConstraint constraint);
 
-    public void addConstraintCost(int owner, KAryConstraint constraint);
+    public void addConstraint(int owner, KAryConstraint constraint);
+
+    public void setConstraint(int owner, int participient1, int participient2, BinaryConstraint constraint);
 
     /**
      * Binary version

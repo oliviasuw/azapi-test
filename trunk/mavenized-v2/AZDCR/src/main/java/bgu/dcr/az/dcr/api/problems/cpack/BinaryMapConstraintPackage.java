@@ -6,10 +6,10 @@ package bgu.dcr.az.dcr.api.problems.cpack;
 
 import bgu.dcr.az.dcr.Agt0DSL;
 import bgu.dcr.az.dcr.api.Assignment;
+import bgu.dcr.az.dcr.api.problems.constraints.BinaryConstraint;
 import bgu.dcr.az.dcr.api.problems.ConstraintCheckResult;
-import bgu.dcr.az.dcr.api.problems.KAryConstraint;
-import java.util.ArrayList;
-import java.util.Map;
+import bgu.dcr.az.dcr.api.problems.constraints.BinaryConstraintTable;
+import bgu.dcr.az.dcr.api.problems.constraints.KAryConstraint;
 
 /**
  *
@@ -17,24 +17,16 @@ import java.util.Map;
  */
 public class BinaryMapConstraintPackage extends AbstractConstraintPackage {
 
-    private Object[] map;
+    private BinaryConstraint[][] map;
     private int biggestDomainSize = 0;
     private final int numvars;
 
-//    private SymetricCPACostCache cache;
-//    boolean useCache = false;
     public BinaryMapConstraintPackage(int numvar, int maxDomainSize) {
         super(numvar);
 
         this.numvars = numvar;
         this.biggestDomainSize = maxDomainSize;
-        this.map = new Object[numvars * numvars];
-
-        //      cache = new SymetricCPACostCache(this);
-    }
-
-    protected int calcId(int i, int j) {
-        return i * numvars + j;
+        this.map = new BinaryConstraint[numvar][numvar];
     }
 
     @Override
@@ -53,20 +45,21 @@ public class BinaryMapConstraintPackage extends AbstractConstraintPackage {
             Agt0DSL.panic("Binary Problem cannot support constraint owners that are not part of the constraints, if you need such a feature use the K-Ary version.");
         }
 
-        int id = calcId(var1, var2);
         if (var1 != var2) {
             addNeighbor(var1, var2);
         }
 
-        createMap(id);
-        ((int[][]) map[id])[val1][val2] = cost;
+        createMap(var1, var2);
+        if (map[var1][var2] instanceof BinaryConstraintTable) {
+            ((BinaryConstraintTable) map[var1][var2]).setCost(val1, val2, cost);
+        } else {
+            Agt0DSL.panic("Cannot change the constraint cost of a custom constraints");
+        }
     }
 
-    private void createMap(int id) {
-        int[][] mapId = (int[][]) map[id];
-        if (mapId == null) {
-            mapId = new int[biggestDomainSize][biggestDomainSize];
-            map[id] = mapId;
+    private void createMap(int var1, int var2) {
+        if (map[var1][var2] == null) {
+            map[var1][var2] = new BinaryConstraintTable(biggestDomainSize);
         }
     }
 
@@ -95,11 +88,11 @@ public class BinaryMapConstraintPackage extends AbstractConstraintPackage {
             Agt0DSL.panic("Binary Problem cannot support constraint owners that are not part of the constraints, if you need such a feature use the K-Ary version.");
         }
 
-        int id = calcId(var1, var2);
-        if (map[id] == null) {
+//        final BinaryConstraint c = map[var1][var2];
+        if (map[var1][var2] == null) {
             result.set(0, 1);
         } else {
-            result.set(((int[][]) map[id])[val1][val2], 1);
+            result.set(map[var1][var2].cost(var1, val1, var2, val2), 1);
         }
     }
 
@@ -109,57 +102,28 @@ public class BinaryMapConstraintPackage extends AbstractConstraintPackage {
     }
 
     @Override
-    public void setConstraintCost(int owner, KAryConstraint constraint) {
+    public void setConstraint(int owner, KAryConstraint constraint) {
         throw new UnsupportedOperationException("Not supported - only Binary and Unary Constraints supported in this problem type.");
     }
 
     @Override
     public void calculateCost(int owner, Assignment assignment, ConstraintCheckResult result) {
-//        if (useCache) {
-//            result.set(cache.calcCost(assignment.getAssignment(), owner), 0);
-//            return;
-//        }
         int c = 0;
         int cc = 0;
-        ArrayList<Map.Entry<Integer, Integer>> past = new ArrayList<>(assignment.getAssignments());
-        for (int i = 0; i< past.size(); i++ ) {
-            Map.Entry<Integer, Integer> e = past.get(i);
-            int var = e.getKey();
-            int val = e.getValue();
-            getConstraintCost(var, var, val, result);
+
+        int[] var = assignment.assignedVariables().toIntArray();
+        for (int i = 0; i < var.length; i++) {
+            int ival = assignment.getAssignment(var[i]);
+            getConstraintCost(var[i], var[i], ival, result);
             c += result.getCost();
             cc += result.getCheckCost();
-
-            for (int j = 0; j<i; j++) {
-                Map.Entry<Integer, Integer> pe = past.get(j);
-                int pvar = pe.getKey();
-                int pval = pe.getValue();
-
-                getConstraintCost(pvar, pvar, pval, var, val, result);
+            for (int j = i + 1; j < var.length; j++) {
+                int jval = assignment.getAssignment(var[j]);
+                getConstraintCost(var[j], var[j], jval, var[i], ival, result);
                 c += result.getCost();
                 cc += result.getCheckCost();
             }
-//            past.add(e);
         }
-
-//        ArrayList<Map.Entry<Integer, Integer>> past = new ArrayList<>(assignment.getNumberOfAssignedVariables());
-//        for (Map.Entry<Integer, Integer> e : assignment.getAssignments()) {
-//            int var = e.getKey();
-//            int val = e.getValue();
-//            getConstraintCost(var, var, val, result);
-//            c += result.getCost();
-//            cc += result.getCheckCost();
-//
-//            for (Map.Entry<Integer, Integer> pe : past) {
-//                int pvar = pe.getKey();
-//                int pval = pe.getValue();
-//
-//                getConstraintCost(pvar, pvar, pval, var, val, result);
-//                c += result.getCost();
-//                cc += result.getCheckCost();
-//            }
-//            past.add(e);
-//        }
         result.set(c, cc);
     }
 
@@ -171,7 +135,17 @@ public class BinaryMapConstraintPackage extends AbstractConstraintPackage {
     }
 
     @Override
-    public void addConstraintCost(int owner, KAryConstraint constraint) {
+    public void addConstraint(int owner, KAryConstraint constraint) {
         throw new UnsupportedOperationException("Not supported.");
     }
+
+    @Override
+    public void setConstraint(int owner, int participient1, int participient2, BinaryConstraint constraint) {
+        if (owner != participient1 && owner != participient2) {
+            Agt0DSL.panic("Binary Problem cannot support constraint owners that are not part of the constraints, if you need such a feature use the K-Ary version.");
+        }
+        
+        map[participient1][participient2] = constraint;
+    }
+
 }

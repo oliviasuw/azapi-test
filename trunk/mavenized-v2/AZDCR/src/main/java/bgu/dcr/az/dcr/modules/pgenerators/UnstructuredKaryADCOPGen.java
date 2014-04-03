@@ -6,7 +6,7 @@ import bgu.dcr.az.conf.api.Variable;
 import bgu.dcr.az.conf.registery.Register;
 import bgu.dcr.az.dcr.api.problems.Problem;
 import bgu.dcr.az.dcr.api.problems.ProblemType;
-import bgu.dcr.az.dcr.api.problems.RandomKAryConstraint;
+import bgu.dcr.az.dcr.api.problems.constraints.RandomKAryConstraint;
 import java.util.ArrayList;
 import java.util.Arrays;
 

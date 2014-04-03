@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.dcr.api.modules;
 
+import bgu.dcr.az.dcr.execution.manipulators.AgentManipulator;
 import bgu.dcr.az.execs.api.experiments.ExecutionService;
 
 /**
@@ -13,5 +14,5 @@ import bgu.dcr.az.execs.api.experiments.ExecutionService;
  */
 public interface AgentSpawner extends ExecutionService{
 
-    Class getAgentType(int id);
+    AgentManipulator createAgentManipulator(int id);
 }

@@ -1,7 +1,9 @@
 package bgu.dcr.az.dcr.api.problems;
 
+import bgu.dcr.az.dcr.api.problems.constraints.KAryConstraint;
 import bgu.dcr.az.dcr.Agt0DSL;
 import bgu.dcr.az.dcr.api.Assignment;
+import bgu.dcr.az.dcr.api.problems.constraints.BinaryConstraint;
 import bgu.dcr.az.dcr.api.problems.cpack.ConstraintsPackage;
 import bgu.dcr.az.dcr.modules.distributers.OneToManyDistributor;
 import bgu.dcr.az.dcr.util.ImmutableSet;
@@ -35,10 +37,6 @@ public class Problem implements ImmutableProblem {
      */
     public int[] getVariablesOwnedByAgent(int agentId) {
         return distributer.getControlledAgentsIds(agentId);
-    }
-
-    public OneToManyDistributor getAgentDistributer() {
-        return distributer;
     }
 
     /**
@@ -107,7 +105,10 @@ public class Problem implements ImmutableProblem {
 
     /**
      * @param var
-     * @return all the variables that are constrained with the given variable
+     * @return all the variables that are constrained with the given variable,
+     * even if there is an unary constraint for this variable the variable
+     * itself will never be one of its own neighbors
+     *
      */
     @Override
     public Set<Integer> getNeighbors(int var) {
@@ -141,6 +142,11 @@ public class Problem implements ImmutableProblem {
         } else {
             throw new RuntimeException("The amount of agents must be less/equal than the amount of variables");
         }
+    }
+
+    public void setNumberOfAgents(int numagents) {
+        this.numagents = numagents;
+        this.distributer = new OneToManyDistributor(numagents, domain.length);
     }
 
     /**
@@ -289,32 +295,38 @@ public class Problem implements ImmutableProblem {
      * @param constraint
      */
     public void setConstraint(int owner, KAryConstraint constraint) {
-        constraints.setConstraintCost(owner, constraint);
+        constraints.setConstraint(owner, constraint);
     }
 
     /**
-     * add into the existing constrains
+     * add into the existing constrains (if a different constraint can be
+     * applied on the given participients then this constraint cost will get
+     * added to it)
      *
      * @param owner
      * @param constraint
      */
     public void addConstraint(int owner, KAryConstraint constraint) {
-        constraints.addConstraintCost(owner, constraint);
+        constraints.addConstraint(owner, constraint);
     }
 
     /**
-     * symmetrically adding the constraint to all of the participants
+     * symmetrically adding the constraint to all of the participants (if a
+     * different constraint can be applied on the given participients then this
+     * constraint cost will get added to it)
      *
      * @param constraint
      */
     public void addConstraint(KAryConstraint constraint) {
         for (int participant : constraint.getParicipients()) {
-            constraints.addConstraintCost(participant, constraint);
+            constraints.addConstraint(participant, constraint);
         }
     }
 
     /**
-     * symmetrically setting the constraint to all of the participants
+     * symmetrically setting the constraint to all of the participants (if a
+     * different constraint can be applied on the given participients then this
+     * constraint cost will override it)
      *
      * @see setConstraintCost
      *
@@ -322,8 +334,17 @@ public class Problem implements ImmutableProblem {
      */
     public void setConstraint(KAryConstraint constraint) {
         for (int participant : constraint.getParicipients()) {
-            constraints.setConstraintCost(participant, constraint);
+            constraints.setConstraint(participant, constraint);
         }
+    }
+
+    /**
+     * set u's constraint for values of v
+     *
+     * @param constraint
+     */
+    public void setConstraint(int u, int v, BinaryConstraint constraint) {
+        constraints.setConstraint(u, u, v, constraint);
     }
 
     public void setConstraintCost(int owner, int x1, int v1, int x2, int v2, int cost) {
@@ -407,4 +428,9 @@ public class Problem implements ImmutableProblem {
     public int calculateGlobalCost(Assignment a) {
         return constraints.calculateGlobalCost(a);
     }
+
+    public OneToManyDistributor getAgentDistribution() {
+        return distributer;
+    }
+
 }

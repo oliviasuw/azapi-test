@@ -20,20 +20,20 @@
     </test>-->
     
     <test seed="42" name="COPs">
-        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="10" />
+        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100" />
     
         <cc-sc/>
         <msgc-sc/>
         <nccc-sc/>
         <ncsc-sc/>
         
-        <multi-var-problem vars-per-agent="5">
-            <dcop-unstructured n="5" d="5" max-cost="100"/>
-        </multi-var-problem>
-        
+        <dcop-connected n="2" d="2" max-cost="1"/>        
         <default-tester/>
-<!--        <algorithm name="SBB"/>-->
-        <algorithm name="CONC_FB2"/>
+        <algorithm name="BNB_ADOPT2"/>
+<!--        <algorithm name="SBB"/>
+        <algorithm name="ADOPT">
+            <assign var="reduce-messages" val="true"/>
+        </algorithm>-->
     </test>
 <!--    <test seed="42" name="Local search" env="async">
         <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100">

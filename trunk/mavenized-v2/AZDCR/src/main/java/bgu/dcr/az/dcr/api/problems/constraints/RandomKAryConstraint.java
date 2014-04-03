@@ -2,9 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.dcr.api.problems;
+package bgu.dcr.az.dcr.api.problems.constraints;
 
 import bgu.dcr.az.dcr.api.Assignment;
+import bgu.dcr.az.dcr.api.problems.ConstraintCheckResult;
 import java.util.Arrays;
 import java.util.Random;
 

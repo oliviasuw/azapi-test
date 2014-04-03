@@ -18,7 +18,6 @@ import bgu.dcr.az.dcr.execution.statistics.InternalMessageReceivedInfo;
 import bgu.dcr.az.dcr.execution.statistics.InternalMessageSentInfo;
 import bgu.dcr.az.execs.api.experiments.Execution;
 import bgu.dcr.az.execs.exceptions.InitializationException;
-import java.util.LinkedList;
 
 /**
  *
@@ -40,10 +39,6 @@ public class CPAgentController extends AgentController {
 
     public Problem getGlobalProblem() {
         return exec.data().getProblem();
-    }
-
-    public void report(String who, Agent a, Object[] data) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void assign(int id, int value) {
@@ -78,30 +73,27 @@ public class CPAgentController extends AgentController {
 
     @Override
     protected void handleIdle() {
-        LinkedList<AgentState> killedAgents = new LinkedList<>();
         for (AgentStateStack a : getControlledAgents().values()) {
-            AgentState agent = a.current();
-            agent.a.onIdleDetected();
-            if (agent.a.isFinished()) {
-                killedAgents.add(agent);
+            activeAgent = a.current();
+            activeAgent.a.onIdleDetected();
+            if (activeAgent.a.isFinished()) {
+                activeAgent.finilize();
             }
         }
-
-        killedAgents.forEach(this::removeControlledAgent);
+        activeAgent = null;
     }
 
     @Override
     protected void beforeNextTick() {
-        LinkedList<AgentState> killedAgents = new LinkedList<>();
         for (AgentStateStack a : getControlledAgents().values()) {
-            final AgentState agent = a.current();
-            agent.a.onMailBoxEmpty();
-            if (agent.a.isFinished()) {
-                killedAgents.add(agent);
+            activeAgent = a.current();
+            activeAgent.a.onMailBoxEmpty();
+            if (activeAgent.a.isFinished()) {
+                activeAgent.finilize();
             }
         }
-
-        killedAgents.forEach(this::removeControlledAgent);
+        
+        activeAgent = null;
     }
 
     @Override

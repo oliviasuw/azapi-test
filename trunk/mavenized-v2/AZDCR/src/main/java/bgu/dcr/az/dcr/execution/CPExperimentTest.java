@@ -9,7 +9,6 @@ import bgu.dcr.az.common.random.RandomSequance;
 import bgu.dcr.az.conf.api.Configuration;
 import bgu.dcr.az.conf.api.ConfigurationException;
 import bgu.dcr.az.conf.registery.Register;
-import bgu.dcr.az.conf.registery.Registery;
 import bgu.dcr.az.conf.utils.ConfigurationUtils;
 import bgu.dcr.az.execs.api.experiments.ExecutionResult;
 import bgu.dcr.az.dcr.Agt0DSL;
@@ -275,11 +274,7 @@ public class CPExperimentTest implements Experiment {
         pgen.generate(p, new Random(seed));
 
         AlgorithmDef adef = algorithms.get(i % algorithms.size());
-        final Class registeredClassByName = Registery.get().getRegisteredClassByName("ALGORITHM." + adef.getName());
-        if (registeredClassByName == null) {
-            Agt0DSL.panic("cannot find agent with algorithem name = " + adef.getName());
-        }
-        AgentSpawner spawner = new SimpleAgentSpawner(registeredClassByName);
+        AgentSpawner spawner = new SimpleAgentSpawner(adef);
 
         CPExecution exec = new CPExecution(this, adef, looper.getRunningVariableValue(execution), spawner, p, executionEnvironment);
 

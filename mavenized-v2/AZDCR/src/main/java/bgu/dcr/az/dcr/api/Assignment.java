@@ -1,18 +1,20 @@
 package bgu.dcr.az.dcr.api;
 
 import bgu.dcr.az.common.deepcopy.DeepCopyable;
-import java.util.List;
 import java.util.Map.Entry;
 
 import bgu.dcr.az.dcr.Agt0DSL;
 import bgu.dcr.az.dcr.api.exceptions.UnassignedVariableException;
 import bgu.dcr.az.dcr.api.problems.ImmutableProblem;
 import bgu.dcr.az.dcr.api.problems.Problem;
-import bgu.dcr.az.dcr.util.ImmutableSet;
+import bgu.dcr.az.dcr.util.ImmutableIntSetView;
+import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,26 +24,29 @@ import java.util.Set;
  */
 public class Assignment implements Serializable, DeepCopyable {
 
-    private Map<Integer, Integer> assignment = new HashMap<>();
-    private transient int cachedCost = -1;
+//    private Map<Integer, Integer> assignment = new HashMap<>();
+    private Int2IntOpenHashMap assignment = new Int2IntOpenHashMap();
+
+    /**
+     * the following fields are used for cost caching
+     */
+    private int cachedTotalCost = -1;
 
     /**
      * construction of a new empty assignment
      */
     public Assignment() {
+        assignment.defaultReturnValue(-1);
     }
 
     public Assignment(Assignment other) {
-        this.cachedCost = -1;
-        this.assignment.clear();
-        for (Entry<Integer, Integer> e : other.assignment.entrySet()) {
-            assignment.put(e.getKey(), e.getValue());
-        }
+        this();
+//        cachedTotalCost = other.cachedTotalCost; not right for asym problems...
+        other.foreach((k, v) -> assignment.put(k, v));
     }
-    
-    public Assignment(Map<Integer, Integer> assignment){
-        this.cachedCost = -1;
-        this.assignment.clear();
+
+    public Assignment(Map<Integer, Integer> assignment) {
+        this();
         for (Entry<Integer, Integer> e : assignment.entrySet()) {
             this.assignment.put(e.getKey(), e.getValue());
         }
@@ -55,6 +60,25 @@ public class Assignment implements Serializable, DeepCopyable {
         }
     }
 
+    public void foreach(IntIntFunction f) {
+        IntIterator i = assignment.keySet().iterator();
+        while (i.hasNext()) {
+            final int nextInt = i.nextInt();
+            f.invoke(nextInt, assignment.get(nextInt));
+        }
+    }
+
+    public int reduce(int initial, IntIntReducer reducer) {
+        int result = initial;
+        IntIterator i = assignment.keySet().iterator();
+        while (i.hasNext()) {
+            final int nextInt = i.nextInt();
+            result = reducer.reduce(result, nextInt, assignment.get(nextInt));
+        }
+
+        return result;
+    }
+
     /**
      * assign val to var if var already been assign then its value will be
      * overwriten
@@ -64,7 +88,7 @@ public class Assignment implements Serializable, DeepCopyable {
      */
     public void assign(int var, int val) {
         assignment.put(var, val);
-        cachedCost = -1;
+        cachedTotalCost = -1;
     }
 
     /**
@@ -74,8 +98,12 @@ public class Assignment implements Serializable, DeepCopyable {
      * @return the removed assigned value
      */
     public Integer unassign(int var) {
-        cachedCost = -1;
-        return assignment.remove(var);
+        cachedTotalCost = -1;
+        int r = assignment.remove(var);
+        if (r == -1) {
+            return null;
+        }
+        return r;
     }
 
     /**
@@ -100,9 +128,9 @@ public class Assignment implements Serializable, DeepCopyable {
      * @param var
      * @return the value assigned to var or null if no such assignment
      */
-    public Integer getAssignment(int var) {
-        final Integer ass = assignment.get(var);
-        if (ass == null) {
+    public int getAssignment(int var) {
+        final int ass = assignment.get(var);
+        if (ass == -1) {
             throw new UnassignedVariableException("calling getAssignment with variable " + var + " while its is not assigned");
         }
         return ass;
@@ -118,10 +146,10 @@ public class Assignment implements Serializable, DeepCopyable {
      */
     public int calcCost(ImmutableProblem p) {
         if (p instanceof Agent.AgentProblem) {
-            if (cachedCost < 0) {
-                cachedCost = p.calculateCost(this);;
+            if (cachedTotalCost < 0) {
+                cachedTotalCost = p.calculateCost(this);;
             }
-            return cachedCost;
+            return cachedTotalCost;
         } else {
             return ((Problem) p).calculateGlobalCost(this);
         }
@@ -141,7 +169,7 @@ public class Assignment implements Serializable, DeepCopyable {
      * * (increase cc checks)
      */
     public int calcAddedCost(int var, int val, ImmutableProblem p) {
-        int oldCache = cachedCost;
+        int oldCache = cachedTotalCost;
         boolean assignend = isAssigned(var);
         int old = (assignend ? getAssignment(var) : 0);
         unassign(var);
@@ -151,10 +179,10 @@ public class Assignment implements Serializable, DeepCopyable {
         int ans = calcCost(p) - withoutCost;
         if (assignend) {
             assign(var, old);
-            cachedCost = oldCache;
+            cachedTotalCost = oldCache;
         } else {
             unassign(var);
-            cachedCost = withoutCost;
+            cachedTotalCost = withoutCost;
         }
 
         return ans;
@@ -166,7 +194,7 @@ public class Assignment implements Serializable, DeepCopyable {
      * @return the cost of the assignment without the given variable assignment
      */
     public int calcCostWithout(int var, ImmutableProblem p) {
-        int oldCache = cachedCost;
+        int oldCache = cachedTotalCost;
         boolean assignend = isAssigned(var);
         int old = (assignend ? getAssignment(var) : 0);
 
@@ -176,7 +204,7 @@ public class Assignment implements Serializable, DeepCopyable {
             assign(var, old);
         }
 
-        cachedCost = oldCache; //fix cache
+        cachedTotalCost = oldCache; //fix cache
 
         return ans;
     }
@@ -266,17 +294,23 @@ public class Assignment implements Serializable, DeepCopyable {
     /**
      * @return the assigned variables in this assignment
      */
-    public ImmutableSet<Integer> assignedVariables() {
-        return new ImmutableSet<>(assignment.keySet());
+    public ImmutableIntSetView assignedVariables() {
+        return new ImmutableIntSetView(assignment.keySet());
     }
 
     /**
      * @return the unassigned variables in this assignemt - same as calling
      */
-    public ImmutableSet<Integer> unassignedVariables(ImmutableProblem p) {
-        List<Integer> all = Agt0DSL.range(0, p.getNumberOfVariables() - 1);
-        all.removeAll(assignment.keySet());
-        return new ImmutableSet<>(all);
+    public IntSet unassignedVariables(ImmutableProblem p) {
+        IntSet result = new IntOpenHashSet();
+        IntSet assigned = assignment.keySet();
+        for (int i = 0; i < p.getNumberOfVariables(); i++) {
+            if (!assigned.contains(i)) {
+                result.add(i);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -301,7 +335,7 @@ public class Assignment implements Serializable, DeepCopyable {
     public boolean isConsistentWith(int var, int val, ImmutableProblem p) {
         boolean assignend = isAssigned(var);
         int old = (assignend ? getAssignment(var) : 0);
-        int oldCache = cachedCost;
+        int oldCache = cachedTotalCost;
 
         assign(var, val);
         boolean ans = calcCost(p) == 0;
@@ -311,7 +345,7 @@ public class Assignment implements Serializable, DeepCopyable {
             unassign(var);
         }
 
-        cachedCost = oldCache; //fix cache
+        cachedTotalCost = oldCache; //fix cache
         return ans;
     }
 
@@ -325,17 +359,7 @@ public class Assignment implements Serializable, DeepCopyable {
             return false;
         } else {
             Assignment otherAssignment = (Assignment) obj;
-            if (otherAssignment.assignment.size() != assignment.size()) {
-                return false;
-            }
-
-            for (Entry<Integer, Integer> e : assignment.entrySet()) {
-                if (!otherAssignment.isAssigned(e.getKey()) || otherAssignment.getAssignment(e.getKey()) != e.getValue()) {
-                    return false;
-                }
-            }
-
-            return true;
+            return assignment.equals(otherAssignment.assignment);
         }
     }
 
@@ -358,27 +382,32 @@ public class Assignment implements Serializable, DeepCopyable {
         }
         return "{}";
     }
-
+    
     @Override
     public Assignment deepCopy() {
         return new Assignment(this);
     }
 
     /**
-     * @param problem
-     * @return a collection of all the variables that does not have an
-     * assignment in this cpa
+     * @return the number of assigned variables in this assignment
      */
-    public Collection<Integer> getUnassignedVariables(ImmutableProblem problem) {
-        Set<Integer> result = new HashSet<>();
-        ImmutableSet<Integer> assigned = assignedVariables();
-        for (int i = 0; i < problem.getNumberOfVariables(); i++) {
-            if (!assigned.contains(i)) {
-                result.add(i);
-            }
-        }
+    public int size() {
+        return getNumberOfAssignedVariables();
+    }
 
-        return result;
+    /**
+     * return a new assignment which contains all the assignment in the current
+     * one with the additional assignment, the original assignment is not
+     * changed!
+     *
+     * @param i
+     * @param vi
+     * @return
+     */
+    public Assignment union(int i, int vi) {
+        Assignment a = new Assignment(this);
+        a.assign(i, vi);
+        return a;
     }
 
 }

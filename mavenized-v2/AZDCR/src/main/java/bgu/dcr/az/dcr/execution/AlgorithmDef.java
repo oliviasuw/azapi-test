@@ -6,6 +6,8 @@
 package bgu.dcr.az.dcr.execution;
 
 import bgu.dcr.az.conf.registery.Register;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -15,6 +17,7 @@ import bgu.dcr.az.conf.registery.Register;
 public class AlgorithmDef {
 
     private String name;
+    private List<AlgorithemVariableAssignment> assignments = new LinkedList<>();
 
     /**
      * @return the algorithm name
@@ -35,6 +38,14 @@ public class AlgorithmDef {
 
     public String getInstanceName() {
         return getName();
+    }
+
+    /**
+     * @propertyName assignments
+     * @return 
+     */
+    public List<AlgorithemVariableAssignment> getAssignments() {
+        return assignments;
     }
 
 }

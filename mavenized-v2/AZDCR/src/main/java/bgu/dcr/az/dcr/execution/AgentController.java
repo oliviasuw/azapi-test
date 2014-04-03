@@ -10,6 +10,7 @@ import bgu.dcr.az.conf.api.ConfigurationException;
 import bgu.dcr.az.conf.registery.Registery;
 import bgu.dcr.az.dcr.Agt0DSL;
 import bgu.dcr.az.dcr.api.Agent;
+import bgu.dcr.az.dcr.api.Continuation;
 import bgu.dcr.az.dcr.api.ContinuationMediator;
 import bgu.dcr.az.dcr.api.Message;
 import bgu.dcr.az.dcr.api.modules.AgentDistributer;
@@ -34,12 +35,11 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadLocalRandom;
 
-
 /**
  *
  * @author User
  */
-public abstract class AgentController extends AbstractProc  {
+public abstract class AgentController extends AbstractProc {
 
     private final MessageRouter router;
     private final int numAgents;
@@ -49,7 +49,7 @@ public abstract class AgentController extends AbstractProc  {
     protected final Execution<?> execution;
     protected final Logger logger;
     private final ContextGenerator cGen;
-    private AgentState activeAgent;
+    protected AgentState activeAgent;
 
     private int tick;
     private boolean giveupBeforeComplete = true;
@@ -96,9 +96,9 @@ public abstract class AgentController extends AbstractProc  {
 
         for (int aId : controlled) {
             try {
-                AgentManipulator manipulator = AgentManipulator.lookup(spawner.getAgentType(aId));
+                AgentManipulator manipulator = spawner.createAgentManipulator(aId);
                 Agent agent = manipulator.create();
-                nest(agent, aId, null);
+                nest(agent, aId, null).andWhenDoneDo(null);
             } catch (Exception ex) {
                 Agt0DSL.panic("Cannot start agent " + aId + ", see cause.", ex);
             }
@@ -306,26 +306,34 @@ public abstract class AgentController extends AbstractProc  {
         }
 
         public ContinuationMediator delayedNest(Agent agent, String contextId) throws ClassNotFoundException {
-            ContinuationMediator mediator = new ContinuationMediator() {
+            return new ContinuationMediator() {
+
                 @Override
                 public void executeContinuation() {
                     restore(true);
                     super.executeContinuation();
                 }
+
+                @Override
+                public void andWhenDoneDo(Continuation c) {
+                    super.andWhenDoneDo(c);
+                    AgentManipulator manipulator = AgentManipulator.lookup(agent.getClass());
+                    initializeAgent(agent, manipulator, aId, execution);
+                    Context context = cGen.getContext(contextId);
+                    AgentState nestedAgent = new AgentState(agent, manipulator, context, this);
+                    stack.addFirst(nestedAgent);
+                    AgentState old = activeAgent;
+                    activeAgent = nestedAgent;
+                    restore(false);
+                    nestedAgent.a.start();
+                    if (nestedAgent.a.isFinished()) {
+                        nestedAgent.finilize();
+                    }
+                    activeAgent = old;
+                }
+
             };
 
-            AgentManipulator manipulator = AgentManipulator.lookup(agent.getClass());
-            initializeAgent(agent, manipulator, aId, execution);
-            Context context = cGen.getContext(contextId);
-            AgentState nestedAgent = new AgentState(agent, manipulator, context, mediator);
-            stack.addFirst(nestedAgent);
-            AgentState old = activeAgent;
-            activeAgent = nestedAgent;
-            restore(false);
-            nestedAgent.a.start();
-            activeAgent = old;
-
-            return mediator;
         }
 
         private void restore(boolean shouldPoll) {

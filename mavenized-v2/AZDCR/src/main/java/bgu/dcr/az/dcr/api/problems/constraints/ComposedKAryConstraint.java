@@ -2,9 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.dcr.api.problems;
+package bgu.dcr.az.dcr.api.problems.constraints;
 
 import bgu.dcr.az.dcr.api.Assignment;
+import bgu.dcr.az.dcr.api.problems.ConstraintCheckResult;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
 public class ComposedKAryConstraint implements KAryConstraint {
 
     private static final int[] EMPTY_ARRAY = new int[0];
-    private List<KAryConstraint> composition = new LinkedList<KAryConstraint>();
+    private List<KAryConstraint> composition = new LinkedList<>();
 
     @Override
     public void getCost(Assignment a, ConstraintCheckResult result) {

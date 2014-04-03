@@ -27,7 +27,7 @@ import java.util.List;
 public class CPExecution extends BaseExecution<CPData> {
 
     public CPExecution(Experiment containingExperiment, AlgorithmDef a, double runningVariable, AgentSpawner spawner, Problem problem, ExecutionEnvironment env) {
-        super(new CPData(new CPSolution(problem), problem, a, runningVariable), containingExperiment, env, problem.getAgentDistributer(), spawner, new BaseMessageRouter());
+        super(new CPData(new CPSolution(problem), problem, a, runningVariable), containingExperiment, env, problem.getAgentDistribution(), spawner, new BaseMessageRouter());
     }
 
     @Override

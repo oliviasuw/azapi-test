@@ -6,9 +6,10 @@ package bgu.dcr.az.dcr.api.problems.cpack;
 
 import bgu.dcr.az.dcr.Agt0DSL;
 import bgu.dcr.az.dcr.api.Assignment;
-import bgu.dcr.az.dcr.api.problems.ComposedKAryConstraint;
+import bgu.dcr.az.dcr.api.problems.constraints.ComposedKAryConstraint;
 import bgu.dcr.az.dcr.api.problems.ConstraintCheckResult;
-import bgu.dcr.az.dcr.api.problems.KAryConstraint;
+import bgu.dcr.az.dcr.api.problems.constraints.BinaryConstraint;
+import bgu.dcr.az.dcr.api.problems.constraints.KAryConstraint;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -78,7 +79,7 @@ public class KAryTreeConstraintPackage extends AbstractConstraintPackage {
     }
     
     @Override
-    public void setConstraintCost(int owner, KAryConstraint constraint) {
+    public void setConstraint(int owner, KAryConstraint constraint) {
         insertKAryConstraint(owner, constraint, true);
     }
 
@@ -117,8 +118,13 @@ public class KAryTreeConstraintPackage extends AbstractConstraintPackage {
     }
 
     @Override
-    public void addConstraintCost(int owner, KAryConstraint constraint) {
+    public void addConstraint(int owner, KAryConstraint constraint) {
         insertKAryConstraint(owner, constraint, false);
+    }
+
+    @Override
+    public void setConstraint(int owner, int participient1, int participient2, BinaryConstraint constraint) {
+        throw new UnsupportedOperationException("Not supported. use the k-ary version of this method"); 
     }
 
     private static class Node {

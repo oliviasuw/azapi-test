@@ -5,6 +5,8 @@
 package bgu.dcr.az.dcr;
 
 import bgu.dcr.az.dcr.api.exceptions.PanicException;
+import com.esotericsoftware.kryo.util.IntArray;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -23,12 +25,14 @@ public class Agt0DSL {
     private static final Pattern nummericPattern = Pattern.compile("[-+]?\\d+(\\.\\d*)?$");
     private static final Pattern integericPattern = Pattern.compile("[-+]?\\d+$");
 
+    public static final int INFINITY_COST = Integer.MAX_VALUE;
+
     /**
      * returns a collection of numbers in the range of start to end (includes
      * start and end)
      *
      * Example: range(0,7) => [0,1,2,3,4,5,6,7]
-     * 
+     *
      * @param start
      * @param end
      * @return
@@ -43,81 +47,97 @@ public class Agt0DSL {
         fillRange(ret, start, end);
         return ret;
     }
-    
+
     /**
-     * generates a random number that is bigger or equal to min and smaller or equal to max
+     * generates a random number that is bigger or equal to min and smaller or
+     * equal to max
+     *
      * @param min
      * @param max
-     * @return 
+     * @return
      */
-    public int randomInteger(int min, int max){
-        if (max <= min) return min;
-        
-        return ThreadLocalRandom.current().nextInt(max-min) + min;
+    public int randomInteger(int min, int max) {
+        if (max <= min) {
+            return min;
+        }
+
+        return ThreadLocalRandom.current().nextInt(max - min) + min;
     }
 
     /**
-     * generates a random number that is bigger or equal to min and smaller or equal to max
+     * generates a random number that is bigger or equal to min and smaller or
+     * equal to max
+     *
      * @param min
      * @param max
-     * @return 
+     * @return
      */
-    public double randomDouble(double min, double max){
-        if (max <= min) return min;
-        return ThreadLocalRandom.current().nextDouble() * (max-min) + min;
+    public double randomDouble(double min, double max) {
+        if (max <= min) {
+            return min;
+        }
+        return ThreadLocalRandom.current().nextDouble() * (max - min) + min;
     }
-        
+
     /**
-     * generates a random number that is bigger or equal to min and smaller or equal to max
+     * generates a random number that is bigger or equal to min and smaller or
+     * equal to max
+     *
      * @param min
      * @param max
-     * @return 
+     * @return
      */
-    public float randomFloat(float min, float max){
-        if (max <= min) return min;
-        return ThreadLocalRandom.current().nextFloat() * (max-min) + min;
+    public float randomFloat(float min, float max) {
+        if (max <= min) {
+            return min;
+        }
+        return ThreadLocalRandom.current().nextFloat() * (max - min) + min;
     }
-    
+
     /**
-     * generates a random number that is bigger or equal to min and smaller or equal to max
+     * generates a random number that is bigger or equal to min and smaller or
+     * equal to max
+     *
      * @param min
      * @param max
-     * @return 
+     * @return
      */
-    public long randomLong(long min, long max){
-        if (max <= min) return min;
-        return abs(ThreadLocalRandom.current().nextLong()) % (max-min) + min;
+    public long randomLong(long min, long max) {
+        if (max <= min) {
+            return min;
+        }
+        return abs(ThreadLocalRandom.current().nextLong()) % (max - min) + min;
     }
-    
+
     /**
      * @param num
      * @return the absolute value of num
      */
-    public long abs(long num){
+    public long abs(long num) {
         return Math.abs(num);
     }
-    
+
     /**
      * @param num
      * @return the absolute value of num
      */
-    public int abs(int num){
+    public int abs(int num) {
         return Math.abs(num);
     }
-    
+
     /**
      * @param num
      * @return the absolute value of num
      */
-    public float abs(float num){
+    public float abs(float num) {
         return Math.abs(num);
     }
-    
+
     /**
      * @param num
      * @return the absolute value of num
      */
-    public double abs(double num){
+    public double abs(double num) {
         return Math.abs(num);
     }
 
@@ -175,20 +195,39 @@ public class Agt0DSL {
     }
 
     /**
-     * concatanate two arrays and return a new array that contain both their element 
+     * concatanate two arrays and return a new array that contain both their
+     * element
+     *
      * @param <T>
      * @param left
      * @param right
-     * @return 
+     * @return
      */
-    public static <T> T[] concatanate(T[] left, T... right){
+    public static <T> T[] concatanate(T[] left, T... right) {
         int nsize = left.length + right.length;
-        T[] a = (T[])java.lang.reflect.Array.newInstance(left.getClass().getComponentType(), nsize);
+        T[] a = (T[]) java.lang.reflect.Array.newInstance(left.getClass().getComponentType(), nsize);
         System.arraycopy(left, 0, a, 0, left.length);
         System.arraycopy(right, 0, a, left.length, right.length);
         return a;
     }
-    
+
+    /**
+     * concatanate two arrays and return a new array that contain both their
+     * element
+     *
+     * @param <T>
+     * @param left
+     * @param right
+     * @return
+     */
+    public static int[] concatanate(int[] left, int... right) {
+        int nsize = left.length + right.length;
+        int[] a = new int[nsize];
+        System.arraycopy(left, 0, a, 0, left.length);
+        System.arraycopy(right, 0, a, left.length, right.length);
+        return a;
+    }
+
     /**
      * perform equals on obj1 and obj2 but take null into consideration
      *
@@ -197,18 +236,18 @@ public class Agt0DSL {
      * @return
      */
     public static boolean eq(Object obj1, Object obj2) {
-        if (obj1 ==  obj2) {
+        if (obj1 == obj2) {
             return true;
         }
-        
+
         if (obj1 == null || obj2 == null) {
             return false;
         }
         return obj1.equals(obj2);
     }
-    
-    public static void main(String[] args){
-        System.out.println("?" + eq(null,null));
+
+    public static void main(String[] args) {
+        System.out.println("?" + eq(null, null));
     }
 
     /**
@@ -415,7 +454,8 @@ public class Agt0DSL {
 
     /**
      * if sum is possitive - return from without the first 'sum' chars if is
-     * negative return only the last 'sum' chars of 'from' - similar to the lisp method
+     * negative return only the last 'sum' chars of 'from' - similar to the lisp
+     * method
      *
      * @param from
      * @param sum
@@ -431,7 +471,8 @@ public class Agt0DSL {
 
     /**
      * if sum is positive: return the first $sum letters from $from if sum is
-     * negative: return all chars from $from but the last $sum - similar to the lisp method.
+     * negative: return all chars from $from but the last $sum - similar to the
+     * lisp method.
      *
      * @param from
      * @param sum
@@ -477,8 +518,8 @@ public class Agt0DSL {
      * @param who
      * @param a
      * @param b
-     * @return true if $who is between $a and $b.
-     * or in other words: $a <= $who <= $b.
+     * @return true if $who is between $a and $b. or in other words: $a <= $who
+     * <= $b.
      */
     public static boolean between(int who, int a, int b) {
         return who >= a && who <= b;
@@ -525,10 +566,10 @@ public class Agt0DSL {
      * @param data
      * @return the given data in an array - just a convenience method
      */
-    public static <T> T[] array(T... data){
+    public static <T> T[] array(T... data) {
         return data;
     }
-    
+
     /**
      * n-ary min function
      *
@@ -546,6 +587,22 @@ public class Agt0DSL {
     }
 
     /**
+     * n-ary min function
+     *
+     * @param <T>
+     * @param args
+     * @return
+     */
+    public static int min(int... args) {
+        int min = 0;
+        for (int i = 1; i < args.length; i++) {
+            min = (args[min] > args[i] ? i : min);
+        }
+
+        return args[min];
+    }
+
+    /**
      * n-ary max function
      *
      * @param <T>
@@ -553,7 +610,7 @@ public class Agt0DSL {
      * @return
      */
     public static long max(long first, long... args) {
-        
+
         long max = first;
         for (int i = 0; i < args.length; i++) {
             max = (max < args[i] ? args[i] : max);
@@ -700,5 +757,5 @@ public class Agt0DSL {
     public static void panic(Exception cause) {
         panic(null, cause);
     }
-    
+
 }

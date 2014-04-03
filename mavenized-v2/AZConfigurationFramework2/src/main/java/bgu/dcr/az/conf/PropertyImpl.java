@@ -98,4 +98,9 @@ public class PropertyImpl implements Property {
         return this.propertyValue.stringValue();
     }
 
+    @Override
+    public void set(String value) {
+        set(new FromStringPropertyValue(value));
+    }
+
 }

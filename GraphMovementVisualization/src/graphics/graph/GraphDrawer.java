@@ -9,6 +9,7 @@ import com.bbn.openmap.util.quadtree.QuadTree;
 import data.map.impl.wersdfawer.AZVisVertex;
 import data.map.impl.wersdfawer.GraphData;
 import data.map.impl.wersdfawer.GraphPolygon;
+import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Vector;
@@ -25,11 +26,15 @@ public class GraphDrawer {
     EdgeDrawer edgeDrawer;
     SimplePolygonImageDrawer backGroundImageDrawer;
     private PolygonDrawer polygonDrawer;
+    private final GroupBoundingQuery groupBoundingQuery;
 
-    public GraphDrawer() {
+    public GraphDrawer(GroupBoundingQuery groupBoundingQuery) {
         this.edgeDrawer = new EdgeDrawer();
         this.polygonDrawer = new PolygonDrawer();
         this.backGroundImageDrawer = new SimplePolygonImageDrawer();
+        
+        this.groupBoundingQuery = groupBoundingQuery;
+
     }
 
     public void drawGraph(Canvas canvas, GraphData graphData, double scale) {
@@ -49,7 +54,6 @@ public class GraphDrawer {
 //            gc.strokeRect((vertex.getX() - tx) * scale, (vertex.getY() - ty) * scale, 5 * scale, 5 * scale);
 //        }
 //        gc.beginPath();
-        
 //        for (String edgeName : graphData.getEdgeSet()) {
 //            AZVisVertex source = (AZVisVertex) graphData.getData(graphData.getEdgeSource(edgeName));
 //            AZVisVertex target = (AZVisVertex) graphData.getData(graphData.getEdgeTarget(edgeName));
@@ -64,8 +68,6 @@ public class GraphDrawer {
 ////            gc.strokeLine((source.getX() - tx) * scale, (source.getY() - ty) * scale, (target.getX() - tx) * scale, (target.getY() - ty) * scale);
 //        }
 //        gc.stroke();
-        
-        
 //        QuadTree polytree = graphData.getEdgeQuadTree();
 //        Vector polys = polytree.get((float)(canvas.getTranslateY() + canvas.getHeight()), (float)(canvas.getTranslateX() + canvas.getWidth()), (float)canvas.getTranslateY(), (float)canvas.getTranslateX());
 //        System.out.println(polys.size());
@@ -76,8 +78,6 @@ public class GraphDrawer {
 //
 //        }
 //        gc.stroke();
-                
-        
         for (String edgeType : graphData.getTagToEdge().keySet()) {
             edgeDrawer.draw(canvas, graphData, graphData.getTagToEdge().get(edgeType), scale);
         }
@@ -88,22 +88,23 @@ public class GraphDrawer {
 //                backGroundImageDrawer.draw(canvas, graphData, polygon, scale);
 //            }
 //        }
-        QuadTree polytree = graphData.getPolygons();
-        double epsilonH = graphData.getMaxPolygonHeight()/2;
-        double epsilonW = graphData.getMaxPolygonWidth()/2;
-        Vector polys = polytree.get((float)(canvas.getTranslateY() + canvas.getHeight() + epsilonH), (float)(canvas.getTranslateX() - epsilonW), (float)(canvas.getTranslateY() - epsilonH), (float)(canvas.getTranslateX() + canvas.getWidth() + epsilonW));
+//        QuadTree polytree = graphData.getPolygons();
+        QuadTree polytree=null;
+        double epsilonH = graphData.getMaxPolygonHeight() / 2;
+        double epsilonW = graphData.getMaxPolygonWidth() / 2;
+        Vector polys = polytree.get((float) (canvas.getTranslateY() + canvas.getHeight() + epsilonH), (float) (canvas.getTranslateX() - epsilonW), (float) (canvas.getTranslateY() - epsilonH), (float) (canvas.getTranslateX() + canvas.getWidth() + epsilonW));
         polys.sort(new Comparator() {
 
             @Override
             public int compare(Object o1, Object o2) {
-                GraphPolygon poly1 = (GraphPolygon)o1;
-                GraphPolygon poly2 = (GraphPolygon)o2;
+                GraphPolygon poly1 = (GraphPolygon) o1;
+                GraphPolygon poly2 = (GraphPolygon) o2;
                 return (poly1.getCenter().y > poly2.getCenter().y) ? 1 : -1;
             }
         });
         for (Iterator it = polys.iterator(); it.hasNext();) {
             Object obj = it.next();
-            GraphPolygon polygon = (GraphPolygon)obj;
+            GraphPolygon polygon = (GraphPolygon) obj;
             polygonDrawer.draw(canvas, graphData, polygon, scale);
             backGroundImageDrawer.draw(canvas, graphData, polygon, scale);
         }

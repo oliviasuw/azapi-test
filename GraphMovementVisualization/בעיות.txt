@@ -1,3 +1,11 @@
 בעיה.
 כשטוענים מהמפה גם את הפוליגונים הגדולים של הדשא, האפסילון שדואג לכך שקשתות ופוליגונים ותמונות לא ייחתכו באמצע נעשה מאוד מאוד גדול.
 זה יוצר האטה משמעותית
+
+
+mapcanvaslayer uses graphdrawer.
+graphdrawer uses boundingbox query
+make graph a canvas entity, insert its draw function
+also for buildings etc
+incoporate with the new boundingboxquery
+buildings, polygons => DefinedSizeSpriteBasedEntity (in map canvas layer)

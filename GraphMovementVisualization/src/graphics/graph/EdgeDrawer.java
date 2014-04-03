@@ -201,5 +201,50 @@ public class EdgeDrawer {
             gc.restore();
         }
     }
+    
+    public void draw(Canvas canvas, GraphData graphData, Collection edges, double scale) {
+
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        double tx = canvas.getTranslateX();
+        double ty = canvas.getTranslateY();
+        
+        if (edges.size() > 0) {
+            HashMap<String, String> edgeData = (HashMap<String, String>) graphData.getData((String) edges.iterator().next());
+            EdgeDescriptor ed = descriptors.get(edgeData.get(ROAD_KEY));
+            if (ed == null) {
+                ed = defaultDescriptor;
+            }
+
+            double pixelLaneWidth = LANE_WIDTH;
+
+            gc.save();
+            gc.beginPath();
+            for (Object edgeObj : edges) {
+                String edgeName = (String) edgeObj;
+                AZVisVertex source = null;
+                AZVisVertex target = null;
+                try {
+                    source = (AZVisVertex) graphData.getData(graphData.getEdgeSource(edgeName));
+                    target = (AZVisVertex) graphData.getData(graphData.getEdgeTarget(edgeName));
+                } catch (Exception e) {
+                    System.out.println("problem with drawing! cant find some node.");
+                    continue;
+                }
+                gc.setLineCap(ed.getOuterStroke().getLineCap());
+                gc.setLineJoin(ed.getOuterStroke().getLineJoin());
+                gc.setLineWidth(ed.getOuterStroke().getLanes() * pixelLaneWidth * scale);
+                gc.setStroke(ed.getOuterStroke().getPaint());
+
+//            gc.setLineCap(ed.getInnerStroke().getLineCap());
+//            gc.setLineJoin(ed.getInnerStroke().getLineJoin());
+//            gc.setLineWidth(pixelLaneWidth * scale);
+//            gc.setStroke(ed.getInnerStroke().getPaint());
+                gc.moveTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
+                gc.lineTo((target.getX() - tx) * scale, (target.getY() - ty) * scale);
+            }
+            gc.stroke();
+            gc.restore();
+        }
+    }
 
 }

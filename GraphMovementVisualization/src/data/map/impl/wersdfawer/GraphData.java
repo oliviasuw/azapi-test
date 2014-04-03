@@ -20,19 +20,23 @@ import org.jgrapht.graph.SimpleWeightedGraph;
  */
 public class GraphData {
 
+    public static final int QUAD_TREE_BOUNDS = 100000;
+    
     private HashMap<String, Object> data = new HashMap<>();
     private SimpleWeightedGraph<String, String> graph = new SimpleWeightedGraph<>(String.class);
 
     //saves edges according to what will become their path descriptors
-    private HashMap<String, QuadTree> tagToEdges = new HashMap<String, QuadTree>();
-//    private HashMap<String, Collection<String>> tagToEdges = new HashMap();
+//    private HashMap<String, QuadTree> tagToEdges = new HashMap<String, QuadTree>();
+    private HashMap<String, Collection<String>> tagToEdges = new HashMap();
 
-    private QuadTree polygons = new QuadTree(0, 100000, 100000, 0, 1000000);
+    
+    private LinkedList<GraphPolygon> polygons = new LinkedList<>();
+
+//    private QuadTree polygons = new QuadTree(0, QUAD_TREE_BOUNDS, QUAD_TREE_BOUNDS, 0, QUAD_TREE_BOUNDS);
     private double maxPolygonWidth = Double.MIN_VALUE;
     private double maxPolygonHeight = Double.MIN_VALUE;
     private double maxEdgeWidth = Double.MIN_VALUE;
     private double maxEdgeHeight = Double.MIN_VALUE;
-//    private LinkedList<GraphPolygon> polygons = new LinkedList<>();
 
     private double defaultScale = 0; //defaultscale in meters/pixels
     private Point2D.Double bounds;
@@ -64,13 +68,13 @@ public class GraphData {
         HashMap<String, String> edgeDataReal = (HashMap<String, String>) edgeData;
         String firstTag = edgeDataReal.values().iterator().next();
         if (tagToEdges.get(firstTag) == null) {
-//            tagToEdges.put(firstTag, new LinkedList<>());
-            tagToEdges.put(firstTag, new QuadTree(0, 100000, 100000, 0, 1000000));
+            tagToEdges.put(firstTag, new LinkedList<>());
+//            tagToEdges.put(firstTag, new QuadTree(0, QUAD_TREE_BOUNDS, QUAD_TREE_BOUNDS, 0, QUAD_TREE_BOUNDS));
         }
-//        tagToEdges.get(firstTag).add(name);
+        tagToEdges.get(firstTag).add(name);
 
         AZVisVertex source = (AZVisVertex) this.getData(from);
-        tagToEdges.get(firstTag).put((float) source.getY(), (float) source.getX(), name);
+//        tagToEdges.get(firstTag).put((float) source.getY(), (float) source.getX(), name);
         AZVisVertex target = (AZVisVertex) this.getData(to);
         double edgeWidth = Math.abs(target.getX() - source.getX());
         double edgeHeight = Math.abs(target.getY() - source.getY());
@@ -103,7 +107,7 @@ public class GraphData {
         return graph.edgesOf(vertexName);
     }
 
-    public HashMap<String, QuadTree> getTagToEdge() {
+    public HashMap<String, Collection<String>> getTagToEdge() {
         return tagToEdges;
     }
 
@@ -117,9 +121,9 @@ public class GraphData {
     void addPolygon(Collection<String> pNodes, HashMap<String, String> params) {
         GraphPolygon graphPolygon = new GraphPolygon(pNodes, params);
         graphPolygon.setCenter(this);
-//        polygons.add(graphPolygon);
+        polygons.add(graphPolygon);
 
-        polygons.put((float) graphPolygon.getCenter().y, (float) graphPolygon.getCenter().x, graphPolygon);
+//        polygons.put((float) graphPolygon.getCenter().y, (float) graphPolygon.getCenter().x, graphPolygon);
         double height = graphPolygon.getHeight();
         double width = graphPolygon.getWidth();
         if (height > maxPolygonHeight) {
@@ -131,7 +135,7 @@ public class GraphData {
 
     }
 
-    public QuadTree getPolygons() {
+    public LinkedList<GraphPolygon> getPolygons() {
         return polygons;
     }
 

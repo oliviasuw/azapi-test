@@ -80,7 +80,6 @@ public abstract class Agent extends Agt0DSL {
 //    protected ReportMediator report(Object... args) {
 //        return new ReportMediator(args, this, controller);
 //    }
-
     /**
      * override this function in case you want to make some action every time
      * before sending a message this is a great place to write logs, attach
@@ -143,6 +142,19 @@ public abstract class Agent extends Agt0DSL {
         if (predicate) {
             log(what);
         }
+    }
+
+    /**
+     * stop execution - returning the given cost, will cause a TERMINATION
+     * message to be sent to all other agents. The need for this function is to
+     * submit a solution quality for algorithms that not tracking the best
+     * assignment but only the best cost
+     *
+     * @param cost
+     */
+    protected void finishWithSolutionCost(int cost) {
+        controller.reportFinalCost(cost);
+        terminate();
     }
 
     /**

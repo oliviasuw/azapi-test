@@ -6,6 +6,7 @@
 package bgu.dcr.az.dcr.execution;
 
 import bgu.dcr.az.common.deepcopy.DeepCopyable;
+import bgu.dcr.az.dcr.api.Agent;
 import bgu.dcr.az.dcr.api.Assignment;
 import bgu.dcr.az.dcr.api.problems.Problem;
 import java.util.Map;
@@ -17,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CPSolution implements DeepCopyable {
 
+    private Integer finalCost;
     private final ConcurrentHashMap<Integer, Integer> assignment;
     private State state;
     private final Problem globalProblem;
@@ -24,6 +26,7 @@ public class CPSolution implements DeepCopyable {
     public CPSolution(Problem problem) {
         state = State.SOLUTION;
         assignment = new ConcurrentHashMap<>();
+        finalCost = null;
         this.globalProblem = problem;
     }
 
@@ -33,11 +36,15 @@ public class CPSolution implements DeepCopyable {
             this.assignment.put(a.getKey(), a.getValue());
         }
     }
-
+    
     public void setStateNoSolution() {
         this.state = State.NO_SOLUTION;
     }
 
+    public void setFinalCost(int cost) {
+        finalCost = cost;
+    }
+    
     public void assign(int i, int vi) {
         assignment.put(i, vi);
     }
@@ -65,7 +72,7 @@ public class CPSolution implements DeepCopyable {
     }
 
     public double getCost() {
-        return globalProblem.calculateGlobalCost(new Assignment(assignment));
+        return finalCost == null ? new Assignment(assignment).calcCost(globalProblem) : finalCost;
     }
 
     @Override
@@ -90,6 +97,7 @@ public class CPSolution implements DeepCopyable {
         CPSolution res = new CPSolution(this.globalProblem);
         res.assignment.putAll(this.assignment);
         res.state = state;
+        res.finalCost = finalCost;
 
         return res;
     }

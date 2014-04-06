@@ -18,7 +18,7 @@ import java.util.Random;
  *
  * @author User
  */
-@Register("peav-problem")
+@Register("peavify")
 public class PEAVifyer extends AbstractProblemGenerator {
 
     ProblemGenerator base;

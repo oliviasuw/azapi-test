@@ -27,7 +27,7 @@
         <nccc-sc/>
         <ncsc-sc/>
         
-        <dcop-connected n="2" d="2" max-cost="1"/>        
+        <dcop-connected n="8" d="3" max-cost="1"/>        
         <default-tester/>
         <algorithm name="BNB_ADOPT2"/>
 <!--        <algorithm name="SBB"/>

@@ -67,6 +67,10 @@ public class CPAgentController extends AgentController {
         Agent.PlatformOperationsExtractor.extract(agent).initialize(aId, this, ex);
     }
 
+    public void reportFinalCost(int cost) {
+        exec.data().getSolution().setFinalCost(cost);
+    }
+
     public void reportNoSolution() {
         exec.data().getSolution().setStateNoSolution();
     }
@@ -92,7 +96,7 @@ public class CPAgentController extends AgentController {
                 activeAgent.finilize();
             }
         }
-        
+
         activeAgent = null;
     }
 

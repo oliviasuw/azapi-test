@@ -1,6 +1,9 @@
 package bgu.dcr.az.dcr.modules.pgenerators;
 
+import bgu.dcr.az.conf.registery.Register;
+import bgu.dcr.az.dcr.api.Assignment;
 import bgu.dcr.az.dcr.api.modules.ProblemGenerator;
+import bgu.dcr.az.dcr.api.problems.ConstraintCheckResult;
 import bgu.dcr.az.dcr.api.problems.Problem;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import sun.management.resources.agent;
 
 /**
  * given an multi-var base problem this problem generator change it to
@@ -20,6 +22,7 @@ import sun.management.resources.agent;
  *
  * @author bennyl
  */
+@Register("complexify")
 public class Complexifyer extends AbstractProblemGenerator {
 
     ProblemGenerator base;
@@ -29,7 +32,7 @@ public class Complexifyer extends AbstractProblemGenerator {
         Problem basep = new Problem();
         base.generate(basep, rand);
 
-        Map<Integer, Map<Integer, int[]>> mapping = new HashMap<>();
+        Map<Integer, Map<Integer, int[]>> mapping = new HashMap<>(); //mapping (var->val)->[original-var1, original-val1, ... ]
         List<Set<Integer>> domains = new ArrayList<>(basep.getNumberOfAgents());
 
         //generates domain mapping per agent
@@ -56,7 +59,39 @@ public class Complexifyer extends AbstractProblemGenerator {
 
         //initialize problems 
         p.initialize(basep.type(), domains);
-        
+
+        //creating constraints for the new variables
+        Assignment a = new Assignment();
+        ConstraintCheckResult ccr = new ConstraintCheckResult();
+        for (Map.Entry<Integer, Map<Integer, int[]>> varNval1 : mapping.entrySet()) {
+            int var1 = varNval1.getKey();
+            for (Map.Entry<Integer, int[]> valNMapping1 : varNval1.getValue().entrySet()) {
+                int val1 = valNMapping1.getKey();
+
+                for (Map.Entry<Integer, Map<Integer, int[]>> varNval2 : mapping.entrySet()) {
+                    int var2 = varNval2.getKey();
+                    for (Map.Entry<Integer, int[]> valNMapping2 : varNval2.getValue().entrySet()) {
+                        int val2 = valNMapping2.getKey();
+
+                        a.clear();
+                        final int[] mapping1 = valNMapping1.getValue();
+                        final int[] mapping2 = valNMapping2.getValue();
+                        for (int i = 0; i < mapping1.length; i += 2) {
+                            a.assign(mapping1[i], mapping1[i + 1]);
+                        }
+                        for (int i = 0; i < mapping2.length; i += 2) {
+                            a.assign(mapping2[i], mapping2[i + 1]);
+                        }
+
+                        p.calculateCost(var1, a, ccr);
+                        if (ccr.getCost() != 0) {
+                            p.setConstraintCost(var1, var1, val1, var2, val2, ccr.getCost());
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     /**

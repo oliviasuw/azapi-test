@@ -382,7 +382,7 @@ public class Assignment implements Serializable, DeepCopyable {
         }
         return "{}";
     }
-    
+
     @Override
     public Assignment deepCopy() {
         return new Assignment(this);
@@ -408,6 +408,14 @@ public class Assignment implements Serializable, DeepCopyable {
         Assignment a = new Assignment(this);
         a.assign(i, vi);
         return a;
+    }
+
+    /**
+     * remove all entries from this assignment
+     */
+    public void clear() {
+        assignment.clear();
+        cachedTotalCost = -1;
     }
 
 }

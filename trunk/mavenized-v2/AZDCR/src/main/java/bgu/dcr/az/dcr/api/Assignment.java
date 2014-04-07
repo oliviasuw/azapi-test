@@ -147,7 +147,7 @@ public class Assignment implements Serializable, DeepCopyable {
     public int calcCost(ImmutableProblem p) {
         if (p instanceof Agent.AgentProblem) {
             if (cachedTotalCost < 0) {
-                cachedTotalCost = p.calculateCost(this);;
+                cachedTotalCost = p.calculateCost(this);
             }
             return cachedTotalCost;
         } else {

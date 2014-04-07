@@ -6,13 +6,18 @@
 package bgu.dcr.az.dcr.modules.pgenerators;
 
 import bgu.dcr.az.conf.registery.Register;
+import bgu.dcr.az.dcr.Agt0DSL;
 import bgu.dcr.az.dcr.api.modules.ProblemGenerator;
 import bgu.dcr.az.dcr.api.problems.Problem;
 import bgu.dcr.az.dcr.api.problems.ProblemType;
 import bgu.dcr.az.dcr.api.problems.constraints.BinaryConstraint;
-import java.util.HashMap;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 /**
  *
@@ -29,21 +34,40 @@ public class PEAVifyer extends AbstractProblemGenerator {
             panic("base problem is not provided, see tutorial for more details.");
         }
 
-        Problem temp = new Problem();
-        base.generate(temp, rand);
+        Problem basep = new Problem();
+        base.generate(basep, rand);
+        
+        int[][] distributions = new int[basep.getNumberOfAgents()][];
+        List<Set<Integer>> domains = new ArrayList<>();
 
         //first calculate the number of agents and map to the peav agents
-        Map<IntIntPair, Integer> variableMapping = new HashMap<>();
-        int numAgents = 0;
-        for (int i = 0; i < temp.getNumberOfVariables(); i++) {
-            variableMapping.put(new IntIntPair(i, i), numAgents++);
-            for (Integer n : temp.getNeighbors(i)) {
-                variableMapping.put(new IntIntPair(i, n), numAgents++);
+        BiMap<IntIntPair, Integer> variableMapping = HashBiMap.create();
+        int numVariables = 0;
+        
+        for (int i = 0; i < basep.getNumberOfVariables(); i++) {
+            distributions[i] = new int[basep.getNeighbors(i).size() + 1];
+            distributions[i][basep.getNeighbors(i).size()] = numVariables;
+            domains.add(basep.getDomainOf(i));
+            variableMapping.put(new IntIntPair(i, i), numVariables++);
+        }
+        
+        for (int i = 0; i < basep.getNumberOfVariables(); i++) {
+            int j = 0;
+            for (Integer n : basep.getNeighbors(i)) {
+                distributions[i][j++] = numVariables;
+                variableMapping.put(new IntIntPair(i, n), numVariables++);
+                domains.add(basep.getDomainOf(Math.min(i, n)));
             }
         }
 
         //then initialize the problem based on this calculation
-        p.initialize(ProblemType.DCOP, numAgents, temp.getDomainSize(0));
+//        p.initialize(ProblemType.DCOP, numVariables, basep.getDomainSize(0));
+        p.initialize(ProblemType.DCOP, domains, basep.getNumberOfAgents());
+        
+        for (int i = 0; i < basep.getNumberOfAgents(); i++) {
+            Integer aid = variableMapping.get(new IntIntPair(i, i));
+            p.getAgentDistribution().assignVariablesToAgent(aid, distributions[i]);
+        }
 
         //create equility constraints
         EquilityConstraint eq = new EquilityConstraint();
@@ -53,17 +77,22 @@ public class PEAVifyer extends AbstractProblemGenerator {
                 Integer variable = v.getValue();
                 Integer mirror = variableMapping.get(pair.reverse());
 
+                System.out.println("Constraint between: " + variable + " and " + mirror + " and reverse");
+
                 p.setConstraint(variable, mirror, eq);
+                p.setConstraint(mirror, variable, eq);
             }
         }
 
         //restore original constraints
-        for (int i = 0; i < temp.getNumberOfVariables(); i++) {
+        for (int i = 0; i < basep.getNumberOfVariables(); i++) {
             Integer meVar = variableMapping.get(new IntIntPair(i, i));
-            DelegativeConstraint constraint = new DelegativeConstraint(temp, i);
-            for (Integer n : temp.getNeighbors(i)) {
+            DelegativeConstraint constraint = new DelegativeConstraint(basep, variableMapping, i);
+            for (Integer n : basep.getNeighbors(i)) {
                 Integer heVar = variableMapping.get(new IntIntPair(i, n));
                 p.setConstraint(meVar, heVar, constraint);
+                p.setConstraint(heVar, meVar, constraint);
+                System.out.println("Constraint between: " + meVar + " and " + heVar);
             }
         }
     }
@@ -81,14 +110,13 @@ public class PEAVifyer extends AbstractProblemGenerator {
     }
 
     public static class EquilityConstraint implements BinaryConstraint {
-
+        
         @Override
         public int cost(int i, int vi, int j, int vj) {
             if (vi == vj) {
                 return 0;
             }
-
-            return Integer.MAX_VALUE;
+            return Agt0DSL.INFINITY_COST;
         }
 
     }
@@ -96,16 +124,29 @@ public class PEAVifyer extends AbstractProblemGenerator {
     public static class DelegativeConstraint implements BinaryConstraint {
 
         Problem delegate;
+        BiMap<IntIntPair, Integer> variableMapping;
         int owner;
 
-        public DelegativeConstraint(Problem delegate, int owner) {
+        public DelegativeConstraint(Problem delegate, BiMap<IntIntPair, Integer> variableMapping, int owner) {
             this.delegate = delegate;
+            this.variableMapping = variableMapping;
             this.owner = owner;
         }
 
         @Override
         public int cost(int i, int vi, int j, int vj) {
-            return delegate.getConstraintCost(owner, i, vi, j, vj);
+            IntIntPair original1 = variableMapping.inverse().get(i);
+            IntIntPair original2 = variableMapping.inverse().get(j);
+
+            if (original1.a == original1.b) {
+                IntIntPair temp = original1;
+                original1 = original2;
+                original2 = temp;
+            }else if (original2.a != original2.b){
+                panic("checking unconstrainted agents!");
+            }
+
+            return delegate.getConstraintCost(owner, original1.a, vi, original1.b, vj);
         }
 
     }

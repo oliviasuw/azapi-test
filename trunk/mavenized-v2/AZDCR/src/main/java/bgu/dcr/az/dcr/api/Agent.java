@@ -269,7 +269,7 @@ public abstract class Agent extends Agt0DSL {
      * @return
      */
     protected int costOf(Assignment a) {
-        return (a == null ? Integer.MAX_VALUE : a.calcCost(prob));
+        return (a == null ? INFINITY_COST : a.calcCost(prob));
     }
 
     /**
@@ -556,7 +556,7 @@ public abstract class Agent extends Agt0DSL {
         public int getConstraintCost(int var1, int val1) {
             controller.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1, queryTemp);
 
-            ccCount[id] += queryTemp.getCheckCost();
+            ccCount[controller.pid()] += queryTemp.getCheckCost();
             return queryTemp.getCost();
         }
 
@@ -564,7 +564,7 @@ public abstract class Agent extends Agt0DSL {
         public int getConstraintCost(int var1, int val1, int var2, int val2) {
             controller.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1, var2, val2, queryTemp);
 
-            ccCount[id] += queryTemp.getCheckCost();
+            ccCount[controller.pid()] += queryTemp.getCheckCost();
             return queryTemp.getCost();
         }
 
@@ -592,7 +592,7 @@ public abstract class Agent extends Agt0DSL {
         public boolean isConsistent(int var1, int val1, int var2, int val2) {
             controller.getGlobalProblem().getConstraintCost(getAgentId(), var1, val1, var2, val2, queryTemp);
 
-            ccCount[id] += queryTemp.getCheckCost();
+            ccCount[controller.pid()] += queryTemp.getCheckCost();
             return queryTemp.getCost() == 0;
         }
 
@@ -613,7 +613,7 @@ public abstract class Agent extends Agt0DSL {
         public int getConstraintCost(Assignment ass) {
             controller.getGlobalProblem().getConstraintCost(getAgentId(), ass, queryTemp);
 
-            ccCount[id] += queryTemp.getCheckCost();
+            ccCount[controller.pid()] += queryTemp.getCheckCost();
             return queryTemp.getCost();
         }
 

@@ -115,12 +115,12 @@ public class BinaryMapConstraintPackage extends AbstractConstraintPackage {
         for (int i = 0; i < var.length; i++) {
             int ival = assignment.getAssignment(var[i]);
             getConstraintCost(var[i], var[i], ival, result);
-            c += result.getCost();
+            c = Agt0DSL.boundedSumm(c, result.getCost());
             cc += result.getCheckCost();
             for (int j = i + 1; j < var.length; j++) {
                 int jval = assignment.getAssignment(var[j]);
                 getConstraintCost(var[j], var[j], jval, var[i], ival, result);
-                c += result.getCost();
+                c = Agt0DSL.boundedSumm(c, result.getCost());
                 cc += result.getCheckCost();
             }
         }
@@ -144,7 +144,11 @@ public class BinaryMapConstraintPackage extends AbstractConstraintPackage {
         if (owner != participient1 && owner != participient2) {
             Agt0DSL.panic("Binary Problem cannot support constraint owners that are not part of the constraints, if you need such a feature use the K-Ary version.");
         }
-        
+
+        if (participient1 != participient2) {
+            addNeighbor(participient1, participient2);
+        }
+
         map[participient1][participient2] = constraint;
     }
 

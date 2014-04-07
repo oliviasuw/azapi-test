@@ -17,6 +17,10 @@ public class BinaryConstraintTable implements BinaryConstraint {
         this.table = new int[domainSize][domainSize];
     }
 
+    public BinaryConstraintTable(int domain1Size, int domain2Size) {
+        this.table = new int[domain1Size][domain2Size];
+    }
+
     public void setCost(int vi, int vj, int cost){
         table[vi][vj] = cost;
     }

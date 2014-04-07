@@ -98,7 +98,7 @@ public class KAryTreeConstraintPackage extends AbstractConstraintPackage {
         if (constraintsToConsider != null) {
             for (KAryConstraint constraint : constraintsToConsider) {
                 constraint.getCost(a, result);
-                cost += result.getCost();
+                cost = Agt0DSL.boundedSumm(cost, result.getCost());
                 cc += result.getCheckCost();
             }
         }
@@ -112,7 +112,7 @@ public class KAryTreeConstraintPackage extends AbstractConstraintPackage {
         int cost = 0;
         for (int i = 0; i < getNumberOfVariables(); i++) {
             calculateCost(i, a, res);
-            cost += res.getCost();
+            cost = Agt0DSL.boundedSumm(cost, res.getCost());
         }
         return cost;
     }

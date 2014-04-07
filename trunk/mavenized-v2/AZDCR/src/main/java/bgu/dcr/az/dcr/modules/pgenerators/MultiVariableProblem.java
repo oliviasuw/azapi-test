@@ -16,7 +16,7 @@ import java.util.Random;
  *
  * @author bennyl
  */
-@Register("multi-var-problem")
+@Register("multi-varify")
 public class MultiVariableProblem extends AbstractProblemGenerator {
 
     private ProblemGenerator base;
@@ -31,15 +31,18 @@ public class MultiVariableProblem extends AbstractProblemGenerator {
     public void generate(Problem p, Random rand) {
         base.generate(p, rand);
 
-        
         int numberOfAgents = p.getNumberOfVariables() / vpa;
         numberOfAgents = p.getNumberOfVariables() % vpa == 0 ? numberOfAgents : numberOfAgents + 1;
         p.setNumberOfAgents(numberOfAgents);
-        
+
         Integer[] order = new Integer[p.getNumberOfVariables()];
-        for (int i=0; i<order.length; i++) order[i] = i;
-        if (!clusterVariables) Collections.shuffle(Arrays.asList(order));
-        
+        for (int i = 0; i < order.length; i++) {
+            order[i] = i;
+        }
+        if (!clusterVariables) {
+            Collections.shuffle(Arrays.asList(order));
+        }
+
         for (int i = 0, vs = order.length; vs > 0; i++, vs -= vpa) {
             int[] vars = new int[vs > vpa ? vpa : vs];
             for (int j = 0; j < vars.length; j++) {
@@ -49,9 +52,8 @@ public class MultiVariableProblem extends AbstractProblemGenerator {
         }
     }
 
-
     /**
-     * 
+     *
      * @propertyName base
      */
     public ProblemGenerator getBase() {

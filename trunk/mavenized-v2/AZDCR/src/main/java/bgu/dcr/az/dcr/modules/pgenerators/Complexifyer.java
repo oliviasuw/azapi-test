@@ -54,7 +54,6 @@ public class Complexifyer extends AbstractProblemGenerator {
                 domain.add(valCounter);
                 currentMapping.put(valCounter++, Arrays.copyOf(valMapping, valMapping.length));
             } while (nextValue(valMapping, domainSizes));
-
         }
 
         //initialize problems 
@@ -76,14 +75,14 @@ public class Complexifyer extends AbstractProblemGenerator {
                         a.clear();
                         final int[] mapping1 = valNMapping1.getValue();
                         final int[] mapping2 = valNMapping2.getValue();
-                        for (int i = 0; i < mapping1.length; i += 2) {
-                            a.assign(mapping1[i], mapping1[i + 1]);
+                        for (int i = 0; i < mapping1.length; i++) {
+                            a.assign(basep.getVariablesOwnedByAgent(var1)[i], mapping1[i]);
                         }
-                        for (int i = 0; i < mapping2.length; i += 2) {
-                            a.assign(mapping2[i], mapping2[i + 1]);
+                        for (int i = 0; i < mapping2.length; i++) {
+                            a.assign(basep.getVariablesOwnedByAgent(var2)[i], mapping2[i]);
                         }
 
-                        p.calculateCost(var1, a, ccr);
+                        basep.calculateCost(var1, a, ccr);
                         if (ccr.getCost() != 0) {
                             p.setConstraintCost(var1, var1, val1, var2, val2, ccr.getCost());
                         }
@@ -108,7 +107,7 @@ public class Complexifyer extends AbstractProblemGenerator {
 
     private boolean nextValue(int[] d, int[] domainSizes) {
         for (int i = 0; i < d.length; i++) {
-            if (d[i]++ == domainSizes[i]) {
+            if (++d[i] == domainSizes[i]) {
                 d[i] = 0;
             } else {
                 return true;

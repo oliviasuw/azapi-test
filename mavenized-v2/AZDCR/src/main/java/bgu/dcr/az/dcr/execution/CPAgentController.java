@@ -77,7 +77,7 @@ public class CPAgentController extends AgentController {
 
     @Override
     protected void handleIdle() {
-        for (AgentStateStack a : getControlledAgents().values()) {
+        for (AgentStateStack a : getControlledAgents().values().toArray(new AgentStateStack[getControlledAgents().size()])) {
             activeAgent = a.current();
             activeAgent.a.onIdleDetected();
             if (activeAgent.a.isFinished()) {

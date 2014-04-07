@@ -27,6 +27,20 @@ public class Agt0DSL {
 
     public static final int INFINITY_COST = Integer.MAX_VALUE;
 
+    private static final int BIT_SIZE = 32;
+    private static final long SIGN_BIT = (1L << (BIT_SIZE - 1));
+
+    /**
+     * Safely computes the sum of two integers.
+     * @param a
+     * @param b
+     * @return the sum or INFINITY_COST of overflowed
+     */
+    public static int boundedSumm(int a, int b) {
+        int result = a + b;
+        return ((~(a ^ b) & (a ^ result) & SIGN_BIT) == 0 ? result : INFINITY_COST);
+    }
+
     /**
      * returns a collection of numbers in the range of start to end (includes
      * start and end)

@@ -21,7 +21,7 @@ public class EdgeStroke {
     private final Paint paint;
     private int lanes;
 
-    EdgeStroke(int lanes, StrokeLineCap lineCap, StrokeLineJoin lineJoin, Paint paint) {
+    public EdgeStroke(int lanes, StrokeLineCap lineCap, StrokeLineJoin lineJoin, Paint paint) {
         this.lineCap = lineCap;
         this.lineJoin = lineJoin;
         this.paint = paint;

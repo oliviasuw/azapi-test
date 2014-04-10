@@ -4,15 +4,12 @@
  * and open the template in the editor.
  */
 
-package data.map.impl.wersdfawer.groupbounding;
+package bgu.dcr.az.vis.presets.map.drawer;
 
 /**
  *
  * @author Shl
  */
-public class GroupMetaData {
-
-    public GroupMetaData() {
-    }
-    
+interface GroupDrawerInterface {
+    public void draw();
 }

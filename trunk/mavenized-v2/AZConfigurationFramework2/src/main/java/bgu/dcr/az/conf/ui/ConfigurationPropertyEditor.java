@@ -47,7 +47,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
     private boolean readOnly;
     private final Property parentCollection;
     private final VBox editorVBox;
-    
+
     private Predicate filter;
 
     private final BooleanProperty selected;
@@ -64,18 +64,23 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
         getStyleClass().add("configuration-property-editor");
 
         selected = new SimpleBooleanProperty(false);
-        
+
         addEventFilter(MouseEvent.MOUSE_RELEASED, eh -> {
-            eh.consume();
-        });
-        
-        addEventFilter(MouseEvent.MOUSE_PRESSED, eh -> {
             Node node = FXUtils.getTitledPaneTitleRegion(this);
-            
+
             if (node != null && node.getParent() == this
                     && node.localToScene(node.getBoundsInLocal()).contains(eh.getSceneX(), eh.getSceneY())) {
                 eh.consume();
-                
+            }
+        });
+
+        addEventFilter(MouseEvent.MOUSE_PRESSED, eh -> {
+            Node node = FXUtils.getTitledPaneTitleRegion(this);
+
+            if (node != null && node.getParent() == this
+                    && node.localToScene(node.getBoundsInLocal()).contains(eh.getSceneX(), eh.getSceneY())) {
+                eh.consume();
+
                 if (!selected.get()) {
                     selected.set(true);
                 } else {
@@ -162,7 +167,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
     }
 
     private void updateModelValue() {
-        if (property.get() == null || ! (property.get() instanceof FromConfigurationPropertyValue)) {
+        if (property.get() == null || !(property.get() instanceof FromConfigurationPropertyValue)) {
             try {
                 String defaultName = (String) choiceBox.getItems().get(0);
                 Configuration defaultValue = Registery.get().getConfiguration(defaultName);
@@ -172,7 +177,6 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
             }
         }
 
-        
         FromConfigurationPropertyValue fcpv = (FromConfigurationPropertyValue) property.get();
 
         if (fcpv != null && fcpv.getValue() != null) { //in case property is a dummy (came from collection property editor)
@@ -207,7 +211,7 @@ public class ConfigurationPropertyEditor extends TitledPane implements PropertyE
 
         if (!readOnly && (parentCollection == null || implementors.size() > 1)) {
             editorVBox.getChildren().add(implementorsBorderPane);
-        }        
+        }
     }
 
     @Override

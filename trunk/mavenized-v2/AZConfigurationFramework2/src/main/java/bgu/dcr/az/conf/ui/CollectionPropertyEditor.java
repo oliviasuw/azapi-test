@@ -76,7 +76,12 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         selected = new SimpleBooleanProperty(false);
 
         addEventFilter(MouseEvent.MOUSE_RELEASED, eh -> {
-            eh.consume();
+            Node node = FXUtils.getTitledPaneTitleRegion(this);
+
+            if (node != null && node.getParent() == this
+                    && node.localToScene(node.getBoundsInLocal()).contains(eh.getSceneX(), eh.getSceneY())) {
+                eh.consume();
+            }
         });
 
         addEventFilter(MouseEvent.MOUSE_PRESSED, eh -> {

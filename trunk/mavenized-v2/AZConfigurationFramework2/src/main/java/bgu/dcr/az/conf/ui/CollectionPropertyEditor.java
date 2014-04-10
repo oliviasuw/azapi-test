@@ -75,28 +75,19 @@ public class CollectionPropertyEditor extends TitledPane implements PropertyEdit
         getStyleClass().add("collection-property-editor");
         selected = new SimpleBooleanProperty(false);
 
-        addEventFilter(MouseEvent.MOUSE_RELEASED, eh -> {
+        skinProperty().addListener((sp, o, n) -> {
             Node node = FXUtils.getTitledPaneTitleRegion(this);
 
-            if (node != null && node.getParent() == this
-                    && node.localToScene(node.getBoundsInLocal()).contains(eh.getSceneX(), eh.getSceneY())) {
-                eh.consume();
-            }
-        });
-
-        addEventFilter(MouseEvent.MOUSE_PRESSED, eh -> {
-
-            Node node = FXUtils.getTitledPaneTitleRegion(this);
-
-            if (node != null && node.getParent() == this
-                    && node.localToScene(node.getBoundsInLocal()).contains(eh.getSceneX(), eh.getSceneY())) {
-                eh.consume();
-
-                if (!selected.get()) {
-                    selected.set(true);
-                } else {
-                    setExpanded(!isExpanded());
-                }
+            if (node != null) {
+                node.addEventFilter(MouseEvent.MOUSE_RELEASED, eh -> eh.consume());
+                node.addEventFilter(MouseEvent.MOUSE_PRESSED, eh -> {
+                    eh.consume();
+                    if (!selected.get()) {
+                        selected.set(true);
+                    } else {
+                        setExpanded(!isExpanded());
+                    }
+                });
             }
         });
 

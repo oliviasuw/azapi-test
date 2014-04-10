@@ -21,10 +21,10 @@ public interface GroupBoundingQueryInterface {
      * @param subgroup 
      * @param movable 
      */
-    public void createGroup(String group, String subgroup, GroupMetaData metadata, boolean movable);
+    public void createGroup(String group, String subgroup, boolean movable);
 
     //does all necessary calcs including epsilon and sorting if need to
-    public Collection get(String group, double left, double right, double up, double down);
+    public Collection get(String group, String subGroup, double left, double right, double up, double down);
     
     /**
      * returns a list of groups where this subgroup is.
@@ -33,12 +33,12 @@ public interface GroupBoundingQueryInterface {
      */
     public Collection<String> getGroups(String subGroup);
 
-    public boolean addToGroup(String group, double x, double y, double width, double height, Object obj);
+    public boolean addToGroup(String group, String subGroup, double x, double y, double width, double height, Object obj);
 
     public boolean hasGroup(String group);
 
-    public double[] getEpsilon(String group);
+    public double[] getEpsilon(String group, String subGroup);
     
-    public double[] getSubGroupEpsilon(String subGroup);
+    public double[] getGroupEpsilon(String group);
 
 }

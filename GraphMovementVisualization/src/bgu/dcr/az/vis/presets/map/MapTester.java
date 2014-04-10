@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.vis.presets;
+package bgu.dcr.az.vis.presets.map;
 
 import bgu.dcr.az.vis.controls.ui.PlayerControls;
 import bgu.dcr.az.vis.player.api.FramesStream;

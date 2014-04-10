@@ -4,7 +4,7 @@
  */
 package graphics.graph;
 
-import bgu.dcr.az.vis.presets.MapVisualScene;
+import bgu.dcr.az.vis.presets.map.MapVisualScene;
 import com.bbn.openmap.util.quadtree.QuadTree;
 import data.map.impl.wersdfawer.AZVisVertex;
 import data.map.impl.wersdfawer.GraphData;

@@ -24,13 +24,11 @@ public class BoundingGroup {
     private double maxWidth;
     private double maxHeight;
     private String subGroup;
-    private GroupMetaData metadata;
 
 
-    public BoundingGroup(String subGroup, GroupMetaData metadata, boolean moveable) {
+    public BoundingGroup(String subGroup, boolean moveable) {
         this.subGroup = subGroup;
         this.moveable = moveable;
-        this.metadata = metadata;
         this.objects = new QuadTree(0, QUAD_TREE_BOUNDS, QUAD_TREE_BOUNDS, 0, QUAD_TREE_BOUNDS);
     }
 
@@ -66,10 +64,6 @@ public class BoundingGroup {
 
     public boolean isMoveable() {
         return moveable;
-    }
-
-    public GroupMetaData getMetadata() {
-        return metadata;
     }
     
     

@@ -110,7 +110,8 @@ public abstract class AbstractConfiguration implements Configuration {
                                 collection.clear();
                                 collection.addAll(value.create(iprop.typeInfo()));
                             } else {
-                                throw new UnsupportedOperationException("cannot configure property " + p.name() + " this property does not have setter and it is not a collection");
+                                System.out.println("Ignoring configuration for " + p.name() + " since this property is readonly.");
+                                //throw new UnsupportedOperationException("cannot configure property " + p.name() + " this property does not have setter and it is not a collection");
                             }
                         } else {
                             accessor.invoke(o, iprop.getSetterIndex(), new Object[]{value.create(iprop.typeInfo())});

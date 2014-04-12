@@ -23,14 +23,17 @@ public interface Property extends Documented {
     TypeInfo typeInfo();
 
     void set(PropertyValue cv);
-    
+
     /**
      * will automatically convert the given value into - FromStringPropertyValue
-     * @param value 
+     *
+     * @param value
      */
     void set(String value);
 
     PropertyValue get();
-    
+
     String stringValue();
+
+    boolean isReadOnly();
 }

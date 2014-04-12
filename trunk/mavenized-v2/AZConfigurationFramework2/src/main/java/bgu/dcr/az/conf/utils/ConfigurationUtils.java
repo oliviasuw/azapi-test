@@ -68,11 +68,11 @@ public class ConfigurationUtils {
         if (registeredClassName == null) {
             throw new ConfigurationException("cannot find registration for class: " + conf.configuredType().getCanonicalName());
         }
-        
+
         Element e = new Element(registeredClassName);
 
         for (Property p : conf.properties()) {
-            putProperty(p.name(), p.get(), e, true);
+            putProperty(p.name(), p.get(), e, true, p.isReadOnly());
         }
 
         return e;
@@ -92,23 +92,24 @@ public class ConfigurationUtils {
         return c;
     }
 
-    private static boolean putProperty(String property, PropertyValue value, Element e, boolean allowAttributes) throws ConfigurationException, UnsupportedOperationException {
+    private static boolean putProperty(String property, PropertyValue value, Element e, boolean allowAttributes, boolean readonly) throws ConfigurationException, UnsupportedOperationException {
         if (value == null) {
             return false;
         }
         if (value instanceof FromStringPropertyValue) {
-            putProperty(property, (FromStringPropertyValue) value, e, allowAttributes);
+            putProperty(property, (FromStringPropertyValue) value, e, allowAttributes, readonly);
         } else if (value instanceof FromConfigurationPropertyValue) {
-            putProperty(property, (FromConfigurationPropertyValue) value, e, allowAttributes);
+            putProperty(property, (FromConfigurationPropertyValue) value, e, allowAttributes, readonly);
         } else if (value instanceof FromCollectionPropertyValue) {
-            putProperty(property, (FromCollectionPropertyValue) value, e, allowAttributes);
+            putProperty(property, (FromCollectionPropertyValue) value, e, allowAttributes, readonly);
         } else {
             throw new UnsupportedOperationException("does not know how to save value of type: " + value.getClass().getSimpleName());
         }
         return true;
     }
 
-    private static void putProperty(String property, FromStringPropertyValue value, Element e, boolean allowAttributes) throws ConfigurationException {
+    private static void putProperty(String property, FromStringPropertyValue value, Element e, boolean allowAttributes, boolean readonly) throws ConfigurationException {
+        if (readonly) return;
         if (allowAttributes) {
             try {
                 e.addAttribute(new Attribute(property, value.getValue()));
@@ -122,7 +123,7 @@ public class ConfigurationUtils {
         }
     }
 
-    private static void putProperty(String property, FromConfigurationPropertyValue value, Element e, boolean allowAttributes) throws ConfigurationException {
+    private static void putProperty(String property, FromConfigurationPropertyValue value, Element e, boolean allowAttributes, boolean readonly) throws ConfigurationException {
         Element inner = toXML(value.getValue());
 
         Element propElem = new Element(property);
@@ -130,12 +131,12 @@ public class ConfigurationUtils {
         e.appendChild(propElem);
     }
 
-    private static void putProperty(String property, FromCollectionPropertyValue value, Element e, boolean allowAttributes) throws ConfigurationException {
+    private static void putProperty(String property, FromCollectionPropertyValue value, Element e, boolean allowAttributes, boolean readonly) throws ConfigurationException {
         Element innerElement = new Element(property);
 
         for (PropertyValue c : value) {
             if (!(c instanceof FromConfigurationPropertyValue)) {
-                putProperty("item", c, innerElement, false);
+                putProperty("item", c, innerElement, false, false);
             } else {
                 Element inner = toXML(((FromConfigurationPropertyValue) c).getValue());
                 innerElement.appendChild(inner);
@@ -269,10 +270,10 @@ public class ConfigurationUtils {
     }
 
     /**
-     * 
+     *
      * @param o
      * @return
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      * @deprecated should remove before release
      */
     public static Configuration createConfigurationFor(Object o) throws ClassNotFoundException {
@@ -280,10 +281,10 @@ public class ConfigurationUtils {
         return conf;
     }
 
-    public static Configuration get(Class type) throws ClassNotFoundException{
+    public static Configuration get(Class type) throws ClassNotFoundException {
         return Registery.get().getConfiguration(type);
     }
-    
+
     public static Configuration load(Object o) throws ClassNotFoundException, ConfigurationException {
         return createConfigurationFor(o).loadFrom(o);
     }

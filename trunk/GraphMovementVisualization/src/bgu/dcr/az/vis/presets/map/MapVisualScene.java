@@ -14,6 +14,10 @@ import bgu.dcr.az.vis.presets.map.drawer.GraphDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.GroupDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.PolygonMetaData;
 import bgu.dcr.az.vis.presets.map.drawer.SimpleDrawer;
+import bgu.dcr.az.vis.presets.map.drawer.SpriteDrawer;
+import bgu.dcr.az.vis.presets.map.drawer.SpriteMetaData;
+import bgu.dcr.az.vis.presets.map.drawer.SpriteMetaData.SingleSpriteMetaData;
+import bgu.dcr.az.vis.tools.Location;
 import data.map.impl.wersdfawer.AZVisVertex;
 import data.map.impl.wersdfawer.GraphData;
 import data.map.impl.wersdfawer.GraphPolygon;
@@ -22,6 +26,8 @@ import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.LinkedList;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.image.Image;
 import javafx.scene.input.ScrollEvent;
 import resources.img.R;
@@ -32,7 +38,7 @@ import resources.img.R;
  */
 public class MapVisualScene extends SimpleScrollableVisualScene {
 
-    public static final double MIN_SCALE = 0.01;
+    public static final double MIN_SCALE = 0.3;
     public static final double MAX_SCALE = 10;
 
     private static double DEFAULT_CONTAINER_WIDTH = 10000;
@@ -49,6 +55,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         CanvasLayer front = new CanvasLayer(this);
         MapCanvasLayer back = new MapCanvasLayer(this, graphData, drawer);
         boundingQuery.addMetaData("GRAPH", CanvasLayer.class, back);
+        boundingQuery.addMetaData("SPRITES", CanvasLayer.class, back);
 
         registerLayer(MapCanvasLayer.class, back, back.getCanvas());
         registerLayer(CanvasLayer.class, front, front.getCanvas());
@@ -56,42 +63,69 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         Point2D.Double bounds = back.getGraphData().getBounds();
         super.setContainerSize(bounds.x, bounds.y);
 
+        //set default viewport to screen width /height
+        drawer.setViewPortWidth(getViewportBounds().getWidth());
+        drawer.setViewPortHeight(getViewportBounds().getHeight());
+
         addEventFilter(ScrollEvent.ANY, (ScrollEvent t) -> {
             if (t.isControlDown()) {
-                double scale = back.getScale() + t.getDeltaY() / 500;
+                double scale = drawer.getScale() + t.getDeltaY() / 500;
                 if (scale <= MIN_SCALE) {
                     scale = MIN_SCALE;
                 } else if (scale >= MAX_SCALE) {
                     scale = MAX_SCALE;
                 }
-//                scaleProperty().set(scale);
                 drawer.setScale(scale);
 
-//                double mousePointX = t.getSceneX() + back.getCanvas().getTranslateX();
-//                double mousePointY = t.getSceneY() + back.getCanvas().getTranslateY();
-//
-//                double newHval = (mousePointX) / (CONTAINER_WIDTH - getViewportBounds().getWidth());
-//                double newVval = (mousePointY) / (CONTAINER_HEIGHT - getViewportBounds().getHeight());
-//                setHvalue(newHval);
-//                setVvalue(newVval);
-                back.drawGraph();
+                double screenWidth = getViewportBounds().getWidth();
+                double screenHeight = getViewportBounds().getHeight();
+
+                //multiplying screen width/height by scale will yield it in meters
+                double viewPortWidth = screenWidth / scale;
+                double viewPortHeight = screenHeight / scale;
+                drawer.setViewPortWidth(viewPortWidth);
+                drawer.setViewPortHeight(viewPortHeight);
+
+//                back.drawGraph();
                 t.consume();
             }
         });
 
 //        widthProperty().addListener((ov, o, n) -> back.drawGraph());
 //        heightProperty().addListener((ov, o, n) -> back.drawGraph());
-        
         //notice that SimpleScrollableVisualScene.java - register layer - also does this!!!
         hvalueProperty().addListener((ov, n, o) -> {
 //            back.drawGraph();
-            
+            double scale = drawer.getScale();
+            double screenWidth = getViewportBounds().getWidth();
+            double screenHeight = getViewportBounds().getHeight();
 
+            //multiplying screen width/height by scale will yield it in meters
+            double viewPortWidth = screenWidth / scale;
+            double viewPortHeight = screenHeight / scale;
+            drawer.setViewPortWidth(viewPortWidth);
+            drawer.setViewPortHeight(viewPortHeight);
+
+            double x = o.doubleValue() * (pane.getWidth() - screenWidth);
+            double y = drawer.getViewPortLocation().getY();
+
+            drawer.setViewPortLocation(x, y);
+
+//            hvalueProperty().addListener((ov, n, o) -> layerNode.translateXProperty().set(o.doubleValue() * (pane.getWidth() - getViewportBounds().getWidth())));
+//            vvalueProperty().addListener((ov, n, o) -> layerNode.translateYProperty().set(o.doubleValue() * (pane.getHeight() - getViewportBounds().getHeight())));
         });
         vvalueProperty().addListener((ov, n, o) -> {
 //            back.drawGraph();
-            
-        
+
+            double scale = drawer.getScale();
+            double screenWidth = getViewportBounds().getWidth();
+            double screenHeight = getViewportBounds().getHeight();
+
+            double x = drawer.getViewPortLocation().getX();
+            double y = o.doubleValue() * (pane.getHeight() - screenHeight);
+
+            drawer.setViewPortLocation(x, y);
+
         });
 
         Image greenCarImage = new Image(R.class.getResourceAsStream("car-green.jpg"));
@@ -129,24 +163,46 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
             }
         }
         LinkedList<GraphPolygon> polys = graphData.getPolygons();
-        boundingQuery.createGroup("building", "BACKGROUND", false);
-//        boundingQuery.addMetaData("building", SimplePolygonImageDrawer.class, backGroundImageDrawer);
+        boundingQuery.createGroup("SPRITES", "building", false);
         boundingQuery.createGroup("GRAPH", "POLYGONS.leisure", false);
         boundingQuery.createGroup("GRAPH", "POLYGONS.landuse", false);
-        boundingQuery.createGroup("GRAPH", "POLYGON.defaultPolys", false);
+        boundingQuery.createGroup("GRAPH", "POLYGONS.building", false);
+        boundingQuery.createGroup("GRAPH", "POLYGONS.defaultPolys", false);
 
+        Image buildingImage = new Image(R.class.getResourceAsStream("building.png"));
+        int i=0;
         for (GraphPolygon poly : polys) {
             String key = poly.getParams().entrySet().iterator().next().getKey();
             if (boundingQuery.hasSubGroup("GRAPH", "POLYGONS." + key)) {
                 boundingQuery.addToGroup("GRAPH", "POLYGONS." + key, poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), poly);
             } else {
-                boundingQuery.addToGroup("GRAPH", "POLYGON.defaultPolys", poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), poly);
+                boundingQuery.addToGroup("GRAPH", "POLYGONS.defaultPolys", poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), poly);
+            }
+
+            if (key.equals("building")) {
+                double subScale = Math.sqrt(Math.abs(poly.getArea()));
+                double newW = subScale;
+                double newH = (buildingImage.getHeight() / buildingImage.getWidth()) * newW;
+//                if (newH > MAX_BUILDING_HEIGHT) {
+//                    newW = newW / newH * MAX_BUILDING_HEIGHT;
+//                    newH = MAX_BUILDING_HEIGHT;
+//                }
+                DefinedSizeSpriteBasedEntity entity = new DefinedSizeSpriteBasedEntity(i, MapCanvasLayer.class, buildingImage, newW, newH);
+                entity.setLocation(new Location(poly.getCenter().x, poly.getCenter().y));
+                boundingQuery.addToGroup("SPRITES", "building", poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), entity);
+                i++;
             }
         }
 
         boundingQuery.addMetaData("GRAPH", GroupDrawer.class, new GraphDrawer(drawer, graphData));
         boundingQuery.addMetaData("GRAPH", EdgesMetaData.class, new EdgesMetaData());
         boundingQuery.addMetaData("GRAPH", PolygonMetaData.class, new PolygonMetaData());
+
+        boundingQuery.addMetaData("SPRITES", GroupDrawer.class, new SpriteDrawer(drawer));
+        SpriteMetaData spriteMetaData = new SpriteMetaData();
+        spriteMetaData.putSpriteMetaData("building", new SingleSpriteMetaData(new Image(R.class.getResourceAsStream("building.png"))));
+        boundingQuery.addMetaData("SPRITES", SpriteMetaData.class, spriteMetaData);
+
     }
 
 }

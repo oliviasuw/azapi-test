@@ -35,7 +35,9 @@ public class PolygonMetaData {
     }
 
     private void init() {
-        ImagePattern grassImagePattern = new ImagePattern(new Image(R.class.getResourceAsStream("grassTexture.jpg")), 0, 0, 100, 100, false);
+//        ImagePattern grassImagePattern = new ImagePattern(new Image(R.class.getResourceAsStream("grassTexture.jpg")), 0, 0, 100, 100, false);
+        Color grassImagePattern = Color.GREEN;
+        
         keyTocolors = new HashMap<>();
         keyTocolors.put(new StringPair("leisure", "park"), grassImagePattern);
         keyTocolors.put(new StringPair("landuse", "grass"), grassImagePattern);
@@ -55,7 +57,7 @@ public class PolygonMetaData {
         keyTocolors.put(new StringPair("building", "school"), Color.RED); //* means everything
         keyTocolors.put(new StringPair("building", "office"), Color.RED); //* means everything
         keyTocolors.put(new StringPair("building", "commercial"), Color.RED); //* means everything
-        defaultPaint = Color.AQUA;
+        defaultPaint = Color.BURLYWOOD;
     }
 
 }

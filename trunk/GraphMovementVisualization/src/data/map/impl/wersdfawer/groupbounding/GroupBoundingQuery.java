@@ -153,5 +153,9 @@ public class GroupBoundingQuery implements GroupBoundingQueryInterface {
     public boolean hasSubGroup(String group, String subGroup) {
         return groups.get(group).get(subGroup) != null;
     }
-
+    
+    public boolean isMoveable(String group, String subgroup) {
+        return groups.get(group).get(subgroup).isMoveable();
+    }
+    
 }

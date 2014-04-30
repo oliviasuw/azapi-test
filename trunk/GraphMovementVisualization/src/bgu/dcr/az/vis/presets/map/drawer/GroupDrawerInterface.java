@@ -11,5 +11,5 @@ package bgu.dcr.az.vis.presets.map.drawer;
  * @author Shl
  */
 interface GroupDrawerInterface {
-    public void draw();
+    public void draw(String group);
 }

@@ -5,8 +5,15 @@
  */
 package bgu.dcr.az.vis.presets.map.drawer;
 
+import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import bgu.dcr.az.vis.tools.Location;
 import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 /**
  *
@@ -17,8 +24,8 @@ public class SimpleDrawer implements DrawerInterface {
     private GroupBoundingQuery boundingQuery;
     private Location location;
     private double scale = 1;
-    
-    
+    private double viewPortWidth;
+    private double viewPortHeight;
 
     public SimpleDrawer(GroupBoundingQuery boundingQuery) {
         this.boundingQuery = boundingQuery;
@@ -27,10 +34,19 @@ public class SimpleDrawer implements DrawerInterface {
 
     @Override
     public void draw() {
+
         for (String group : boundingQuery.getGroups()) {
             GroupDrawer drawer = (GroupDrawer) boundingQuery.getMetaData(group, GroupDrawer.class);
-            if (drawer != null) {
-                drawer.draw();
+            if (drawer != null && drawer.toDraw(group)) {
+                if (group.equals("GRAPH")) {
+                    CanvasLayer canvasLayer = (CanvasLayer) boundingQuery.getMetaData(group, CanvasLayer.class);
+                    Canvas canvas = canvasLayer.getCanvas();
+                    GraphicsContext gc = canvas.getGraphicsContext2D();
+                    gc.setFill(new Color(0, 0, 0, 1));
+                    gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+                    gc.strokeText("scale: " + getScale() + " meter/pixel", 14, canvas.getHeight() - 25);
+                }
+                drawer.draw(group);
             }
         }
     }
@@ -59,6 +75,26 @@ public class SimpleDrawer implements DrawerInterface {
     public void setViewPortLocation(double x, double y) {
         this.location.xProperty().set(x);
         this.location.yProperty().set(y);
+    }
+
+    @Override
+    public void setViewPortWidth(double viewPortWidth) {
+        this.viewPortWidth = viewPortWidth;
+    }
+
+    @Override
+    public void setViewPortHeight(double viewPortHeight) {
+        this.viewPortHeight = viewPortHeight;
+    }
+
+    @Override
+    public double getViewPortWidth() {
+        return viewPortWidth;
+    }
+
+    @Override
+    public double getViewPortHeight() {
+        return viewPortHeight;
     }
 
 }

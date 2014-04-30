@@ -38,53 +38,107 @@ import resources.img.R;
 public class GraphDrawer extends GroupDrawer {
 
     private final GraphData graphData;
+    private Location viewPortLocation;
+    private double viewPortScale;
 
     public GraphDrawer(DrawerInterface drawer, GraphData graphData) {
         super(drawer);
         this.graphData = graphData;
+        this.viewPortLocation = new Location();
+        this.viewPortScale = 1;
 
     }
 
-    @Override
-    public void draw() {
+//    @Override
+//    public void draw(String group) {
+//        Location newLocation = drawer.getViewPortLocation();
+//        double newScale = drawer.getScale();
+//        if (newLocation.getX() == viewPortLocation.getX() && newLocation.getY() == viewPortLocation.getY() && viewPortScale == newScale) {
+//            //caching!
+//            return;
+//        }
+//
+//        GroupBoundingQuery boundingQuery = drawer.getQuery();
+//        viewPortLocation.xProperty().set(newLocation.getX());
+//        viewPortLocation.yProperty().set(newLocation.getY());
+//        viewPortScale = newScale;
+//        double viewPortWidth = drawer.getViewPortWidth();
+//        double viewPortHeight = drawer.getViewPortHeight();
+//
+//        CanvasLayer canvasLayer = (CanvasLayer) drawer.getQuery().getMetaData("GRAPH", CanvasLayer.class);
+//        Canvas canvas = canvasLayer.getCanvas();
+//
+//        double scale = drawer.getScale();
+//        group = "GRAPH";
+//
+//        GraphicsContext gc = canvas.getGraphicsContext2D();
+//        //clear canvas
+//        gc.setFill(new Color(0, 0, 0, 1));
+//        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+//        //show info
+//        double tx = drawer.getViewPortLocation().getX() / drawer.getScale();
+//        double ty = drawer.getViewPortLocation().getY() / drawer.getScale();
+//        gc.strokeText("tx: " + tx + ", ty: " + ty, tx + 14, ty + canvas.getHeight() - 14);
+//        gc.strokeText("scale: " + drawer.getScale() + " meter/pixel", tx + 14, ty + canvas.getHeight() - 25);
+//
+//        //draw edges
+//        for (String edgeType : graphData.getTagToEdge().keySet()) {
+//            double epsilonH = boundingQuery.getEpsilon(group, "EDGES." + edgeType)[0];
+//            double epsilonW = boundingQuery.getEpsilon(group, "EDGES." + edgeType)[1];
+//
+//            Collection edges = boundingQuery.get(group, "EDGES." + edgeType, viewPortLocation.getX() - epsilonW / scale, viewPortLocation.getX() + viewPortWidth + epsilonW / scale, viewPortLocation.getY() + viewPortHeight + epsilonH / scale, viewPortLocation.getY() - epsilonH / scale);
+//            draw(canvas, graphData, edges, scale);
+//        }
+//
+//        //draw polygons
+//        for (String subgroup : boundingQuery.getSubGroups(group)) {
+//            if (!subgroup.contains("POLYGONS")) {
+//                continue;
+//            }
+//            double epsilonH = boundingQuery.getEpsilon(group, subgroup)[0];
+//            double epsilonW = boundingQuery.getEpsilon(group, subgroup)[1];
+//            Vector polys = (Vector) boundingQuery.get(group, subgroup, viewPortLocation.getX() - epsilonW / scale, viewPortLocation.getX() + viewPortWidth + epsilonW / scale, viewPortLocation.getY() + viewPortHeight + epsilonH / scale, viewPortLocation.getY() - epsilonH / scale);
+//
+//            for (Iterator it = polys.iterator(); it.hasNext();) {
+//                Object obj = it.next();
+//                GraphPolygon polygon = (GraphPolygon) obj;
+//                draw(canvas, graphData, polygon, scale);
+//            }
+//
+//        }
+//
+//    }
+//
+    public void _draw(String group, String subgroup) {
+        
         GroupBoundingQuery boundingQuery = drawer.getQuery();
-        Location viewPortLocation = drawer.getViewPortLocation();
-
+        double scale = drawer.getScale();
         CanvasLayer canvasLayer = (CanvasLayer) drawer.getQuery().getMetaData("GRAPH", CanvasLayer.class);
         Canvas canvas = canvasLayer.getCanvas();
+        
+        double viewPortWidth = drawer.getViewPortWidth();
+        double viewPortHeight = drawer.getViewPortHeight();
 
-        double scale = drawer.getScale();
-        String group = "GRAPH";
-
-        //draw edges
-        for (String edgeType : graphData.getTagToEdge().keySet()) {
-            double epsilonH = boundingQuery.getEpsilon(group, "EDGES." + edgeType)[0];
-            double epsilonW = boundingQuery.getEpsilon(group, "EDGES." + edgeType)[1];
-
-            Collection edges = boundingQuery.get(group, "EDGES." + edgeType, viewPortLocation.getX() - epsilonW * scale, viewPortLocation.getX() + epsilonW * scale, viewPortLocation.getY() + epsilonH * scale, viewPortLocation.getY() - epsilonH * scale);
+        double epsilonH = boundingQuery.getEpsilon(group, subgroup)[0];
+        double epsilonW = boundingQuery.getEpsilon(group, subgroup)[1];
+        
+        if (subgroup.contains("EDGES")) {
+            Collection edges = boundingQuery.get(group, subgroup, drawer.getViewPortLocation().getX() - epsilonW / scale, drawer.getViewPortLocation().getX() + viewPortWidth + epsilonW / scale, drawer.getViewPortLocation().getY() + viewPortHeight + epsilonH / scale, drawer.getViewPortLocation().getY() - epsilonH / scale);
             draw(canvas, graphData, edges, scale);
         }
 
-        //draw polygons
-        for (String subgroup : boundingQuery.getSubGroups(group)) {
-            if (!subgroup.contains("POLYGONS")) {
-                continue;
-            }
-            double epsilonH = boundingQuery.getEpsilon(group, subgroup)[0];
-            double epsilonW = boundingQuery.getEpsilon(group, subgroup)[1];
-            Vector polys = (Vector) boundingQuery.get(group, subgroup, viewPortLocation.getX() - epsilonW * scale, viewPortLocation.getX() + epsilonW * scale, viewPortLocation.getY() + epsilonH * scale, viewPortLocation.getY() - epsilonH * scale);
-
+        if (subgroup.contains("POLYGONS")) {
+            Vector polys = (Vector) boundingQuery.get(group, subgroup, drawer.getViewPortLocation().getX() - epsilonW / scale, drawer.getViewPortLocation().getX() + viewPortWidth + epsilonW / scale, drawer.getViewPortLocation().getY() + viewPortHeight + epsilonH / scale, drawer.getViewPortLocation().getY() - epsilonH / scale);
             for (Iterator it = polys.iterator(); it.hasNext();) {
                 Object obj = it.next();
                 GraphPolygon polygon = (GraphPolygon) obj;
                 draw(canvas, graphData, polygon, scale);
-//                backGroundImageDrawer.draw(canvas, graphData, polygon, scale);
             }
-
         }
 
     }
 
+    //cancel scale! with viewportsize no need for it! its already included
     public void draw(Canvas canvas, GraphData graphData, Collection edges, double scale) {
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -173,5 +227,6 @@ public class GraphDrawer extends GroupDrawer {
 
         gc.restore();
     }
+
 
 }

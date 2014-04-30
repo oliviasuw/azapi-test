@@ -29,7 +29,7 @@ public abstract class SimpleScrollableVisualScene extends ScrollPane implements 
     private final Map<Class, Layer> layers;
     private final Map<Long, Entity> entities;
 
-    private final Pane pane;
+    protected final Pane pane;
 
     public SimpleScrollableVisualScene(double contentPrefWidth, double contentPrefHeight) {
         this.rotationProperty = new SimpleDoubleProperty(0);

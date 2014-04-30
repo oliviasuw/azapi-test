@@ -80,4 +80,18 @@ public class DefinedSizeSpriteBasedEntity extends CanvasLayeredEntity {
         gc.drawImage(image, 0, 0, realWidth, realHeight);
     }
 
+    public double getRealWidth() {
+        return realWidth;
+    }
+
+    public double getRealHeight() {
+        return realHeight;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    
+    
 }

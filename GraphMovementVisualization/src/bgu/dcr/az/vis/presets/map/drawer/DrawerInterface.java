@@ -26,4 +26,14 @@ public interface DrawerInterface {
     public void setScale(double scale);
     
     public void setViewPortLocation(double x, double y);
+    
+    public void setViewPortWidth(double width);
+    public void setViewPortHeight(double width);
+
+    
+    public double getViewPortWidth();
+    
+    public double getViewPortHeight();
+
+    
 }

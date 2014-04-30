@@ -37,13 +37,13 @@ import javafx.scene.paint.Color;
  * @author Shl
  */
 public class MapCanvasLayer extends CanvasLayer {
+
     private GraphData graphData;
     private DrawerInterface drawer;
 
 //    private EdgeDrawer edgeDrawer;
 //    private PolygonDrawer polyDrawer;
 //    private SimplePolygonImageDrawer backGroundImageDrawer;
-
     /**
      * generates a new canvas layer map from the specified file path. the map is
      * represented by a jgrapht graph.
@@ -55,9 +55,7 @@ public class MapCanvasLayer extends CanvasLayer {
         super(scene);
         this.graphData = graphData;
         this.drawer = drawer;
- 
-        
-        
+
 //        graphDrawer = new GraphDrawer(boundingQuery);
 //        graphDrawer.drawGraph(getCanvas(), graphData, 1);
         getCanvas().setCacheHint(CacheHint.SPEED);
@@ -71,7 +69,6 @@ public class MapCanvasLayer extends CanvasLayer {
     @Override
     public void refresh() {
         drawer.draw();
-
     }
 
     public void drawGraph() {
@@ -88,7 +85,6 @@ public class MapCanvasLayer extends CanvasLayer {
         gc.strokeText("tx: " + tx + ", ty: " + ty, 14, getCanvas().getHeight() - 14);
         gc.strokeText("scale: " + getScale() + " meter/pixel", 14, getCanvas().getHeight() - 25);
         double scale = getScale();
-        
 
 //        for (String edgeType : graphData.getTagToEdge().keySet()) {
 //            double epsilonH = boundingQuery.getEpsilon("EDGES", edgeType)[0];

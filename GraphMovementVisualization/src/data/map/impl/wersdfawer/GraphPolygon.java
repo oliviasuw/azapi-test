@@ -5,6 +5,7 @@
  */
 package data.map.impl.wersdfawer;
 
+import data.map.impl.wersdfawer.groupbounding.HasId;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import java.util.HashMap;
  *
  * @author Shl
  */
-public class GraphPolygon {
+public class GraphPolygon implements HasId{
 
     private final Collection<String> nodes;
     private final HashMap<String, String> params;
@@ -143,6 +144,11 @@ public class GraphPolygon {
 
     public double getHeight() {
         return height;
+    }
+
+    @Override
+    public String getId() {
+        return null;
     }
     
     

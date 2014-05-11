@@ -38,7 +38,7 @@ public class SimpleDrawer implements DrawerInterface {
         for (String group : boundingQuery.getGroups()) {
             GroupDrawer drawer = (GroupDrawer) boundingQuery.getMetaData(group, GroupDrawer.class);
             if (drawer != null && drawer.toDraw(group)) {
-                if (group.equals("GRAPH")) {
+                if (group.equals("GRAPH") || group.equals("MOVING")) {
                     CanvasLayer canvasLayer = (CanvasLayer) boundingQuery.getMetaData(group, CanvasLayer.class);
                     Canvas canvas = canvasLayer.getCanvas();
                     GraphicsContext gc = canvas.getGraphicsContext2D();

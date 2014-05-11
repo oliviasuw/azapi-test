@@ -53,4 +53,14 @@ public class MoveAction extends SingleEntityAction {
                 new Location(from.getX() + dx * percentageTo, from.getY() + dy * percentageTo));
     }
 
+    public Location getFrom() {
+        return from;
+    }
+
+    public Location getTo() {
+        return to;
+    }
+    
+    
+
 }

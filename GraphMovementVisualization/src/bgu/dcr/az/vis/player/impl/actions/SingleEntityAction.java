@@ -34,7 +34,9 @@ public abstract class SingleEntityAction implements Action {
     @Override
     public final void initialize(Player player) {
         this.player = player;
-        entity = player.getScene().getEntity(entityId);
+//        entity = player.getScene().getEntity(entityId);
+        //we assume that something that can be moved is an entity?
+        entity = (Entity)player.getQuery().getById(String.valueOf(entityId));
         _initialize();
     }
 
@@ -43,7 +45,7 @@ public abstract class SingleEntityAction implements Action {
     @Override
     public final void update(double percentage) {
         _update(percentage);
-        entity.draw(player.getScene());
+//        entity.draw(player.getScene());
     }
 
     protected abstract void _update(double percentage);

@@ -6,12 +6,15 @@
 package bgu.dcr.az.vis.presets.map;
 
 import bgu.dcr.az.vis.controls.ui.PlayerControls;
+import bgu.dcr.az.vis.newplayer.NewPlayer;
 import bgu.dcr.az.vis.player.api.FramesStream;
 import bgu.dcr.az.vis.player.impl.BoundedFramesStream;
 import bgu.dcr.az.vis.player.impl.SimplePlayer;
+import bgu.dcr.az.vis.presets.map.drawer.SimpleDrawer;
 import data.events.api.SimulatorEvent;
 import data.events.impl.Tick;
 import data.events.impl.test.EventsTester;
+import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
 import java.util.Collection;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -26,17 +29,24 @@ import javafx.stage.WindowEvent;
 public class MapTester extends Application {
 
     private static MapVisualScene vs;
+    private GroupBoundingQuery boundingQuery;
+    private SimpleDrawer drawer;
 
     @Override
     public void start(Stage stage) throws Exception {
         
+        boundingQuery = new GroupBoundingQuery();
+        drawer = new SimpleDrawer(boundingQuery);
+        
         //change to beershevagraph.txt to get beersheva back
         //graph2_1.txt is telaviv
-        vs = new MapVisualScene(100, "graph2_1.txt");
+        vs = new MapVisualScene(100, "graph2_1.txt", boundingQuery, drawer);
         
         BoundedFramesStream fs = new BoundedFramesStream(10);
         FramesGenerator fg = new FramesGenerator(fs);
-        SimplePlayer player = new SimplePlayer(vs, 1000, 0);
+//        SimplePlayer player = new SimplePlayer(vs, 1000, 0);
+
+        NewPlayer player = new NewPlayer(boundingQuery, drawer, 1000, 0);
 
         BorderPane bp = new BorderPane();
         bp.setCenter(vs);

@@ -5,6 +5,8 @@
  */
 package bgu.dcr.az.vis.player.api;
 
+import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
+
 /**
  *
  * @author Zovadi
@@ -15,5 +17,7 @@ public interface Frame {
     
     void initialize(Player player);
     
-    void update(double percentage);
+//    void update(double percentage);
+     void update(double percentage, GroupBoundingQuery query);
+     
 }

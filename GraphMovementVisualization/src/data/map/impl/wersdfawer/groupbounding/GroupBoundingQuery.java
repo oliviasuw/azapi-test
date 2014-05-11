@@ -5,6 +5,7 @@
  */
 package data.map.impl.wersdfawer.groupbounding;
 
+import bgu.dcr.az.vis.player.impl.entities.DefinedSizeSpriteBasedEntity;
 import com.bbn.openmap.util.quadtree.QuadTree;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,12 +23,18 @@ public class GroupBoundingQuery implements GroupBoundingQueryInterface {
     private HashMap<String, Collection<String>> subToGroup;
     private HashMap<String, HashMap<Class, Object>> metadata;
     private final Set<String> movable;
+    private HashMap<String, HasId> idToEntity;
+    private HashMap<String, String[]> idToGroup;
 
     public GroupBoundingQuery() {
         this.groups = new HashMap<>();
         this.subToGroup = new HashMap<>();
         this.metadata = new HashMap<>();
-        this.movable = new HashSet<String>();
+        this.movable = new HashSet<>();
+
+        this.idToEntity = new HashMap<>();
+        this.idToGroup = new HashMap<>();
+
     }
 
     @Override
@@ -35,8 +42,7 @@ public class GroupBoundingQuery implements GroupBoundingQueryInterface {
         HashMap<String, BoundingGroup> groupHash;
         if (!hasGroup(group)) {
             groupHash = new HashMap<>();
-        }
-        else {
+        } else {
             groupHash = groups.get(group);
         }
         groupHash.put(subGroup, new BoundingGroup(subGroup, movable));
@@ -69,11 +75,13 @@ public class GroupBoundingQuery implements GroupBoundingQueryInterface {
     }
 
     @Override
-    public boolean addToGroup(String group, String subGroup, double x, double y, double width, double height, Object obj) {
+    public boolean addToGroup(String group, String subGroup, double x, double y, double width, double height, HasId obj) {
         HashMap<String, BoundingGroup> subs = groups.get(group);
         if (subs.get(subGroup) == null) {
             return false;
         }
+        idToEntity.put(obj.getId(), obj);
+        idToGroup.put(obj.getId(), new String[]{group, subGroup});
         return subs.get(subGroup).add(x, y, width, height, obj);
     }
 
@@ -161,24 +169,44 @@ public class GroupBoundingQuery implements GroupBoundingQueryInterface {
     public boolean hasSubGroup(String group, String subGroup) {
         return groups.get(group).get(subGroup) != null;
     }
-    
+
     public boolean isMoveable(String group, String subgroup) {
         return groups.get(group).get(subgroup).isMoveable();
     }
-    
+
     /**
      * a group is moveable if at least one of its subgroups is moveable.
-     * although possible, it is not adviced to mix unmoveable and movebale sub groups in the same group.
+     * although possible, it is not adviced to mix unmoveable and movebale sub
+     * groups in the same group.
+     *
      * @param group
      * @param subgroup
-     * @return 
+     * @return
      */
     public boolean isMoveable(String group) {
         return movable.contains(group);
     }
-    
-    public Object remove(String group, String subgroup, double x, double y, Object obj) {
+
+    @Override
+    public Object remove(String group, String subgroup, double x, double y, HasId obj) {
+        idToEntity.remove(obj.getId());
+        idToGroup.remove(obj.getId());
         return groups.get(group).get(subgroup).remove(x, y, obj);
     }
-    
+
+    public Object getById(String id) {
+        return idToEntity.get(id);
+    }
+
+    public String[] getGroupDetails(String entityId) {
+        return idToGroup.get(entityId);
+    }
+
+    public void remove(HasId entity, double x, double y) {
+        String[] groupDetails = idToGroup.remove(entity.getId());
+        if (groupDetails != null) {
+            remove(groupDetails[0], groupDetails[1], x, y, entity);
+        }
+    }
+
 }

@@ -9,6 +9,7 @@ import bgu.dcr.az.vis.player.api.Frame;
 import bgu.dcr.az.vis.player.api.FramesStream;
 import bgu.dcr.az.vis.player.api.Player;
 import bgu.dcr.az.vis.player.api.VisualScene;
+import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
 import javafx.animation.AnimationTimer;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
@@ -105,6 +106,11 @@ public class SimplePlayer implements Player {
         return animator != null || animator.isStopped();
     }
 
+    @Override
+    public GroupBoundingQuery getQuery() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     private class Animator extends AnimationTimer {
 
         private final FramesStream stream;
@@ -142,7 +148,7 @@ public class SimplePlayer implements Player {
             scene.getLayers().forEach(layer -> layer.refresh());
 
             if (currentFrame != null) {
-                currentFrame.update(frameProgress);
+//                currentFrame.update(frameProgress);
             }
 
             if (!isPaused && (currentFrame == null || frameProgress == 1)) {

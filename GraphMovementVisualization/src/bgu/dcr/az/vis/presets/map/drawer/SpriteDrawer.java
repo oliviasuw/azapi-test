@@ -68,7 +68,17 @@ public class SpriteDrawer extends GroupDrawer {
                 newW = newW / newH * MAX_SPRITE_HEIGHT;
                 newH = MAX_SPRITE_HEIGHT;
             }
-            gc.drawImage(entity.getImage(), (centerX - tx - ((newW / scale) / 2.0)) * scale, (centerY - ty - ((newH / scale) / 2.0)) * scale, newW, newH);
+
+            gc.save();
+            gc.translate((centerX - tx) * scale, (centerY - ty) * scale);
+            gc.rotate(entity.getRotation());
+            gc.rotate(canvasLayer.getRotation());
+            gc.scale(canvasLayer.getScale(), canvasLayer.getScale());
+            gc.translate(- ((newW / scale) / 2.0), - ((newH / scale) / 2.0));
+            gc.drawImage(entity.getImage(), 0, 0, newW, newH);
+            gc.restore();
+
+//            gc.drawImage(entity.getImage(), (centerX - tx - ((newW / scale) / 2.0)) * scale, (centerY - ty - ((newH / scale) / 2.0)) * scale, newW, newH);
         }
     }
 

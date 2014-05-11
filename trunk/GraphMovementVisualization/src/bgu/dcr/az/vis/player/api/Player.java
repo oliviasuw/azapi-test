@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.vis.player.api;
 
+import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 
@@ -31,4 +32,8 @@ public interface Player {
     boolean isPaused();
     
     boolean isStopped();
+    
+    
+    //recent addition
+    GroupBoundingQuery getQuery();
 }

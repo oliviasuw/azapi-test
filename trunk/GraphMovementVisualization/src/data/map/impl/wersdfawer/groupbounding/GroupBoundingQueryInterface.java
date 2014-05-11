@@ -16,31 +16,33 @@ public interface GroupBoundingQueryInterface {
 
     /**
      * subgroup can be the layer of the group for example.
-     * 
+     *
      * @param group
-     * @param subgroup 
-     * @param movable 
+     * @param subgroup
+     * @param movable
      */
     public void createGroup(String group, String subgroup, boolean movable);
 
     //does all necessary calcs including epsilon and sorting if need to
     public Collection get(String group, String subGroup, double left, double right, double up, double down);
-    
+
     /**
      * returns a list of groups where this subgroup is.
+     *
      * @param subGroup
-     * @return 
+     * @return
      */
     public Collection<String> getGroups(String subGroup);
 
-    public boolean addToGroup(String group, String subGroup, double x, double y, double width, double height, Object obj);
+    public boolean addToGroup(String group, String subGroup, double x, double y, double width, double height, HasId obj);
 
-    public Object remove(String group, String subgroup, double x, double y, Object obj);
+    public Object remove(String group, String subgroup, double x, double y, HasId obj);
 
     public boolean hasGroup(String group);
 
     public double[] getEpsilon(String group, String subGroup);
-    
+
     public double[] getGroupEpsilon(String group);
+
 
 }

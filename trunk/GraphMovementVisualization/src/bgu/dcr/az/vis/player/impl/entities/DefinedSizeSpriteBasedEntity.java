@@ -6,6 +6,7 @@
 package bgu.dcr.az.vis.player.impl.entities;
 
 import bgu.dcr.az.vis.player.api.Layer;
+import data.map.impl.wersdfawer.groupbounding.HasId;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -20,7 +21,7 @@ import javafx.scene.image.Image;
  * 
  * @author Shl
  */
-public class DefinedSizeSpriteBasedEntity extends CanvasLayeredEntity {
+public class DefinedSizeSpriteBasedEntity extends CanvasLayeredEntity implements HasId {
 
     private double realWidth;
     private double realHeight;
@@ -92,6 +93,10 @@ public class DefinedSizeSpriteBasedEntity extends CanvasLayeredEntity {
         return image;
     }
 
+    @Override
+    public String getId() {
+        return String.valueOf(this.getEntityId());
+    }
     
     
 }

@@ -17,4 +17,5 @@ public interface Action {
     
     Action subAction(double percentageFrom, double percentageTo);
     
+    long getEntityId();
 }

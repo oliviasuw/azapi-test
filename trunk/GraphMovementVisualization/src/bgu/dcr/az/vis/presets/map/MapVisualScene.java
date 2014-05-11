@@ -17,6 +17,7 @@ import bgu.dcr.az.vis.presets.map.drawer.SimpleDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.SpriteDrawer;
 import bgu.dcr.az.vis.tools.Location;
 import data.map.impl.wersdfawer.AZVisVertex;
+import data.map.impl.wersdfawer.Edge;
 import data.map.impl.wersdfawer.GraphData;
 import data.map.impl.wersdfawer.GraphPolygon;
 import data.map.impl.wersdfawer.GraphReader;
@@ -48,9 +49,12 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
     private SimpleDrawer drawer;
     private HashMap<String, Image> images;
 
-    public MapVisualScene(int carNum, String mapPath) {
+    public MapVisualScene(int carNum, String mapPath, GroupBoundingQuery query, SimpleDrawer drawer) {
         super(DEFAULT_CONTAINER_WIDTH, DEFAULT_CONTAINER_HEIGHT);
 
+        this.boundingQuery = query;
+        this.drawer = drawer;
+        
         init(mapPath);
         CanvasLayer front = new CanvasLayer(this);
         MapCanvasLayer back = new MapCanvasLayer(this, graphData, drawer);
@@ -150,9 +154,6 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
     private void init(String mapFilePath) {
         graphData = new GraphReader().readGraph(mapFilePath);
 
-        boundingQuery = new GroupBoundingQuery();
-        drawer = new SimpleDrawer(boundingQuery);
-
         images = new HashMap<>();
         images.put("university", new Image(R.class.getResourceAsStream("university.png")));
         images.put("school", new Image(R.class.getResourceAsStream("university.png")));
@@ -174,7 +175,11 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                 }
                 double width = Math.abs(target.getX() - source.getX());
                 double height = Math.abs(target.getY() - source.getY());
-                boundingQuery.addToGroup("GRAPH", "EDGES." + edgeType, source.getX(), source.getY(), width, height, edge);
+                
+                
+                //this is a temporary hack for hasID
+                Edge temp = new Edge(edge);
+                boundingQuery.addToGroup("GRAPH", "EDGES." + edgeType, source.getX(), source.getY(), width, height, temp);
 
             }
         }

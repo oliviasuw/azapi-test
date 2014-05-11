@@ -9,6 +9,7 @@ import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import bgu.dcr.az.vis.tools.Location;
 import bgu.dcr.az.vis.tools.StringPair;
 import data.map.impl.wersdfawer.AZVisVertex;
+import data.map.impl.wersdfawer.Edge;
 import data.map.impl.wersdfawer.GraphData;
 import data.map.impl.wersdfawer.GraphPolygon;
 import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
@@ -50,18 +51,18 @@ public class GraphDrawer extends GroupDrawer {
 
     @Override
     public void _draw(String group, String subgroup) {
-        
+
         GroupBoundingQuery boundingQuery = drawer.getQuery();
         double scale = drawer.getScale();
         CanvasLayer canvasLayer = (CanvasLayer) drawer.getQuery().getMetaData("GRAPH", CanvasLayer.class);
         Canvas canvas = canvasLayer.getCanvas();
-        
+
         double viewPortWidth = drawer.getViewPortWidth();
         double viewPortHeight = drawer.getViewPortHeight();
 
         double epsilonH = boundingQuery.getEpsilon(group, subgroup)[1];
         double epsilonW = boundingQuery.getEpsilon(group, subgroup)[0];
-        
+
         if (subgroup.contains("EDGES")) {
             Collection edges = boundingQuery.get(group, subgroup, drawer.getViewPortLocation().getX() - epsilonW * scale, drawer.getViewPortLocation().getX() + viewPortWidth + epsilonW * scale, drawer.getViewPortLocation().getY() + viewPortHeight + epsilonH * scale, drawer.getViewPortLocation().getY() - epsilonH * scale);
             draw(canvas, graphData, edges, scale);
@@ -90,7 +91,9 @@ public class GraphDrawer extends GroupDrawer {
         EdgesMetaData edgeMeta = (EdgesMetaData) drawer.getQuery().getMetaData("GRAPH", EdgesMetaData.class);
 
         if (edges.size() > 0) {
-            HashMap<String, String> edgeData = (HashMap<String, String>) graphData.getData((String) edges.iterator().next());
+            //temporary hack (Edge)
+            String name = ((Edge) edges.iterator().next()).getId();
+            HashMap<String, String> edgeData = (HashMap<String, String>) graphData.getData(name);
             EdgeDescriptor ed = edgeMeta.getDescriptors().get(edgeData.get(edgeMeta.ROAD_KEY()));
             if (ed == null) {
                 ed = edgeMeta.getDefaultDescriptor();
@@ -101,7 +104,10 @@ public class GraphDrawer extends GroupDrawer {
             gc.save();
             gc.beginPath();
             for (Object edgeObj : edges) {
-                String edgeName = (String) edgeObj;
+//                String edgeName = (String) edgeObj;
+                //temporary hack:
+                String edgeName = ((Edge) edgeObj).getId();
+
                 AZVisVertex source = null;
                 AZVisVertex target = null;
                 try {
@@ -167,6 +173,5 @@ public class GraphDrawer extends GroupDrawer {
 
         gc.restore();
     }
-
 
 }

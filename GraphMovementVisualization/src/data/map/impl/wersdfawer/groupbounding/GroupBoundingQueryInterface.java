@@ -35,6 +35,8 @@ public interface GroupBoundingQueryInterface {
 
     public boolean addToGroup(String group, String subGroup, double x, double y, double width, double height, Object obj);
 
+    public Object remove(String group, String subgroup, double x, double y, Object obj);
+
     public boolean hasGroup(String group);
 
     public double[] getEpsilon(String group, String subGroup);

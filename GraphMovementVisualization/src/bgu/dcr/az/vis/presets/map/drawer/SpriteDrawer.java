@@ -34,25 +34,27 @@ public class SpriteDrawer extends GroupDrawer {
         GroupBoundingQuery boundingQuery = drawer.getQuery();
         Location viewPortLocation = drawer.getViewPortLocation();
 
-        CanvasLayer canvasLayer = (CanvasLayer) drawer.getQuery().getMetaData("SPRITES", CanvasLayer.class);
+        CanvasLayer canvasLayer = (CanvasLayer) drawer.getQuery().getMetaData(group, CanvasLayer.class);
         Canvas canvas = canvasLayer.getCanvas();
         GraphicsContext gc = canvas.getGraphicsContext2D();
         double scale = drawer.getScale();
         double viewPortWidth = drawer.getViewPortWidth();
         double viewPortHeight = drawer.getViewPortHeight();
 
-        double epsilonH = boundingQuery.getEpsilon(group, subgroup)[0];
-        double epsilonW = boundingQuery.getEpsilon(group, subgroup)[1];
-        Vector entities = (Vector) boundingQuery.get(group, subgroup, viewPortLocation.getX() - epsilonW / scale, viewPortLocation.getX() + viewPortWidth + epsilonW / scale, viewPortLocation.getY() + viewPortHeight + epsilonH / scale, viewPortLocation.getY() - epsilonH / scale);
-        entities.sort(new Comparator() {
+        double epsilonH = boundingQuery.getEpsilon(group, subgroup)[1];
+        double epsilonW = boundingQuery.getEpsilon(group, subgroup)[0];
+        Vector entities = (Vector) boundingQuery.get(group, subgroup, viewPortLocation.getX() - epsilonW * scale, viewPortLocation.getX() + viewPortWidth + epsilonW * scale, viewPortLocation.getY() + viewPortHeight + epsilonH * scale, viewPortLocation.getY() - epsilonH * scale);
+        if (!boundingQuery.isMoveable(group, subgroup)) {
+            entities.sort(new Comparator() {
 
-            @Override
-            public int compare(Object o1, Object o2) {
-                DefinedSizeSpriteBasedEntity entity1 = (DefinedSizeSpriteBasedEntity) o1;
-                DefinedSizeSpriteBasedEntity entity2 = (DefinedSizeSpriteBasedEntity) o2;
-                return (entity1.getLocation().getY() > entity2.getLocation().getY()) ? 1 : -1;
-            }
-        });
+                @Override
+                public int compare(Object o1, Object o2) {
+                    DefinedSizeSpriteBasedEntity entity1 = (DefinedSizeSpriteBasedEntity) o1;
+                    DefinedSizeSpriteBasedEntity entity2 = (DefinedSizeSpriteBasedEntity) o2;
+                    return (entity1.getLocation().getY() > entity2.getLocation().getY()) ? 1 : -1;
+                }
+            });
+        }
         for (Iterator it = entities.iterator(); it.hasNext();) {
             Object obj = it.next();
             DefinedSizeSpriteBasedEntity entity = (DefinedSizeSpriteBasedEntity) obj;
@@ -66,7 +68,7 @@ public class SpriteDrawer extends GroupDrawer {
                 newW = newW / newH * MAX_SPRITE_HEIGHT;
                 newH = MAX_SPRITE_HEIGHT;
             }
-            gc.drawImage(entity.getImage(), (centerX - tx - ((newW/scale) / 2.0)) * scale, (centerY - ty - ((newH/scale) / 2.0)) * scale, newW, newH);
+            gc.drawImage(entity.getImage(), (centerX - tx - ((newW / scale) / 2.0)) * scale, (centerY - ty - ((newH / scale) / 2.0)) * scale, newW, newH);
         }
     }
 

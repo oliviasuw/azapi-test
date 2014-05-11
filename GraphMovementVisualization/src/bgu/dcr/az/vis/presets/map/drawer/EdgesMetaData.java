@@ -23,6 +23,7 @@ import resources.img.R;
  */
 public final class EdgesMetaData {
     
+    public static final String ROAD_KEY = "highway";
     private final double LANE_WIDTH = 3.6; //in meters
     private HashMap<String, EdgeDescriptor> descriptors;
     private EdgeDescriptor defaultDescriptor; 
@@ -41,6 +42,10 @@ public final class EdgesMetaData {
 
     public double LANE_WIDTH() {
         return LANE_WIDTH;
+    }
+    
+    public String ROAD_KEY() {
+        return ROAD_KEY;
     }
     
     public void init() {

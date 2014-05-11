@@ -15,8 +15,6 @@ import bgu.dcr.az.vis.presets.map.drawer.GroupDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.PolygonMetaData;
 import bgu.dcr.az.vis.presets.map.drawer.SimpleDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.SpriteDrawer;
-import bgu.dcr.az.vis.presets.map.drawer.SpriteMetaData;
-import bgu.dcr.az.vis.presets.map.drawer.SpriteMetaData.SingleSpriteMetaData;
 import bgu.dcr.az.vis.tools.Location;
 import data.map.impl.wersdfawer.AZVisVertex;
 import data.map.impl.wersdfawer.GraphData;
@@ -25,6 +23,7 @@ import data.map.impl.wersdfawer.GraphReader;
 import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
 import java.awt.geom.Point2D;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -47,6 +46,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
     private GraphData graphData;
     private GroupBoundingQuery boundingQuery;
     private SimpleDrawer drawer;
+    private HashMap<String, Image> images;
 
     public MapVisualScene(int carNum, String mapPath) {
         super(DEFAULT_CONTAINER_WIDTH, DEFAULT_CONTAINER_HEIGHT);
@@ -56,6 +56,8 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         MapCanvasLayer back = new MapCanvasLayer(this, graphData, drawer);
         boundingQuery.addMetaData("GRAPH", CanvasLayer.class, back);
         boundingQuery.addMetaData("SPRITES", CanvasLayer.class, back);
+        
+        boundingQuery.addMetaData("MOVING", CanvasLayer.class, front);
 
         registerLayer(MapCanvasLayer.class, back, back.getCanvas());
         registerLayer(CanvasLayer.class, front, front.getCanvas());
@@ -76,6 +78,10 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                     scale = MAX_SCALE;
                 }
                 drawer.setScale(scale);
+
+                //problematic lines
+                Point2D.Double b = back.getGraphData().getBounds();
+                pane.setPrefSize(b.x * scale, b.y * scale);
 
                 double screenWidth = getViewportBounds().getWidth();
                 double screenHeight = getViewportBounds().getHeight();
@@ -131,7 +137,10 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         Image greenCarImage = new Image(R.class.getResourceAsStream("car-green.jpg"));
         Image blueCarImage = new Image(R.class.getResourceAsStream("car-blue.jpg"));
         for (long i = 0; i < carNum; i++) {
-            addEntity(i, new DefinedSizeSpriteBasedEntity(i, CanvasLayer.class, (Math.random() > 0.5) ? greenCarImage : blueCarImage, DefinedSizeSpriteBasedEntity.SizeParameter.WIDTH, 1.7));
+            DefinedSizeSpriteBasedEntity car = new DefinedSizeSpriteBasedEntity(i, CanvasLayer.class, (Math.random() > 0.5) ? greenCarImage : blueCarImage, DefinedSizeSpriteBasedEntity.SizeParameter.WIDTH, 1.7);
+            addEntity(i, car);
+
+            boundingQuery.addToGroup("MOVING", "CARS", 10, 10, car.getRealHeight(), car.getRealWidth(), car);
         }
 
         setPrefWidth(800);
@@ -143,6 +152,12 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
         boundingQuery = new GroupBoundingQuery();
         drawer = new SimpleDrawer(boundingQuery);
+
+        images = new HashMap<>();
+        images.put("university", new Image(R.class.getResourceAsStream("university.png")));
+        images.put("school", new Image(R.class.getResourceAsStream("university.png")));
+        images.put("office", new Image(R.class.getResourceAsStream("office.png")));
+        Image defaultImage = new Image(R.class.getResourceAsStream("building.png"));
 
         for (String edgeType : graphData.getTagToEdge().keySet()) {
             Collection<String> edges = graphData.getTagToEdge().get(edgeType);
@@ -160,6 +175,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                 double width = Math.abs(target.getX() - source.getX());
                 double height = Math.abs(target.getY() - source.getY());
                 boundingQuery.addToGroup("GRAPH", "EDGES." + edgeType, source.getX(), source.getY(), width, height, edge);
+
             }
         }
         LinkedList<GraphPolygon> polys = graphData.getPolygons();
@@ -169,8 +185,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         boundingQuery.createGroup("GRAPH", "POLYGONS.building", false);
         boundingQuery.createGroup("GRAPH", "POLYGONS.defaultPolys", false);
 
-        Image buildingImage = new Image(R.class.getResourceAsStream("building.png"));
-        int i=0;
+        int i = 0;
         for (GraphPolygon poly : polys) {
             String key = poly.getParams().entrySet().iterator().next().getKey();
             if (boundingQuery.hasSubGroup("GRAPH", "POLYGONS." + key)) {
@@ -181,6 +196,10 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
             if (key.equals("building")) {
                 double subScale = Math.sqrt(Math.abs(poly.getArea()));
+                Image buildingImage = images.get(poly.getParams().get("building"));
+                if (buildingImage == null) {
+                    buildingImage = defaultImage;
+                }
                 double newW = subScale;
                 double newH = (buildingImage.getHeight() / buildingImage.getWidth()) * newW;
 //                if (newH > MAX_BUILDING_HEIGHT) {
@@ -198,11 +217,11 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         boundingQuery.addMetaData("GRAPH", EdgesMetaData.class, new EdgesMetaData());
         boundingQuery.addMetaData("GRAPH", PolygonMetaData.class, new PolygonMetaData());
 
-        boundingQuery.addMetaData("SPRITES", GroupDrawer.class, new SpriteDrawer(drawer));
-        SpriteMetaData spriteMetaData = new SpriteMetaData();
-        spriteMetaData.putSpriteMetaData("building", new SingleSpriteMetaData(new Image(R.class.getResourceAsStream("building.png"))));
-        boundingQuery.addMetaData("SPRITES", SpriteMetaData.class, spriteMetaData);
+        SpriteDrawer spriteDrawer = new SpriteDrawer(drawer);
+        boundingQuery.addMetaData("SPRITES", GroupDrawer.class, spriteDrawer);
 
+        boundingQuery.createGroup("MOVING", "CARS", true);
+        boundingQuery.addMetaData("MOVING",GroupDrawer.class, spriteDrawer);
     }
 
 }

@@ -8,6 +8,7 @@ package data.map.impl.wersdfawer.groupbounding;
 import com.bbn.openmap.util.quadtree.QuadTree;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -20,11 +21,13 @@ public class GroupBoundingQuery implements GroupBoundingQueryInterface {
     private HashMap<String, HashMap<String, BoundingGroup>> groups;
     private HashMap<String, Collection<String>> subToGroup;
     private HashMap<String, HashMap<Class, Object>> metadata;
+    private final Set<String> movable;
 
     public GroupBoundingQuery() {
         this.groups = new HashMap<>();
         this.subToGroup = new HashMap<>();
         this.metadata = new HashMap<>();
+        this.movable = new HashSet<String>();
     }
 
     @Override
@@ -39,6 +42,9 @@ public class GroupBoundingQuery implements GroupBoundingQueryInterface {
         groupHash.put(subGroup, new BoundingGroup(subGroup, movable));
         groups.put(group, groupHash);
         addSubToGroup(subGroup, group, movable);
+        if (movable) {
+            this.movable.add(group);
+        }
     }
 
     private void addSubToGroup(String subgroup, String group, boolean movable) {
@@ -108,6 +114,8 @@ public class GroupBoundingQuery implements GroupBoundingQueryInterface {
                 ans[1] = epsH;
             }
         }
+        ans[0]++;
+        ans[1]++;
         return ans;
     }
 
@@ -156,6 +164,21 @@ public class GroupBoundingQuery implements GroupBoundingQueryInterface {
     
     public boolean isMoveable(String group, String subgroup) {
         return groups.get(group).get(subgroup).isMoveable();
+    }
+    
+    /**
+     * a group is moveable if at least one of its subgroups is moveable.
+     * although possible, it is not adviced to mix unmoveable and movebale sub groups in the same group.
+     * @param group
+     * @param subgroup
+     * @return 
+     */
+    public boolean isMoveable(String group) {
+        return movable.contains(group);
+    }
+    
+    public Object remove(String group, String subgroup, double x, double y, Object obj) {
+        return groups.get(group).get(subgroup).remove(x, y, obj);
     }
     
 }

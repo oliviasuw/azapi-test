@@ -49,6 +49,10 @@ public class BoundingGroup {
     public Vector get(double left, double right, double up, double down) {
         return this.objects.get((float) up, (float) left, (float) down, (float) right);
     }
+    
+    public Object remove(double x, double y, Object obj) {
+        return this.objects.remove((float)y, (float)x, obj);
+    }
 
     /**
      * returns array with array[0]==epsilon height and array[1]==epsilon width,

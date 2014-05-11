@@ -8,9 +8,12 @@ package data.map.impl.wersdfawer;
 import bgu.dcr.az.vis.tools.Location;
 import com.bbn.openmap.util.quadtree.QuadTree;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
@@ -21,18 +24,17 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 public class GraphData {
 
     public static final int QUAD_TREE_BOUNDS = 100000;
-    
+
     private HashMap<String, Object> data = new HashMap<>();
     private SimpleWeightedGraph<String, String> graph = new SimpleWeightedGraph<>(String.class);
 
     //saves edges according to what will become their path descriptors
-//    private HashMap<String, QuadTree> tagToEdges = new HashMap<String, QuadTree>();
     private HashMap<String, Collection<String>> tagToEdges = new HashMap();
 
-    
+    private HashMap<String, Set<Object>> edgeToEntities = new HashMap<String, Set<Object>>();
+
     private LinkedList<GraphPolygon> polygons = new LinkedList<>();
 
-//    private QuadTree polygons = new QuadTree(0, QUAD_TREE_BOUNDS, QUAD_TREE_BOUNDS, 0, QUAD_TREE_BOUNDS);
     private double maxPolygonWidth = Double.MIN_VALUE;
     private double maxPolygonHeight = Double.MIN_VALUE;
     private double maxEdgeWidth = Double.MIN_VALUE;
@@ -45,10 +47,6 @@ public class GraphData {
         return data.get(name);
     }
 
-//        
-//    public Object addData(String name, Object toPut) {
-//        return data.put(name, toPut);
-//    }
     public void addVertex(String name, Object vertexData) {
         data.put(name, vertexData);
         graph.addVertex(name);
@@ -69,7 +67,6 @@ public class GraphData {
         String firstTag = edgeDataReal.values().iterator().next();
         if (tagToEdges.get(firstTag) == null) {
             tagToEdges.put(firstTag, new LinkedList<>());
-//            tagToEdges.put(firstTag, new QuadTree(0, QUAD_TREE_BOUNDS, QUAD_TREE_BOUNDS, 0, QUAD_TREE_BOUNDS));
         }
         tagToEdges.get(firstTag).add(name);
 
@@ -84,7 +81,7 @@ public class GraphData {
         if (edgeHeight > maxEdgeHeight) {
             maxEdgeHeight = edgeHeight;
         }
-        
+
     }
 
     public Set<String> getVertexSet() {
@@ -111,19 +108,11 @@ public class GraphData {
         return tagToEdges;
     }
 
-//    public Set<String> getOutgoingEdgesOf(String edgeName) {
-//        return graph.outgoingEdgesOf(edgeName);
-//    }
-//    
-//    public Set<String> getIncomingEdgesOf(String edgeName) {
-//        return graph.incomingEdgesOf(edgeName);
-//    }
     void addPolygon(Collection<String> pNodes, HashMap<String, String> params) {
         GraphPolygon graphPolygon = new GraphPolygon(pNodes, params);
         graphPolygon.setCenter(this);
         polygons.add(graphPolygon);
 
-//        polygons.put((float) graphPolygon.getCenter().y, (float) graphPolygon.getCenter().x, graphPolygon);
         double height = graphPolygon.getHeight();
         double width = graphPolygon.getWidth();
         if (height > maxPolygonHeight) {
@@ -147,9 +136,6 @@ public class GraphData {
         return bounds;
     }
 
-//    public QuadTree getEdgeQuadTree() {
-//        return edgeQuadTree;
-//    }
     public double getMaxPolygonWidth() {
         return maxPolygonWidth;
     }
@@ -165,7 +151,63 @@ public class GraphData {
     public double getMaxEdgeHeight() {
         return maxEdgeHeight;
     }
-    
-    
+
+    public boolean addEntityToEdge(String edge, Object entity) {
+        if (!graph.edgeSet().contains(edge)) {
+            String[] split = edge.split(" ");
+            edge = split[1] + " " + split[0];
+            if (!graph.edgeSet().contains(edge)) {
+                System.out.println("cant add entity! edgeset doesnt contain edge " + edge);
+                return false;
+            }
+        }
+        Set<Object> get = edgeToEntities.get(edge);
+        if (get == null) {
+            get = new HashSet<>();
+            edgeToEntities.put(edge, get);
+        }
+        return get.add(entity);
+    }
+
+    public boolean removeEdgeEntity(String edge, Object entity) {
+        if (!graph.edgeSet().contains(edge)) {
+            String[] split = edge.split(" ");
+            edge = split[1] + " " + split[0];
+            if (!graph.edgeSet().contains(edge)) {
+                System.out.println("cant get entities! edgeset doesnt contain edge " + edge);
+            }
+        }
+        Set<Object> get = edgeToEntities.get(edge);
+        if (get != null) {
+            return get.remove(entity);
+        }
+        return false;
+    }
+
+    public Set<Object> getEdgeEntities(String edge) {
+        if (!graph.edgeSet().contains(edge)) {
+            String[] split = edge.split(" ");
+            edge = split[1] + " " + split[0];
+            if (!graph.edgeSet().contains(edge)) {
+                System.out.println("cant get entities! edgeset doesnt contain edge " + edge);
+            }
+        }
+        return edgeToEntities.get(edge);
+    }
+
+    public boolean hasEntity(String edge) {
+        if (!graph.edgeSet().contains(edge)) {
+            String[] split = edge.split(" ");
+            edge = split[1] + " " + split[0];
+            if (!graph.edgeSet().contains(edge)) {
+                System.out.println("cant check if has entity! edgeset doesnt contain edge " + edge);
+            }
+        }
+        Set<Object> get = edgeToEntities.get(edge);
+        if (get != null) {
+            return get.contains(edge);
+        }
+        return false;
+    }
 
 }

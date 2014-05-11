@@ -104,23 +104,19 @@ public class EventsTester {
 
                 double endPrecent = ((tick.getTickNum() - movee.getStartTick() + 1.0) / (movee.getEndTick() - movee.getStartTick() + 1.0)) * 100.0;
                 double startPrecent = ((tick.getTickNum() - movee.getStartTick()) / (movee.getEndTick() - movee.getStartTick() + 1.0)) * 100.0;
-//                if (!edgeSet.contains(edge)) {
-//                    String[] split = edge.split(" ");
-//                    Set<String> edgesof = graphData.getEdgesOf(split[1]);
-//                    for (String meh : edgesof) {
-//                        if (graphData.getEdgeTarget(meh).equals(split[0])) {
-//                            edge = meh;
-//                        }
-//                    }
-//
-//                    String reversed = split[1] + " " + split[0];
-//                }
                 Location startLocation = translateToLocation(from, to, startPrecent);
                 Location endLocation = translateToLocation(from, to, endPrecent);
                 frame.directedMove(who, startLocation, endLocation);
+
+                //this has to sit in player because it has to be live...
+//                String edgeName = from + " " + to;
+//                if (!graphData.hasEntity(edgeName)) {
+//                    graphData.addEntityToEdge(edgeName, who);
+//                }   
+                
             }
         }
-            stream.writeFrame(frame);
+        stream.writeFrame(frame);
     }
 
     private Location translateToLocation(String src, String target, Double precentage) {

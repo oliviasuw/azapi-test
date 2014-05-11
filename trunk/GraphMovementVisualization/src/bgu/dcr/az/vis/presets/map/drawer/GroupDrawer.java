@@ -52,7 +52,8 @@ public abstract class GroupDrawer implements GroupDrawerInterface {
     public boolean toDraw(String group) {
         Location newLocation = drawer.getViewPortLocation();
         double newScale = drawer.getScale();
-        return (newLocation.getX() != viewPortLocation.getX() || newLocation.getY() != viewPortLocation.getY() || viewPortScale != newScale);
+        boolean moveable = drawer.getQuery().isMoveable(group);
+        return (moveable || newLocation.getX() != viewPortLocation.getX() || newLocation.getY() != viewPortLocation.getY() || viewPortScale != newScale);
     }
 
 }

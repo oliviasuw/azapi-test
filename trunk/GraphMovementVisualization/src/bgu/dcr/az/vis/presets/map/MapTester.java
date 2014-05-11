@@ -31,6 +31,7 @@ public class MapTester extends Application {
     public void start(Stage stage) throws Exception {
         
         //change to beershevagraph.txt to get beersheva back
+        //graph2_1.txt is telaviv
         vs = new MapVisualScene(100, "graph2_1.txt");
         
         BoundedFramesStream fs = new BoundedFramesStream(10);

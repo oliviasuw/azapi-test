@@ -11,5 +11,5 @@ import bgu.dcr.az.dcr.api.annotations.Algorithm;
  * @author bennyl
  */
 @Algorithm("SIMPLE_AGENT")
-public abstract class SimpleAgent extends Agent {
+public abstract class SimpleAgent extends Agent {    
 }

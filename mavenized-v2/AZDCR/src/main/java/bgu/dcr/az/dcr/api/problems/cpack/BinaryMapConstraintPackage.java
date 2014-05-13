@@ -115,12 +115,12 @@ public class BinaryMapConstraintPackage extends AbstractConstraintPackage {
         for (int i = 0; i < var.length; i++) {
             int ival = assignment.getAssignment(var[i]);
             getConstraintCost(var[i], var[i], ival, result);
-            c = Agt0DSL.boundedSumm(c, result.getCost());
+            c = Agt0DSL.boundedSum(c, result.getCost());
             cc += result.getCheckCost();
             for (int j = i + 1; j < var.length; j++) {
                 int jval = assignment.getAssignment(var[j]);
                 getConstraintCost(var[j], var[j], jval, var[i], ival, result);
-                c = Agt0DSL.boundedSumm(c, result.getCost());
+                c = Agt0DSL.boundedSum(c, result.getCost());
                 cc += result.getCheckCost();
             }
         }

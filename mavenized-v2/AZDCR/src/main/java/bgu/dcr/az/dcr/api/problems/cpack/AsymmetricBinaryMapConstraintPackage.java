@@ -34,7 +34,7 @@ public class AsymmetricBinaryMapConstraintPackage extends BinaryMapConstraintPac
             int var = e.getKey();
             int val = e.getValue();
             getConstraintCost(owner, owner, value, var, val, result);
-            c = Agt0DSL.boundedSumm(c, result.getCost());
+            c = Agt0DSL.boundedSum(c, result.getCost());
             cc += result.getCheckCost();
         }
 
@@ -51,16 +51,16 @@ public class AsymmetricBinaryMapConstraintPackage extends BinaryMapConstraintPac
             int var = e.getKey();
             int val = e.getValue();
             getConstraintCost(var, var, val, result);
-            c = Agt0DSL.boundedSumm(c, result.getCost());
+            c = Agt0DSL.boundedSum(c, result.getCost());
 
             for (Map.Entry<Integer, Integer> pe : past) {
                 int pvar = pe.getKey();
                 int pval = pe.getValue();
 
                 getConstraintCost(pvar, pvar, pval, var, val, result);
-                c = Agt0DSL.boundedSumm(c, result.getCost());
+                c = Agt0DSL.boundedSum(c, result.getCost());
                 getConstraintCost(var, var, val, pvar, pval, result);
-                c = Agt0DSL.boundedSumm(c, result.getCost());
+                c = Agt0DSL.boundedSum(c, result.getCost());
             }
 
             past.add(e);

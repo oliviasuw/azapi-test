@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: AZMetadataGenerator
+Bundle-SymbolicName: AZMetadataGenerator;singleton:=true
+Bundle-Version: 1.0.0.0
+Bundle-Activator: bgu.dcr.az.metagen.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.jdt.apt.core
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,
+ lib/mvel2-2.1.3.Final.jar,
+ lib/commons-lang3-3.3.1.jar

@@ -70,13 +70,13 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>AZCmmon</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>autogen</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>
+
+    <modules>    
+        <module>../AZCmmon</module>
+    </modules>
+
 </project>

@@ -2,35 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>bgu.dcr.az</groupId>
+    <parent>
+        <groupId>bgu.dcr.az</groupId>
+        <artifactId>AgentZero</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    
     <artifactId>AZUI</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>AZUI</name>
-
-    <organization>
-        <!-- Used as the 'Vendor' for JNLP generation -->
-        <name>Your Organisation</name>
-    </organization>
 
     <build>
-        
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.xml</include>
-                    <include>**/*.css</include>
-                    <include>**/*.png</include>
-                    <include>**/*.fxml</include>
-                </includes>                
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
-        
+                
         <plugins>            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -63,7 +46,7 @@
             <url>svn:https://azapi-test.googlecode.com/svn/maven-repo/releases</url>
             <uniqueVersion>false</uniqueVersion>
         </repository>
-<!--        <snapshotRepository>
+        <!--        <snapshotRepository>
             <id>maven-agent-zero-plugin-repo-releases</id>
             <name>Maven Repository for AgentZero Plugin (snapshots)</name>
             <url>svn:https://azapi-test.googlecode.com/svn/maven-repo/snapshots</url>
@@ -97,7 +80,7 @@
             <artifactId>jung-graph-impl</artifactId>
             <version>2.0.1</version>
         </dependency>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>AZAlgorithmsTest</artifactId>
             <version>${project.version}</version>

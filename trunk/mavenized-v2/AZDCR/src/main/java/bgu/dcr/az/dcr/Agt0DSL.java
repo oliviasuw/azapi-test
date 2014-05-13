@@ -36,7 +36,7 @@ public class Agt0DSL {
      * @param b
      * @return the sum or INFINITY_COST of overflowed
      */
-    public static int boundedSumm(int a, int b) {
+    public static int boundedSum(int a, int b) {
         int result = a + b;
         return ((~(a ^ b) & (a ^ result) & SIGN_BIT) == 0 ? result : INFINITY_COST);
     }

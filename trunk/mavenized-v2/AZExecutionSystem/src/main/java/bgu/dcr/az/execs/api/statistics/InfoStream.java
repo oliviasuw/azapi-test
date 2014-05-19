@@ -15,6 +15,8 @@ public interface InfoStream {
 
     void write(Object data);
 
+    void write(Object data, Class... recepients);
+
     boolean hasListeners(Class dataType);
 
     public static interface InfoStreamListener<T> {

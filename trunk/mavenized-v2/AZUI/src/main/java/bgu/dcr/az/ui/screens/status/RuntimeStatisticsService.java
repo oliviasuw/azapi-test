@@ -26,8 +26,8 @@ public class RuntimeStatisticsService implements ExecutionService {
 
     @Override
     public void initialize(Execution ex) throws InitializationException {
-        collectors.get(CPU_TIME_PREFIX + ex.getContainingExperiment().getName()).initialize(null, ex, null);
-        collectors.get(NUM_CORES_PREFIX + ex.getContainingExperiment().getName()).initialize(null, ex, null);
+        collectors.get(CPU_TIME_PREFIX + ex.getContainingExperiment().getName()).initialize(ex);
+        collectors.get(NUM_CORES_PREFIX + ex.getContainingExperiment().getName()).initialize(ex);
     }
 
     @Override

@@ -57,6 +57,8 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
                         synchronizationLock.release();
                     } else if (item instanceof DefineTableCommand) {
                         defineTable((DefineTableCommand) item);
+                    } else if (item instanceof ExecuteUpdateCommand) {
+                        executeUpdate((ExecuteUpdateCommand) item);
                     } else {
                         addToPreparedStatementBatch(item);
                     }
@@ -71,6 +73,23 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
                 Logger.getLogger(H2EmbeddedDatabaseWriter.class.getName()).log(Level.SEVERE, null, ex1);
             } finally {
                 manager.onWriterThreadFailed(ex);
+            }
+        }
+    }
+
+    private void executeUpdate(ExecuteUpdateCommand cmd) throws SQLException {
+        if (cmd.parameters == null || cmd.parameters.length == 0) {
+            try (Statement st = manager.getConnection().createStatement()) {
+                System.out.println("creating table: \n" + cmd.sql);
+                st.executeUpdate(cmd.sql);
+            }
+        } else {
+            try (PreparedStatement st = manager.getConnection().prepareStatement(cmd.sql)) {
+                for (int i = 0; i < cmd.parameters.length; i++) {
+                    st.setObject(i + 1, cmd.parameters[i]);
+                }
+                System.out.println("creating table: \n" + st.toString());
+                st.executeUpdate(cmd.sql);
             }
         }
     }
@@ -116,6 +135,10 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
         q.add(new DefineTableCommand(name, recordType));
     }
 
+    void appendExecuteUpdateCommand(String sql, Object... parameters) {
+        q.add(new ExecuteUpdateCommand(sql, parameters));
+    }
+
     void synchronize() throws InterruptedException {
         System.out.println("Sync Against last version of Database");
         q.add(CALLBACK_SIGNAL);
@@ -124,6 +147,17 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
 
     void appendInsertionCommand(Object o) {
         q.add(o);
+    }
+
+    private static class ExecuteUpdateCommand {
+
+        String sql;
+        Object[] parameters;
+
+        public ExecuteUpdateCommand(String sql, Object[] parameters) {
+            this.sql = sql;
+            this.parameters = parameters;
+        }
     }
 
     private static class DefineTableCommand {

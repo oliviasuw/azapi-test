@@ -14,6 +14,8 @@ import bgu.dcr.az.orm.api.DBRecord;
 import bgu.dcr.az.orm.api.TableMetadata;
 import bgu.dcr.az.execs.util.PreparedStatementLRUCache;
 import bgu.dcr.az.common.exceptions.UncheckedSQLException;
+import bgu.dcr.az.execs.api.experiments.Execution;
+import bgu.dcr.az.execs.exceptions.InitializationException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -35,6 +37,7 @@ import org.h2.tools.Csv;
  */
 public class H2EmbeddedDatabaseManager implements EmbeddedDatabaseManager {
 
+    public static String DATA_BASE_NAME = "agentzero";
     private static final int MAXIMUM_CACHE_SIZE = 5;
 
     private Connection connection;
@@ -42,12 +45,26 @@ public class H2EmbeddedDatabaseManager implements EmbeddedDatabaseManager {
     private PreparedStatementLRUCache cachedQueries;
 
     @Override
+    public void initialize(Execution ex) throws InitializationException {
+        if (connection != null) {
+            return;
+        }
+        try {
+            start(new File(DATA_BASE_NAME), false);
+        } catch (SQLException ex1) {
+            throw new InitializationException("cannot initialize database, see cause", ex1);
+        }
+    }
+
+    @Override
     public void start(File databasePath, boolean append) throws SQLException {
         final String databaseAbsolutePath = databasePath.getAbsolutePath();
-        if (!append && new File(databasePath.getAbsolutePath() + ".h2.db").exists()) {
-            new File(databaseAbsolutePath + ".h2.db").delete();
-            new File(databaseAbsolutePath + ".lock.db").delete();
-            new File(databaseAbsolutePath + ".trace.db").delete();
+        if (!append) {
+            for (File f : databasePath.getAbsoluteFile().getParentFile().listFiles()) {
+                if (f.getName().startsWith(databasePath.getName() + ".")) {
+                    f.delete();
+                }
+            }
         }
 
         try {
@@ -104,6 +121,11 @@ public class H2EmbeddedDatabaseManager implements EmbeddedDatabaseManager {
         }
     }
 
+    @Override
+    public void executeUpdate(String sql, Object ... parameters) {
+        writer.appendExecuteUpdateCommand(sql, parameters);
+    }
+    
     @Override
     public void insert(Object o) {
         writer.appendInsertionCommand(o);
@@ -177,7 +199,7 @@ public class H2EmbeddedDatabaseManager implements EmbeddedDatabaseManager {
         PreparedStatement ps = cachedQueries.retreive(sql);
 
         for (int i = 0; i < parameters.length; i++) {
-            ps.setObject(i+1, parameters[i]);
+            ps.setObject(i + 1, parameters[i]);
         }
 
         return ps;

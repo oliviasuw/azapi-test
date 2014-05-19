@@ -8,10 +8,10 @@ import bgu.dcr.az.execs.api.statistics.AdditionalBarChartProperties;
 import bgu.dcr.az.execs.api.statistics.AdditionalLineChartProperties;
 import bgu.dcr.az.execs.api.statistics.Plotter;
 import bgu.dcr.az.execs.api.statistics.StatisticCollector;
-import bgu.dcr.az.execs.api.statistics.StatisticsManager;
-import bgu.dcr.az.execs.statistics.StatisticsManagerImpl;
+import bgu.dcr.az.execs.exceptions.InitializationException;
 import bgu.dcr.az.orm.api.Data;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
+import bgu.dcr.az.orm.api.EmbeddedDatabaseManager;
 import bgu.dcr.az.orm.api.QueryDatabase;
 
 /**
@@ -20,37 +20,38 @@ import bgu.dcr.az.orm.api.QueryDatabase;
  */
 public abstract class AbstractStatisticCollector implements StatisticCollector<CPData>, Plotter {
 
-    private StatisticsManager manager;
     private Plotter plotter;
-    Execution<CPData> execution;
+    private Execution<CPData> execution;
+    private boolean initialized = false;
+    private EmbeddedDatabaseManager db;
 
     @Override
-    public final void initialize(StatisticsManager manager, Execution<CPData> execution, DefinitionDatabase database) {
-        this.manager = manager;
+    public final void initialize(Execution<CPData> execution) throws InitializationException {
+        db = (EmbeddedDatabaseManager) execution.require(EmbeddedDatabaseManager.class);
+
         this.execution = execution;
-        initialize(execution, database);
+        initialize(execution, db.createDefinitionDatabase());
+
+        System.out.println("Statistic Collector: " + getName() + " initialized");
+        initialized = true;
     }
 
     public void write(CPRecord record) {
         record.algorithm_instance = execution.data().getAlgorithm().getInstanceName();
         record.rvar = execution.data().getRunningVar();
         record.test = execution.getContainingExperiment().getName();
-        manager.database().insert(record);
+        db.insert(record);
     }
 
     @Override
     public void plot(Plotter ploter, Experiment ex) {
 //        if (ex == null) return ;
 
-        if (manager == null) {
-            manager = StatisticsManagerImpl.getInstance();
-        }
-
         this.plotter = ploter;
-        if (manager == null) {
-            plot((QueryDatabase) null, (CPExperimentTest) ex);
+        if (initialized) {
+            plot(db.createQueryDatabase(), (CPExperimentTest) ex);
         } else {
-            plot(manager.database().createQueryDatabase(), (CPExperimentTest) ex);
+            plot((QueryDatabase) null, (CPExperimentTest) ex);
         }
         this.plotter = null;
     }
@@ -59,6 +60,7 @@ public abstract class AbstractStatisticCollector implements StatisticCollector<C
 
     protected abstract void initialize(final Execution<CPData> ex, DefinitionDatabase database);
 
+    @Override
     public void plotLineChart(Data data, String xField, String yField, String seriesField) {
         plotter.plotLineChart(data, xField, yField, seriesField, getName(), xField, yField);
     }

@@ -13,7 +13,6 @@ import bgu.dcr.az.dcr.api.modules.Logger;
 import bgu.dcr.az.dcr.api.problems.Problem;
 import bgu.dcr.az.dcr.modules.logger.StdoutLogger;
 import bgu.dcr.az.execs.api.Proc;
-import bgu.dcr.az.execs.api.experiments.Experiment;
 import bgu.dcr.az.execs.experiments.BaseExecution;
 import bgu.dcr.az.execs.exceptions.InitializationException;
 import java.util.Collection;
@@ -26,8 +25,8 @@ import java.util.List;
  */
 public class CPExecution extends BaseExecution<CPData> {
 
-    public CPExecution(Experiment containingExperiment, AlgorithmDef a, double runningVariable, AgentSpawner spawner, Problem problem, ExecutionEnvironment env) {
-        super(new CPData(new CPSolution(problem), problem, a, runningVariable), containingExperiment, env, problem.getAgentDistribution(), spawner, new BaseMessageRouter());
+    public CPExecution(CPExperimentTest containingExperiment, AlgorithmDef a, double runningVariable, AgentSpawner spawner, Problem problem, ExecutionEnvironment environment) {
+        super(new CPData(new CPSolution(problem), problem, a, runningVariable), containingExperiment, environment, problem.getAgentDistribution(), spawner, new BaseMessageRouter());
     }
 
     @Override

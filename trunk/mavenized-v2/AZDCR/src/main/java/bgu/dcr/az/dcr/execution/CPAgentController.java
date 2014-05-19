@@ -12,12 +12,10 @@ import bgu.dcr.az.dcr.api.Agent;
 import bgu.dcr.az.dcr.api.Assignment;
 import bgu.dcr.az.dcr.api.Message;
 import bgu.dcr.az.dcr.api.problems.Problem;
-import bgu.dcr.az.dcr.execution.statistics.ExternalMessageReceivedInfo;
-import bgu.dcr.az.dcr.execution.statistics.ExternalMessageSentInfo;
-import bgu.dcr.az.dcr.execution.statistics.InternalMessageReceivedInfo;
-import bgu.dcr.az.dcr.execution.statistics.InternalMessageSentInfo;
+import bgu.dcr.az.dcr.execution.statistics.CPMessageInfo;
 import bgu.dcr.az.execs.api.experiments.Execution;
 import bgu.dcr.az.execs.exceptions.InitializationException;
+import bgu.dcr.az.execs.statistics.info.MessageInfo;
 
 /**
  *
@@ -103,12 +101,16 @@ public class CPAgentController extends AgentController {
     @Override
     public void send(Message m, int recepientAgent) {
         if (!isControlling(m.getRecepient())) {
-            if (exec.informationStream().hasListeners(ExternalMessageSentInfo.class)) {
-                exec.informationStream().write(new ExternalMessageSentInfo(m.getMessageId(), pid(), recepientAgent, m.getName(), exec.data().getCcCount()[pid()]));
+            if (exec.informationStream().hasListeners(CPMessageInfo.class) || exec.informationStream().hasListeners(MessageInfo.class)) {
+                exec.informationStream().write(
+                        new CPMessageInfo(m.getMessageId(), pid(), recepientAgent, m.getName(), exec.data().getCcCount()[pid()], MessageInfo.OperationType.Sent, false),
+                        CPMessageInfo.class,
+                        MessageInfo.class
+                );
             }
         } else {
-            if (exec.informationStream().hasListeners(InternalMessageSentInfo.class)) {
-                exec.informationStream().write(new InternalMessageSentInfo(m.getMessageId(), m.getSender(), recepientAgent, m.getName(), exec.data().getCcCount()[pid()]));
+            if (exec.informationStream().hasListeners(CPMessageInfo.class)) {
+                exec.informationStream().write(new CPMessageInfo(m.getMessageId(), m.getSender(), recepientAgent, m.getName(), exec.data().getCcCount()[pid()], MessageInfo.OperationType.Sent, true));
             }
         }
 
@@ -118,12 +120,15 @@ public class CPAgentController extends AgentController {
     @Override
     public void receive(AZIPMessage message) {
         if (!isControlling(message.getData().getSender())) {
-            if (exec.informationStream().hasListeners(ExternalMessageReceivedInfo.class)) {
-                exec.informationStream().write(new ExternalMessageReceivedInfo(message.getData().getMessageId(), message.getData().getSender(), pid(), message.getData().getName()));
+            if (exec.informationStream().hasListeners(CPMessageInfo.class) || exec.informationStream().hasListeners(MessageInfo.class)) {
+                exec.informationStream().write(
+                        new CPMessageInfo(message.getData().getMessageId(), message.getData().getSender(), pid(), message.getData().getName(), exec.data().getCcCount()[pid()], MessageInfo.OperationType.Received, false),
+                        CPMessageInfo.class,
+                        MessageInfo.class);
             }
         } else {
-            if (exec.informationStream().hasListeners(InternalMessageReceivedInfo.class)) {
-                exec.informationStream().write(new InternalMessageReceivedInfo(message.getData().getMessageId(), message.getData().getSender(), message.getData().getRecepient(), message.getData().getName()));
+            if (exec.informationStream().hasListeners(CPMessageInfo.class)) {
+                exec.informationStream().write(new CPMessageInfo(message.getData().getMessageId(), message.getData().getSender(), pid(), message.getData().getName(), exec.data().getCcCount()[pid()], MessageInfo.OperationType.Received, true));
             }
         }
 

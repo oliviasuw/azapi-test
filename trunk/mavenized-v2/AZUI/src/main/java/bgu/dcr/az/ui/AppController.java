@@ -10,11 +10,11 @@ import bgu.dcr.az.execs.api.experiments.ExecutionResult;
 import bgu.dcr.az.common.timing.TimingUtils;
 import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.conf.api.ConfigurationException;
-import bgu.dcr.az.execs.statistics.StatisticsManagerImpl;
 import bgu.dcr.az.dcr.api.modules.Logger;
 import bgu.dcr.az.dcr.execution.CPExperiment;
 import bgu.dcr.az.execs.experiments.ExperimentUtils;
 import bgu.dcr.az.orm.api.EmbeddedDatabaseManager;
+import bgu.dcr.az.orm.impl.H2EmbeddedDatabaseManager;
 import bgu.dcr.az.ui.screens.MainWindow;
 import bgu.dcr.az.ui.screens.dialogs.Notification;
 import bgu.dcr.az.ui.screens.log.LogScreen;
@@ -22,7 +22,6 @@ import bgu.dcr.az.ui.screens.problem.ProblemViewScreenCtl;
 import bgu.dcr.az.ui.screens.statistics.MainStatisticScreen;
 import bgu.dcr.az.ui.screens.status.StatusScreenCtl;
 import bgu.dcr.az.ui.screens.status.RuntimeStatisticsService;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.io.FileInputStream;
 import java.io.IOException;
 import javafx.application.Platform;
@@ -108,6 +107,8 @@ public class AppController {
         FXUtils.JFXPanelWithCTL<StatusScreenCtl> statusScreenFX = FXUtils.loadFXMLForSwing(StatusScreenCtl.class, "StatusScreen.fxml");
         main.addScreen("Status", "status", statusScreenFX);
         statusScreenFX.getController().setModel(runningExperiment);
+        
+        runningExperiment.supply(EmbeddedDatabaseManager.class, new H2EmbeddedDatabaseManager());
 
         LogScreen lscreen = new LogScreen();
         main.addScreen("Log", "log", lscreen);
@@ -154,10 +155,6 @@ public class AppController {
 
     public static void focusMainScreen() {
         main.requestFocus();
-    }
-
-    public static EmbeddedDatabaseManager getDatabaseManager() {
-        return StatisticsManagerImpl.getInstance().database();
     }
 
     public static void showErrorDialog(Exception ex, String title) {

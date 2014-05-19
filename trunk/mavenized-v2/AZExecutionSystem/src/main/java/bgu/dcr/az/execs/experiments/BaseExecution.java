@@ -37,16 +37,16 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
     public static final int INFORMATION_STREAM_PROCESS_ID = -1;
     private final Map<Class<? extends ExecutionService>, ExecutionServiceWithInitializationData> services = new HashMap<>();
 
-    private final ExecutionEnvironment env;
     private final T data;
     private final Experiment containingExperiment;
-    private InfoStreamProc statisticalStream;
+    private final InfoStreamProc statisticalStream;
+    private final ExecutionEnvironment environment;
 
-    public BaseExecution(T data, Experiment containingExperiment, ExecutionEnvironment env, ExecutionService... services) {
-        this.env = env;
+    public BaseExecution(T data, Experiment containingExperiment, ExecutionEnvironment environment, ExecutionService... services) {
         this.data = data;
         this.containingExperiment = containingExperiment;
         this.statisticalStream = new InfoStreamProc(INFORMATION_STREAM_PROCESS_ID);
+        this.environment = environment;
 
         for (ExecutionService s : services) {
             supply(s);
@@ -119,11 +119,6 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
 
     protected abstract void initialize() throws InitializationException;
 
-    @Override
-    public ExecutionEnvironment getEnvironment() {
-        return env;
-    }
-
     private enum InitializatinState {
 
         INITIALIZED, INITIALIZING, UNINITIALIZED;
@@ -177,6 +172,11 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
         return this.containingExperiment;
     }
 
+    @Override
+    public ExecutionEnvironment getEnvironment() {
+        return environment;
+    }
+    
     @Override
     public InfoStream informationStream() {
         return statisticalStream;

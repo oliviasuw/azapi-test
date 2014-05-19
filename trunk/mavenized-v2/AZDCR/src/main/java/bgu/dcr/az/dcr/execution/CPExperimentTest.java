@@ -27,10 +27,11 @@ import bgu.dcr.az.execs.api.experiments.ExecutionService;
 import bgu.dcr.az.execs.api.experiments.Experiment;
 import bgu.dcr.az.execs.exceptions.ExperimentExecutionException;
 import bgu.dcr.az.execs.api.experiments.ExperimentStatusSnapshot;
-import bgu.dcr.az.execs.statistics.StatisticsManagerImpl;
+import bgu.dcr.az.execs.api.loggers.LogManager;
 import bgu.dcr.az.execs.api.statistics.StatisticCollector;
-import bgu.dcr.az.execs.api.statistics.StatisticsManager;
+import bgu.dcr.az.execs.exceptions.InitializationException;
 import bgu.dcr.az.execs.experiments.ExperimentStatusSnapshotImpl;
+import bgu.dcr.az.execs.loggers.LogManagerImpl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,6 +64,7 @@ public class CPExperimentTest implements Experiment {
     private final HashSet<StatisticCollector> statistics = new HashSet<>();
     private final Map<Class, ExecutionService> suppliedServices = new HashMap<>();
     private ExecutionResult result;
+    private LogManager logger = new LogManagerImpl();
 
     @Override
     public ExecutionResult lastResult() {
@@ -214,8 +216,7 @@ public class CPExperimentTest implements Experiment {
             status.end();
         }
 
-        return new ExecutionResult()
-                .toSucceefulState(null);
+        return new ExecutionResult().toSucceefulState(null);
     }
 
     @Override
@@ -230,9 +231,10 @@ public class CPExperimentTest implements Experiment {
 
     /**
      * this is mainly used for external query (e.g., by the problem view screen)
+     *
      * @param i
      * @return
-     * @throws ConfigurationException 
+     * @throws ConfigurationException
      */
     public Problem getProblem(int i) throws ConfigurationException {
         try {
@@ -266,7 +268,7 @@ public class CPExperimentTest implements Experiment {
 
     private CPExecution createExecutionWithSeed(int i, ConfigurationOfElements conf, long seed) throws ConfigurationException {
         int execution = i / algorithms.size();
-        
+
         looper.configure(execution, conf.configurationsOfElements);
 
         conf.apply();
@@ -278,17 +280,15 @@ public class CPExperimentTest implements Experiment {
 
         CPExecution exec = new CPExecution(this, adef, looper.getRunningVariableValue(execution), spawner, p, executionEnvironment);
 
-        final StatisticsManagerImpl statm = StatisticsManagerImpl.getInstance();
-        statm.clearRegistrations();
-        statistics.forEach(statm::register);
-
-        exec.supply(StatisticsManager.class, statm);
-        for (Map.Entry<Class, ExecutionService> e : suppliedServices.entrySet()) {
-            exec.supply(e.getKey(), e.getValue());
-        }
+        statistics.forEach(s -> exec.supply(s.getClass(), s));
+        suppliedServices.entrySet().stream().forEach(e -> exec.supply(e.getKey(), e.getValue()));
 
         if (correctnessTester != null) {
             exec.supply(CPCorrectnessTester.class, correctnessTester);
+        }
+
+        if (logger != null) {
+            exec.supply(LogManager.class, logger);
         }
 
         return exec;
@@ -317,6 +317,11 @@ public class CPExperimentTest implements Experiment {
     @Override
     public Iterator<Experiment> iterator() {
         return Collections.EMPTY_LIST.iterator();
+    }
+
+    @Override
+    public <T extends ExecutionService> T require(Class<T> service) throws InitializationException {
+        return (T) suppliedServices.get(service);
     }
 
     private static interface RuntimeCoreAdapter {

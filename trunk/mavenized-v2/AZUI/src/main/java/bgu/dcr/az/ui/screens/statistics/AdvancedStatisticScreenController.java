@@ -5,6 +5,8 @@
  */
 package bgu.dcr.az.ui.screens.statistics;
 
+import bgu.dcr.az.execs.api.experiments.Execution;
+import bgu.dcr.az.execs.exceptions.InitializationException;
 import bgu.dcr.az.orm.api.Data;
 import bgu.dcr.az.orm.api.EmbeddedDatabaseManager;
 import bgu.dcr.az.orm.api.FieldMetadata;
@@ -14,6 +16,8 @@ import bgu.dcr.az.ui.screens.dialogs.Notification;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -61,13 +65,22 @@ public class AdvancedStatisticScreenController implements Initializable {
     private EmbeddedDatabaseManager dbm;
     private JSObject editorModel;
     private QueryDatabase queryDB;
+    private Execution exec;
+
+    public AdvancedStatisticScreenController() {
+
+    }
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        dbm = AppController.getDatabaseManager();
+        try {
+            dbm = (EmbeddedDatabaseManager) AppController.getRunningExperiment().require(EmbeddedDatabaseManager.class);
+        } catch (InitializationException ex) {
+            Logger.getLogger(AdvancedStatisticScreenController.class.getName()).log(Level.SEVERE, null, ex);
+        }
         queryDB = dbm.createQueryDatabase();
 
         simpleModeButton.setOnAction(a -> statisticsScreen.toSimpleMode());
@@ -109,9 +122,9 @@ public class AdvancedStatisticScreenController implements Initializable {
     }
 
     private void initializeEditor() {
-        
+
         editor.getEngine().loadContent("<html> <body style='bacground-color:black;'/> </html>");
-        
+
         editor.getEngine().getLoadWorker().stateProperty().addListener((v, o, n) -> {
             if (n == Worker.State.SUCCEEDED) {
                 editorModel = (JSObject) editor.getEngine().executeScript("window.editor");
@@ -125,7 +138,7 @@ public class AdvancedStatisticScreenController implements Initializable {
                         AppController.showErrorDialog(ex, "cannot execute query");
                     }
                 });
-                
+
                 cleanQueryButton.setOnAction(a -> {
                     editorModel.call("setValue", "");
                 });

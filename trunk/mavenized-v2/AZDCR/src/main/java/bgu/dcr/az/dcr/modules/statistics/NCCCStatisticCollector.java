@@ -7,11 +7,11 @@ package bgu.dcr.az.dcr.modules.statistics;
 import bgu.dcr.az.conf.registery.Register;
 import bgu.dcr.az.dcr.execution.CPData;
 import bgu.dcr.az.dcr.execution.CPExperimentTest;
-import bgu.dcr.az.dcr.execution.statistics.ExternalMessageReceivedInfo;
-import bgu.dcr.az.dcr.execution.statistics.ExternalMessageSentInfo;
+import bgu.dcr.az.dcr.execution.statistics.CPMessageInfo;
 import bgu.dcr.az.execs.api.experiments.Execution;
 import bgu.dcr.az.execs.api.statistics.AdditionalLineChartProperties;
 import bgu.dcr.az.execs.statistics.info.ExecutionTerminationInfo;
+import bgu.dcr.az.execs.statistics.info.MessageInfo;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.QueryDatabase;
 import com.google.common.primitives.Longs;
@@ -37,14 +37,24 @@ public class NCCCStatisticCollector extends AbstractStatisticCollector {
         currentNccc = new long[ex.data().getProblem().getNumberOfAgents()];
         messageNccc = new HashMap<>();
 
-        ex.informationStream().listen(ExternalMessageSentInfo.class, m -> {
-            currentNccc[m.getSender()] += (m.getConstraintChecks() - lastCCs[m.getSender()]);
-            lastCCs[m.getSender()] = m.getConstraintChecks();
-            messageNccc.put(m.getMessageId(), currentNccc[m.getSender()]);
-        });
-
-        ex.informationStream().listen(ExternalMessageReceivedInfo.class, m -> {
-            currentNccc[m.getRecepient()] = Math.max(messageNccc.remove(m.getMessageId()), currentNccc[m.getRecepient()]);
+        ex.informationStream().listen(CPMessageInfo.class, m -> {
+            if (!m.isInternal()) {
+                switch (m.getType()) {
+                    case Sent:
+                        if (m instanceof CPMessageInfo) {
+                            long cc = m.getConstraintChecks();
+                            currentNccc[m.getSender()] += (cc - lastCCs[m.getSender()]);
+                            lastCCs[m.getSender()] = cc;
+                            messageNccc.put(m.getMessageId(), currentNccc[m.getSender()]);
+                        }
+                        break;
+                    case Received:
+                        currentNccc[m.getRecepient()] = Math.max(messageNccc.remove(m.getMessageId()), currentNccc[m.getRecepient()]);
+                        break;
+                    default:
+                        throw new AssertionError(m.getType().name());
+                }
+            }
         });
 
         ex.informationStream().listen(ExecutionTerminationInfo.class, t -> {

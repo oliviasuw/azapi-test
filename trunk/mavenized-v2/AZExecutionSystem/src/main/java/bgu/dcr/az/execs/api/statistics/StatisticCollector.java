@@ -5,19 +5,15 @@
  */
 package bgu.dcr.az.execs.api.statistics;
 
-import bgu.dcr.az.execs.api.experiments.Execution;
+import bgu.dcr.az.execs.api.experiments.ExecutionService;
 import bgu.dcr.az.execs.api.experiments.Experiment;
-import bgu.dcr.az.orm.api.DefinitionDatabase;
-import bgu.dcr.az.orm.api.QueryDatabase;
 
 /**
  *
  * @author User
  * @param <T>
  */
-public interface StatisticCollector<T> {
-
-    void initialize(StatisticsManager manager, Execution<T> execution, DefinitionDatabase database);
+public interface StatisticCollector<T> extends ExecutionService<T> {
 
     String getName();
 

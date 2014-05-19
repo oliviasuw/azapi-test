@@ -49,6 +49,12 @@ public class InfoStreamProc extends AbstractProc implements InfoStream {
         wakeup(pid());
     }
 
+    @Override
+    public void write(Object data, Class... recepients) {
+        dataQueue.add(new DataWithRecepients(recepients, data));
+        wakeup(pid());
+    }
+
     public void writeNow(Object data) {
         dataQueue.add(data);
         quota();
@@ -64,12 +70,23 @@ public class InfoStreamProc extends AbstractProc implements InfoStream {
         while (!dataQueue.isEmpty()) {
             Object data = dataQueue.poll();
 
-            for (InfoStreamListener listener : listeners.getOrDefault(data.getClass(), Collections.<InfoStreamListener>emptyList())) {
-                listener.info(data);
+            if (data.getClass() == DataWithRecepients.class) {
+                DataWithRecepients dwr = (DataWithRecepients) data;
+                for (Class c : dwr.recepients) {
+                    notifyData(c, dwr.data);
+                }
+            } else {
+                notifyData(data.getClass(), data);
             }
         }
 
         sleep();
+    }
+
+    private void notifyData(Class c, Object data) {
+        for (InfoStreamListener listener : listeners.getOrDefault(c, Collections.<InfoStreamListener>emptyList())) {
+            listener.info(data);
+        }
     }
 
     @Override
@@ -77,6 +94,18 @@ public class InfoStreamProc extends AbstractProc implements InfoStream {
         if (dataQueue.isEmpty()) {
             sleep();
         }
+    }
+
+    private class DataWithRecepients {
+
+        Class[] recepients;
+        Object data;
+
+        public DataWithRecepients(Class[] recepients, Object data) {
+            this.recepients = recepients;
+            this.data = data;
+        }
+
     }
 
 }

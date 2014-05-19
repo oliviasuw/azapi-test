@@ -20,25 +20,25 @@
     </test>-->
     
         <test seed="42" name="COPs PEAV (Complex variables)">
-        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100" />
+        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="10" />
     
         <cc-sc/>
         <msgc-sc/>
         <nccc-sc/>
         <ncsc-sc/>
         
-        <complexify>
-            <peavify>
+<!--        <complexify>
+            <peavify>-->
             <!--<multi-varify vars-per-agent="2">-->
                 <dcop-connected n="4" d="3" max-cost="10"/>        
             <!--</multi-varify>-->
-            </peavify>
-        </complexify>
+<!--            </peavify>
+        </complexify>-->
         
         <!--<default-tester/>-->
         <algorithm name="SBB"/>
         <algorithm name="ADOPT"/>
-        <algorithm name="BNB_ADOPT"/>
+        <!--<algorithm name="BNB_ADOPT"/>-->
         <!--<algorithm name="CONC_FB"/>-->
 <!--        <algorithm name="SBB"/>
         <algorithm name="ADOPT">
@@ -46,7 +46,7 @@
         </algorithm>-->
     </test>
 
-    <test seed="42" name="COPs PEAV (Virtual agents)">
+<!--    <test seed="42" name="COPs PEAV (Virtual agents)">
         <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100" />
     
         <cc-sc/>
@@ -55,21 +55,21 @@
         <ncsc-sc/>
         
         <peavify>
-            <!--<multi-varify vars-per-agent="2">-->
+            <multi-varify vars-per-agent="2">
                 <dcop-connected n="4" d="3" max-cost="10"/>        
-            <!--</multi-varify>-->
+            </multi-varify>
         </peavify>
         
-        <!--<default-tester/>-->
+        <default-tester/>
         <algorithm name="SBB"/>
         <algorithm name="ADOPT"/>
         <algorithm name="BNB_ADOPT"/>
         <algorithm name="CONC_FB"/>
-<!--        <algorithm name="SBB"/>
+        <algorithm name="SBB"/>
         <algorithm name="ADOPT">
             <assign var="reduce-messages" val="true"/>
-        </algorithm>-->
-    </test>
+        </algorithm>
+    </test>-->
         
 <!--    <test seed="42" name="Local search" env="async">
         <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100">

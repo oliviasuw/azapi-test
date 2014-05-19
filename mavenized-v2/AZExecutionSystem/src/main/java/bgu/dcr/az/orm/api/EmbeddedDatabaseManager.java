@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.orm.api;
 
+import bgu.dcr.az.execs.api.experiments.ExecutionService;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.util.Map;
  *
  * @author User
  */
-public interface EmbeddedDatabaseManager extends Closeable {
+public interface EmbeddedDatabaseManager extends Closeable, ExecutionService {
 
     /**
      * start the manager - initiate a connection to the database start any
@@ -46,6 +47,16 @@ public interface EmbeddedDatabaseManager extends Closeable {
      */
     Data query(String sql, Object[] parameters) throws SQLException;
 
+    
+    /**
+     * executes an update query in this database
+     * 
+     * @param sql
+     * @param parameters
+     * @throws SQLException 
+     */
+    void executeUpdate(String sql, Object ... parameters);
+    
     /**
      * insert a new record into the database
      *

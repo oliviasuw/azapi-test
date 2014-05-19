@@ -1,6 +1,7 @@
 package bgu.dcr.az.execs.api.experiments;
 
 import bgu.dcr.az.execs.api.statistics.StatisticCollector;
+import bgu.dcr.az.execs.exceptions.InitializationException;
 import java.util.Collection;
 
 /**
@@ -52,11 +53,12 @@ public interface Experiment extends Iterable<Experiment> {
      */
     public void supply(Class<? extends ExecutionService> serviceType, ExecutionService service);
 
+    public <T extends ExecutionService> T require(Class<T> service) throws InitializationException;
+
     /**
      * @return mutable list of statistics stored in this execution - modifying
      * the list while the experiment is running may or may not affect the rest
      * of the execution
      */
     Collection<StatisticCollector> getStatistics();
-    
 }

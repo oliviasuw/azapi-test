@@ -17,15 +17,18 @@ import bgu.dcr.az.execs.api.experiments.Experiment;
 import bgu.dcr.az.execs.exceptions.ExperimentExecutionException;
 import bgu.dcr.az.execs.api.experiments.ExperimentStatusSnapshot;
 import bgu.dcr.az.execs.api.statistics.StatisticCollector;
+import bgu.dcr.az.execs.exceptions.InitializationException;
 import bgu.dcr.az.execs.experiments.ExperimentStatusSnapshotImpl;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -45,6 +48,7 @@ public class CPExperiment implements Experiment {
     private final ExperimentStatusSnapshotImpl status = new ExperimentStatusSnapshotImpl();
     private String name;
     private Map<Class, ExecutionService> suppliedServices = new HashMap<>();
+    
     private ExecutionResult result;
     private List<StatisticCollector> statistics = new LinkedList<>();
 
@@ -236,6 +240,12 @@ public class CPExperiment implements Experiment {
     @Override
     public Collection<StatisticCollector> getStatistics() {
         return statistics;
+    }
+
+    @Override
+    public <T extends ExecutionService> T require(Class<T> service) throws InitializationException {
+        //need to create an experiment service
+        return (T) suppliedServices.get(service);
     }
 
 }

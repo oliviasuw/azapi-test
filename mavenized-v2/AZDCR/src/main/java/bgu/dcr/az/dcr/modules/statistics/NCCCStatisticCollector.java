@@ -83,7 +83,7 @@ public class NCCCStatisticCollector extends AbstractCPStatisticCollector {
         plotLineChart(database.query(sql, test.getName()), "rvar", "avg", "ALGORITHM_INSTANCE", properties);
     }
 
-    public static class NCCCRecord extends CPRecord {
+    public static class NCCCRecord extends StatisticRecord {
 
         double nccc;
 

@@ -7,13 +7,12 @@ package bgu.dcr.az.dcr.modules.statistics;
 
 import bgu.dcr.az.dcr.execution.CPData;
 import bgu.dcr.az.dcr.execution.CPExperimentTest;
-import bgu.dcr.az.execs.statistics.AbstractStatisticCollector;
 import bgu.dcr.az.execs.api.experiments.Execution;
 import bgu.dcr.az.execs.api.statistics.AdditionalBarChartProperties;
 import bgu.dcr.az.execs.statistics.info.ExecutionInitializationInfo;
-import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.QueryDatabase;
 import bgu.dcr.az.orm.api.DataUtils;
+import bgu.dcr.az.orm.api.DefinitionDatabase;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -63,7 +62,5 @@ public class NumberOfCoresInUseStatisticCollector extends AbstractCPStatisticCol
         plotBarChart(DataUtils.fromMap(coreUsage,
                 String.class, "Algorithm", Integer.class, "Cores"), "Algorithm", "Cores", properties);
     }
-
-    
 
 }

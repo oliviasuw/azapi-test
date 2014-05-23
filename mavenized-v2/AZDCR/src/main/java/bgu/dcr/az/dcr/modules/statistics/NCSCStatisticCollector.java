@@ -33,7 +33,7 @@ public class NCSCStatisticCollector extends AbstractCPStatisticCollector {
     protected void initialize(Execution<CPData> ex, DefinitionDatabase database) {
         database.defineTable("NCSC", NCSCRecord.class);
 
-        currentNcsc = new long[ex.data().getProblem().getNumberOfAgents()];
+        currentNcsc = new long[ex.numberOfAgents()];
         messageNcsc = new HashMap<>();
 
         ex.informationStream().listen(MessageInfo.class, m -> {
@@ -71,12 +71,12 @@ public class NCSCStatisticCollector extends AbstractCPStatisticCollector {
         plotLineChart(database.query(sql, test.getName()), "rvar", "avg", "ALGORITHM_INSTANCE", properties);
     }
 
-    public static class NCSCRecord extends CPRecord {
+    public static class NCSCRecord extends StatisticRecord {
 
         double ncsc;
 
-        public NCSCRecord(double nccc) {
-            this.ncsc = nccc;
+        public NCSCRecord(double ncsc) {
+            this.ncsc = ncsc;
         }
 
     }

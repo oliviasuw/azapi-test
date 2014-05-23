@@ -8,7 +8,6 @@ package bgu.dcr.az.dcr.modules.statistics;
 import bgu.dcr.az.dcr.execution.CPData;
 import bgu.dcr.az.dcr.execution.CPExperimentTest;
 import bgu.dcr.az.execs.api.experiments.Experiment;
-import bgu.dcr.az.execs.api.statistics.Plotter;
 import bgu.dcr.az.execs.statistics.AbstractStatisticCollector;
 import bgu.dcr.az.orm.api.QueryDatabase;
 
@@ -16,21 +15,12 @@ import bgu.dcr.az.orm.api.QueryDatabase;
  *
  * @author user
  */
-public abstract class AbstractCPStatisticCollector extends AbstractStatisticCollector<CPData, CPRecord> {
-
-    @Override
-    public void write(CPRecord record) {
-        record.algorithm_instance = getExecution().data().getAlgorithm().getInstanceName();
-        record.rvar = getExecution().data().getRunningVar();
-        record.test = getExecution().getContainingExperiment().getName();
-        insertRecord(record);
-    }
+public abstract class AbstractCPStatisticCollector extends AbstractStatisticCollector<CPData> {
 
     @Override
     protected void plot(QueryDatabase database, Experiment test) {
-        plot(database, (CPExperimentTest)test);
+        plot(database, (CPExperimentTest) test);
     }
- 
-    protected abstract void plot(QueryDatabase database, CPExperimentTest test);
 
+    protected abstract void plot(QueryDatabase database, CPExperimentTest test);
 }

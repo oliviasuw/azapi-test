@@ -49,13 +49,12 @@ public interface EmbeddedDatabaseManager extends Closeable, ExecutionService {
 
     
     /**
-     * executes an update query in this database
+     * executes a query in this database
      * 
      * @param sql
      * @param parameters
-     * @throws SQLException 
      */
-    void executeUpdate(String sql, Object ... parameters);
+    void execute(String sql, Object ... parameters);
     
     /**
      * insert a new record into the database

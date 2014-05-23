@@ -21,6 +21,7 @@ import bgu.dcr.az.execs.api.statistics.StatisticCollector;
 import bgu.dcr.az.execs.exceptions.ExperimentExecutionException;
 import bgu.dcr.az.execs.exceptions.InitializationException;
 import bgu.dcr.az.execs.exceptions.UnmetRequirementException;
+import bgu.dcr.az.execs.statistics.ExecutionInfoCollector;
 import bgu.dcr.az.execs.statistics.InfoStreamProc;
 import bgu.dcr.az.execs.statistics.info.ExecutionInitializationInfo;
 import bgu.dcr.az.execs.statistics.info.ExecutionTerminationInfo;
@@ -54,7 +55,7 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
         }
     }
 
-    public abstract ExecutionService getExecutionDataCollector();
+    public abstract ExecutionService getExecutionInfoCollector();
 
     @Override
     public ExecutionResult execute(Scheduler sched, int numCores) throws ExperimentExecutionException, InterruptedException {
@@ -66,8 +67,8 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
             initialize();
 
             if (hasRequirementImplementors(StatisticCollector.class)) {
-                ExecutionService s = getExecutionDataCollector();
-                supply(s.getClass(), s);
+                ExecutionService s = getExecutionInfoCollector();
+                supply(ExecutionInfoCollector.class, s);
             }
 
             //initialize rest of services

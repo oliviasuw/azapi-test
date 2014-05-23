@@ -18,7 +18,7 @@ import bgu.dcr.az.orm.api.QueryDatabase;
  * @author bennyl
  */
 @Register("cc-sc")
-public class CCStatisticCollector extends AbstractStatisticCollector {
+public class CCStatisticCollector extends AbstractCPStatisticCollector {
 
     @Override
     public String getName() {

@@ -1,7 +1,5 @@
-package bgu.dcr.az.dcr.modules.statistics;
+package bgu.dcr.az.execs.statistics;
 
-import bgu.dcr.az.dcr.execution.CPData;
-import bgu.dcr.az.dcr.execution.CPExperimentTest;
 import bgu.dcr.az.execs.api.experiments.Execution;
 import bgu.dcr.az.execs.api.experiments.Experiment;
 import bgu.dcr.az.execs.api.statistics.AdditionalBarChartProperties;
@@ -18,47 +16,56 @@ import bgu.dcr.az.orm.api.QueryDatabase;
  *
  * @author Benny Lutati
  */
-public abstract class AbstractStatisticCollector implements StatisticCollector<CPData>, Plotter {
+public abstract class AbstractStatisticCollector<T, R> implements StatisticCollector<T>, Plotter {
 
     private Plotter plotter;
-    private Execution<CPData> execution;
-    private boolean initialized = false;
-    private EmbeddedDatabaseManager db;
+    private Execution<T> execution;
+    private EmbeddedDatabaseManager db = null;
+
+    public Plotter getPlotter() {
+        return plotter;
+    }
+
+    public void setPlotter(Plotter plotter) {
+        this.plotter = plotter;
+    }
+
+    public Execution<T> getExecution() {
+        return execution;
+    }
+
+    public void insertRecord(Object record) {
+        db.insert(record);
+    }
 
     @Override
-    public final void initialize(Execution<CPData> execution) throws InitializationException {
+    public final void initialize(Execution<T> execution) throws InitializationException {
         db = (EmbeddedDatabaseManager) execution.require(EmbeddedDatabaseManager.class);
 
         this.execution = execution;
         initialize(execution, db.createDefinitionDatabase());
 
         System.out.println("Statistic Collector: " + getName() + " initialized");
-        initialized = true;
-    }
-
-    public void write(CPRecord record) {
-        record.algorithm_instance = execution.data().getAlgorithm().getInstanceName();
-        record.rvar = execution.data().getRunningVar();
-        record.test = execution.getContainingExperiment().getName();
-        db.insert(record);
     }
 
     @Override
     public void plot(Plotter ploter, Experiment ex) {
 //        if (ex == null) return ;
 
-        this.plotter = ploter;
-        if (initialized) {
-            plot(db.createQueryDatabase(), (CPExperimentTest) ex);
+        this.setPlotter(ploter);
+        if (db != null) {
+            plot(db.createQueryDatabase(), ex);
         } else {
-            plot((QueryDatabase) null, (CPExperimentTest) ex);
+            plot((QueryDatabase) null, ex);
         }
-        this.plotter = null;
+        this.setPlotter(null);
     }
 
-    protected abstract void plot(QueryDatabase database, CPExperimentTest test);
+    protected abstract void plot(QueryDatabase database, Experiment test);
 
-    protected abstract void initialize(final Execution<CPData> ex, DefinitionDatabase database);
+    public abstract void write(R record);
+
+    protected abstract void initialize(final Execution<T> ex, DefinitionDatabase database);
 
     @Override
     public void plotLineChart(Data data, String xField, String yField, String seriesField) {

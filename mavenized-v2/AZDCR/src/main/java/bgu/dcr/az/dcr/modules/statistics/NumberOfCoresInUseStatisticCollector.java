@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.ui.screens.status;
+package bgu.dcr.az.dcr.modules.statistics;
 
 import bgu.dcr.az.dcr.execution.CPData;
 import bgu.dcr.az.dcr.execution.CPExperimentTest;
-import bgu.dcr.az.dcr.modules.statistics.AbstractStatisticCollector;
+import bgu.dcr.az.execs.statistics.AbstractStatisticCollector;
 import bgu.dcr.az.execs.api.experiments.Execution;
 import bgu.dcr.az.execs.api.statistics.AdditionalBarChartProperties;
 import bgu.dcr.az.execs.statistics.info.ExecutionInitializationInfo;
@@ -21,7 +21,7 @@ import java.util.Map;
  *
  * @author User
  */
-public class NumberOfCoresInUseStatisticCollector extends AbstractStatisticCollector {
+public class NumberOfCoresInUseStatisticCollector extends AbstractCPStatisticCollector {
 
     Map<String, Float> coreUsage = new LinkedHashMap<>();
     int maxCores;

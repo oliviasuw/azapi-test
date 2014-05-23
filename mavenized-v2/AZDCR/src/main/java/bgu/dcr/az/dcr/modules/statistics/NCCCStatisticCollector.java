@@ -11,7 +11,6 @@ import bgu.dcr.az.dcr.execution.statistics.CPMessageInfo;
 import bgu.dcr.az.execs.api.experiments.Execution;
 import bgu.dcr.az.execs.api.statistics.AdditionalLineChartProperties;
 import bgu.dcr.az.execs.statistics.info.ExecutionTerminationInfo;
-import bgu.dcr.az.execs.statistics.info.MessageInfo;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.QueryDatabase;
 import com.google.common.primitives.Longs;
@@ -23,7 +22,7 @@ import java.util.Map;
  * @author bennyl
  */
 @Register("nccc-sc")
-public class NCCCStatisticCollector extends AbstractStatisticCollector {
+public class NCCCStatisticCollector extends AbstractCPStatisticCollector {
 
     private long[] lastCCs;
     private long[] currentNccc;

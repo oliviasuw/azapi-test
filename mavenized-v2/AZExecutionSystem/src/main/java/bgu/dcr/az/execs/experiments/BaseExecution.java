@@ -17,6 +17,7 @@ import bgu.dcr.az.execs.api.experiments.ExecutionService;
 import bgu.dcr.az.execs.api.experiments.Experiment;
 import bgu.dcr.az.execs.api.experiments.HasSolution;
 import bgu.dcr.az.execs.api.statistics.InfoStream;
+import bgu.dcr.az.execs.api.statistics.StatisticCollector;
 import bgu.dcr.az.execs.exceptions.ExperimentExecutionException;
 import bgu.dcr.az.execs.exceptions.InitializationException;
 import bgu.dcr.az.execs.exceptions.UnmetRequirementException;
@@ -53,6 +54,8 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
         }
     }
 
+    public abstract ExecutionService getExecutionDataCollector();
+
     @Override
     public ExecutionResult execute(Scheduler sched, int numCores) throws ExperimentExecutionException, InterruptedException {
         ThreadSafeProcTable table = new ThreadSafeProcTable();
@@ -61,6 +64,11 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
         try {
 
             initialize();
+
+            if (hasRequirementImplementors(StatisticCollector.class)) {
+                ExecutionService s = getExecutionDataCollector();
+                supply(s.getClass(), s);
+            }
 
             //initialize rest of services
             for (ExecutionServiceWithInitializationData service : services.values()) {
@@ -105,14 +113,18 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
     public final void supply(Class<? extends ExecutionService> serviceKey, ExecutionService service) {
         services.put(serviceKey, new ExecutionServiceWithInitializationData(service));
     }
-    
-    public final void supply(ExecutionService service){
+
+    public final void supply(ExecutionService service) {
         ReflectionUtils.implementedInterfacesOf(service.getClass()).forEach(c -> supply(c, service));
     }
 
     @Override
     public boolean hasRequirement(Class<? extends ExecutionService> service) {
         return services.containsKey(service);
+    }
+
+    private boolean hasRequirementImplementors(Class<? extends ExecutionService> service) {
+        return services.keySet().stream().anyMatch(s -> service.isAssignableFrom(s));
     }
 
     protected abstract Collection<Proc> createProcesses() throws InitializationException;
@@ -176,7 +188,7 @@ public abstract class BaseExecution<T extends HasSolution> implements Execution<
     public ExecutionEnvironment getEnvironment() {
         return environment;
     }
-    
+
     @Override
     public InfoStream informationStream() {
         return statisticalStream;

@@ -73,10 +73,11 @@
             <artifactId>autogen</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>bgu.dcr.az</groupId>
+            <artifactId>AZCmmon</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
-
-    <modules>    
-        <module>../AZCmmon</module>
-    </modules>
 
 </project>

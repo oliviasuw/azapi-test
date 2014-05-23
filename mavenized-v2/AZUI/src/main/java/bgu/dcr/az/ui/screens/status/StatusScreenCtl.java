@@ -5,6 +5,8 @@
  */
 package bgu.dcr.az.ui.screens.status;
 
+import bgu.dcr.az.dcr.modules.statistics.AlgorithmCPUTimeStatisticCollector;
+import bgu.dcr.az.dcr.modules.statistics.NumberOfCoresInUseStatisticCollector;
 import bgu.dcr.az.common.ui.UIPoke;
 import bgu.dcr.az.conf.api.ConfigurationException;
 import bgu.dcr.az.conf.ui.ConfigurationEditor;

@@ -19,7 +19,7 @@ import bgu.dcr.az.orm.api.QueryDatabase;
  * @author bennyl
  */
 @Register("msgc-sc")
-public class MessageCountStatisticCollector extends AbstractStatisticCollector {
+public class MessageCountStatisticCollector extends AbstractCPStatisticCollector {
 
     @Variable(name = "type", description = "type of the graph to show (BY_AGENT/BY_RUNVAR)", defaultValue = "BY_RUNVAR")
     Type graphType = Type.BY_RUNVAR;

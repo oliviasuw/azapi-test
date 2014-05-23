@@ -27,8 +27,8 @@ import java.util.List;
 public class CPExecution extends BaseExecution<CPData> {
 
     @Override
-    public ExecutionService getExecutionDataCollector() {
-        return ((CPExperimentTest) getContainingExperiment()).getDataCollector();
+    public ExecutionService getExecutionInfoCollector() {
+        return ((CPExperimentTest) getContainingExperiment()).getInfoCollector();
     }
 
     public CPExecution(CPExperimentTest containingExperiment, AlgorithmDef a, double runningVariable, AgentSpawner spawner, Problem problem, ExecutionEnvironment environment) {
@@ -51,6 +51,11 @@ public class CPExecution extends BaseExecution<CPData> {
         }
 
         return controllers;
+    }
+
+    @Override
+    public int numberOfAgents() {
+        return data().getProblem().getNumberOfAgents();
     }
 
     @Override

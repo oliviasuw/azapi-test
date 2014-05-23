@@ -7,6 +7,7 @@ import bgu.dcr.az.execs.api.statistics.AdditionalLineChartProperties;
 import bgu.dcr.az.execs.api.statistics.Plotter;
 import bgu.dcr.az.execs.api.statistics.StatisticCollector;
 import bgu.dcr.az.execs.exceptions.InitializationException;
+import bgu.dcr.az.orm.api.DBRecord;
 import bgu.dcr.az.orm.api.Data;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.EmbeddedDatabaseManager;
@@ -16,11 +17,11 @@ import bgu.dcr.az.orm.api.QueryDatabase;
  *
  * @author Benny Lutati
  */
-public abstract class AbstractStatisticCollector<T, R> implements StatisticCollector<T>, Plotter {
+public abstract class AbstractStatisticCollector<T> implements StatisticCollector<T>, Plotter {
 
     private Plotter plotter;
-    private Execution<T> execution;
     private EmbeddedDatabaseManager db = null;
+    private ExecutionInfoCollector executionInfo;
 
     public Plotter getPlotter() {
         return plotter;
@@ -30,20 +31,23 @@ public abstract class AbstractStatisticCollector<T, R> implements StatisticColle
         this.plotter = plotter;
     }
 
-    public Execution<T> getExecution() {
-        return execution;
-    }
+    public void write(StatisticRecord record) {
+        record.executionIndex = executionInfo.getLastRecordIndex();
 
-    public void insertRecord(Object record) {
         db.insert(record);
     }
 
     @Override
     public final void initialize(Execution<T> execution) throws InitializationException {
+
+        executionInfo = execution.require(ExecutionInfoCollector.class);
+
         db = (EmbeddedDatabaseManager) execution.require(EmbeddedDatabaseManager.class);
 
-        this.execution = execution;
-        initialize(execution, db.createDefinitionDatabase());
+        initialize(execution, (tableName, recordType) -> {
+            db.defineTable("RAW_" + tableName, recordType);
+            db.execute("CREATE OR REPLACE VIEW " + tableName + " AS SELECT * FROM RAW_" + tableName + " AS t, " + ExecutionInfoCollector.EXECUTION_INFO_DATA_TABLE + " AS i WHERE t.executionIndex = i.index;");
+        });
 
         System.out.println("Statistic Collector: " + getName() + " initialized");
     }
@@ -62,8 +66,6 @@ public abstract class AbstractStatisticCollector<T, R> implements StatisticColle
     }
 
     protected abstract void plot(QueryDatabase database, Experiment test);
-
-    public abstract void write(R record);
 
     protected abstract void initialize(final Execution<T> ex, DefinitionDatabase database);
 
@@ -101,4 +103,8 @@ public abstract class AbstractStatisticCollector<T, R> implements StatisticColle
         return getName();
     }
 
+    public static class StatisticRecord implements DBRecord {
+
+        public long executionIndex;
+    }
 }

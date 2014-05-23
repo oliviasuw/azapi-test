@@ -61,7 +61,7 @@ public class LogManagerImpl implements LogManager {
             exe.append(", ").append(l.getClass().getSimpleName()).append(" BIGINT");
         }
         exe.append(", PRIMARY KEY (ID));");
-        db.executeUpdate(exe.toString());
+        db.execute(exe.toString());
     }
 
     @Override

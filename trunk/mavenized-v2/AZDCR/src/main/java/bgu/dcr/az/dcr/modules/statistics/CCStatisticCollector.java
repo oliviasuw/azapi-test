@@ -51,7 +51,7 @@ public class CCStatisticCollector extends AbstractCPStatisticCollector {
         });
     }
 
-    public static class CCRecord extends CPRecord {
+    public static class CCRecord extends StatisticRecord {
 
         double cc;
 

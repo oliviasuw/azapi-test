@@ -122,7 +122,7 @@ public class H2EmbeddedDatabaseManager implements EmbeddedDatabaseManager {
     }
 
     @Override
-    public void executeUpdate(String sql, Object ... parameters) {
+    public void execute(String sql, Object ... parameters) {
         writer.appendExecuteUpdateCommand(sql, parameters);
     }
     

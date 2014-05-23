@@ -19,7 +19,7 @@ import bgu.dcr.az.dcr.api.modules.ProblemGenerator;
 import bgu.dcr.az.dcr.api.problems.Problem;
 import bgu.dcr.az.dcr.modules.loopers.SingleExecutionLooper;
 import bgu.dcr.az.dcr.modules.spawners.SimpleAgentSpawner;
-import bgu.dcr.az.dcr.modules.statistics.CPExecutionDataStatisticCollector;
+import bgu.dcr.az.dcr.modules.statistics.CPExecutionInfoCollector;
 import bgu.dcr.az.execs.MultithreadedScheduler;
 import bgu.dcr.az.execs.api.Scheduler;
 import bgu.dcr.az.execs.api.experiments.Execution;
@@ -66,10 +66,10 @@ public class CPExperimentTest implements Experiment {
     private final Map<Class, ExecutionService> suppliedServices = new HashMap<>();
     private ExecutionResult result;
     private LogManager logger = new LogManagerImpl();
-    private CPExecutionDataStatisticCollector dataCollector = new CPExecutionDataStatisticCollector();
+    private CPExecutionInfoCollector infoCollector = new CPExecutionInfoCollector();
 
-    public CPExecutionDataStatisticCollector getDataCollector() {
-        return dataCollector;
+    public CPExecutionInfoCollector getInfoCollector() {
+        return infoCollector;
     }
     
     @Override

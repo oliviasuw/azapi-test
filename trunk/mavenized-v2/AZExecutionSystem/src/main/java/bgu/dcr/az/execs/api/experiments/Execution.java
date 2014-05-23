@@ -32,4 +32,6 @@ public interface Execution<T> {
     public Experiment getContainingExperiment();
     
     public InfoStream informationStream();
+    
+    public int numberOfAgents();
 }

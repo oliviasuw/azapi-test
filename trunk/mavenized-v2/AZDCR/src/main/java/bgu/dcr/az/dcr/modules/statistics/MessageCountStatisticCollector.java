@@ -60,21 +60,21 @@ public class MessageCountStatisticCollector extends AbstractCPStatisticCollector
 
     @Override
     protected void initialize(Execution<CPData> ex, DefinitionDatabase database) {
-        database.defineTable("MESSAGE_COUNT", Record.class);
+        database.defineTable("MESSAGE_COUNT", MessagesRecord.class);
 
         ex.informationStream().listen(ExecutionTerminationInfo.class, t -> {
             for (int i = 0; i < ex.data().getMessagesCount().length; i++) {
-                write(new Record(i, ex.data().getMessagesCount()[i]));
+                write(new MessagesRecord(i, ex.data().getMessagesCount()[i]));
             }
         });
     }
 
-    public static class Record extends CPRecord {
+    public static class MessagesRecord extends StatisticRecord {
 
         int agent;
         float messages;
 
-        public Record(int agent, long messages) {
+        public MessagesRecord(int agent, long messages) {
             this.agent = agent;
             this.messages = messages;
         }

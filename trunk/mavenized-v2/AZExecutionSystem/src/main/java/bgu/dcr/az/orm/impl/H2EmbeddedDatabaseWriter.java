@@ -16,6 +16,7 @@ import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
@@ -57,8 +58,8 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
                         synchronizationLock.release();
                     } else if (item instanceof DefineTableCommand) {
                         defineTable((DefineTableCommand) item);
-                    } else if (item instanceof ExecuteUpdateCommand) {
-                        executeUpdate((ExecuteUpdateCommand) item);
+                    } else if (item instanceof ExecuteCommand) {
+                        execute((ExecuteCommand) item);
                     } else {
                         addToPreparedStatementBatch(item);
                     }
@@ -77,11 +78,11 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
         }
     }
 
-    private void executeUpdate(ExecuteUpdateCommand cmd) throws SQLException {
+    private void execute(ExecuteCommand cmd) throws SQLException {
         if (cmd.parameters == null || cmd.parameters.length == 0) {
             try (Statement st = manager.getConnection().createStatement()) {
                 System.out.println("creating table: \n" + cmd.sql);
-                st.executeUpdate(cmd.sql);
+                st.execute(cmd.sql);
             }
         } else {
             try (PreparedStatement st = manager.getConnection().prepareStatement(cmd.sql)) {
@@ -89,7 +90,7 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
                     st.setObject(i + 1, cmd.parameters[i]);
                 }
                 System.out.println("creating table: \n" + st.toString());
-                st.executeUpdate(cmd.sql);
+                st.execute(cmd.sql);
             }
         }
     }
@@ -136,7 +137,7 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
     }
 
     void appendExecuteUpdateCommand(String sql, Object... parameters) {
-        q.add(new ExecuteUpdateCommand(sql, parameters));
+        q.add(new ExecuteCommand(sql, parameters));
     }
 
     void synchronize() throws InterruptedException {
@@ -149,12 +150,12 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
         q.add(o);
     }
 
-    private static class ExecuteUpdateCommand {
+    private static class ExecuteCommand {
 
         String sql;
         Object[] parameters;
 
-        public ExecuteUpdateCommand(String sql, Object[] parameters) {
+        public ExecuteCommand(String sql, Object[] parameters) {
             this.sql = sql;
             this.parameters = parameters;
         }
@@ -206,7 +207,8 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
 
         void defineTable(Connection connection) throws SQLException {
             StringBuilder exe = new StringBuilder("CREATE TABLE ").append(tableName).append(" (");
-            exe.append("ID INTEGER NOT NULL AUTO_INCREMENT ");
+            String id = "ID_" + Math.round(Math.random() * Long.MAX_VALUE); 
+            exe.append(id + " INTEGER NOT NULL AUTO_INCREMENT ");
             for (Field f : fields) {
                 exe.append(", ").append(f.getName());
                 if (Boolean.class == f.getType() || boolean.class == f.getType()) {
@@ -225,7 +227,7 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
                     exe.append(" BIGINT");
                 }
             }
-            exe.append(", PRIMARY KEY (ID));");
+            exe.append(", PRIMARY KEY (" + id + "));");
 
             try (Statement st = connection.createStatement()) {
                 System.out.println("creating table: \n" + exe.toString());

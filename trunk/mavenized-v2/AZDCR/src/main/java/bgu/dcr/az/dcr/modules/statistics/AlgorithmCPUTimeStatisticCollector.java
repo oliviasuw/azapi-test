@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.ui.screens.status;
+package bgu.dcr.az.dcr.modules.statistics;
 
 import bgu.dcr.az.dcr.execution.CPData;
 import bgu.dcr.az.dcr.execution.CPExperimentTest;
-import bgu.dcr.az.dcr.modules.statistics.AbstractStatisticCollector;
+import bgu.dcr.az.execs.statistics.AbstractStatisticCollector;
 import bgu.dcr.az.execs.api.experiments.Execution;
 import bgu.dcr.az.execs.statistics.info.ExecutionTerminationInfo;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
@@ -20,7 +20,7 @@ import java.util.Map;
  *
  * @author User
  */
-public class AlgorithmCPUTimeStatisticCollector extends AbstractStatisticCollector {
+public class AlgorithmCPUTimeStatisticCollector extends AbstractCPStatisticCollector {
 
     Map<String, Long> millisSpent = new LinkedHashMap<>();
 

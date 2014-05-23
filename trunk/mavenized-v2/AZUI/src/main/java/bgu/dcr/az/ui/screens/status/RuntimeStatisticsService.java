@@ -5,6 +5,8 @@
  */
 package bgu.dcr.az.ui.screens.status;
 
+import bgu.dcr.az.dcr.modules.statistics.AlgorithmCPUTimeStatisticCollector;
+import bgu.dcr.az.dcr.modules.statistics.NumberOfCoresInUseStatisticCollector;
 import bgu.dcr.az.execs.api.experiments.Execution;
 import bgu.dcr.az.execs.api.experiments.ExecutionService;
 import bgu.dcr.az.execs.api.experiments.Experiment;

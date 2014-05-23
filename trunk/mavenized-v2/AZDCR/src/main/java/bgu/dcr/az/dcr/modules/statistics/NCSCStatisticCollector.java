@@ -7,11 +7,12 @@ package bgu.dcr.az.dcr.modules.statistics;
 import bgu.dcr.az.conf.registery.Register;
 import bgu.dcr.az.dcr.execution.CPData;
 import bgu.dcr.az.dcr.execution.CPExperimentTest;
-import bgu.dcr.az.dcr.execution.statistics.CPMessageInfo;
 import bgu.dcr.az.execs.api.experiments.Execution;
 import bgu.dcr.az.execs.api.statistics.AdditionalLineChartProperties;
 import bgu.dcr.az.execs.statistics.info.ExecutionTerminationInfo;
 import bgu.dcr.az.execs.statistics.info.MessageInfo;
+import static bgu.dcr.az.execs.statistics.info.MessageInfo.OperationType.Received;
+import static bgu.dcr.az.execs.statistics.info.MessageInfo.OperationType.Sent;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.QueryDatabase;
 import com.google.common.primitives.Longs;
@@ -23,7 +24,7 @@ import java.util.Map;
  * @author bennyl
  */
 @Register("ncsc-sc")
-public class NCSCStatisticCollector extends AbstractStatisticCollector {
+public class NCSCStatisticCollector extends AbstractCPStatisticCollector {
 
     private long[] currentNcsc;
     private Map<Long, Long> messageNcsc;
@@ -35,18 +36,16 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector {
         currentNcsc = new long[ex.data().getProblem().getNumberOfAgents()];
         messageNcsc = new HashMap<>();
 
-        ex.informationStream().listen(CPMessageInfo.class, m -> {
-            if (!m.isInternal()) {
-                switch (m.getType()) {
-                    case Sent:
-                        messageNcsc.put(m.getMessageId(), currentNcsc[m.getSender()]);
-                        break;
-                    case Received:
-                        currentNcsc[m.getRecepient()] = Math.max(messageNcsc.remove(m.getMessageId()), currentNcsc[m.getRecepient()]) + 1;
-                        break;
-                    default:
-                        throw new AssertionError(m.getType().name());
-                }
+        ex.informationStream().listen(MessageInfo.class, m -> {
+            switch (m.getType()) {
+                case Sent:
+                    messageNcsc.put(m.getMessageId(), currentNcsc[m.getSender()]);
+                    break;
+                case Received:
+                    currentNcsc[m.getRecepient()] = Math.max(messageNcsc.remove(m.getMessageId()), currentNcsc[m.getRecepient()]) + 1;
+                    break;
+                default:
+                    throw new AssertionError(m.getType().name());
             }
         });
 

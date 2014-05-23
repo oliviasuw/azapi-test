@@ -14,7 +14,7 @@ import bgu.dcr.az.execs.api.experiments.ExecutionResult;
 import bgu.dcr.az.dcr.Agt0DSL;
 import bgu.dcr.az.dcr.api.modules.AgentSpawner;
 import bgu.dcr.az.dcr.api.modules.CPCorrectnessTester;
-import bgu.dcr.az.dcr.api.modules.Looper;
+import bgu.dcr.az.execs.api.experiments.Looper;
 import bgu.dcr.az.dcr.api.modules.ProblemGenerator;
 import bgu.dcr.az.dcr.api.problems.Problem;
 import bgu.dcr.az.dcr.modules.loopers.SingleExecutionLooper;
@@ -28,6 +28,7 @@ import bgu.dcr.az.execs.api.experiments.ExecutionService;
 import bgu.dcr.az.execs.api.experiments.Experiment;
 import bgu.dcr.az.execs.exceptions.ExperimentExecutionException;
 import bgu.dcr.az.execs.api.experiments.ExperimentStatusSnapshot;
+import bgu.dcr.az.execs.api.experiments.HasLooper;
 import bgu.dcr.az.execs.api.loggers.LogManager;
 import bgu.dcr.az.execs.api.statistics.StatisticCollector;
 import bgu.dcr.az.execs.exceptions.InitializationException;
@@ -50,7 +51,7 @@ import java.util.concurrent.Executors;
  * @author User
  */
 @Register("test")
-public class CPExperimentTest implements Experiment {
+public class CPExperimentTest implements Experiment, HasLooper {
 
     private static int creationNumber = 0;
 

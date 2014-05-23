@@ -207,8 +207,7 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
 
         void defineTable(Connection connection) throws SQLException {
             StringBuilder exe = new StringBuilder("CREATE TABLE ").append(tableName).append(" (");
-            String id = "ID_" + Math.round(Math.random() * Long.MAX_VALUE); 
-            exe.append(id + " INTEGER NOT NULL AUTO_INCREMENT ");
+            exe.append("ID INTEGER NOT NULL AUTO_INCREMENT ");
             for (Field f : fields) {
                 exe.append(", ").append(f.getName());
                 if (Boolean.class == f.getType() || boolean.class == f.getType()) {
@@ -225,9 +224,11 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
                     exe.append(" VARCHAR(150)");
                 } else if (Long.class == f.getType() || long.class == f.getType()) {
                     exe.append(" BIGINT");
+                } else {
+                    throw new SQLException("Cannot generate table " + tableName + ", field " + f.getName() + " is not primitive.");
                 }
             }
-            exe.append(", PRIMARY KEY (" + id + "));");
+            exe.append(", PRIMARY KEY (ID));");
 
             try (Statement st = connection.createStatement()) {
                 System.out.println("creating table: \n" + exe.toString());

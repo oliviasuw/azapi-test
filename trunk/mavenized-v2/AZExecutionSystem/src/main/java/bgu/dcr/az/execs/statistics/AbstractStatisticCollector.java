@@ -1,5 +1,6 @@
 package bgu.dcr.az.execs.statistics;
 
+import bgu.dcr.az.common.reflections.ReflectionUtils;
 import bgu.dcr.az.execs.api.experiments.Execution;
 import bgu.dcr.az.execs.api.experiments.Experiment;
 import bgu.dcr.az.execs.api.statistics.AdditionalBarChartProperties;
@@ -12,12 +13,17 @@ import bgu.dcr.az.orm.api.Data;
 import bgu.dcr.az.orm.api.DefinitionDatabase;
 import bgu.dcr.az.orm.api.EmbeddedDatabaseManager;
 import bgu.dcr.az.orm.api.QueryDatabase;
+import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
  * @author Benny Lutati
  */
 public abstract class AbstractStatisticCollector<T> implements StatisticCollector<T>, Plotter {
+
+    private final Set<String> definedTableNames = new HashSet<>();
 
     private Plotter plotter;
     private EmbeddedDatabaseManager db = null;
@@ -41,21 +47,41 @@ public abstract class AbstractStatisticCollector<T> implements StatisticCollecto
     public final void initialize(Execution<T> execution) throws InitializationException {
 
         executionInfo = execution.require(ExecutionInfoCollector.class);
-
         db = (EmbeddedDatabaseManager) execution.require(EmbeddedDatabaseManager.class);
 
-        initialize(execution, (tableName, recordType) -> {
-            db.defineTable("RAW_" + tableName, recordType);
-            db.execute("CREATE OR REPLACE VIEW " + tableName + " AS SELECT * FROM RAW_" + tableName + " AS t, " + ExecutionInfoCollector.EXECUTION_INFO_DATA_TABLE + " AS i WHERE t.executionIndex = i.index;");
-        });
+        class CachedDDB implements DefinitionDatabase {
 
-        System.out.println("Statistic Collector: " + getName() + " initialized");
+            @Override
+            public void defineTable(String tableName, Class<? extends DBRecord> recordType) {
+                if (definedTableNames.contains(tableName)) {
+                    return;
+                }
+                definedTableNames.add(tableName);
+
+                db.defineTable("RAW_" + tableName, recordType);
+                StringBuilder fields = new StringBuilder();
+                for (Field f : ReflectionUtils.allFields(recordType)) {
+                    if (f.getName().equals("executionIndex")) {
+                        continue;
+                    }
+                    fields.append(", ").append(f.getName());
+                }
+                for (Field f : ReflectionUtils.allFields(executionInfo.getDataRecordClass())) {
+                    if (f.getName().equals("index")) {
+                        continue;
+                    }
+                    fields.append(", ").append(f.getName());
+                }
+
+                db.execute("CREATE OR REPLACE VIEW " + tableName + " AS SELECT executionIndex " + fields.toString() + " FROM RAW_" + tableName + " AS t, " + ExecutionInfoCollector.EXECUTION_INFO_DATA_TABLE + " AS i WHERE t.executionIndex = i.index;");
+            }
+        }
+
+        initialize(execution, new CachedDDB());
     }
 
     @Override
     public void plot(Plotter ploter, Experiment ex) {
-//        if (ex == null) return ;
-
         this.setPlotter(ploter);
         if (db != null) {
             plot(db.createQueryDatabase(), ex);

@@ -2,13 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.dcr.modules.statistics;
+package bgu.dcr.az.execs.statistics;
 
 import bgu.dcr.az.conf.registery.Register;
-import bgu.dcr.az.dcr.execution.CPData;
-import bgu.dcr.az.dcr.execution.CPExperimentTest;
 import bgu.dcr.az.execs.api.experiments.Execution;
+import bgu.dcr.az.execs.api.experiments.Experiment;
+import bgu.dcr.az.execs.api.experiments.HasLooper;
 import bgu.dcr.az.execs.api.statistics.AdditionalLineChartProperties;
+import bgu.dcr.az.execs.statistics.AbstractStatisticCollector.StatisticRecord;
 import bgu.dcr.az.execs.statistics.info.ExecutionTerminationInfo;
 import bgu.dcr.az.execs.statistics.info.MessageInfo;
 import static bgu.dcr.az.execs.statistics.info.MessageInfo.OperationType.Received;
@@ -24,13 +25,13 @@ import java.util.Map;
  * @author bennyl
  */
 @Register("ncsc-sc")
-public class NCSCStatisticCollector extends AbstractCPStatisticCollector {
+public class NCSCStatisticCollector extends AbstractStatisticCollector {
 
     private long[] currentNcsc;
     private Map<Long, Long> messageNcsc;
 
     @Override
-    protected void initialize(Execution<CPData> ex, DefinitionDatabase database) {
+    protected void initialize(Execution ex, DefinitionDatabase database) {
         database.defineTable("NCSC", NCSCRecord.class);
 
         currentNcsc = new long[ex.numberOfAgents()];
@@ -60,15 +61,20 @@ public class NCSCStatisticCollector extends AbstractCPStatisticCollector {
     }
 
     @Override
-    protected void plot(QueryDatabase database, CPExperimentTest test) {
-        String sql = "select AVG(ncsc) as avg, rVar, ALGORITHM_INSTANCE from NCSC where TEST = ? group by ALGORITHM_INSTANCE, rVar order by rVar";
+    protected void plot(QueryDatabase database, Experiment test) {
+        if (test instanceof HasLooper) {
+            HasLooper hlop = (HasLooper) test;
+            String sql = "select AVG(ncsc) as avg, rVar, ALGORITHM_INSTANCE from NCSC where TEST = ? group by ALGORITHM_INSTANCE, rVar order by rVar";
 
-        AdditionalLineChartProperties properties = new AdditionalLineChartProperties();
-        properties.setTitle(getName());
-        properties.setLogarithmicScale(true);
-        properties.setXAxisLabel(test.getLooper().getRunningVariableName());
-        properties.setYAxisLabel("AVG(NCSC)");
-        plotLineChart(database.query(sql, test.getName()), "rvar", "avg", "ALGORITHM_INSTANCE", properties);
+            AdditionalLineChartProperties properties = new AdditionalLineChartProperties();
+            properties.setTitle(getName());
+            properties.setLogarithmicScale(true);
+            properties.setXAxisLabel(hlop.getLooper().getRunningVariableName());
+            properties.setYAxisLabel("AVG(NCSC)");
+            plotLineChart(database.query(sql, test.getName()), "rvar", "avg", "ALGORITHM_INSTANCE", properties);
+        } else {
+            throw new UnsupportedOperationException("cannot plot ncsc statistic on execution without looper");
+        }
     }
 
     public static class NCSCRecord extends StatisticRecord {

@@ -36,6 +36,7 @@ public interface EmbeddedDatabaseManager extends Closeable, ExecutionService {
      * @param recordType the record type that will be stored in the table
      */
     void defineTable(String name, Class<? extends DBRecord> recordType);
+    
 
     /**
      * query for data in this database

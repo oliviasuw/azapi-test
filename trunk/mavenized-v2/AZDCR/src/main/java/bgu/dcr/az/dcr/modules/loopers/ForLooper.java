@@ -10,7 +10,7 @@ import bgu.dcr.az.conf.api.Configuration;
 import bgu.dcr.az.conf.api.ConfigurationException;
 import bgu.dcr.az.conf.api.Property;
 import bgu.dcr.az.conf.registery.Register;
-import bgu.dcr.az.dcr.api.modules.Looper;
+import bgu.dcr.az.execs.api.experiments.Looper;
 import bgu.dcr.az.execs.exceptions.ExperimentExecutionException;
 
 /**

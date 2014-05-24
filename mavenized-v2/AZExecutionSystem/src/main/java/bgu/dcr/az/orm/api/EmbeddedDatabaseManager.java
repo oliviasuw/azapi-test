@@ -6,6 +6,7 @@
 package bgu.dcr.az.orm.api;
 
 import bgu.dcr.az.execs.api.experiments.ExecutionService;
+import bgu.dcr.az.orm.impl.RecordDescriptor;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +38,8 @@ public interface EmbeddedDatabaseManager extends Closeable, ExecutionService {
      */
     void defineTable(String name, Class<? extends DBRecord> recordType);
     
+    void defineTable(String name, RecordDescriptor recordDes);
+    
 
     /**
      * query for data in this database
@@ -63,6 +66,8 @@ public interface EmbeddedDatabaseManager extends Closeable, ExecutionService {
      * @param o
      */
     void insert(Object o);
+
+    void insert(Object o, Object recordIdentifier);
 
     /**
      * get tables metadata which is a map {@code tableName -> tableMetadata}

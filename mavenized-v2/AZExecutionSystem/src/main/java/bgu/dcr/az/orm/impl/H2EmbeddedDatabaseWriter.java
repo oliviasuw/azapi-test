@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
     static final Object CALLBACK_SIGNAL = new Object();
 
     BlockingQueue q = new LinkedBlockingQueue(); //accessed from producer threads
-    Map<Class, RecordManipulator> recordManipulators = new IdentityHashMap<>(); // accessed from this thread only
+    Map<Object, RecordManipulator> recordManipulators = new IdentityHashMap<>(); // accessed from this thread only
     H2EmbeddedDatabaseManager manager;
     Semaphore synchronizationLock = new Semaphore(0);
 
@@ -81,7 +82,7 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
     private void execute(ExecuteCommand cmd) throws SQLException {
         if (cmd.parameters == null || cmd.parameters.length == 0) {
             try (Statement st = manager.getConnection().createStatement()) {
-                System.out.println("creating table: \n" + cmd.sql);
+                System.out.println("executing: \n" + cmd.sql);
                 st.execute(cmd.sql);
             }
         } else {
@@ -89,23 +90,32 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
                 for (int i = 0; i < cmd.parameters.length; i++) {
                     st.setObject(i + 1, cmd.parameters[i]);
                 }
-                System.out.println("creating table: \n" + st.toString());
-                st.execute(cmd.sql);
+                System.out.println("executing: \n" + st.toString());
+                st.execute();
             }
         }
     }
 
     private void defineTable(DefineTableCommand cmd) throws SQLException {
-        if (!recordManipulators.containsKey(cmd.recordType)) {
-            RecordManipulator manipulator = new RecordManipulator(cmd.tableName, cmd.recordType, manager.getConnection());
-            recordManipulators.put(cmd.recordType, manipulator);
+        if (!recordManipulators.containsKey(cmd.recordDes.identifier())) {
+            RecordManipulator manipulator = new RecordManipulator(cmd.tableName, cmd.recordDes, manager.getConnection());
+            recordManipulators.put(cmd.recordDes.identifier(), manipulator);
 
             manipulator.defineTable(manager.getConnection());
         }
     }
 
     private void addToPreparedStatementBatch(Object item) throws SQLException {
-        RecordManipulator manipulator = recordManipulators.get(item.getClass());
+        RecordManipulator manipulator;
+
+        if (item instanceof ObjectWithIdentifier) {
+            ObjectWithIdentifier owi = (ObjectWithIdentifier) item;
+            manipulator = recordManipulators.get(owi.ident);
+            item = owi.o;
+        } else {
+            manipulator = recordManipulators.get(item.getClass());
+        }
+
         if (manipulator == null) {
             throw new SQLException("Unknown record type: " + item.getClass().getCanonicalName() + " (did you forget to call defineTable?)");
         }
@@ -132,8 +142,12 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
         synchronize();
     }
 
-    void appendDefineTableCommand(String name, Class<? extends DBRecord> recordType) {
-        q.add(new DefineTableCommand(name, recordType));
+    void appendDefineTableCommand(String name, RecordDescriptor recordDes) {
+        q.add(new DefineTableCommand(name, recordDes));
+    }
+
+    void appendDefineTableCommand(String name, Class recordDes) {
+        q.add(new DefineTableCommand(name, new ObjectRecordDescriptor(recordDes)));
     }
 
     void appendExecuteUpdateCommand(String sql, Object... parameters) {
@@ -150,6 +164,22 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
         q.add(o);
     }
 
+    private static class ObjectWithIdentifier {
+
+        Object o;
+        Object ident;
+
+        public ObjectWithIdentifier(Object o, Object ident) {
+            this.o = o;
+            this.ident = ident;
+        }
+
+    }
+
+    void appendInsertionCommand(Object o, Object identifier) {
+        q.add(new ObjectWithIdentifier(o, identifier));
+    }
+
     private static class ExecuteCommand {
 
         String sql;
@@ -164,40 +194,85 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
     private static class DefineTableCommand {
 
         String tableName;
-        Class recordType;
+        RecordDescriptor recordDes;
 
-        public DefineTableCommand(String tableName, Class recordType) {
+        public DefineTableCommand(String tableName, RecordDescriptor recordDes) {
             this.tableName = tableName;
-            this.recordType = recordType;
+            this.recordDes = recordDes;
+        }
+
+    }
+
+    private static class ObjectRecordDescriptor implements RecordDescriptor {
+
+        Class c;
+        String[] fieldsNames;
+        Field[] fields;
+
+        public ObjectRecordDescriptor(Class c) {
+            this.c = c;
+            List<Field> allFields = ReflectionUtils.allFields(c);
+            fields = allFields.stream().map(f -> {
+                f.setAccessible(true);
+                return f;
+            }).toArray(Field[]::new);
+            fieldsNames = allFields.stream().map(f -> f.getName()).toArray(String[]::new);
+        }
+
+        @Override
+        public String[] fields() {
+            return fieldsNames;
+        }
+
+        @Override
+        public Object get(int idx, Object from) {
+            try {
+                return fields[idx].get(from);
+            } catch (IllegalArgumentException | IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        @Override
+        public Class type(int idx) {
+            return fields[idx].getType();
+        }
+
+        @Override
+        public Object identifier() {
+            return c;
         }
 
     }
 
     private static class RecordManipulator {
 
-        List<Field> fields;
+        //List<Field> fields;
         PreparedStatement insertStatement;
         String tableName;
-        Class recordClass;
+        //Class recordClass;
         private Connection connection;
+        private final RecordDescriptor record;
 
-        public RecordManipulator(String tableName, Class recordClass, Connection connection) throws SQLException {
-            fields = ReflectionUtils.allFields(recordClass);
+        public RecordManipulator(String tableName, RecordDescriptor record, Connection connection) throws SQLException {
+            //fields = ReflectionUtils.allFields(recordClass);
+            this.record = record;
             this.tableName = tableName;
-            this.recordClass = recordClass;
+            //this.recordClass = recordClass;
             this.connection = connection;
 
         }
 
         private void createInsertStatement() throws SQLException, SecurityException {
             StringBuilder sb = new StringBuilder("INSERT INTO ").append(tableName).append(" (");
-            for (Field f : fields) {
-                f.setAccessible(true);
-                sb.append(f.getName()).append(",");
+            String[] fields = record.fields();
+            for (String f : fields) {
+                //f.setAccessible(true);
+                sb.append(f).append(",");
             }
 
             sb.deleteCharAt(sb.length() - 1).append(") VALUES (");
-            for (int i = 0; i < fields.size(); i++) {
+            for (int i = 0; i < fields.length; i++) {
                 sb.append("?,");
             }
             sb.deleteCharAt(sb.length() - 1).append(");");
@@ -208,24 +283,27 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
         void defineTable(Connection connection) throws SQLException {
             StringBuilder exe = new StringBuilder("CREATE TABLE ").append(tableName).append(" (");
             exe.append("ID INTEGER NOT NULL AUTO_INCREMENT ");
-            for (Field f : fields) {
-                exe.append(", ").append(f.getName());
-                if (Boolean.class == f.getType() || boolean.class == f.getType()) {
+            String[] fields = record.fields();
+            for (int i = 0; i < fields.length; i++) {
+
+                exe.append(", ").append(fields[i]);
+                Class type = record.type(i);
+                if (Boolean.class == type || boolean.class == type) {
                     exe.append(" BOOLEAN");
-                } else if (Double.class == f.getType() || double.class == f.getType()) {
+                } else if (Double.class == type || double.class == type) {
                     exe.append(" DECIMAL(20, 3)");
-                } else if (Float.class == f.getType() || float.class == f.getType()) {
+                } else if (Float.class == type || float.class == type) {
                     exe.append(" DECIMAL(14, 3)");
-                } else if (Integer.class == f.getType() || int.class == f.getType()) {
+                } else if (Integer.class == type || int.class == type) {
                     exe.append(" INTEGER");
-                } else if (Character.class == f.getType() || char.class == f.getType()) {
+                } else if (Character.class == type || char.class == type) {
                     exe.append(" CHAR");
-                } else if (String.class == f.getType()) {
+                } else if (String.class == type) {
                     exe.append(" VARCHAR(150)");
-                } else if (Long.class == f.getType() || long.class == f.getType()) {
+                } else if (Long.class == type || long.class == type) {
                     exe.append(" BIGINT");
                 } else {
-                    throw new SQLException("Cannot generate table " + tableName + ", field " + f.getName() + " is not primitive.");
+                    throw new SQLException("Cannot generate table " + tableName + ", field " + fields[i] + " is not primitive.");
                 }
             }
             exe.append(", PRIMARY KEY (ID));");
@@ -241,15 +319,12 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
                 createInsertStatement();
             }
 
-            try {
-                for (int i = 0; i < fields.size(); i++) {
-                    insertStatement.setObject(i + 1, fields.get(i).get(item));
-                }
-
-                insertStatement.addBatch();
-            } catch (IllegalArgumentException | IllegalAccessException ex) {
-                throw new SQLException("cannot insert object " + item);
+            String[] fields = record.fields();
+            for (int i = 0; i < fields.length; i++) {
+                insertStatement.setObject(i + 1, record.get(i, item));
             }
+
+            insertStatement.addBatch();
         }
 
         void commit() throws SQLException {

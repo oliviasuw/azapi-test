@@ -5,7 +5,6 @@
  */
 package bgu.dcr.az.dcr.modules.spawners;
 
-import bgu.dcr.az.conf.FromStringPropertyValue;
 import bgu.dcr.az.conf.api.Property;
 import bgu.dcr.az.conf.registery.Registery;
 import bgu.dcr.az.dcr.Agt0DSL;

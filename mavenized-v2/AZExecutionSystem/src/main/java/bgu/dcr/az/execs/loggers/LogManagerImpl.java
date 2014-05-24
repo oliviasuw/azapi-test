@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.execs.loggers;
 
+import bgu.dcr.az.conf.registery.Register;
 import bgu.dcr.az.execs.api.experiments.Execution;
 import bgu.dcr.az.execs.api.experiments.ExecutionEnvironment;
 import bgu.dcr.az.execs.api.loggers.LogManager;
@@ -24,6 +25,7 @@ import java.util.Map;
  *
  * @author bennyl
  */
+@Register("log-manager")
 public class LogManagerImpl implements LogManager {
 
     public static final String LOG_MANAGEMENT_TABLE_NAME = "LOG_MANAGEMENT";
@@ -35,12 +37,32 @@ public class LogManagerImpl implements LogManager {
     private ExecutionInfoCollector infoCollector;
     private NCSCStatisticCollector ncsc;
 
+    private boolean saveTimestaps = true;
+
+    public boolean getSaveTimestaps() {
+        return saveTimestaps;
+    }
+
+    public void setSaveTimestaps(boolean saveTimestaps) {
+        this.saveTimestaps = saveTimestaps;
+    }
+
+    /**
+     * @propertyName loggers
+     * @return 
+     */
+    public List<Logger> getLoggers() {
+        return loggers;
+    }
+    
     @Override
     public void initialize(Execution ex) throws InitializationException {
-        environment = ex.getEnvironment();
-        infoCollector = (ExecutionInfoCollector) ex.require(ExecutionInfoCollector.class);
-        if (ExecutionEnvironment.async.equals(environment)) {
-            ncsc = (NCSCStatisticCollector) ex.require(NCSCStatisticCollector.class);
+        if (saveTimestaps) {
+            environment = ex.getEnvironment();
+            infoCollector = (ExecutionInfoCollector) ex.require(ExecutionInfoCollector.class);
+            if (ExecutionEnvironment.async.equals(environment)) {
+                ncsc = (NCSCStatisticCollector) ex.require(NCSCStatisticCollector.class);
+            }
         }
 
         if (db == null) {
@@ -82,16 +104,18 @@ public class LogManagerImpl implements LogManager {
 
         db.insert(record);
 
-        Object[] args = new Object[loggers.size() + 3];
-        args[0] = record.aid;
-        args[1] = getTime(record.aid);
-        args[2] = infoCollector.getLastRecordIndex();
+        if (saveTimestaps) {
+            Object[] args = new Object[loggers.size() + 3];
+            args[0] = record.aid;
+            args[1] = getTime(record.aid);
+            args[2] = infoCollector.getLastRecordIndex();
 
-        int i = 3;
-        for (Logger l : loggers) {
-            args[i++] = logIndex.get(l).value[record.aid];
+            int i = 3;
+            for (Logger l : loggers) {
+                args[i++] = logIndex.get(l).value[record.aid];
+            }
+            db.insert(args, LogRecordDescriptor.class);
         }
-        db.insert(args, LogRecordDescriptor.class);
     }
 
     private long getTime(int aid) {
@@ -103,6 +127,11 @@ public class LogManagerImpl implements LogManager {
             default:
                 throw new AssertionError(environment.name());
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Log manager";
     }
 
     private static class TimedLoggerEntry {

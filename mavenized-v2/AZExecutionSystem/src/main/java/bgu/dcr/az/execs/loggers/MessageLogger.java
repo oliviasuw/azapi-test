@@ -24,9 +24,7 @@ public class MessageLogger implements Logger {
         database.defineTable("MESSAGES_LOG", MessageLogRecord.class);
 
         execution.informationStream().listen(MessageInfo.class, m -> {
-            IntStream.range(0, execution.numberOfAgents()).forEach(a -> {
-                manager.commit(this, new MessageLogRecord(m.getMessageName(), m.getSender(), m.getRecepient(), MessageInfo.OperationType.Sent.equals(m.getType())));
-            });
+            manager.commit(this, new MessageLogRecord(m.getMessageName(), m.getSender(), m.getRecepient(), MessageInfo.OperationType.Sent.equals(m.getType())));
         });
     }
 

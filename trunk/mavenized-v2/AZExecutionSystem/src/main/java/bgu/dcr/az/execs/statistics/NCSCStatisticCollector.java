@@ -29,6 +29,10 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector {
 
     private long[] currentNcsc;
     private Map<Long, Long> messageNcsc;
+    
+    public long getCurrentNCSC(int aid) {
+        return currentNcsc[aid];
+    }
 
     @Override
     protected void initialize(Execution ex, DefinitionDatabase database) {

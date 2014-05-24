@@ -6,6 +6,7 @@
         <groupId>bgu.dcr.az</groupId>
         <artifactId>AgentZero</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
     </parent>
     
     <artifactId>AZUI</artifactId>

@@ -34,6 +34,7 @@ import bgu.dcr.az.execs.api.statistics.StatisticCollector;
 import bgu.dcr.az.execs.exceptions.InitializationException;
 import bgu.dcr.az.execs.experiments.ExperimentStatusSnapshotImpl;
 import bgu.dcr.az.execs.loggers.LogManagerImpl;
+import bgu.dcr.az.execs.loggers.MessageLogger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,13 +67,17 @@ public class CPExperimentTest implements Experiment, HasLooper {
     private final HashSet<StatisticCollector> statistics = new HashSet<>();
     private final Map<Class, ExecutionService> suppliedServices = new HashMap<>();
     private ExecutionResult result;
-    private LogManager logger = new LogManagerImpl();
-    private CPExecutionInfoCollector infoCollector = new CPExecutionInfoCollector();
+    private final LogManager logger = new LogManagerImpl();
+    private final CPExecutionInfoCollector infoCollector = new CPExecutionInfoCollector();
+
+    public CPExperimentTest() {
+        logger.register(new MessageLogger());
+    }
 
     public CPExecutionInfoCollector getInfoCollector() {
         return infoCollector;
     }
-    
+
     @Override
     public ExecutionResult lastResult() {
         return result;

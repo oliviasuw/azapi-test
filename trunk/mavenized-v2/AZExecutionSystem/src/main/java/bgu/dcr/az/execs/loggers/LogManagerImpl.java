@@ -6,16 +6,19 @@
 package bgu.dcr.az.execs.loggers;
 
 import bgu.dcr.az.execs.api.experiments.Execution;
-import bgu.dcr.az.execs.api.experiments.ExecutionService;
+import bgu.dcr.az.execs.api.experiments.ExecutionEnvironment;
 import bgu.dcr.az.execs.api.loggers.LogManager;
-import bgu.dcr.az.execs.api.loggers.LogRecord;
 import bgu.dcr.az.execs.api.loggers.Logger;
 import bgu.dcr.az.execs.exceptions.InitializationException;
+import bgu.dcr.az.execs.statistics.ExecutionInfoCollector;
+import bgu.dcr.az.execs.statistics.NCSCStatisticCollector;
 import bgu.dcr.az.orm.api.EmbeddedDatabaseManager;
-import java.lang.reflect.Field;
+import bgu.dcr.az.orm.impl.RecordDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -26,16 +29,36 @@ public class LogManagerImpl implements LogManager {
     public static final String LOG_MANAGEMENT_TABLE_NAME = "LOG_MANAGEMENT";
 
     private final List<Logger> loggers = new ArrayList<>();
-    private Execution execution;
+    private Map<Logger, TimedLoggerEntry> logIndex;
     private EmbeddedDatabaseManager db = null;
+    private ExecutionEnvironment environment;
+    private ExecutionInfoCollector infoCollector;
+    private NCSCStatisticCollector ncsc;
 
     @Override
     public void initialize(Execution ex) throws InitializationException {
-        this.execution = ex;
+        environment = ex.getEnvironment();
+        infoCollector = (ExecutionInfoCollector) ex.require(ExecutionInfoCollector.class);
+        if (ExecutionEnvironment.async.equals(environment)) {
+            ncsc = (NCSCStatisticCollector) ex.require(NCSCStatisticCollector.class);
+        }
+
         if (db == null) {
             db = (EmbeddedDatabaseManager) ex.require(EmbeddedDatabaseManager.class);
-            createLogManagementTable();
+            db.defineTable(LOG_MANAGEMENT_TABLE_NAME, new LogRecordDescriptor(loggers));
+
+            logIndex = new HashMap<>();
+
+            loggers.stream().forEach(l -> {
+                TimedLoggerEntry entry = new TimedLoggerEntry();
+                entry.value = new long[ex.numberOfAgents()];
+                logIndex.put(l, entry);
+            });
         }
+
+        loggers.stream().forEach(l -> {
+            l.initialize(this, ex, db.createDefinitionDatabase());
+        });
     }
 
     @Override
@@ -51,21 +74,78 @@ public class LogManagerImpl implements LogManager {
         loggers.add(logger);
     }
 
-    private void createLogManagementTable() {
-        StringBuilder exe = new StringBuilder("CREATE TABLE ").append(LOG_MANAGEMENT_TABLE_NAME).append(" (");
-        exe.append("ID INTEGER NOT NULL AUTO_INCREMENT ");
-        exe.append(", EXECUTION_NUMBER BIGINT");
-        exe.append(", PROCESS_ID INTEGER");
-        exe.append(", EXECUTION_TIME BIGINT");
+    @Override
+    public void commit(Logger logger, LogRecord record) {
+        TimedLoggerEntry entry = logIndex.get(logger);
+        record.index = entry.time++;
+        entry.value[record.aid] = record.index;
+
+        db.insert(record);
+
+        Object[] args = new Object[loggers.size() + 3];
+        args[0] = record.aid;
+        args[1] = getTime(record.aid);
+        args[2] = infoCollector.getLastRecordIndex();
+
+        int i = 3;
         for (Logger l : loggers) {
-            exe.append(", ").append(l.getClass().getSimpleName()).append(" BIGINT");
+            args[i++] = logIndex.get(l).value[record.aid];
         }
-        exe.append(", PRIMARY KEY (ID));");
-        db.execute(exe.toString());
+        db.insert(args, LogRecordDescriptor.class);
     }
 
-    @Override
-    public void commit(LogRecord record) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private long getTime(int aid) {
+        switch (environment) {
+            case async:
+                return ncsc.getCurrentNCSC(aid);
+            case sync:
+                return 0;
+            default:
+                throw new AssertionError(environment.name());
+        }
+    }
+
+    private static class TimedLoggerEntry {
+
+        long time;
+        long[] value;
+    }
+
+    private static class LogRecordDescriptor implements RecordDescriptor {
+
+        String[] columns;
+
+        public LogRecordDescriptor(Collection<Logger> loggers) {
+            columns = new String[3 + loggers.size()];
+
+            columns[0] = "aid";
+            columns[1] = "execution_time";
+            columns[2] = "execution_number";
+
+            int i = 3;
+            for (Logger l : loggers) {
+                columns[i++] = l.getClass().getSimpleName();
+            }
+        }
+
+        @Override
+        public String[] fields() {
+            return columns;
+        }
+
+        @Override
+        public Object get(int idx, Object from) {
+            return ((Object[]) from)[idx];
+        }
+
+        @Override
+        public Class type(int idx) {
+            return idx == 0 ? int.class : long.class;
+        }
+
+        @Override
+        public Object identifier() {
+            return LogRecordDescriptor.class;
+        }
     }
 }

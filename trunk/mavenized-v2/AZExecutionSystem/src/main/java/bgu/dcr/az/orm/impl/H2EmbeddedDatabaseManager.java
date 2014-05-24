@@ -122,10 +122,10 @@ public class H2EmbeddedDatabaseManager implements EmbeddedDatabaseManager {
     }
 
     @Override
-    public void execute(String sql, Object ... parameters) {
+    public void execute(String sql, Object... parameters) {
         writer.appendExecuteUpdateCommand(sql, parameters);
     }
-    
+
     @Override
     public void insert(Object o) {
         writer.appendInsertionCommand(o);
@@ -207,6 +207,16 @@ public class H2EmbeddedDatabaseManager implements EmbeddedDatabaseManager {
 
     private void closeCachedStoredProcedures() {
         cachedQueries.clear();
+    }
+
+    @Override
+    public void defineTable(String name, RecordDescriptor recordDes) {
+        writer.appendDefineTableCommand(name, recordDes);
+    }
+
+    @Override
+    public void insert(Object o, Object recordIdentifier) {
+        writer.appendInsertionCommand(o, recordIdentifier);
     }
 
     private class DDB implements DefinitionDatabase {

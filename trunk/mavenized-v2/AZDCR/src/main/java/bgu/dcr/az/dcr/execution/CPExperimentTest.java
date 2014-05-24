@@ -74,6 +74,14 @@ public class CPExperimentTest implements Experiment, HasLooper {
         logger.register(new MessageLogger());
     }
 
+    /**
+     * @propertyName log-manager
+     * @return 
+     */
+    public LogManager getLogger() {
+        return logger;
+    }
+
     public CPExecutionInfoCollector getInfoCollector() {
         return infoCollector;
     }

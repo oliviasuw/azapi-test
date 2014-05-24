@@ -161,6 +161,10 @@ public class ForLooper implements Looper {
         return "for (" + runVar + "=" + startValue + "; " + runVar + " <= " + endValue + "; " + runVar + " += " + tickSizeValue + ") do " + repeatCountValue + " times.";
     }
 
+    /**
+     * @propertyName run-variable-name
+     * @return 
+     */
     @Override
     public String getRunningVariableName() {
         return runVar;

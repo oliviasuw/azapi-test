@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.vis.presets.map;
 
+import bgu.dcr.az.vis.presets.map.drawer.FPSDrawer;
 import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import bgu.dcr.az.vis.player.impl.SimpleScrollableVisualScene;
 import bgu.dcr.az.vis.player.impl.entities.DefinedSizeSpriteBasedEntity;
@@ -26,10 +27,16 @@ import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.ScrollEvent;
+import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import resources.img.R;
 
 /**
@@ -54,13 +61,15 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
         this.boundingQuery = query;
         this.drawer = drawer;
-        
+
         init(mapPath);
+
         CanvasLayer front = new CanvasLayer(this);
         MapCanvasLayer back = new MapCanvasLayer(this, graphData, drawer);
         boundingQuery.addMetaData("GRAPH", CanvasLayer.class, back);
         boundingQuery.addMetaData("SPRITES", CanvasLayer.class, back);
-        
+        boundingQuery.addMetaData("*FPS*", CanvasLayer.class, front);
+
         boundingQuery.addMetaData("MOVING", CanvasLayer.class, front);
 
         registerLayer(MapCanvasLayer.class, back, back.getCanvas());
@@ -69,13 +78,40 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         Point2D.Double bounds = back.getGraphData().getBounds();
         super.setContainerSize(bounds.x, bounds.y);
 
-        //set default viewport to screen width /height
-        drawer.setViewPortWidth(getViewportBounds().getWidth());
-        drawer.setViewPortHeight(getViewportBounds().getHeight());
+        sceneProperty().addListener((ObservableValue<? extends Scene> s, Scene o, Scene scene) -> {
 
+            //set default viewport to screen width /height
+            scene.windowProperty().addListener((ObservableValue<? extends Window> ov, Window t, Window window) -> {
+                window.setOnShown((WindowEvent e) -> {
+                    System.out.println("Initializing");
+                    drawer.setViewPortWidth(getViewportBounds().getWidth());
+                    drawer.setViewPortHeight(getViewportBounds().getHeight());
+                    drawer.setScale(1);
+                });
+            });
+
+            //refresh viewport on window resize
+            viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
+                @Override
+                public void changed(ObservableValue<? extends Bounds> observableValue, Bounds oldBounds, Bounds newBounds) {
+                    //viewport is the amout of meters that we are viewing from the map
+                    double viewPortWidth = newBounds.getWidth() / drawer.getScale();
+                    double viewPortHeight = newBounds.getHeight() / drawer.getScale();
+                    drawer.setViewPortWidth(viewPortWidth);
+                    drawer.setViewPortHeight(viewPortHeight);
+
+                    //refresh hvalue and vvalue - will invoke listeners
+                    hvalueProperty().set(hvalueProperty().getValue() + 0.0001);
+                    vvalueProperty().set(vvalueProperty().getValue() + 0.0001);
+                }
+            });
+
+        });
+
+        //handle zoom
         addEventFilter(ScrollEvent.ANY, (ScrollEvent t) -> {
             if (t.isControlDown()) {
-                double scale = drawer.getScale() + t.getDeltaY() / 500;
+                double scale = drawer.getScale() + t.getDeltaY() / 500.0;
                 if (scale <= MIN_SCALE) {
                     scale = MIN_SCALE;
                 } else if (scale >= MAX_SCALE) {
@@ -83,58 +119,59 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                 }
                 drawer.setScale(scale);
 
-                //problematic lines
-                Point2D.Double b = back.getGraphData().getBounds();
-                pane.setPrefSize(b.x * scale, b.y * scale);
+                Point2D.Double mapSize = back.getGraphData().getBounds();
+                double mapWidth = mapSize.x;
+                double mapHeight = mapSize.y;
 
-                double screenWidth = getViewportBounds().getWidth();
-                double screenHeight = getViewportBounds().getHeight();
+//                System.out.println("BEFORE: " + pane.getPrefWidth() + " " + pane.getPrefHeight());
+                super.setContainerSize(mapWidth * scale, mapHeight * scale);
+//                System.out.println("AFTER: " + pane.getPrefWidth() + " " + pane.getPrefHeight());
 
-                //multiplying screen width/height by scale will yield it in meters
-                double viewPortWidth = screenWidth / scale;
-                double viewPortHeight = screenHeight / scale;
+//                System.out.println("AFTER (s): " + pane.getWidth() + " " + pane.getHeight());
+
+                double windowWidth = getViewportBounds().getWidth();
+                double windownHeight = getViewportBounds().getHeight();
+
+                //viewport is the amout of meters that we are viewing from the map
+                double viewPortWidth = windowWidth / scale;
+                double viewPortHeight = windownHeight / scale;
                 drawer.setViewPortWidth(viewPortWidth);
                 drawer.setViewPortHeight(viewPortHeight);
 
-//                back.drawGraph();
+                //refresh hvalue and vvalue - will invoke listeners
+                hvalueProperty().set(hvalueProperty().getValue() + 0.0001);
+                vvalueProperty().set(vvalueProperty().getValue() + 0.0001);
+
                 t.consume();
             }
         });
 
-//        widthProperty().addListener((ov, o, n) -> back.drawGraph());
-//        heightProperty().addListener((ov, o, n) -> back.drawGraph());
-        //notice that SimpleScrollableVisualScene.java - register layer - also does this!!!
-        hvalueProperty().addListener((ov, n, o) -> {
-//            back.drawGraph();
+        hvalueProperty().addListener((ov, n, xRatio) -> {
+            double dXRatio = xRatio.doubleValue();
             double scale = drawer.getScale();
-            double screenWidth = getViewportBounds().getWidth();
-            double screenHeight = getViewportBounds().getHeight();
 
-            //multiplying screen width/height by scale will yield it in meters
-            double viewPortWidth = screenWidth / scale;
-            double viewPortHeight = screenHeight / scale;
-            drawer.setViewPortWidth(viewPortWidth);
-            drawer.setViewPortHeight(viewPortHeight);
+            double windowWidth = getViewportBounds().getWidth();
 
-            double x = o.doubleValue() * (pane.getWidth() - screenWidth);
-            double y = drawer.getViewPortLocation().getY();
+            Point2D.Double mapSize = back.getGraphData().getBounds();
+            double mapWidth = mapSize.x;
+            double viewportX = dXRatio * (mapWidth - windowWidth / scale);
+            double viewportY = drawer.getViewPortLocation().getY();
 
-            drawer.setViewPortLocation(x, y);
-
-//            hvalueProperty().addListener((ov, n, o) -> layerNode.translateXProperty().set(o.doubleValue() * (pane.getWidth() - getViewportBounds().getWidth())));
-//            vvalueProperty().addListener((ov, n, o) -> layerNode.translateYProperty().set(o.doubleValue() * (pane.getHeight() - getViewportBounds().getHeight())));
+            drawer.setViewPortLocation(viewportX, viewportY);
         });
-        vvalueProperty().addListener((ov, n, o) -> {
-//            back.drawGraph();
 
+        vvalueProperty().addListener((ov, n, yRatio) -> {
+            double dYRatio = yRatio.doubleValue();
             double scale = drawer.getScale();
-            double screenWidth = getViewportBounds().getWidth();
-            double screenHeight = getViewportBounds().getHeight();
 
-            double x = drawer.getViewPortLocation().getX();
-            double y = o.doubleValue() * (pane.getHeight() - screenHeight);
+            double windowHeight = getViewportBounds().getHeight();
 
-            drawer.setViewPortLocation(x, y);
+            Point2D.Double mapSize = back.getGraphData().getBounds();
+            double mapHeight = mapSize.y;
+            double viewportY = dYRatio * (mapHeight - windowHeight / scale);
+            double viewportX = drawer.getViewPortLocation().getX();
+
+            drawer.setViewPortLocation(viewportX, viewportY);
 
         });
 
@@ -175,8 +212,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                 }
                 double width = Math.abs(target.getX() - source.getX());
                 double height = Math.abs(target.getY() - source.getY());
-                
-                
+
                 //this is a temporary hack for hasID
                 Edge temp = new Edge(edge);
                 boundingQuery.addToGroup("GRAPH", "EDGES." + edgeType, source.getX(), source.getY(), width, height, temp);
@@ -193,11 +229,13 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         int i = 0;
         for (GraphPolygon poly : polys) {
             String key = poly.getParams().entrySet().iterator().next().getKey();
-            if (boundingQuery.hasSubGroup("GRAPH", "POLYGONS." + key)) {
-                boundingQuery.addToGroup("GRAPH", "POLYGONS." + key, poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), poly);
-            } else {
-                boundingQuery.addToGroup("GRAPH", "POLYGONS.defaultPolys", poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), poly);
-            }
+//            if (!key.equals("building")) {
+                if (boundingQuery.hasSubGroup("GRAPH", "POLYGONS." + key)) {
+                    boundingQuery.addToGroup("GRAPH", "POLYGONS." + key, poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), poly);
+                } else {
+                    boundingQuery.addToGroup("GRAPH", "POLYGONS.defaultPolys", poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), poly);
+                }
+//            }
 
             if (key.equals("building")) {
                 double subScale = Math.sqrt(Math.abs(poly.getArea()));
@@ -226,7 +264,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         boundingQuery.addMetaData("SPRITES", GroupDrawer.class, spriteDrawer);
 
         boundingQuery.createGroup("MOVING", "CARS", true);
-        boundingQuery.addMetaData("MOVING",GroupDrawer.class, spriteDrawer);
+        boundingQuery.addMetaData("MOVING", GroupDrawer.class, spriteDrawer);
     }
 
 }

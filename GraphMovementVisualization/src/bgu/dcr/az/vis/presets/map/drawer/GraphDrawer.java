@@ -63,6 +63,8 @@ public class GraphDrawer extends GroupDrawer {
         double epsilonH = boundingQuery.getEpsilon(group, subgroup)[1];
         double epsilonW = boundingQuery.getEpsilon(group, subgroup)[0];
 
+        //print what im asking for
+        
         if (subgroup.contains("EDGES")) {
             Collection edges = boundingQuery.get(group, subgroup, drawer.getViewPortLocation().getX() - epsilonW * scale, drawer.getViewPortLocation().getX() + viewPortWidth + epsilonW * scale, drawer.getViewPortLocation().getY() + viewPortHeight + epsilonH * scale, drawer.getViewPortLocation().getY() - epsilonH * scale);
             draw(canvas, graphData, edges, scale);
@@ -154,7 +156,7 @@ public class GraphDrawer extends GroupDrawer {
         StringPair keyVal = new StringPair(entry.getKey(), entry.getValue());
         Paint get = metaData.getKeyTocolors().get(keyVal);
         if (get == null) {
-            System.out.println("unsupported polygon " + keyVal.getFirst() + "=" + keyVal.getSecond());
+            //System.out.println("unsupported polygon " + keyVal.getFirst() + "=" + keyVal.getSecond());
             get = metaData.getDefaultPaint();
         }
         gc.setFill(get);

@@ -13,7 +13,7 @@ import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
  */
 public interface Frame {
     
-    Frame addAction(Action action);
+    Frame addCommand(Command action);
     
     void initialize(Player player);
     

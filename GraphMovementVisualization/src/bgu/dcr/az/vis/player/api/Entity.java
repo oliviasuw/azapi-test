@@ -17,6 +17,7 @@ import javafx.beans.property.ObjectProperty;
  * @author Zovadi
  */
 public interface Entity {
+    
     long getEntityId();
     
     ObjectProperty<Location> locationProperty();
@@ -24,6 +25,5 @@ public interface Entity {
     DoubleProperty rotationProperty();
     
     DoubleProperty scaleProperty();
-    
-    void draw(VisualScene scene);
+
 }

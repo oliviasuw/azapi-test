@@ -5,7 +5,7 @@
  */
 package data.events.impl.test;
 
-import bgu.dcr.az.vis.player.api.FramesStream;
+import bgu.dcr.az.vis.newplayer.SimplePlayer;
 import bgu.dcr.az.vis.player.impl.BasicOperationsFrame;
 import bgu.dcr.az.vis.tools.Location;
 import com.esotericsoftware.kryo.Kryo;
@@ -90,7 +90,7 @@ public class EventsTester {
 //        output.close();
     }
 
-    public void AddNewMovesFromTick(Tick tick, FramesStream stream) {
+    public void AddNewMovesFromTick(Tick tick, SimplePlayer player) {
 
         Collection<SimulatorEvent> events = tick.getEvents();
         Set<String> edgeSet = graphData.getEdgeSet();
@@ -116,7 +116,7 @@ public class EventsTester {
                 
             }
         }
-        stream.writeFrame(frame);
+        player.playNextFrame(frame);
     }
 
     private Location translateToLocation(String src, String target, Double precentage) {

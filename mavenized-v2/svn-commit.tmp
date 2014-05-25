@@ -1,0 +1,12 @@
+
+--This line, and those below, will be ignored--
+
+M    AZUI/agentzero.mv.db
+M    AZUI/nb-configuration.xml
+M    AZUI/nbactions.xml
+M    AZUI/pom.xml
+M    AZUI/src/main/java/bgu/dcr/az/ui/AppController.java
+M    AZUI/src/main/java/bgu/dcr/az/ui/azstyle.css
+M    AZUI/src/main/java/bgu/dcr/az/ui/screens/problem/ConstraintCalcConsole.fxml
+M    AZUI/src/main/java/bgu/dcr/az/ui/screens/problem/ProblemViewScreen.fxml
+M    AZUI/src/main/java/bgu/dcr/az/ui/screens/problem/ProblemViewScreenCtl.java

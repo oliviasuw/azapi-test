@@ -6,7 +6,6 @@
 package bgu.dcr.az.vis.newplayer;
 
 import bgu.dcr.az.vis.player.api.Frame;
-import bgu.dcr.az.vis.player.api.FramesStream;
 import bgu.dcr.az.vis.player.api.Player;
 import bgu.dcr.az.vis.player.api.VisualScene;
 import bgu.dcr.az.vis.player.impl.CanvasLayer;
@@ -18,12 +17,13 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
 
 /**
  *
  * @author Shl
  */
-public class NewPlayer implements Player {
+public class SimplePlayer implements Player {
 
     private GroupBoundingQuery query;
     private DrawerInterface drawer;
@@ -31,7 +31,7 @@ public class NewPlayer implements Player {
     private SimpleDoubleProperty millisPerFrame;
     private SimpleIntegerProperty fps;
 
-    public NewPlayer(GroupBoundingQuery query, DrawerInterface drawer, double millisPerFrame, int fps) {
+    public SimplePlayer(GroupBoundingQuery query, DrawerInterface drawer, double millisPerFrame, int fps) {
         this.query = query;
         this.drawer = drawer;
         this.frameProcessor = null;
@@ -66,9 +66,9 @@ public class NewPlayer implements Player {
     }
 
     @Override
-    public void play(FramesStream stream) {
+    public void play() {
         stop();
-        frameProcessor = new FrameProcessor(this, stream);
+        frameProcessor = new FrameProcessor(this);
         frameProcessor.start();
     }
 
@@ -111,10 +111,13 @@ public class NewPlayer implements Player {
     public GroupBoundingQuery getQuery() {
         return query;
     }
-
-    @Override
-    public VisualScene getScene() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    public void addFrameFinishListener(ChangeListener<Boolean> listener) {
+        frameProcessor.addFrameFinishListener(listener);
+    }
+    
+    public void playNextFrame(Frame frame) {
+        frameProcessor.playNextFrame(frame);
     }
    
 

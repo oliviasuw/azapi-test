@@ -18,10 +18,8 @@ public interface Player {
     DoubleProperty millisPerFrameProperty();
     
     IntegerProperty framesPerSecondProperty();
-    
-    VisualScene getScene();
 
-    void play(FramesStream stream);
+    void play();
     
     void pause();
     
@@ -32,7 +30,6 @@ public interface Player {
     boolean isPaused();
     
     boolean isStopped();
-    
     
     //recent addition
     GroupBoundingQuery getQuery();

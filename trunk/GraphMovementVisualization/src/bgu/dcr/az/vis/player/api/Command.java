@@ -9,13 +9,11 @@ package bgu.dcr.az.vis.player.api;
  *
  * @author Zovadi
  */
-public interface FramesStream {
-
-    void writeFrame(Frame frame);
-
-    Frame readFrame();
+public interface Command {
     
-//    Frame getFrame(long index);
-//    
-//    long numberOfFrames();
+    void update(double percentage);
+    
+    void initialize(Player player);
+
+    //getEntityId shouldnt be in the interface but its an ok function for certain ones
 }

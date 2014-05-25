@@ -6,10 +6,10 @@
 package bgu.dcr.az.vis.presets.map;
 
 import bgu.dcr.az.vis.controls.ui.PlayerControls;
-import bgu.dcr.az.vis.newplayer.NewPlayer;
-import bgu.dcr.az.vis.player.api.FramesStream;
-import bgu.dcr.az.vis.player.impl.BoundedFramesStream;
-import bgu.dcr.az.vis.player.impl.SimplePlayer;
+import bgu.dcr.az.vis.newplayer.SimplePlayer;
+import bgu.dcr.az.vis.player.impl.CanvasLayer;
+import bgu.dcr.az.vis.presets.map.drawer.FPSDrawer;
+import bgu.dcr.az.vis.presets.map.drawer.GroupDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.SimpleDrawer;
 import data.events.api.SimulatorEvent;
 import data.events.impl.Tick;
@@ -17,6 +17,8 @@ import data.events.impl.test.EventsTester;
 import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
 import java.util.Collection;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -34,39 +36,33 @@ public class MapTester extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        
+
         boundingQuery = new GroupBoundingQuery();
         drawer = new SimpleDrawer(boundingQuery);
-        
+
+        boundingQuery.createGroup("*FPS*", "*FPS*", true);
+
         //change to beershevagraph.txt to get beersheva back
         //graph2_1.txt is telaviv
-        vs = new MapVisualScene(100, "graph2_1.txt", boundingQuery, drawer);
-        
-        BoundedFramesStream fs = new BoundedFramesStream(10);
-        FramesGenerator fg = new FramesGenerator(fs);
-//        SimplePlayer player = new SimplePlayer(vs, 1000, 0);
+        vs = new MapVisualScene(100, "beershevagraph.txt", boundingQuery, drawer);
 
-        NewPlayer player = new NewPlayer(boundingQuery, drawer, 1000, 0);
+        SimplePlayer player = new SimplePlayer(boundingQuery, drawer, 1000, 0);
+
+        boundingQuery.addMetaData("*FPS*", GroupDrawer.class, new FPSDrawer(drawer,player));
+        
+        FramesGenerator fg = new FramesGenerator(player);
 
         BorderPane bp = new BorderPane();
         bp.setCenter(vs);
         bp.setBottom(new PlayerControls(player));
 
         Scene scene = new Scene(bp);
-//        Camera camera = new PerspectiveCamera(false);
-//        scene.setCamera(camera);
-//        bp.getChildren().add(camera);
-
-//        camera.setTranslateZ(-400);
-//        camera.setTranslateY(190);
-//        camera.getTransforms().add(new Rotate(40, Rotate.X_AXIS));
-//        camera.setRotate(360);
-//        camera.setRotationAxis(new Point3D(0.7, 0.4 , 0));
+        
         stage.setScene(scene);
         stage.show();
         stage.addEventFilter(WindowEvent.WINDOW_HIDING, e -> fg.cancel());
 
-        player.play(fs);
+        player.play();
 
         fg.start();
     }
@@ -77,12 +73,12 @@ public class MapTester extends Application {
 
     private static class FramesGenerator extends Thread {
 
-        private final FramesStream stream;
         private boolean isStopped = false;
         private final EventsTester eventTester;
+        private SimplePlayer player;
 
-        public FramesGenerator(FramesStream stream) {
-            this.stream = stream;
+        public FramesGenerator(SimplePlayer player) {
+            this.player = player;
             MapCanvasLayer layer = (MapCanvasLayer) vs.getLayer(MapCanvasLayer.class);
             eventTester = new EventsTester(layer.getGraphData());
 //            eventTester.write();
@@ -93,10 +89,26 @@ public class MapTester extends Application {
         public void run() {
             Tick tick = eventTester.read();
             Collection<SimulatorEvent> read = tick.getEvents();
-            while (!read.isEmpty() && !isStopped) {
-                eventTester.AddNewMovesFromTick(tick, stream);
-                tick = eventTester.read();
+            if (!read.isEmpty() && !isStopped) {
+                eventTester.AddNewMovesFromTick(tick, player);
             }
+            player.addFrameFinishListener(new ChangeListener<Boolean>() {
+
+                @Override
+                public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
+                    if (t1 && !read.isEmpty() && !isStopped) {
+                        Tick tick = eventTester.read();
+                        eventTester.AddNewMovesFromTick(tick, player);
+                    }
+                }
+            });
+//            
+//            while (!read.isEmpty() && !isStopped) {
+//                if (player.isFinishedCurrFrame()) {
+//                    eventTester.AddNewMovesFromTick(tick, player);
+//                    tick = eventTester.read();
+//                }
+//            }
 //
 //            long i = 0;
 //            while (true) {

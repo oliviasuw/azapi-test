@@ -93,10 +93,11 @@ public abstract class SimpleScrollableVisualScene extends ScrollPane implements 
     }
 
     public void setContainerSize(double x, double y) {
-        pane.setPrefWidth(x);
-        pane.setPrefHeight(y);
+        pane.setPrefSize(x, y);
     }
     
-    
+    public double[] getContainerSize() {
+        return new double[]{pane.getPrefWidth(), pane.getPrefHeight()};
+    }
 
 }

@@ -6,11 +6,13 @@
 package bgu.dcr.az.vis.newplayer;
 
 import bgu.dcr.az.vis.player.api.Frame;
-import bgu.dcr.az.vis.player.api.FramesStream;
 import bgu.dcr.az.vis.player.api.Player;
 import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import javafx.animation.AnimationTimer;
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
 
 /**
  *
@@ -18,7 +20,6 @@ import javafx.beans.binding.DoubleBinding;
  */
 class FrameProcessor extends AnimationTimer {
 
-    private final FramesStream stream;
     private boolean isPaused;
     private boolean isStopped;
 
@@ -31,10 +32,12 @@ class FrameProcessor extends AnimationTimer {
     private Frame currentFrame;
 
     private final DoubleBinding frameDurationInNano;
-    private NewPlayer player;
+    private final SimplePlayer player;
 
-    FrameProcessor(NewPlayer player, FramesStream stream) {
-        this.stream = stream;
+    private BooleanProperty d = new SimpleBooleanProperty(true);
+//    private boolean finishedCurrFrame = true;
+
+    FrameProcessor(SimplePlayer player) {
         this.player = player;
         this.isPaused = false;
         this.isStopped = true;
@@ -57,7 +60,8 @@ class FrameProcessor extends AnimationTimer {
         }
 
         if (!isPaused && (currentFrame == null || frameProgress == 1)) {
-            prepareNextFrame();
+//            finishedCurrFrame = true;
+            d.set(true);
         }
 
         measureFPS(l);
@@ -72,17 +76,24 @@ class FrameProcessor extends AnimationTimer {
         }
         fps++;
 
+        
+        player.setFramesPerSeccond(lastFps);
 //        CanvasLayer cl = (CanvasLayer) player.getScene().getLayer(CanvasLayer.class);
 //
 //        cl.getCanvas().getGraphicsContext2D().strokeText("fps: " + lastFps, 14, 14);
     }
 
-    private void prepareNextFrame() {
-        Frame frame = stream.readFrame();
-
+    /**
+     * should only invoke this if current frame is finished!
+     *
+     * @param frame
+     */
+    public void playNextFrame(Frame frame) {
+        d.set(false);
         if (frame != null) {
             frame.initialize(player);
             currentFrame = frame;
+//            finishedCurrFrame = false;
             frameStartTime = System.nanoTime();
         }
     }
@@ -94,8 +105,6 @@ class FrameProcessor extends AnimationTimer {
 
         lastFps = 0;
         lastSecondStart = System.nanoTime();
-
-        prepareNextFrame();
 
         super.start();
     }
@@ -122,4 +131,9 @@ class FrameProcessor extends AnimationTimer {
     public boolean isStopped() {
         return isStopped;
     }
+
+    public void addFrameFinishListener(ChangeListener<Boolean> listener) {
+        d.addListener(listener);
+    }
+
 }

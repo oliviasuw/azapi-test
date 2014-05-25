@@ -29,7 +29,8 @@ public class BoundingGroup {
     public BoundingGroup(String subGroup, boolean moveable) {
         this.subGroup = subGroup;
         this.moveable = moveable;
-        this.objects = new QuadTree(0, QUAD_TREE_BOUNDS, QUAD_TREE_BOUNDS, 0, QUAD_TREE_BOUNDS);
+//        this.objects = new QuadTree(0, QUAD_TREE_BOUNDS, QUAD_TREE_BOUNDS, 0, QUAD_TREE_BOUNDS);
+        this.objects = new QuadTree(QUAD_TREE_BOUNDS, 0, QUAD_TREE_BOUNDS, 0, QUAD_TREE_BOUNDS);
     }
 
     public boolean add(double x, double y, double width, double height, Object obj) {

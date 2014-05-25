@@ -82,10 +82,5 @@ public abstract class SimpleEntity implements Entity {
         scaleProperty.set(scale);
     }
 
-    @Override
-    public final void draw(VisualScene scene) {
-        _draw(scene.getLayer(layerClazz));
-    }
-
     protected abstract void _draw(Layer layer);
 }

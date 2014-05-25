@@ -19,24 +19,24 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.esotericsoftware.kryo</groupId>
+            <artifactId>kryo</artifactId>
+            <version>2.23.0</version>
+        </dependency>
+        <dependency>
             <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            <version>LATEST</version>
+            <artifactId>cglib-full</artifactId>
+            <version>2.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-proxy</artifactId>
-            <version>LATEST</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>com.esotericsoftware.reflectasm</groupId>
             <artifactId>reflectasm</artifactId>
-            <version>LATEST</version>
-        </dependency>
-        <dependency>
-            <groupId>com.esotericsoftware.kryo</groupId>
-            <artifactId>kryo</artifactId>
-            <version>2.23.0</version>
+            <version>1.09</version>
         </dependency>
     </dependencies>
 </project>

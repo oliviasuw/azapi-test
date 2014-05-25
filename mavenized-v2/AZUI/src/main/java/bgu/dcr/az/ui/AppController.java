@@ -30,6 +30,7 @@ import javafx.scene.image.Image;
 import javax.swing.JFrame;
 import nu.xom.ParsingException;
 import org.controlsfx.dialog.Dialogs;
+import org.scenicview.ScenicView;
 import resources.img.ResourcesImg;
 
 /**
@@ -98,7 +99,7 @@ public class AppController {
 
     public static void startTestingUI() throws IOException {
         String agentZeroStyleSheet = AppController.class.getResource("azstyle.css").toExternalForm();
-        String agentZeroStyleSheet_DEBUG = "/home/bennyl/Desktop/Agent Zero/azapi-test/AZUserInterfaceFX/src/bgu/dcr/az/ui/azstyle.css";
+        String agentZeroStyleSheet_DEBUG = "/home/bennyl/Desktop/MoreSpace/Projects/AgentZero/mavenized-v2/AZUI/src/main/java/bgu/dcr/az/ui/azstyle.css";
 
         SwingDSL.configureLookAndFeel();
         main = new MainWindow();
@@ -107,7 +108,7 @@ public class AppController {
         FXUtils.JFXPanelWithCTL<StatusScreenCtl> statusScreenFX = FXUtils.loadFXMLForSwing(StatusScreenCtl.class, "StatusScreen.fxml");
         main.addScreen("Status", "status", statusScreenFX);
         statusScreenFX.getController().setModel(runningExperiment);
-        
+
         runningExperiment.supply(EmbeddedDatabaseManager.class, new H2EmbeddedDatabaseManager());
 
         LogScreen lscreen = new LogScreen();
@@ -115,16 +116,15 @@ public class AppController {
         runningExperiment.supply(Logger.class, lscreen);
 
         JFXPanel statisticScreen = FXUtils.jfxToSwing(MainStatisticScreen.class, agentZeroStyleSheet);
-//        JFXPanel statisticScreen = FXUtils.jfxToSwing(MainStatisticScreen.class);
-//        FXUtils.invokeInUI(() -> {
-//            FXUtils.startCSSLiveReloader(statisticScreen.getScene(), agentZeroStyleSheet_DEBUG);
-//        });
         main.addScreen("Statistics", "statistics", statisticScreen);
-//        ProblemViewScreen pview = new ProblemViewScreen();
-//        pview.setModel(runningExperiment);
+
         FXUtils.JFXPanelWithCTL<ProblemViewScreenCtl> pview = FXUtils.loadFXMLForSwing(ProblemViewScreenCtl.class, "ProblemViewScreen.fxml");
         pview.getController().setModel(runningExperiment);
         main.addScreen("Problem", "problem", pview);
+        FXUtils.startCSSLiveReloader(pview.getScene().getRoot(), agentZeroStyleSheet_DEBUG);
+//        FXUtils.invokeInUI(() -> {
+//            ScenicView.show(pview.getScene());
+//        });
 
         java.awt.EventQueue.invokeLater(() -> main.setVisible(true));
     }

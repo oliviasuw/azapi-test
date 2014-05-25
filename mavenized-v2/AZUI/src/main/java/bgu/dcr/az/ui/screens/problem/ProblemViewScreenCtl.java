@@ -64,7 +64,7 @@ public class ProblemViewScreenCtl implements Initializable {
     private final static Image CONSTRAINTS_ICON = ResourcesImg.png("all-constraints");
     private final static Image PROBLEM_ICON = ResourcesImg.png("problem");
 
-    private final static int COLUMN_WIDTH = 50;
+    private final static int COLUMN_WIDTH = 80;
     private final static int ROW_HEIGHT = 25;
 
     @FXML
@@ -81,6 +81,9 @@ public class ProblemViewScreenCtl implements Initializable {
 
     @FXML
     private SplitPane split;
+
+    @FXML
+    private SplitPane secondSplit;
 
     @FXML
     private BorderPane data;
@@ -122,6 +125,7 @@ public class ProblemViewScreenCtl implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
         graphLayoutsPane = new BorderPane();
         graphLayoutCombo = new ComboBox();
         graphLayoutCombo.getItems().addAll(new ProblemSpringLayout(), new ProblemCircleLayout(), new ProblemFRLayout(), new ProblemISOMLayout(), new ProblemKKLayout());
@@ -131,15 +135,6 @@ public class ProblemViewScreenCtl implements Initializable {
         graphLayoutsPane.setTop(graphLayoutAnimator);
 
         graphLayoutCombo.setOnAction(eh -> showProblemGraph());
-//        for (Iterator<String> it = container.getStylesheets().iterator(); it.hasNext();) {
-//            String s = it.next();
-//
-//            if (s.contains("azstyle")) {
-//                it.remove();
-//            }
-//        }
-//
-//        FXUtils.startCSSLiveReloader(container, "/home/bennyl/Desktop/Agent Zero/trunk/AZUserInterfaceFX/src/bgu/dcr/az/ui/azstyle.css");
         TextField t = pnumSelect;
         top.getChildren().remove(pnumSelect);
         pnumSelect = new TextField() {
@@ -202,7 +197,6 @@ public class ProblemViewScreenCtl implements Initializable {
                     AgentInfo aj = (AgentInfo) value;
                     showConstraintsCosts(ai.getId(), aj.getId());
                 } else {
-//                    data.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
                     showProblemGraph();
                 }
             }
@@ -272,19 +266,6 @@ public class ProblemViewScreenCtl implements Initializable {
             gd.draw(gl);
         });
 
-//        AnimationTimer at = new AnimationTimer() {
-//            long last = 0;
-//
-//            @Override
-//            public void handle(long l) {
-//                if (l - last > 10000000) {
-//                    gl.step();
-//                    gd.draw(gl);
-//                }
-//                last = l;
-//            }
-//        };
-//        at.start();        
     }
 
     private void showConstraintsMatrix() {
@@ -299,6 +280,7 @@ public class ProblemViewScreenCtl implements Initializable {
             columns[i].setMaxWidth(COLUMN_WIDTH);
             columns[i].setCellFactory(p -> {
                 return new TableCell() {
+
                     @Override
                     protected void updateItem(Object t, boolean bln) {
                         super.updateItem(t, bln); //To change body of generated methods, choose Tools | Templates.
@@ -308,6 +290,10 @@ public class ProblemViewScreenCtl implements Initializable {
                             setText(e.toString());
                             getStyleClass().clear();
                             getStyleClass().add(e.getStyleClass());
+                            if (e.toString().equals("0")) {
+                                getStyleClass().add("zero");
+                            }
+
                             setMinHeight(ROW_HEIGHT);
                             setPrefHeight(ROW_HEIGHT);
                             setMaxHeight(ROW_HEIGHT);
@@ -413,14 +399,13 @@ public class ProblemViewScreenCtl implements Initializable {
                 DataPanel msg = new DataPanel();
                 msg.setNoDataText("There are no problems to view");
                 container.setTop(null);
-                container.setLeft(null);
+                //container.setLeft(null);
                 container.setCenter(FXMessagePanel.createNoDataPanel("No data to view."));
             } else {
                 pnumSelect.setText("1");
                 container.setTop(slider);
-                container.setLeft(tree);
-                container.setCenter(split);
-
+                //container.setLeft(tree);
+                container.setCenter(secondSplit);
                 switchProblemView();
             }
         });
@@ -446,7 +431,6 @@ public class ProblemViewScreenCtl implements Initializable {
             this.p = p;
             calc.setProblem(p);
             prepareTree();
-//            problemChangePan.setVisible(false);
         }
     }
 
@@ -505,17 +489,18 @@ public class ProblemViewScreenCtl implements Initializable {
         Header {
                     @Override
                     String getStyleClass() {
-                        return "Header";
+                        return "header-cell";
                     }
 
                     @Override
                     public String toString() {
                         return this.name;
                     }
-                }, Data {
+                },
+        Data {
                     @Override
                     String getStyleClass() {
-                        return "Data";
+                        return "data-cell";
                     }
 
                     @Override

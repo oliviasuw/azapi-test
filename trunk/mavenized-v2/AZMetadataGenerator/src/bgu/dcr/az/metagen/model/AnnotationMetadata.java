@@ -10,7 +10,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
-import com.sun.mirror.type.ClassType;
 
 import bgu.dcr.az.metagen.proc.Processor;
 

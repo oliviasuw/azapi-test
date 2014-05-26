@@ -1,6 +1,6 @@
 package bgu.dcr.az.metagen.util;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class TemplateUtils {
 	/**

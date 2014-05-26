@@ -23,11 +23,21 @@
                 </includes>                
             </resource>
             <resource>
+                <directory>src/test/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.javat</include>
+                    <include>**/*.css</include>
+                    <include>**/*.fxml</include>
+                    <include>**/*.png</include>
+                </includes>                
+            </resource>
+            <resource>
                 <directory>src/main/resources</directory>
             </resource>
         </resources>    
         
-<!--        <plugins>
+        <!--        <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>

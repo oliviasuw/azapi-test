@@ -89,16 +89,11 @@
             <artifactId>AZDCR</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>AZDCRAlgorithms</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>scenicview</groupId>
-            <artifactId>scenicview</artifactId>
-            <version>1</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
     
 </project>

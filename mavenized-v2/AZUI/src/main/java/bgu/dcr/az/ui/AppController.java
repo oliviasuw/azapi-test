@@ -30,7 +30,6 @@ import javafx.scene.image.Image;
 import javax.swing.JFrame;
 import nu.xom.ParsingException;
 import org.controlsfx.dialog.Dialogs;
-import org.scenicview.ScenicView;
 import resources.img.ResourcesImg;
 
 /**

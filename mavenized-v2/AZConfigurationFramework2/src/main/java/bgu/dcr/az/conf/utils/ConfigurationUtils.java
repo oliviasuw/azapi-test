@@ -109,7 +109,9 @@ public class ConfigurationUtils {
     }
 
     private static void putProperty(String property, FromStringPropertyValue value, Element e, boolean allowAttributes, boolean readonly) throws ConfigurationException {
-        if (readonly) return;
+        if (readonly) {
+            return;
+        }
         if (allowAttributes) {
             try {
                 e.addAttribute(new Attribute(property, value.getValue()));
@@ -176,7 +178,9 @@ public class ConfigurationUtils {
         if (property == null) { //attempt to find property by type
             Class valueType = Registery.get().getRegisteredClassByName(child.getLocalName());
             if (valueType != null) {
+
                 for (Property p : c) {
+                    
                     if (p.typeInfo().getType().isAssignableFrom(valueType)) {
                         property = p;
 

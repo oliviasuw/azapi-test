@@ -57,6 +57,7 @@
     </build>
     
     <modules>
+        <module>AZMetadataGenerator</module>
         <module>AZCmmon</module>
         <module>AZConfigurationFramework2</module>
         <module>AZExecutionSystem</module>

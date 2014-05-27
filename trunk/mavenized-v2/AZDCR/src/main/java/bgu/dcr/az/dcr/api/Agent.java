@@ -71,15 +71,6 @@ public abstract class Agent extends Agt0DSL {
 
     }
 
-//    /**
-//     * report to statistic collector
-//     *
-//     * @param args
-//     * @return
-//     */
-//    protected ReportMediator report(Object... args) {
-//        return new ReportMediator(args, this, controller);
-//    }
     /**
      * override this function in case you want to make some action every time
      * before sending a message this is a great place to write logs, attach

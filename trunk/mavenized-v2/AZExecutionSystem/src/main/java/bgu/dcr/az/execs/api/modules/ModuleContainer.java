@@ -11,10 +11,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * a class which is responsible to supply and provide modules, a module
@@ -30,6 +34,29 @@ public class ModuleContainer implements Module {
 
     private final Map<Class, List<Module>> supplied = new HashMap<>();
     private ModuleContainer parent = null;
+    private Set<Module> awaitingInitializationModules = new LinkedHashSet<>();
+
+    /**
+     * initialize all the supplied modules, for each supplied module container
+     * recursively call the start method. once the module container was started
+     * there will be no module additions allowed!
+     */
+    protected void start() {
+        List<ModuleContainer> awaitingModuleContainers = new LinkedList<>();
+
+        while (!awaitingInitializationModules.isEmpty()) {
+            final Iterator<Module> i = awaitingInitializationModules.iterator();
+            Module module = i.next();
+            i.remove();
+            module.initialize(this);
+            if (module instanceof ModuleContainer) {
+                awaitingModuleContainers.add((ModuleContainer) module);
+            }
+        }
+
+        awaitingInitializationModules = null; //no more module addition allowed!
+        awaitingModuleContainers.forEach(ModuleContainer::start);
+    }
 
     /**
      * attempt to get the first requirement which is supplied by the given
@@ -97,6 +124,11 @@ public class ModuleContainer implements Module {
      * @param module
      */
     public void supply(Class<? extends Module> moduleKey, Module module) {
+
+        if (awaitingInitializationModules == null) {
+            throw new UnsupportedOperationException("cannot supply new modules on a started module container");
+        }
+
         List<Module> result = supplied.get(moduleKey);
         if (result == null || result.isEmpty()) {
             result = new LinkedList<>();
@@ -104,7 +136,8 @@ public class ModuleContainer implements Module {
         }
 
         result.add(module);
-        
+        awaitingInitializationModules.add(module);
+
         System.out.println("Added Module: " + moduleKey.getSimpleName() + " ( ");
     }
 
@@ -167,7 +200,7 @@ public class ModuleContainer implements Module {
 
         @Override
         public Iterator<Module> iterator() {
-            throw new UnsupportedOperationException("Not supported"); //To change body of generated methods, choose Tools | Templates.
+            return supplied.values().stream().flatMap(v -> v.stream()).collect(Collectors.toSet()).iterator();
         }
 
         @Override

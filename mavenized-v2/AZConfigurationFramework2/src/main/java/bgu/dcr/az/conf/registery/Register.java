@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * @author Shl
  */
 @Target(ElementType.TYPE)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface Register {
     String value();
 }

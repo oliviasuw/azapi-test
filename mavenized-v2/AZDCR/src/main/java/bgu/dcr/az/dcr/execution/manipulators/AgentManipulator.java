@@ -9,8 +9,10 @@ import bgu.dcr.az.conf.api.Configuration;
 import bgu.dcr.az.conf.api.ConfigurationException;
 import bgu.dcr.az.conf.api.JavaDocInfo;
 import bgu.dcr.az.conf.api.Property;
+import bgu.dcr.az.conf.api.PropertyValue;
 import bgu.dcr.az.execs.sim.Agt0DSL;
 import bgu.dcr.az.dcr.api.CPAgent;
+import bgu.dcr.az.execs.sim.Agent;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -42,14 +44,19 @@ public abstract class AgentManipulator implements Configuration {
     }
 
     @Override
-    public Class configuredType(){
+    public Class configuredType() {
         return configurationDelegate.configuredType();
     }
 
-    public void handle(CPAgent a, String messageName, Object[] arguments){
+    @Override
+    public void configureProperty(Object o, String propertyName, PropertyValue pval) throws ConfigurationException {
+        configurationDelegate.configureProperty(o, propertyName, pval);
+    }
+
+    public void handle(Agent a, String messageName, Object[] arguments) {
         Agt0DSL.panic("no such message: " + messageName + " defined for agent " + a.getClass().getSimpleName());
     }
-    
+
     @Override
     public <T> T create() throws ConfigurationException {
         return configurationDelegate.create();
@@ -85,7 +92,7 @@ public abstract class AgentManipulator implements Configuration {
         return configurationDelegate.registeredName();
     }
 
-    public static AgentManipulator lookup(Class<? extends CPAgent> type){
+    public static AgentManipulator lookup(Class<? extends CPAgent> type) {
         try {
             final Class clazz = Class.forName("bgu.dcr.az.dcr.autogen." + (type.getCanonicalName().replaceAll("\\.", "_")));
             return (AgentManipulator) clazz.newInstance();
@@ -94,5 +101,5 @@ public abstract class AgentManipulator implements Configuration {
             return null;
         }
     }
-    
+
 }

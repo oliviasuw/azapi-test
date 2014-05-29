@@ -5,8 +5,8 @@
  */
 package bgu.dcr.az.pivot.model.impl;
 
-import bgu.dcr.az.orm.api.RecordAccessor;
-import bgu.dcr.az.orm.impl.Record;
+import bgu.dcr.az.execs.orm.api.RecordAccessor;
+import bgu.dcr.az.execs.orm.Record;
 import bgu.dcr.az.pivot.model.TableData;
 import java.util.Arrays;
 import java.util.Iterator;

@@ -6,15 +6,15 @@
 package bgu.dcr.az.ui;
 
 import bc.dsl.SwingDSL;
-import bgu.dcr.az.execs.api.experiments.ExecutionResult;
+import bgu.dcr.az.execs.exps.exe.SimulationResult;
 import bgu.dcr.az.common.timing.TimingUtils;
 import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.conf.api.ConfigurationException;
 import bgu.dcr.az.dcr.api.modules.Logger;
 import bgu.dcr.az.dcr.execution.CPExperiment;
-import bgu.dcr.az.execs.experiments.ExperimentUtils;
-import bgu.dcr.az.orm.api.EmbeddedDatabaseManager;
-import bgu.dcr.az.orm.impl.H2EmbeddedDatabaseManager;
+import bgu.dcr.az.execs.executions.ExperimentUtils;
+import bgu.dcr.az.execs.orm.api.EmbeddedDatabaseManager;
+import bgu.dcr.az.execs.orm.H2EmbeddedDatabaseManager;
 import bgu.dcr.az.ui.screens.MainWindow;
 import bgu.dcr.az.ui.screens.dialogs.Notification;
 import bgu.dcr.az.ui.screens.log.LogScreen;
@@ -74,7 +74,7 @@ public class AppController {
         System.out.println("Time To Build UI: " + (System.currentTimeMillis() - time));
 
         TimingUtils.schedule(() -> {
-            final ExecutionResult executionResults = runningExperiment.execute();
+            final SimulationResult executionResults = runningExperiment.execute();
             System.out.println("DONE " + executionResults);
         }, 100); //give the ui time to draw itself...
 
@@ -142,7 +142,7 @@ public class AppController {
 
             @Override
             public void onExperimentEnded() {
-                if (runningExperiment.lastResult().getState() == ExecutionResult.State.SUCCESS) {
+                if (runningExperiment.lastResult().getState() == SimulationResult.State.SUCCESS) {
                     Platform.runLater(() -> {
                         Notification.Notifier.INSTANCE.notify("Whoopy!!!", "Execution ended without any problem", WHOOPY_DIMA, "success");
                     });

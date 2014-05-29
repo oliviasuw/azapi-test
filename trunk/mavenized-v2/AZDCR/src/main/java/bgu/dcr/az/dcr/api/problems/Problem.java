@@ -1,12 +1,12 @@
 package bgu.dcr.az.dcr.api.problems;
 
 import bgu.dcr.az.dcr.api.problems.constraints.KAryConstraint;
-import bgu.dcr.az.dcr.Agt0DSL;
+import bgu.dcr.az.execs.sim.Agt0DSL;
 import bgu.dcr.az.dcr.api.Assignment;
 import bgu.dcr.az.dcr.api.problems.constraints.BinaryConstraint;
 import bgu.dcr.az.dcr.api.problems.cpack.ConstraintsPackage;
-import bgu.dcr.az.dcr.modules.distributers.OneToManyDistributor;
 import bgu.dcr.az.dcr.util.ImmutableSet;
+import bgu.dcr.az.execs.exps.exe.SimulationConfiguration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,13 +22,28 @@ import java.util.Set;
 public class Problem implements ImmutableProblem {
 
     private final HashMap<String, Object> metadata = new HashMap<>();
-    private OneToManyDistributor distributer;
     protected int numagents;
     protected ImmutableSetOfIntegers[] domain;
     protected ConstraintsPackage constraints;
     protected ProblemType type;
     protected int maxCost = 0;
     protected boolean singleDomain = true;
+    private SimulationConfiguration.Builder initialConfiguration;
+    private long[] ccCount;
+
+    public SimulationConfiguration.Builder getInitialConfiguration() {
+        initialConfiguration.numAgents(getNumberOfVariables());
+        initialConfiguration.numMachines(getNumberOfVariables());
+        return initialConfiguration;
+    }
+
+    public void resetCC_Count() {
+        ccCount = new long[numagents];
+    }
+
+    public long[] getCC_Count() {
+        return ccCount;
+    }
 
     /**
      *
@@ -36,7 +51,15 @@ public class Problem implements ImmutableProblem {
      * @return the set of variables owned by a given agent
      */
     public int[] getVariablesOwnedByAgent(int agentId) {
-        return distributer.getControlledAgentsIds(agentId);
+        return initialConfiguration.agentsInMachine(agentId);
+    }
+
+    public void assignVariablesToAgent(int aid, int... variables) {
+        initialConfiguration.withAgentsInMachine(aid, variables);
+    }
+
+    public LocalProblem createLocalProblem(int variable) {
+        return new LocalProblem(variable, this);
     }
 
     /**
@@ -53,7 +76,7 @@ public class Problem implements ImmutableProblem {
             throw new RuntimeException("Since the amount of agents equals to amount of variables, only One-T-One variable allocation allowed");
         }
 
-        distributer.assignVariablesToAgent(agentId, vars);
+        initialConfiguration.withAgentsInMachine(agentId, vars);
     }
 
     @Override
@@ -135,10 +158,9 @@ public class Problem implements ImmutableProblem {
         if (domain.size() >= numberOfAgents) {
             this.singleDomain = singleDomain;
             this.domain = ImmutableSetOfIntegers.arrayOf(domain);
-            this.numagents = numberOfAgents;
+            setNumberOfAgents(numagents);
             this.type = type;
             this.constraints = type.newConstraintPackage(domain.size(), domain.stream().max((x, y) -> x.size() - y.size()).get().size());
-            this.distributer = new OneToManyDistributor(numagents, domain.size());
         } else {
             throw new RuntimeException("The amount of agents must be less/equal than the amount of variables");
         }
@@ -146,7 +168,7 @@ public class Problem implements ImmutableProblem {
 
     public void setNumberOfAgents(int numagents) {
         this.numagents = numagents;
-        this.distributer = new OneToManyDistributor(numagents, domain.length);
+        resetCC_Count();
     }
 
     /**
@@ -365,10 +387,12 @@ public class Problem implements ImmutableProblem {
 
     public void getConstraintCost(int owner, int x1, int v1, ConstraintCheckResult result) {
         constraints.getConstraintCost(owner, x1, v1, result);
+        ccCount[owner] += result.getCheckCost();
     }
 
     public void getConstraintCost(int owner, int x1, int v1, int x2, int v2, ConstraintCheckResult result) {
         constraints.getConstraintCost(owner, x1, v1, x2, v2, result);
+        ccCount[owner] += result.getCheckCost();
     }
 
     public int getConstraintCost(int owner, int x1, int v1) {
@@ -399,11 +423,13 @@ public class Problem implements ImmutableProblem {
 
     public void getConstraintCost(int owner, Assignment k, ConstraintCheckResult result) {
         constraints.getConstraintCost(owner, k, result);
+        ccCount[owner] += result.getCheckCost();
     }
 
     public int getConstraintCost(int owner, Assignment k) {
         ConstraintCheckResult result = new ConstraintCheckResult();
         constraints.getConstraintCost(owner, k, result);
+        ccCount[owner] += result.getCheckCost();
         return result.getCost();
     }
 
@@ -423,14 +449,11 @@ public class Problem implements ImmutableProblem {
      */
     public void calculateCost(int owner, Assignment assignment, ConstraintCheckResult result) {
         constraints.calculateCost(owner, assignment, result);
+        ccCount[owner] += result.getCheckCost();
     }
 
     public int calculateGlobalCost(Assignment a) {
         return constraints.calculateGlobalCost(a);
-    }
-
-    public OneToManyDistributor getAgentDistribution() {
-        return distributer;
     }
 
 }

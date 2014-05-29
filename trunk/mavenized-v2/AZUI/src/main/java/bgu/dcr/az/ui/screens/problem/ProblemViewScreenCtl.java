@@ -22,6 +22,8 @@ import bgu.dcr.az.ui.screens.problem.graph.ProblemKKLayout;
 import bgu.dcr.az.ui.screens.problem.graph.ProblemSpringLayout;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.IntStream;
 import javafx.application.Platform;
@@ -200,10 +202,13 @@ public class ProblemViewScreenCtl implements Initializable {
                     showProblemGraph();
                 }
             }
+
         });
 
         testSelect.valueProperty().addListener((p, ov, nv) -> pnumSelect.setText("1"));
+        final List<String> styleClass = new LinkedList<>(top.getParent().getStyleClass());
         slider = new SlidingAnimator(top, bot, true);
+        slider.getStyleClass().addAll(styleClass);
         container.setTop(slider);
 
         changeProblemHyperlink.setOnAction(eh -> slider.scrollDown());
@@ -228,6 +233,7 @@ public class ProblemViewScreenCtl implements Initializable {
         }
 
         showProblemLayout(gl);
+
     }
 
     private void showProblemLayout(ProblemGraphLayout gl) {

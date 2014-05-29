@@ -4,20 +4,21 @@
  */
 package bgu.dcr.az.dcr.modules.correctness;
 
-import bgu.dcr.az.execs.api.experiments.ExecutionResult;
+import bgu.dcr.az.execs.exps.exe.SimulationResult;
 import bgu.dcr.az.conf.registery.Register;
-import bgu.dcr.az.dcr.Agt0DSL;
+import bgu.dcr.az.execs.sim.Agt0DSL;
 import bgu.dcr.az.dcr.api.Assignment;
+import bgu.dcr.az.dcr.api.experiment.CPData;
 import bgu.dcr.az.dcr.api.modules.CPCorrectnessTester;
 import bgu.dcr.az.dcr.api.problems.Problem;
 import static bgu.dcr.az.dcr.api.problems.ProblemType.ADCOP;
 import static bgu.dcr.az.dcr.api.problems.ProblemType.DCOP;
 import static bgu.dcr.az.dcr.api.problems.ProblemType.DCSP;
-import bgu.dcr.az.dcr.execution.CPExecution;
-import bgu.dcr.az.dcr.execution.CPSolution;
+import bgu.dcr.az.dcr.api.experiment.CPSolution;
 import bgu.dcr.az.dcr.modules.correctness.IterativeCSPSolver.Status;
 import static bgu.dcr.az.dcr.modules.correctness.IterativeCSPSolver.Status.imposible;
 import static bgu.dcr.az.dcr.modules.correctness.IterativeCSPSolver.Status.solution;
+import bgu.dcr.az.execs.exps.exe.Simulation;
 
 /**
  *
@@ -27,7 +28,7 @@ import static bgu.dcr.az.dcr.modules.correctness.IterativeCSPSolver.Status.solut
 public class DefaultCorrectnessTester extends CPCorrectnessTester {
 
     @Override
-    public void test(CPExecution exec, ExecutionResult<CPSolution> result) {
+    public void test(Simulation<CPData, CPSolution> exec, SimulationResult<CPSolution> result) {
         Assignment ass;
         final Problem globalProblem = exec.data().getProblem();
         Status stat;

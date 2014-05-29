@@ -5,7 +5,7 @@
 package bgu.dcr.az.pivot.model;
 
 import bgu.dcr.az.common.events.EventListeners;
-import bgu.dcr.az.orm.api.Data;
+import bgu.dcr.az.execs.orm.api.Data;
 import java.util.List;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;

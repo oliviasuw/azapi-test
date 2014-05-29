@@ -348,7 +348,9 @@ public class FXUtils {
     public static void reloadSceneStylesheet(Parent p) {
         Platform.runLater(() -> {
             Scene scene = p.getScene();
-            if (scene == null) return;
+            if (scene == null) {
+                return;
+            }
             com.sun.javafx.css.StyleManager.getInstance().forget(scene);
             scene.getRoot().impl_reapplyCSS();
         });
@@ -394,7 +396,7 @@ public class FXUtils {
     public static String css(Class anchor, String cssFileName) {
         return anchor.getResource(cssFileName.endsWith(".css") ? cssFileName : cssFileName + ".css").toExternalForm();
     }
-    
+
     public static void startCSSLiveReloader(Parent parent, String cssFile) {
         invokeInUI(() -> {
             try {
@@ -532,6 +534,33 @@ public class FXUtils {
         TitledPaneSkin skin = (TitledPaneSkin) pane.getSkin();
         Node node = ((Parent) skin.getNode()).getChildrenUnmodifiable().get(1);
         return node;
+    }
+
+    public static void setOnWindowShown(Node containingNode, Runnable r) {
+        containingNode.sceneProperty().addListener((obs, o, scene) -> {
+            if (scene != null) {
+                scene.windowProperty().addListener((obs1, o1, window) -> {
+                    if (window != null) {
+                        window.setOnShown(e -> {
+                            r.run();
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    public static void setOnSceneResize(Node containingNode, Runnable r) {
+        containingNode.sceneProperty().addListener((obs, o, scene) -> {
+            if (scene != null) {
+                setOnSceneResize(scene, r);
+            }
+        });
+    }
+
+    public static void setOnSceneResize(Scene scene, Runnable r) {
+        scene.heightProperty().addListener(e -> r.run());
+        scene.widthProperty().addListener(e -> r.run());
     }
 
 }

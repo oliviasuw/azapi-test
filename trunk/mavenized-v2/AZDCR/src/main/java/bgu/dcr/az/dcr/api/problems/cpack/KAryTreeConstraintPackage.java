@@ -4,7 +4,7 @@
  */
 package bgu.dcr.az.dcr.api.problems.cpack;
 
-import bgu.dcr.az.dcr.Agt0DSL;
+import bgu.dcr.az.execs.sim.Agt0DSL;
 import bgu.dcr.az.dcr.api.Assignment;
 import bgu.dcr.az.dcr.api.problems.constraints.ComposedKAryConstraint;
 import bgu.dcr.az.dcr.api.problems.ConstraintCheckResult;

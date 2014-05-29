@@ -5,32 +5,30 @@
  */
 package bgu.dcr.az.dcr.api.modules;
 
-import bgu.dcr.az.dcr.execution.CPData;
-import bgu.dcr.az.dcr.execution.CPExecution;
-import bgu.dcr.az.dcr.execution.CPSolution;
-import bgu.dcr.az.execs.api.experiments.ExecutionResult;
-import bgu.dcr.az.execs.api.experiments.Execution;
-import bgu.dcr.az.execs.api.experiments.ExecutionService;
-import bgu.dcr.az.execs.exceptions.InitializationException;
-import bgu.dcr.az.execs.statistics.info.ExecutionTerminationInfo;
+import bgu.dcr.az.conf.modules.Module;
+import bgu.dcr.az.dcr.api.experiment.CPData;
+import bgu.dcr.az.dcr.api.experiment.CPSolution;
+import bgu.dcr.az.execs.exps.exe.SimulationResult;
+import bgu.dcr.az.execs.exps.exe.Simulation;
+import bgu.dcr.az.execs.statistics.info.SimulationTerminationInfo;
 
 /**
  *
  * @author User
  */
-public abstract class CPCorrectnessTester implements ExecutionService<CPData> {
+public abstract class CPCorrectnessTester implements Module<Simulation<CPData, CPSolution>> {
 
     @Override
-    public void initialize(final Execution<CPData> ex) throws InitializationException {
-        ex.informationStream().listen(ExecutionTerminationInfo.class, t -> {
-            ExecutionResult result = t.getExecutionResult();
+    public void initialize(final Simulation<CPData, CPSolution> ex) {
+        ex.infoStream().listen(SimulationTerminationInfo.class, t -> {
+            SimulationResult result = t.getExecutionResult();
             switch (result.getState()) {
                 case CRUSHED:
                     break;
                 case LIMITED:
                     break;
                 case SUCCESS:
-                    test((CPExecution) ex, (ExecutionResult<CPSolution>) result);
+                    test(ex, (SimulationResult<CPSolution>) result);
                     break;
                 default:
                     throw new AssertionError(result.getState().name());
@@ -38,5 +36,5 @@ public abstract class CPCorrectnessTester implements ExecutionService<CPData> {
         });
     }
 
-    protected abstract void test(CPExecution exec, ExecutionResult<CPSolution> result);
+    protected abstract void test(Simulation<CPData, CPSolution> sim, SimulationResult<CPSolution> result);
 }

@@ -4,7 +4,7 @@
  */
 package bgu.dcr.az.pivot.model;
 
-import bgu.dcr.az.orm.api.Data;
+import bgu.dcr.az.execs.orm.api.Data;
 
 /**
  *

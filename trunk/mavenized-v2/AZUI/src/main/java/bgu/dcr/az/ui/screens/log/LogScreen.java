@@ -12,7 +12,7 @@ package bgu.dcr.az.ui.screens.log;
 
 //import bc.dsl.PageDSL;
 import bgu.dcr.az.common.ui.UIPoke;
-import bgu.dcr.az.dcr.execution.CPData;
+import bgu.dcr.az.dcr.api.experiment.CPData;
 import bgu.dcr.az.execs.api.experiments.Execution;
 import bgu.dcr.az.execs.exceptions.InitializationException;
 import java.awt.Color;

@@ -6,15 +6,13 @@
 package bgu.dcr.az.execs.loggers;
 
 import bgu.dcr.az.conf.registery.Register;
-import bgu.dcr.az.execs.api.experiments.Execution;
-import bgu.dcr.az.execs.api.experiments.ExecutionEnvironment;
+import bgu.dcr.az.execs.exps.exe.ExecutionEnvironment;
 import bgu.dcr.az.execs.api.loggers.LogManager;
 import bgu.dcr.az.execs.api.loggers.Logger;
-import bgu.dcr.az.execs.exceptions.InitializationException;
-import bgu.dcr.az.execs.statistics.ExecutionInfoCollector;
+import bgu.dcr.az.execs.exps.exe.Simulation;
 import bgu.dcr.az.execs.statistics.NCSCStatisticCollector;
-import bgu.dcr.az.orm.api.EmbeddedDatabaseManager;
-import bgu.dcr.az.orm.impl.RecordDescriptor;
+import bgu.dcr.az.execs.orm.api.EmbeddedDatabaseManager;
+import bgu.dcr.az.execs.orm.RecordDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,8 +32,9 @@ public class LogManagerImpl implements LogManager {
     private Map<Logger, TimedLoggerEntry> logIndex;
     private EmbeddedDatabaseManager db = null;
     private ExecutionEnvironment environment;
-    private ExecutionInfoCollector infoCollector;
     private NCSCStatisticCollector ncsc;
+    private Simulation exec;
+    
 
     private boolean saveTimestaps = true;
 
@@ -49,38 +48,37 @@ public class LogManagerImpl implements LogManager {
 
     /**
      * @propertyName loggers
-     * @return 
+     * @return
      */
     public List<Logger> getLoggers() {
         return loggers;
     }
-    
+
     @Override
-    public void initialize(Execution ex) throws InitializationException {
+    public void initialize(Simulation ex) {
+        
+        this.exec = ex;
+        
         if (saveTimestaps) {
-            environment = ex.getEnvironment();
-            infoCollector = (ExecutionInfoCollector) ex.require(ExecutionInfoCollector.class);
+            environment = ex.getExecutionEnvironment();
             if (ExecutionEnvironment.async.equals(environment)) {
                 ncsc = (NCSCStatisticCollector) ex.require(NCSCStatisticCollector.class);
             }
         }
 
         if (db == null) {
-            db = (EmbeddedDatabaseManager) ex.require(EmbeddedDatabaseManager.class);
+            db = ex.require(EmbeddedDatabaseManager.class);
             db.defineTable(LOG_MANAGEMENT_TABLE_NAME, new LogRecordDescriptor(loggers));
 
             logIndex = new HashMap<>();
 
             loggers.stream().forEach(l -> {
                 TimedLoggerEntry entry = new TimedLoggerEntry();
-                entry.value = new long[ex.numberOfAgents()];
+                entry.value = new long[ex.configuration().numAgents()];
                 logIndex.put(l, entry);
             });
         }
 
-        loggers.stream().forEach(l -> {
-            l.initialize(this, ex, db.createDefinitionDatabase());
-        });
     }
 
     @Override
@@ -108,7 +106,7 @@ public class LogManagerImpl implements LogManager {
             Object[] args = new Object[loggers.size() + 3];
             args[0] = record.aid;
             args[1] = getTime(record.aid);
-            args[2] = infoCollector.getLastRecordIndex();
+            args[2] = exec.getSimulationNumber();
 
             int i = 3;
             for (Logger l : loggers) {

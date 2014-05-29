@@ -4,7 +4,7 @@
  */
 package bgu.dcr.az.dcr.modules.pgenerators;
 
-import bgu.dcr.az.dcr.Agt0DSL;
+import bgu.dcr.az.execs.sim.Agt0DSL;
 import bgu.dcr.az.dcr.api.modules.ProblemGenerator;
 
 /**

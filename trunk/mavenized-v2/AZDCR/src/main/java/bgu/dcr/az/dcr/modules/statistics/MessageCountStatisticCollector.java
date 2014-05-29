@@ -4,15 +4,17 @@
  */
 package bgu.dcr.az.dcr.modules.statistics;
 
+import bgu.dcr.az.dcr.api.modules.AbstractCPStatisticCollector;
 import bgu.dcr.az.conf.api.Variable;
 import bgu.dcr.az.conf.registery.Register;
-import bgu.dcr.az.dcr.execution.CPData;
-import bgu.dcr.az.dcr.execution.CPExperimentTest;
-import bgu.dcr.az.execs.api.experiments.Execution;
+import bgu.dcr.az.dcr.api.experiment.CPData;
+import bgu.dcr.az.dcr.api.experiment.CPSolution;
+import bgu.dcr.az.dcr.api.experiment.CPTest;
 import bgu.dcr.az.execs.api.statistics.AdditionalBarChartProperties;
-import bgu.dcr.az.execs.statistics.info.ExecutionTerminationInfo;
-import bgu.dcr.az.orm.api.DefinitionDatabase;
-import bgu.dcr.az.orm.api.QueryDatabase;
+import bgu.dcr.az.execs.exps.exe.Simulation;
+import bgu.dcr.az.execs.statistics.info.SimulationTerminationInfo;
+import bgu.dcr.az.execs.orm.api.DefinitionDatabase;
+import bgu.dcr.az.execs.orm.api.QueryDatabase;
 
 /**
  *
@@ -30,7 +32,7 @@ public class MessageCountStatisticCollector extends AbstractCPStatisticCollector
     }
 
     @Override
-    protected void plot(QueryDatabase database, CPExperimentTest test) {
+    protected void plot(QueryDatabase database, CPTest test) {
         switch (graphType) {
             case BY_AGENT:
                 plotBarChart(database.query(""
@@ -59,12 +61,13 @@ public class MessageCountStatisticCollector extends AbstractCPStatisticCollector
     }
 
     @Override
-    protected void initialize(Execution<CPData> ex, DefinitionDatabase database) {
+    protected void initialize(DefinitionDatabase database, Simulation<CPData, CPSolution> ex) {
         database.defineTable("MESSAGE_COUNT", MessagesRecord.class);
 
-        ex.informationStream().listen(ExecutionTerminationInfo.class, t -> {
-            for (int i = 0; i < ex.data().getMessagesCount().length; i++) {
-                write(new MessagesRecord(i, ex.data().getMessagesCount()[i]));
+        ex.infoStream().listen(SimulationTerminationInfo.class, t -> {
+            final long[] messagec = ex.getMessageRouter().getMessageReceivedCountPerAgent();
+            for (int i = 0; i < messagec.length; i++) {
+                write(new MessagesRecord(i, messagec[i]));
             }
         });
     }

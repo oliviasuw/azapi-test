@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.ui.screens.problem.graph;
 
+import bgu.dcr.az.ui.screens.problem.ProblemViewScreenCtl;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -26,7 +27,7 @@ public class GraphDrawer extends Canvas {
     public void draw(ProblemGraphLayout gl) {
         GraphicsContext gc = getGraphicsContext2D();
 
-        gc.setFill(Color.YELLOW);
+        gc.setFill(ProblemGraphLayout.GRAPH_BACKGROUND);
         gc.fillRect(0, 0, getWidth(), getHeight());
 
         gl.draw(gc);

@@ -4,11 +4,11 @@
  */
 package bgu.dcr.az.pivot.model.impl;
 
-import bgu.dcr.az.orm.api.FieldMetadata;
-import bgu.dcr.az.orm.api.RecordAccessor;
-import bgu.dcr.az.orm.impl.FieldMetadataImpl;
-import bgu.dcr.az.orm.impl.ObjectArrayRecord;
-import bgu.dcr.az.orm.impl.SimpleData;
+import bgu.dcr.az.execs.orm.api.FieldMetadata;
+import bgu.dcr.az.execs.orm.api.RecordAccessor;
+import bgu.dcr.az.execs.orm.FieldMetadataImpl;
+import bgu.dcr.az.execs.orm.ObjectArrayRecord;
+import bgu.dcr.az.execs.orm.SimpleData;
 import bgu.dcr.az.pivot.model.AggregatedField;
 import bgu.dcr.az.pivot.model.AggregationFunction;
 import bgu.dcr.az.pivot.model.Field;

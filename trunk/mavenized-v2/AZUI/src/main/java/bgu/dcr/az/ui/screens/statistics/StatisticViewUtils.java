@@ -6,8 +6,8 @@
 package bgu.dcr.az.ui.screens.statistics;
 
 import bgu.dcr.az.common.ui.ConstantObservableValue;
-import bgu.dcr.az.orm.api.Data;
-import bgu.dcr.az.orm.api.RecordAccessor;
+import bgu.dcr.az.execs.orm.api.Data;
+import bgu.dcr.az.execs.orm.api.RecordAccessor;
 import java.util.Arrays;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;

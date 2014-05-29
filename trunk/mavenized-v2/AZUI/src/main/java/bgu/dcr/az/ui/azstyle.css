@@ -29,6 +29,21 @@
 CLEANUP
 */
 
+.split-pane .split-pane-divider{
+    -fx-cursor: move;
+}
+
+.split-pane:horizontal .split-pane-divider{
+    -fx-cursor: move;
+}
+
+/* remove the round corners from text area */
+.text-area .content {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-insets: 0;
+}
+
 .scroll-pane,
 .split-pane,
 .list-view,
@@ -190,9 +205,9 @@ TABLES
 .table-view.no-headers .column-header-background{ 
     /*-fx-border-color: red;*/
     /*-fx-border-width: 0;*/
-/*    visibility : collapse;*/
+    /*    visibility : collapse;*/
     /*-fx-scale-y: 0;*/
-    
+
     visibility: hidden; -fx-padding: -1em; 
 }
 
@@ -478,9 +493,31 @@ PIVOT VIEW
 PROBLEM VIEW
 */
 
-#problem-view #toolbar {
-    -fx-background-color: rgb(143,143,143);
+#problem-view {
+    -pv-border-color: rgb(120,120,120);
+    -fx-border-color: -pv-border-color;
+    -fx-border-width: 4;
 }
+
+#problem-view .split-pane-divider {
+    -fx-background-color:-pv-border-color;
+    -fx-padding: 2;
+ 
+}
+
+
+#problem-view .toolbar *{
+    -fx-background-color: -pv-border-color;
+}
+
+#problem-view .toolbar .label{
+    -fx-text-fill: rgb(240,240,240);
+}
+
+#problem-view .toolbar .hyperlink{
+    -fx-text-fill: #eee13b;
+}
+
 
 #problem-view #constraint-matrix-container {
     -pv-background: rgb(240, 240, 240);
@@ -517,8 +554,26 @@ PROBLEM VIEW
 
 #problem-view #constraint-console #outputTextArea{
     -fx-text-fill: rgb(160, 230, 30);
+
 }
 
 #problem-view #constraint-console .text-area .content{
     -fx-background-color: rgb(51,51,51);
+}
+
+#problem-view #command-prompt {
+    -fx-background-color: -pv-border-color;
+    -fx-border-color: -pv-border-color;
+    -fx-border-width: 5 1 0 1;
+}
+
+#problem-view #command-prompt > * {
+    -fx-padding: 3;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-insets: 0;
+}
+
+#problem-view #command-prompt * {
+    -fx-background-color: rgb(220,220,220);
 }

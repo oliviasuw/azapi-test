@@ -5,16 +5,49 @@
  */
 package bgu.dcr.az.execs.api.loggers;
 
-import bgu.dcr.az.execs.api.experiments.Execution;
-import bgu.dcr.az.orm.api.DefinitionDatabase;
+import bgu.dcr.az.execs.exps.exe.Simulation;
+import bgu.dcr.az.conf.modules.Module;
+import bgu.dcr.az.conf.modules.ModuleContainer;
+import bgu.dcr.az.execs.orm.api.DefinitionDatabase;
+import bgu.dcr.az.execs.orm.api.EmbeddedDatabaseManager;
 
 /**
  *
  * @author bennyl
+ * @param <T>
  */
-public interface Logger<T> {
+public abstract class Logger<T extends Simulation> implements Module<T> {
 
-    void initialize(LogManager manager, Execution<T> execution, DefinitionDatabase database);
+    private ModuleContainer mc;
+    private LogManager lman;
 
-    String getName();
+    @Override
+    public final void initialize(T mc) {
+        this.mc = mc;
+        lman = mc.require(LogManager.class);
+        EmbeddedDatabaseManager db = mc.require(EmbeddedDatabaseManager.class);
+        initialize(db.createDefinitionDatabase());
+        
+    }
+
+    protected T execution() {
+        return (T) mc;
+    }
+
+    /**
+     * saves the latest changes of the experiment (at given time for a given
+     * process)
+     *
+     * @param record
+     */
+    protected void commitLog(LogManager.LogRecord record) {
+        lman.commit(this, record);
+    }
+
+    public abstract void initialize(DefinitionDatabase database);
+
+    public String getName() {
+        return toString();
+    }
+
 }

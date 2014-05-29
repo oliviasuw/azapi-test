@@ -6,7 +6,7 @@ package bgu.dcr.az.dcr.modules.pgenerators;
 
 import bgu.dcr.az.conf.api.Variable;
 import bgu.dcr.az.conf.registery.Register;
-import bgu.dcr.az.dcr.Agt0DSL;
+import bgu.dcr.az.execs.sim.Agt0DSL;
 import bgu.dcr.az.dcr.api.problems.Problem;
 import bgu.dcr.az.dcr.api.problems.ProblemType;
 import bgu.dcr.az.dcr.util.ImmutableSet;

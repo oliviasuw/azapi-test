@@ -7,7 +7,7 @@ package bgu.dcr.az.dcr.modules.loopers;
 
 import bgu.dcr.az.conf.api.Configuration;
 import bgu.dcr.az.conf.registery.Register;
-import bgu.dcr.az.execs.api.experiments.Looper;
+import bgu.dcr.az.execs.exps.exe.Looper;
 
 /**
  *

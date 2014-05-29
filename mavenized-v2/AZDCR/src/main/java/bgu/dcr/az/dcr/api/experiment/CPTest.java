@@ -55,8 +55,10 @@ public class CPTest extends Test {
         if (iteration == cachedLastProblemId) {
             p = cachedLastProblem.get();
         }
+        
         if (p == null) {
             p = new Problem();
+            getLooper().configure(iteration, pgen);
             pgen.generate(p, new Random(seq.getIthLong(iteration)));
             cachedLastProblem = new WeakReference<>(p);
             cachedLastProblemId = iteration;

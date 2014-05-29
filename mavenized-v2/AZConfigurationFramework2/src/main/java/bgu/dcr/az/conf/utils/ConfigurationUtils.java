@@ -285,8 +285,12 @@ public class ConfigurationUtils {
         return conf;
     }
 
-    public static Configuration get(Class type) throws ClassNotFoundException {
-        return Registery.get().getConfiguration(type);
+    public static Configuration get(Class type) {
+        try {
+            return Registery.get().getConfiguration(type);
+        } catch (ClassNotFoundException ex) {
+            throw new UnsupportedOperationException("given class could not be found.", ex);
+        }
     }
 
     public static Configuration load(Object o) throws ClassNotFoundException, ConfigurationException {

@@ -5,8 +5,6 @@
  */
 package bgu.dcr.az.execs.exps.exe;
 
-import bgu.dcr.az.conf.api.Configuration;
-import bgu.dcr.az.conf.api.ConfigurationException;
 import bgu.dcr.az.conf.modules.Module;
 
 /**
@@ -17,7 +15,7 @@ public interface Looper extends Module{
 
     int count();
 
-    void configure(int i, Configuration[] configurations) throws ConfigurationException;
+    void configure(int i, Object o);
     
     String getRunningVariableName();
     

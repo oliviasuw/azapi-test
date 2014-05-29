@@ -5,13 +5,14 @@
  */
 package bgu.dcr.az.dcr.modules.loopers;
 
-import bgu.dcr.az.conf.FromStringPropertyValue;
 import bgu.dcr.az.conf.api.Configuration;
 import bgu.dcr.az.conf.api.ConfigurationException;
-import bgu.dcr.az.conf.api.Property;
 import bgu.dcr.az.conf.registery.Register;
+import bgu.dcr.az.conf.utils.ConfigurationUtils;
+import bgu.dcr.az.execs.exceptions.PanicException;
 import bgu.dcr.az.execs.exps.exe.Looper;
-import bgu.dcr.az.execs.exceptions.ExperimentExecutionException;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  *
@@ -20,8 +21,10 @@ import bgu.dcr.az.execs.exceptions.ExperimentExecutionException;
 @Register("for-loop")
 public class ForLooper implements Looper {
 
+    private Map<Class, Configuration> cachedConfigurations = new WeakHashMap<>();
+
     private Integer count = null;
-    private Looper innerLooper = new SingleExecutionLooper();
+    private Looper innerLooper = null;
     private String runVar = null;
     private Double startValue = null;
     private Double endValue = null;
@@ -37,7 +40,7 @@ public class ForLooper implements Looper {
         return innerLooper;
     }
 
-    public void setInnerLooper(Looper looper) throws ExperimentExecutionException {
+    public void setInnerLooper(Looper looper) {
         this.innerLooper = looper;
     }
 
@@ -116,21 +119,23 @@ public class ForLooper implements Looper {
     }
 
     @Override
-    public void configure(int i, Configuration[] configurations) throws ConfigurationException {
-        checkForLoopValues();
-        final String runningVariableValue = "" + getRunningVariableValue(i);
+    public void configure(int i, Object o) {
+        try {
+            checkForLoopValues();
+            final String runningVariableValue = Double.toString(getRunningVariableValue(i));
 
-        if (runVar != null) {
-            for (Configuration conf : configurations) {
-                Property property = conf.get(runVar);
-                if (property != null) {
-                    property.set(new FromStringPropertyValue(runningVariableValue));
+            if (runVar != null) {
+                final Configuration conf = cachedConfigurations.computeIfAbsent(o.getClass(), ConfigurationUtils::get);
+                if (conf.get(runVar) != null) {
+                    conf.configureProperty(o, runVar, runningVariableValue);
                 }
             }
-        }
 
-        if (innerLooper != null) {
-            innerLooper.configure(i % innerLooper.count(), configurations);
+            if (innerLooper != null) {
+                innerLooper.configure(i % innerLooper.count(), o);
+            }
+        } catch (ConfigurationException ex) {
+            throw new PanicException("problem configuring variable " + runVar, ex);
         }
     }
 
@@ -163,7 +168,7 @@ public class ForLooper implements Looper {
 
     /**
      * @propertyName run-variable-name
-     * @return 
+     * @return
      */
     @Override
     public String getRunningVariableName() {

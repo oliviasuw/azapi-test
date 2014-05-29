@@ -12,7 +12,7 @@
     <artifactId>AZUI</artifactId>
     <packaging>jar</packaging>
 
-    <build>                
+<!--    <build>                
         <plugins>            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -26,7 +26,7 @@
                     </compilerArguments>
                 </configuration>
             </plugin>
-        </plugins>
+        </plugins>-->
         
 <!--        <extensions>
             <extension>
@@ -36,26 +36,28 @@
             </extension>
         </extensions>-->
 
-    </build>
+    <!--</build>-->
     
-    <distributionManagement>
+<!--    <distributionManagement>
         <repository>
             <id>maven-agent-zero-plugin-repo-releases</id>
             <name>Maven Repository for AgentZero Plugin (releases)</name>
             <url>svn:https://azapi-test.googlecode.com/svn/maven-repo/releases</url>
             <uniqueVersion>false</uniqueVersion>
         </repository>
-        <!--        <snapshotRepository>
+                <snapshotRepository>
             <id>maven-agent-zero-plugin-repo-releases</id>
             <name>Maven Repository for AgentZero Plugin (snapshots)</name>
             <url>svn:https://azapi-test.googlecode.com/svn/maven-repo/snapshots</url>
             <uniqueVersion>false</uniqueVersion>
-        </snapshotRepository>-->
-    </distributionManagement>
+        </snapshotRepository>
+    </distributionManagement>-->
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mainClass>bgu.dcr.az.azui.MainApp</mainClass>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <dependencies>

@@ -29,7 +29,6 @@ public abstract class ProblemJungLayout extends ProblemGraphLayout {
             layout.setSize(new Dimension((int) width, (int) height));
             layout.initialize();
             layout.reset();
-            System.out.println("Laouy size updated to (" + width + ", " + height + ")");
         }
     }
 
@@ -53,7 +52,7 @@ public abstract class ProblemJungLayout extends ProblemGraphLayout {
         }
 
         layout = generateLayout(g);
-        layout.setSize(new Dimension(100, 100));
+        layout.setSize(new Dimension(400, 400));
         layout.initialize();
         layout.reset();
     }

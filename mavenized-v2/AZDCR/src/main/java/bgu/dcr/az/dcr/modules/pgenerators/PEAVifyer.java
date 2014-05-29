@@ -6,7 +6,7 @@
 package bgu.dcr.az.dcr.modules.pgenerators;
 
 import bgu.dcr.az.conf.registery.Register;
-import bgu.dcr.az.dcr.Agt0DSL;
+import bgu.dcr.az.execs.sim.Agt0DSL;
 import bgu.dcr.az.dcr.api.modules.ProblemGenerator;
 import bgu.dcr.az.dcr.api.problems.Problem;
 import bgu.dcr.az.dcr.api.problems.ProblemType;
@@ -66,7 +66,7 @@ public class PEAVifyer extends AbstractProblemGenerator {
         
         for (int i = 0; i < basep.getNumberOfAgents(); i++) {
             Integer aid = variableMapping.get(new IntIntPair(i, i));
-            p.getAgentDistribution().assignVariablesToAgent(aid, distributions[i]);
+            p.assignVariablesToAgent(aid, distributions[i]);
         }
 
         //create equility constraints

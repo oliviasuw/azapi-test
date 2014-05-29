@@ -25,6 +25,7 @@ public class ProblemSpringLayout extends ProblemJungLayout {
     @Override
     protected AbstractLayout generateLayout(Graph g) {
         springLayout = new SpringLayout(g);
+        springLayout.setStretch(0.01);
         return springLayout;
     }
 

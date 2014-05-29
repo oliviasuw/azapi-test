@@ -5,9 +5,9 @@
  */
 package bgu.dcr.az.pivot.model.impl;
 
-import bgu.dcr.az.orm.api.Data;
-import bgu.dcr.az.orm.api.FieldMetadata;
-import bgu.dcr.az.orm.api.RecordAccessor;
+import bgu.dcr.az.execs.orm.api.Data;
+import bgu.dcr.az.execs.orm.api.FieldMetadata;
+import bgu.dcr.az.execs.orm.api.RecordAccessor;
 import bgu.dcr.az.pivot.model.TableData;
 import java.util.Iterator;
 

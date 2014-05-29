@@ -7,10 +7,10 @@ package bgu.dcr.az.ui.screens.statistics;
 
 import bgu.dcr.az.execs.api.experiments.Execution;
 import bgu.dcr.az.execs.exceptions.InitializationException;
-import bgu.dcr.az.orm.api.Data;
-import bgu.dcr.az.orm.api.EmbeddedDatabaseManager;
-import bgu.dcr.az.orm.api.FieldMetadata;
-import bgu.dcr.az.orm.api.QueryDatabase;
+import bgu.dcr.az.execs.orm.api.Data;
+import bgu.dcr.az.execs.orm.api.EmbeddedDatabaseManager;
+import bgu.dcr.az.execs.orm.api.FieldMetadata;
+import bgu.dcr.az.execs.orm.api.QueryDatabase;
 import bgu.dcr.az.ui.AppController;
 import bgu.dcr.az.ui.screens.dialogs.Notification;
 import java.net.URL;

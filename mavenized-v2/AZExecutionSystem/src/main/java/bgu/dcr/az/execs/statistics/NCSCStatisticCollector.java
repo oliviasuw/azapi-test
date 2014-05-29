@@ -5,17 +5,17 @@
 package bgu.dcr.az.execs.statistics;
 
 import bgu.dcr.az.conf.registery.Register;
-import bgu.dcr.az.execs.api.experiments.Execution;
-import bgu.dcr.az.execs.api.experiments.Experiment;
-import bgu.dcr.az.execs.api.experiments.HasLooper;
+import bgu.dcr.az.execs.exps.exe.Looper;
 import bgu.dcr.az.execs.api.statistics.AdditionalLineChartProperties;
+import bgu.dcr.az.execs.exps.exe.Simulation;
+import bgu.dcr.az.execs.exps.exe.Test;
 import bgu.dcr.az.execs.statistics.AbstractStatisticCollector.StatisticRecord;
-import bgu.dcr.az.execs.statistics.info.ExecutionTerminationInfo;
+import bgu.dcr.az.execs.statistics.info.SimulationTerminationInfo;
 import bgu.dcr.az.execs.statistics.info.MessageInfo;
 import static bgu.dcr.az.execs.statistics.info.MessageInfo.OperationType.Received;
 import static bgu.dcr.az.execs.statistics.info.MessageInfo.OperationType.Sent;
-import bgu.dcr.az.orm.api.DefinitionDatabase;
-import bgu.dcr.az.orm.api.QueryDatabase;
+import bgu.dcr.az.execs.orm.api.DefinitionDatabase;
+import bgu.dcr.az.execs.orm.api.QueryDatabase;
 import com.google.common.primitives.Longs;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,19 +29,19 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector {
 
     private long[] currentNcsc;
     private Map<Long, Long> messageNcsc;
-    
+
     public long getCurrentNCSC(int aid) {
         return currentNcsc[aid];
     }
 
     @Override
-    protected void initialize(Execution ex, DefinitionDatabase database) {
+    protected void initialize(Simulation ex, DefinitionDatabase database) {
         database.defineTable("NCSC", NCSCRecord.class);
 
-        currentNcsc = new long[ex.numberOfAgents()];
+        currentNcsc = new long[ex.configuration().numAgents()];
         messageNcsc = new HashMap<>();
 
-        ex.informationStream().listen(MessageInfo.class, m -> {
+        ex.infoStream().listen(MessageInfo.class, m -> {
             switch (m.getType()) {
                 case Sent:
                     messageNcsc.put(m.getMessageId(), currentNcsc[m.getSender()]);
@@ -54,7 +54,7 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector {
             }
         });
 
-        ex.informationStream().listen(ExecutionTerminationInfo.class, t -> {
+        ex.infoStream().listen(SimulationTerminationInfo.class, t -> {
             write(new NCSCRecord(Longs.max(currentNcsc)));
         });
     }
@@ -65,20 +65,16 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector {
     }
 
     @Override
-    protected void plot(QueryDatabase database, Experiment test) {
-        if (test instanceof HasLooper) {
-            HasLooper hlop = (HasLooper) test;
-            String sql = "select AVG(ncsc) as avg, rVar, ALGORITHM_INSTANCE from NCSC where TEST = ? group by ALGORITHM_INSTANCE, rVar order by rVar";
+    protected void plot(QueryDatabase database, Test test) {
+        Looper hlop = test.require(Looper.class);
+        String sql = "select AVG(ncsc) as avg, rVar, ALGORITHM_INSTANCE from NCSC where TEST = ? group by ALGORITHM_INSTANCE, rVar order by rVar";
 
-            AdditionalLineChartProperties properties = new AdditionalLineChartProperties();
-            properties.setTitle(getName());
-            properties.setLogarithmicScale(true);
-            properties.setXAxisLabel(hlop.getLooper().getRunningVariableName());
-            properties.setYAxisLabel("AVG(NCSC)");
-            plotLineChart(database.query(sql, test.getName()), "rvar", "avg", "ALGORITHM_INSTANCE", properties);
-        } else {
-            throw new UnsupportedOperationException("cannot plot ncsc statistic on execution without looper");
-        }
+        AdditionalLineChartProperties properties = new AdditionalLineChartProperties();
+        properties.setTitle(getName());
+        properties.setLogarithmicScale(true);
+        properties.setXAxisLabel(hlop.getRunningVariableName());
+        properties.setYAxisLabel("AVG(NCSC)");
+        plotLineChart(database.query(sql, test.getName()), "rvar", "avg", "ALGORITHM_INSTANCE", properties);
     }
 
     public static class NCSCRecord extends StatisticRecord {

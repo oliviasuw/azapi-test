@@ -4,7 +4,7 @@
  */
 package bgu.dcr.az.dcr.api.problems.cpack;
 
-import bgu.dcr.az.dcr.Agt0DSL;
+import bgu.dcr.az.execs.sim.Agt0DSL;
 import bgu.dcr.az.dcr.api.problems.NeighboresSet;
 import java.util.Set;
 

@@ -5,8 +5,9 @@
  */
 package bgu.dcr.az.execs.api.loggers;
 
-import bgu.dcr.az.execs.api.experiments.ExecutionService;
-import bgu.dcr.az.orm.api.DBRecord;
+import bgu.dcr.az.execs.exps.exe.Simulation;
+import bgu.dcr.az.conf.modules.Module;
+import bgu.dcr.az.execs.orm.api.DBRecord;
 import java.util.Collection;
 
 /**
@@ -15,7 +16,7 @@ import java.util.Collection;
  *
  * @author bennyl
  */
-public interface LogManager extends ExecutionService {
+public interface LogManager extends Module<Simulation> {
 
     /**
      * @return all registered loggers (for a given experiment)

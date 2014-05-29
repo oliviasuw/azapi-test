@@ -1,6 +1,7 @@
 package bgu.dcr.az.dcr.api;
 
-import bgu.dcr.az.dcr.execution.CPAgentController;
+import bgu.dcr.az.execs.sim.SimulatedMachine;
+import bgu.dcr.az.execs.sim.net.Message;
 import java.util.Collection;
 import java.util.stream.IntStream;
 
@@ -17,10 +18,10 @@ public class SendMediator {
 
     private Object[] args;
     private String messageName;
-    private final Agent agent;
-    private final CPAgentController controller;
+    private final CPAgent agent;
+    private final SimulatedMachine controller;
 
-    public SendMediator(Agent agent, CPAgentController controller) {
+    public SendMediator(CPAgent agent, SimulatedMachine controller) {
         this.controller = controller;
         this.agent = agent;
         args = null;
@@ -57,7 +58,7 @@ public class SendMediator {
     }
 
     public void toLastAgent() {
-        to(controller.getGlobalProblem().getNumberOfVariables() - 1);
+        to(agent.getProblem().getNumberOfVariables() - 1);
     }
 
     /**
@@ -89,7 +90,7 @@ public class SendMediator {
      * @param p
      */
     public void toNeighbores() {
-        controller.getGlobalProblem().getNeighbors(agent.getId()).forEach(this::to);
+        agent.getProblem().getNeighbors(agent.getId()).forEach(this::to);
     }
 
     /**

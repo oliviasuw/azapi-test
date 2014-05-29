@@ -1,14 +1,16 @@
 package bgu.dcr.az.dcr.api;
 
+import bgu.dcr.az.execs.sim.nest.IntIntReducer;
+import bgu.dcr.az.execs.sim.nest.IntIntFunction;
 import bgu.dcr.az.common.deepcopy.DeepCopyable;
 import java.util.Map.Entry;
 
-import bgu.dcr.az.dcr.Agt0DSL;
-import bgu.dcr.az.dcr.api.exceptions.UnassignedVariableException;
+import bgu.dcr.az.execs.sim.Agt0DSL;
 import bgu.dcr.az.dcr.api.problems.ImmutableProblem;
 import bgu.dcr.az.dcr.api.problems.Problem;
 import bgu.dcr.az.dcr.util.ImmutableIntSetView;
-import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
+import bgu.dcr.az.execs.exceptions.PanicException;
+import bgu.dcr.az.execs.sim.Agent;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -112,7 +114,7 @@ public class Assignment implements Serializable, DeepCopyable {
      * @param agt
      * @return the removed assigned value
      */
-    public Integer unassign(Agent agt) {
+    public Integer unassign(CPAgent agt) {
         return unassign(agt.getId());
     }
 
@@ -131,7 +133,7 @@ public class Assignment implements Serializable, DeepCopyable {
     public int getAssignment(int var) {
         final int ass = assignment.get(var);
         if (ass == -1) {
-            throw new UnassignedVariableException("calling getAssignment with variable " + var + " while its is not assigned");
+            throw new PanicException("calling getAssignment with variable " + var + " while its is not assigned");
         }
         return ass;
     }
@@ -139,13 +141,13 @@ public class Assignment implements Serializable, DeepCopyable {
     public Set<Entry<Integer, Integer>> getAssignments() {
         return assignment.entrySet();
     }
-
+    
     /**
      * @param p
      * @return the cost of this assignment - (increase cc checks)
      */
     public int calcCost(ImmutableProblem p) {
-        if (p instanceof Agent.AgentProblem) {
+        if (Agent.current() != null) {
             if (cachedTotalCost < 0) {
                 cachedTotalCost = p.calculateCost(this);
             }

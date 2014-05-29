@@ -9,8 +9,8 @@ import bgu.dcr.az.conf.api.Configuration;
 import bgu.dcr.az.conf.api.ConfigurationException;
 import bgu.dcr.az.conf.api.JavaDocInfo;
 import bgu.dcr.az.conf.api.Property;
-import bgu.dcr.az.dcr.Agt0DSL;
-import bgu.dcr.az.dcr.api.Agent;
+import bgu.dcr.az.execs.sim.Agt0DSL;
+import bgu.dcr.az.dcr.api.CPAgent;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -46,7 +46,7 @@ public abstract class AgentManipulator implements Configuration {
         return configurationDelegate.configuredType();
     }
 
-    public void handle(Agent a, String messageName, Object[] arguments){
+    public void handle(CPAgent a, String messageName, Object[] arguments){
         Agt0DSL.panic("no such message: " + messageName + " defined for agent " + a.getClass().getSimpleName());
     }
     
@@ -85,7 +85,7 @@ public abstract class AgentManipulator implements Configuration {
         return configurationDelegate.registeredName();
     }
 
-    public static AgentManipulator lookup(Class<? extends Agent> type){
+    public static AgentManipulator lookup(Class<? extends CPAgent> type){
         try {
             final Class clazz = Class.forName("bgu.dcr.az.dcr.autogen." + (type.getCanonicalName().replaceAll("\\.", "_")));
             return (AgentManipulator) clazz.newInstance();

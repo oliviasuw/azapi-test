@@ -5,17 +5,17 @@
  */
 package bgu.dcr.az.execs.api.statistics;
 
-import bgu.dcr.az.execs.api.experiments.ExecutionService;
-import bgu.dcr.az.execs.api.experiments.Experiment;
+import bgu.dcr.az.execs.exps.exe.Test;
+import bgu.dcr.az.conf.modules.Module;
+import bgu.dcr.az.execs.exps.ExecutionTree;
 
 /**
  *
  * @author User
- * @param <T>
  */
-public interface StatisticCollector<T> extends ExecutionService<T> {
+public interface StatisticCollector extends Module<ExecutionTree> {
 
     String getName();
 
-    void plot(Plotter ploter, Experiment experiment);
+    void plot(Plotter ploter, Test test);
 }

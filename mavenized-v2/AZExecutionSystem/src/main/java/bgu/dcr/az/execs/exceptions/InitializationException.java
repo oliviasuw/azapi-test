@@ -10,7 +10,7 @@ package bgu.dcr.az.execs.exceptions;
  *
  * @author Zovadi
  */
-public class InitializationException extends Exception {
+public class InitializationException extends RuntimeException {
 
     public InitializationException() {
     }

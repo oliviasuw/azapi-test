@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.execs.api.statistics;
 
-import bgu.dcr.az.orm.api.Data;
+import bgu.dcr.az.execs.orm.api.Data;
 
 /**
  *

@@ -13,6 +13,7 @@ import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
 /**
@@ -21,14 +22,15 @@ import javafx.scene.text.TextAlignment;
  */
 public abstract class ProblemGraphLayout {
 
-    private final static double PADDING = 40;
-    private final static double CIRCLE_RADIUS = 15;
-    private final static double BORDER_SIZE = 2;
-    private final Font LABEL_FONT = Font.getDefault();
-    private final Color OUTER_COLOR = Color.BLACK;
-    private final Color INNER_COLOR = Color.WHITE;
-    private final Color TEXT_COLOR = Color.RED;
-    private final Color EDGE_COLOR = Color.AQUA;
+    public final static double CIRCLE_RADIUS = 20;
+    public final static double BORDER_SIZE = 2;
+    public final static double EDGE_WIDTH = 3;
+    public final static Font LABEL_FONT = Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 14);
+    public final static Color OUTER_COLOR = Color.rgb(200, 200, 200);
+    public final static Color INNER_COLOR = Color.rgb(50, 50, 50);;
+    public final static Color TEXT_COLOR = Color.rgb(220, 220, 220);
+    public final static Color EDGE_COLOR = INNER_COLOR;
+    public final static Color GRAPH_BACKGROUND = Color.rgb(235, 235, 235);
 
     private final DoubleProperty widthProperty = new SimpleDoubleProperty();
     private final DoubleProperty heightProperty = new SimpleDoubleProperty();
@@ -41,6 +43,7 @@ public abstract class ProblemGraphLayout {
         widthProperty.set(width);
         heightProperty.set(height);
         _setDimentions(width, height);
+        System.out.println("Dims: " + width + " " + height);
     }
 
     protected abstract void _setDimentions(double width, double height);
@@ -69,14 +72,11 @@ public abstract class ProblemGraphLayout {
         double width = widthProperty.get();
         double height = heightProperty.get();
 
-        gc.setFill(Color.YELLOW);
-        gc.fillRect(0, 0, width, height);
-
         double minx = Double.POSITIVE_INFINITY;
         double maxx = Double.NEGATIVE_INFINITY;
         double miny = Double.POSITIVE_INFINITY;
         double maxy = Double.NEGATIVE_INFINITY;
-
+        
         for (Object i : getVertices()) {
             Point u = getLocation(i);
             minx = Math.min(minx, u.x);
@@ -84,9 +84,11 @@ public abstract class ProblemGraphLayout {
             miny = Math.min(miny, u.y);
             maxy = Math.max(maxy, u.y);
         }
-
-        double scalex = (width - PADDING * 2) / (maxx - minx);
-        double scaley = (height - PADDING * 2) / (maxy - miny);
+        
+        double xt = (width / 2.0) - ((maxx - minx) / 2.0) - minx;
+        double yt = (height / 2.0) - ((maxy - miny) / 2.0) - miny;
+        
+        double scale = Math.max((maxx - minx) > width ? width / (maxx - minx) : 1, (maxy - miny) > height ? height / (maxy - miny) : 1);
 
         for (Object i : getVertices()) {
             for (Object j : getNeighborsVertices(i)) {
@@ -94,18 +96,15 @@ public abstract class ProblemGraphLayout {
                 Point v = getLocation(j);
 
                 gc.setStroke(EDGE_COLOR);
-                final double ux = PADDING + (u.x - minx) * scalex;
-                final double uy = PADDING + (u.y - miny) * scaley;
-                final double vx = PADDING + (v.x - minx) * scalex;
-                final double vy = PADDING + (v.y - miny) * scaley;
-                gc.strokeLine(ux, uy, vx, vy);
+                gc.setLineWidth(EDGE_WIDTH);
+                gc.strokeLine((u.x + xt) * scale, (u.y + yt) * scale, (v.x + xt) * scale, (v.y + yt) * scale);
             }
         }
 
         for (Object i : getVertices()) {
             Point u = getLocation(i);
-            double x = PADDING + (u.x - minx) * scalex;
-            double y = PADDING + (u.y - miny) * scaley;
+            double x = (u.x + xt) * scale;
+            double y = (u.y + yt) * scale;
             gc.setFill(OUTER_COLOR);
             gc.fillOval(x - CIRCLE_RADIUS, y - CIRCLE_RADIUS, CIRCLE_RADIUS * 2, CIRCLE_RADIUS * 2);
 

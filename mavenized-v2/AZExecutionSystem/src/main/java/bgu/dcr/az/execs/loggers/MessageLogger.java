@@ -5,34 +5,31 @@
  */
 package bgu.dcr.az.execs.loggers;
 
-import bgu.dcr.az.execs.api.experiments.Execution;
-import bgu.dcr.az.execs.api.loggers.LogManager;
 import bgu.dcr.az.execs.api.loggers.LogManager.LogRecord;
 import bgu.dcr.az.execs.api.loggers.Logger;
 import bgu.dcr.az.execs.statistics.info.MessageInfo;
-import bgu.dcr.az.orm.api.DefinitionDatabase;
-import java.util.stream.IntStream;
+import bgu.dcr.az.execs.orm.api.DefinitionDatabase;
 
 /**
  *
  * @author bennyl
  */
-public class MessageLogger implements Logger {
+public class MessageLogger extends Logger {
 
     @Override
-    public void initialize(LogManager manager, Execution execution, DefinitionDatabase database) {
+    public void initialize(DefinitionDatabase database) {
         database.defineTable("MESSAGES_LOG", MessageLogRecord.class);
 
-        execution.informationStream().listen(MessageInfo.class, m -> {
-            manager.commit(this, new MessageLogRecord(m.getMessageName(), m.getSender(), m.getRecepient(), MessageInfo.OperationType.Sent.equals(m.getType())));
+        execution().infoStream().listen(MessageInfo.class, m -> {
+            commitLog(new MessageLogRecord(m.getMessageName(), m.getSender(), m.getRecepient(), MessageInfo.OperationType.Sent.equals(m.getType())));
         });
     }
 
     @Override
-    public String getName() {
+    public String toString() {
         return "Message logger";
     }
-
+    
     public static class MessageLogRecord extends LogRecord {
 
         public String name;

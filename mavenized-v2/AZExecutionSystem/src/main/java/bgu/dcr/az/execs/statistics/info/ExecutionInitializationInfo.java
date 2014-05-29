@@ -11,14 +11,7 @@ package bgu.dcr.az.execs.statistics.info;
  */
 public class ExecutionInitializationInfo {
 
-    private int numberOfCores;
-
-    public ExecutionInitializationInfo(int numberOfCores) {
-        this.numberOfCores = numberOfCores;
-    }
-
-    public int getNumberOfCores() {
-        return numberOfCores;
+    public ExecutionInitializationInfo() {
     }
 
 }

@@ -1,18 +1,18 @@
 package bgu.dcr.az.execs.statistics;
 
 import bgu.dcr.az.common.reflections.ReflectionUtils;
-import bgu.dcr.az.execs.api.experiments.Execution;
-import bgu.dcr.az.execs.api.experiments.Experiment;
 import bgu.dcr.az.execs.api.statistics.AdditionalBarChartProperties;
 import bgu.dcr.az.execs.api.statistics.AdditionalLineChartProperties;
 import bgu.dcr.az.execs.api.statistics.Plotter;
 import bgu.dcr.az.execs.api.statistics.StatisticCollector;
-import bgu.dcr.az.execs.exceptions.InitializationException;
-import bgu.dcr.az.orm.api.DBRecord;
-import bgu.dcr.az.orm.api.Data;
-import bgu.dcr.az.orm.api.DefinitionDatabase;
-import bgu.dcr.az.orm.api.EmbeddedDatabaseManager;
-import bgu.dcr.az.orm.api.QueryDatabase;
+import bgu.dcr.az.execs.exps.ExecutionTree;
+import bgu.dcr.az.execs.exps.exe.Simulation;
+import bgu.dcr.az.execs.exps.exe.Test;
+import bgu.dcr.az.execs.orm.api.DBRecord;
+import bgu.dcr.az.execs.orm.api.Data;
+import bgu.dcr.az.execs.orm.api.DefinitionDatabase;
+import bgu.dcr.az.execs.orm.api.EmbeddedDatabaseManager;
+import bgu.dcr.az.execs.orm.api.QueryDatabase;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,13 +21,13 @@ import java.util.Set;
  *
  * @author Benny Lutati
  */
-public abstract class AbstractStatisticCollector<T> implements StatisticCollector<T>, Plotter {
+public abstract class AbstractStatisticCollector implements StatisticCollector, Plotter {
 
     private final Set<String> definedTableNames = new HashSet<>();
 
     private Plotter plotter;
     private EmbeddedDatabaseManager db = null;
-    private ExecutionInfoCollector executionInfo;
+    private Simulation sim;
 
     public Plotter getPlotter() {
         return plotter;
@@ -38,16 +38,13 @@ public abstract class AbstractStatisticCollector<T> implements StatisticCollecto
     }
 
     public void write(StatisticRecord record) {
-        record.executionIndex = executionInfo.getLastRecordIndex();
-
+        record.executionIndex = sim.getSimulationNumber();
         db.insert(record);
     }
 
     @Override
-    public final void initialize(Execution<T> execution) throws InitializationException {
-
-        executionInfo = execution.require(ExecutionInfoCollector.class);
-        db = (EmbeddedDatabaseManager) execution.require(EmbeddedDatabaseManager.class);
+    public final void initialize(ExecutionTree exec) {
+        db = exec.require(EmbeddedDatabaseManager.class);
 
         class CachedDDB implements DefinitionDatabase {
 
@@ -66,22 +63,25 @@ public abstract class AbstractStatisticCollector<T> implements StatisticCollecto
                     }
                     fields.append(", ").append(f.getName());
                 }
-                for (Field f : ReflectionUtils.allFields(executionInfo.getDataRecordClass())) {
+                for (Field f : ReflectionUtils.allFields(sim.getInfo().getClass())) {
                     if (f.getName().equals("index")) {
                         continue;
                     }
                     fields.append(", ").append(f.getName());
                 }
 
-                db.execute("CREATE OR REPLACE VIEW " + tableName + " AS SELECT executionIndex " + fields.toString() + " FROM RAW_" + tableName + " AS t, " + ExecutionInfoCollector.EXECUTION_INFO_DATA_TABLE + " AS i WHERE t.executionIndex = i.index;");
+                db.execute("CREATE OR REPLACE VIEW " + tableName + " AS SELECT executionIndex " + fields.toString() + " FROM RAW_" + tableName + " AS t, " + Simulation.EXECUTION_INFO_DATA_TABLE + " AS i WHERE t.executionIndex = i.index;");
             }
         }
 
-        initialize(execution, new CachedDDB());
+        exec.infoStream().listen(Simulation.class, s -> {
+            sim = s;
+            initialize(sim, new CachedDDB());
+        });
     }
 
     @Override
-    public void plot(Plotter ploter, Experiment ex) {
+    public void plot(Plotter ploter, Test ex) {
         this.setPlotter(ploter);
         if (db != null) {
             plot(db.createQueryDatabase(), ex);
@@ -91,9 +91,9 @@ public abstract class AbstractStatisticCollector<T> implements StatisticCollecto
         this.setPlotter(null);
     }
 
-    protected abstract void plot(QueryDatabase database, Experiment test);
+    protected abstract void plot(QueryDatabase database, Test test);
 
-    protected abstract void initialize(final Execution<T> ex, DefinitionDatabase database);
+    protected abstract void initialize(final Simulation ex, DefinitionDatabase database);
 
     @Override
     public void plotLineChart(Data data, String xField, String yField, String seriesField) {

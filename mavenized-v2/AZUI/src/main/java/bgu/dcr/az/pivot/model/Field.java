@@ -4,8 +4,8 @@
  */
 package bgu.dcr.az.pivot.model;
 
-import bgu.dcr.az.orm.api.FieldMetadata;
-import bgu.dcr.az.orm.api.RecordAccessor;
+import bgu.dcr.az.execs.orm.api.FieldMetadata;
+import bgu.dcr.az.execs.orm.api.RecordAccessor;
 import javafx.beans.property.StringProperty;
 
 /**

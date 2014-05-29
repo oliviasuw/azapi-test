@@ -4,14 +4,16 @@
  */
 package bgu.dcr.az.dcr.modules.statistics;
 
+import bgu.dcr.az.dcr.api.modules.AbstractCPStatisticCollector;
 import bgu.dcr.az.conf.registery.Register;
-import bgu.dcr.az.dcr.execution.CPData;
-import bgu.dcr.az.dcr.execution.CPExperimentTest;
-import bgu.dcr.az.execs.api.experiments.Execution;
+import bgu.dcr.az.dcr.api.experiment.CPData;
+import bgu.dcr.az.dcr.api.experiment.CPSolution;
+import bgu.dcr.az.dcr.api.experiment.CPTest;
 import bgu.dcr.az.execs.api.statistics.AdditionalLineChartProperties;
-import bgu.dcr.az.execs.statistics.info.ExecutionTerminationInfo;
-import bgu.dcr.az.orm.api.DefinitionDatabase;
-import bgu.dcr.az.orm.api.QueryDatabase;
+import bgu.dcr.az.execs.exps.exe.Simulation;
+import bgu.dcr.az.execs.statistics.info.SimulationTerminationInfo;
+import bgu.dcr.az.execs.orm.api.DefinitionDatabase;
+import bgu.dcr.az.execs.orm.api.QueryDatabase;
 
 /**
  *
@@ -26,7 +28,7 @@ public class CCStatisticCollector extends AbstractCPStatisticCollector {
     }
 
     @Override
-    protected void plot(QueryDatabase database, CPExperimentTest test) {
+    protected void plot(QueryDatabase database, CPTest test) {
         String sql = "select AVG(cc) as avg, rVar, ALGORITHM_INSTANCE from CC where TEST = ? group by ALGORITHM_INSTANCE, rVar order by rVar";
 
         AdditionalLineChartProperties properties = new AdditionalLineChartProperties();
@@ -38,12 +40,12 @@ public class CCStatisticCollector extends AbstractCPStatisticCollector {
     }
 
     @Override
-    protected void initialize(Execution<CPData> ex, DefinitionDatabase database) {
+    protected void initialize(DefinitionDatabase database, final Simulation<CPData, CPSolution> ex) {
         database.defineTable("CC", CCRecord.class);
 
-        ex.informationStream().listen(ExecutionTerminationInfo.class, t -> {
+        ex.infoStream().listen(SimulationTerminationInfo.class, t -> {
             long cc = 0;
-            for (long c : ex.data().getCcCount()) {
+            for (long c : ex.data().getProblem().getCC_Count()) {
                 cc += c;
             }
 

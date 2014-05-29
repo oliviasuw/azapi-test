@@ -20,13 +20,21 @@ public class RandomSequance {
     long seed;
     private ThreadLocalRandomProvider r;
 
+    public long getSeed() {
+        return seed;
+    }
+
+    public void reset(long seed) {
+        this.seed = seed;
+    }
+
     public RandomSequance(long seed) {
         this.seed = seed;
         r = new ThreadLocalRandomProvider(seed);
     }
 
     public RandomSequance() {
-        seed = new Random().nextInt();
+        seed = System.currentTimeMillis();
     }
 
     public int getIthPositiveInteger(long i) {

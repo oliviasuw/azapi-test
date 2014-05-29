@@ -4,7 +4,7 @@
  */
 package bgu.dcr.az.pivot.model.impl;
 
-import bgu.dcr.az.orm.api.Data;
+import bgu.dcr.az.execs.orm.api.Data;
 import bgu.dcr.az.pivot.model.TableData;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;

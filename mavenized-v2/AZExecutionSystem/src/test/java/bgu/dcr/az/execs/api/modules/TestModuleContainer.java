@@ -6,6 +6,7 @@
 
 package bgu.dcr.az.execs.api.modules;
 
+import bgu.dcr.az.conf.modules.ModuleContainer;
 import bgu.dcr.az.conf.registery.Register;
 
 /**

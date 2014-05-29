@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.ui.screens.statistiscs.pivot;
 
-import bgu.dcr.az.orm.api.RecordAccessor;
+import bgu.dcr.az.execs.orm.api.RecordAccessor;
 import bgu.dcr.az.pivot.model.TableData;
 import java.util.Collections;
 import java.util.LinkedList;

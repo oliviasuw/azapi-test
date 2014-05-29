@@ -53,7 +53,7 @@ public class AdaptiveScheduler implements Module {
     public final void setGroup(Object groupKey) {
         currentAdaption = adaptionMap.get(groupKey);
         if (currentAdaption == null) {
-            currentAdaption = new Adaptation();
+            currentAdaption = new Adaptation(groupKey);
             adaptionMap.put(groupKey, currentAdaption);
         }
     }

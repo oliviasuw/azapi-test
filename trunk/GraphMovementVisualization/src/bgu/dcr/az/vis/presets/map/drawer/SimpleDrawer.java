@@ -13,6 +13,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.Effect;
 import javafx.scene.paint.Color;
 
 /**
@@ -43,8 +45,15 @@ public class SimpleDrawer implements DrawerInterface {
                     CanvasLayer canvasLayer = (CanvasLayer) boundingQuery.getMetaData(group, CanvasLayer.class);
                     Canvas canvas = canvasLayer.getCanvas();
                     GraphicsContext gc = canvas.getGraphicsContext2D();
-                    gc.setFill(new Color(0, 0, 0, 1));
+//                    gc.setFill(new Color(0, 0, 0, 1));
                     gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+                    if (group.equals("GRAPH")) {
+                        gc.save();
+                        Color color = new Color(220 / 255, 220 / 255, 220 / 255, 0.1).deriveColor(160 / 255, 0, 207 / 255, 1);
+                        gc.setFill(color);
+                        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+                        gc.restore();
+                    }
                     gc.strokeText("scale: " + getScale() + " meter/pixel", 14, canvas.getHeight() - 25);
                 }
                 drawer.draw(group);

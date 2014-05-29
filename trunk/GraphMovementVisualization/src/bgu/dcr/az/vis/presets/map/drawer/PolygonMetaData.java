@@ -36,8 +36,8 @@ public class PolygonMetaData {
 
     private void init() {
 //        ImagePattern grassImagePattern = new ImagePattern(new Image(R.class.getResourceAsStream("grassTexture.jpg")), 0, 0, 100, 100, false);
-        Color grassImagePattern = Color.GREEN;
-        
+        Color grassImagePattern = Color.rgb(197, 240, 197);
+        Color buildingColor = Color.rgb(190, 173, 173);
         keyTocolors = new HashMap<>();
         keyTocolors.put(new StringPair("leisure", "park"), grassImagePattern);
         keyTocolors.put(new StringPair("landuse", "grass"), grassImagePattern);
@@ -45,18 +45,19 @@ public class PolygonMetaData {
         keyTocolors.put(new StringPair("landuse", "meadow"), grassImagePattern);
         keyTocolors.put(new StringPair("leisure", "pitch"), grassImagePattern);
         keyTocolors.put(new StringPair("leisure", "garden"), grassImagePattern);
-        keyTocolors.put(new StringPair("building", "yes"), Color.RED); //* means everything
-        keyTocolors.put(new StringPair("building", "garages"), Color.RED); //* means everything
-        keyTocolors.put(new StringPair("building", "house"), Color.RED); //* means everything
-        keyTocolors.put(new StringPair("building", "roof"), Color.RED); //* means everything
-        keyTocolors.put(new StringPair("building", "collapsed"), Color.RED); //* means everything
-        keyTocolors.put(new StringPair("building", "university"), Color.RED); //* means everything
-        keyTocolors.put(new StringPair("building", "residential"), Color.RED); //* means everything
-        keyTocolors.put(new StringPair("building", "apartments"), Color.RED); //* means everything
-        keyTocolors.put(new StringPair("building", "public"), Color.RED); //* means everything
-        keyTocolors.put(new StringPair("building", "school"), Color.RED); //* means everything
-        keyTocolors.put(new StringPair("building", "office"), Color.RED); //* means everything
-        keyTocolors.put(new StringPair("building", "commercial"), Color.RED); //* means everything
+        keyTocolors.put(new StringPair("building", "yes"), buildingColor); //* means everything
+        keyTocolors.put(new StringPair("building", "garages"), buildingColor); //* means everything
+        keyTocolors.put(new StringPair("building", "house"), buildingColor); //* means everything
+        keyTocolors.put(new StringPair("building", "roof"), buildingColor); //* means everything
+        keyTocolors.put(new StringPair("building", "collapsed"), buildingColor); //* means everything
+        keyTocolors.put(new StringPair("building", "university"), buildingColor); //* means everything
+        keyTocolors.put(new StringPair("building", "residential"), buildingColor); //* means everything
+        keyTocolors.put(new StringPair("building", "apartments"), buildingColor); //* means everything
+        keyTocolors.put(new StringPair("building", "public"), buildingColor); //* means everything
+        keyTocolors.put(new StringPair("building", "school"), Color.rgb(240, 240, 216)); //* means everything
+//        keyTocolors.put(new StringPair("amenity", "school"), Color.rgb(240, 240, 216)); //* means everything
+        keyTocolors.put(new StringPair("building", "office"), buildingColor); //* means everything
+        keyTocolors.put(new StringPair("building", "commercial"), buildingColor); //* means everything
         defaultPaint = Color.BURLYWOOD;
     }
 

@@ -42,7 +42,6 @@ public abstract class GroupDrawer implements GroupDrawerInterface {
         viewPortLocation.xProperty().set(newLocation.getX());
         viewPortLocation.yProperty().set(newLocation.getY());
         viewPortScale = newScale;
-
     }
 
     public abstract void _draw(String group, String subgroup);

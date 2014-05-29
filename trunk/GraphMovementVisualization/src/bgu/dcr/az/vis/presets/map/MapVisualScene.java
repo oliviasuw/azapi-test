@@ -72,6 +72,25 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
         boundingQuery.addMetaData("MOVING", CanvasLayer.class, front);
 
+        GroupScale carZoom = new GroupScale() {
+            @Override
+            public double getCurrentScale(double worldScale, String subGroup) {
+                return super.getCurrentScale(worldScale);
+            }
+        };
+//        GroupScale edgeZoom = new GroupScale(1, 1, 0, 10){
+//            @Override
+//            public double getCurrentScale(double worldScale, String subGroup) {
+//                if (subGroup.contains("EDGES")) {
+//                    return super.getCurrentScale(worldScale);
+//                } else {
+//                    return 1;
+//                }
+//            }  
+//        };
+        boundingQuery.addMetaData("MOVING", GroupScale.class, carZoom);
+//        boundingQuery.addMetaData("GRAPH", GroupScale.class, edgeZoom);
+
         registerLayer(MapCanvasLayer.class, back, back.getCanvas());
         registerLayer(CanvasLayer.class, front, front.getCanvas());
 
@@ -103,6 +122,8 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                     //refresh hvalue and vvalue - will invoke listeners
                     hvalueProperty().set(hvalueProperty().getValue() + 0.0001);
                     vvalueProperty().set(vvalueProperty().getValue() + 0.0001);
+                    hvalueProperty().set(hvalueProperty().getValue() - 0.0001);
+                    vvalueProperty().set(vvalueProperty().getValue() - 0.0001);
                 }
             });
 
@@ -128,7 +149,6 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 //                System.out.println("AFTER: " + pane.getPrefWidth() + " " + pane.getPrefHeight());
 
 //                System.out.println("AFTER (s): " + pane.getWidth() + " " + pane.getHeight());
-
                 double windowWidth = getViewportBounds().getWidth();
                 double windownHeight = getViewportBounds().getHeight();
 
@@ -141,6 +161,8 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                 //refresh hvalue and vvalue - will invoke listeners
                 hvalueProperty().set(hvalueProperty().getValue() + 0.0001);
                 vvalueProperty().set(vvalueProperty().getValue() + 0.0001);
+                hvalueProperty().set(hvalueProperty().getValue() - 0.0001);
+                vvalueProperty().set(vvalueProperty().getValue() - 0.0001);
 
                 t.consume();
             }
@@ -229,15 +251,15 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         int i = 0;
         for (GraphPolygon poly : polys) {
             String key = poly.getParams().entrySet().iterator().next().getKey();
-//            if (!key.equals("building")) {
-                if (boundingQuery.hasSubGroup("GRAPH", "POLYGONS." + key)) {
-                    boundingQuery.addToGroup("GRAPH", "POLYGONS." + key, poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), poly);
-                } else {
-                    boundingQuery.addToGroup("GRAPH", "POLYGONS.defaultPolys", poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), poly);
-                }
-//            }
+            if (boundingQuery.hasSubGroup("GRAPH", "POLYGONS." + key)) {
+                boundingQuery.addToGroup("GRAPH", "POLYGONS." + key, poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), poly);
+            } else {
+                boundingQuery.addToGroup("GRAPH", "POLYGONS.defaultPolys", poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), poly);
+            }
 
-            if (key.equals("building")) {
+            //is building sprite drawing enabled
+            boolean buildingSpriteOn = false;
+            if (key.equals("building") && buildingSpriteOn) {
                 double subScale = Math.sqrt(Math.abs(poly.getArea()));
                 Image buildingImage = images.get(poly.getParams().get("building"));
                 if (buildingImage == null) {

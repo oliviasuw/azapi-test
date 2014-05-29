@@ -122,23 +122,10 @@ public class EventsTester {
     private Location translateToLocation(String src, String target, Double precentage) {
 //        String src = graphData.getEdgeSource(edgeName);
 //        String target = graphData.getEdgeTarget(edgeName);
-        AZVisVertex srcData = (AZVisVertex) graphData.getData(src);
-        AZVisVertex targetData = (AZVisVertex) graphData.getData(target);
-        double xsub = Math.abs(srcData.getX() - targetData.getX());
-        double ysub = Math.abs(srcData.getY() - targetData.getY());
-        double totalDistance = Math.sqrt(xsub * xsub + ysub * ysub);
-        double distance = totalDistance * (precentage / 100D);
-        double angle = Math.atan2(ysub, xsub);
+        AZVisVertex sV = (AZVisVertex) graphData.getData(src);
+        AZVisVertex tV = (AZVisVertex) graphData.getData(target);
 
-        double newx = Math.abs(srcData.getX() + distance * Math.cos(angle));
-        double newy = Math.abs(distance * Math.sin(angle) - srcData.getY());
-        if (srcData.getX() > targetData.getX()) {
-            newx = srcData.getX() - distance * Math.cos(angle);
-        }
-        if (srcData.getY() < targetData.getY()) {
-            newy = Math.abs(distance * Math.sin(angle) + srcData.getY());
-        }
-
-        return new Location(newx, newy);
+        return new Location(sV.getX() + (tV.getX() - sV.getX()) * precentage / 100.0, 
+                            sV.getY() + (tV.getY() - sV.getY()) * precentage / 100.0);
     }
 }

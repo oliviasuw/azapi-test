@@ -7,15 +7,13 @@ package bgu.dcr.az.vis.presets.map.drawer;
 
 import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import bgu.dcr.az.vis.player.impl.entities.DefinedSizeSpriteBasedEntity;
+import bgu.dcr.az.vis.presets.map.GroupScale;
 import bgu.dcr.az.vis.tools.Location;
-import data.map.impl.wersdfawer.GraphPolygon;
 import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Vector;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 
 /**
  *
@@ -34,12 +32,14 @@ public class SpriteDrawer extends GroupDrawer {
         GroupBoundingQuery boundingQuery = drawer.getQuery();
         Location viewPortLocation = drawer.getViewPortLocation();
 
+        GroupScale groupScale = (GroupScale) drawer.getQuery().getMetaData(group, GroupScale.class);
         CanvasLayer canvasLayer = (CanvasLayer) drawer.getQuery().getMetaData(group, CanvasLayer.class);
         Canvas canvas = canvasLayer.getCanvas();
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        double scale = drawer.getScale();
+
         double viewPortWidth = drawer.getViewPortWidth();
         double viewPortHeight = drawer.getViewPortHeight();
+        double scale = drawer.getScale();
 
         double epsilonH = boundingQuery.getEpsilon(group, subgroup)[1];
         double epsilonW = boundingQuery.getEpsilon(group, subgroup)[0];
@@ -55,22 +55,32 @@ public class SpriteDrawer extends GroupDrawer {
                 }
             });
         }
-        for (Iterator it = entities.iterator(); it.hasNext();) {
-            Object obj = it.next();
+        
+        double tx = drawer.getViewPortLocation().getX();
+        double ty = drawer.getViewPortLocation().getY();
+
+        for (Object obj : entities) {
             DefinedSizeSpriteBasedEntity entity = (DefinedSizeSpriteBasedEntity) obj;
-            double centerX = entity.getLocation().getX();
-            double centerY = entity.getLocation().getY();
-            double tx = drawer.getViewPortLocation().getX();
-            double ty = drawer.getViewPortLocation().getY();
-            double newH = entity.getRealHeight() * scale;
-            double newW = entity.getRealWidth() * scale;
-            if (newH > MAX_SPRITE_HEIGHT) {
-                newW = newW / newH * MAX_SPRITE_HEIGHT;
-                newH = MAX_SPRITE_HEIGHT;
+            double cX = entity.getLocation().getX();
+            double cY = entity.getLocation().getY();
+            double newH = entity.getRealHeight();
+            double newW = entity.getRealWidth();
+            
+            double tscale = scale;
+            if (groupScale != null) {
+                tscale *= groupScale.getCurrentScale(scale);
             }
+            newH *= tscale;
+            newW *= tscale;
+            
+//            if (newH > MAX_SPRITE_HEIGHT) {
+//                newW = newW / newH * MAX_SPRITE_HEIGHT;
+//                newH = MAX_SPRITE_HEIGHT;
+//            }
 
             gc.save();
-            gc.translate((centerX - tx - ((newW / scale) / 2.0)) * scale, (centerY - ty - ((newH / scale) / 2.0)) * scale);
+            gc.translate((cX - tx) * scale, (cY - ty) * scale);
+            gc.translate( -(newW / 2.0), -(newH / 2.0));
             gc.rotate(entity.getRotation());
 //            gc.rotate(canvasLayer.getRotation());
 //            gc.scale(canvasLayer.getScale(), canvasLayer.getScale());

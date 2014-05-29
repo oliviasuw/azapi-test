@@ -3,11 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package bgu.dcr.az.vis.presets.map.drawer;
 
 import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
-import graphics.graph.EdgeDescriptor;
 import graphics.graph.EdgeStroke;
 import java.util.HashMap;
 import javafx.scene.image.Image;
@@ -22,107 +20,85 @@ import resources.img.R;
  * @author Shl
  */
 public final class EdgesMetaData {
-    
+
     public static final String ROAD_KEY = "highway";
     private final double LANE_WIDTH = 3.6; //in meters
-    private HashMap<String, EdgeDescriptor> descriptors;
-    private EdgeDescriptor defaultDescriptor; 
+    private HashMap<String, EdgeStroke> strokes;
+    private EdgeStroke defaultStroke;
 
     public EdgesMetaData() {
         init();
     }
 
-    public HashMap<String, EdgeDescriptor> getDescriptors() {
-        return descriptors;
+    public EdgeStroke getStroke(String edgeTag) {
+        return strokes.get(edgeTag);
     }
 
-    public EdgeDescriptor getDefaultDescriptor() {
-        return defaultDescriptor;
+    public EdgeStroke getDefaultStroke() {
+        return defaultStroke;
     }
 
     public double LANE_WIDTH() {
         return LANE_WIDTH;
     }
-    
+
     public String ROAD_KEY() {
         return ROAD_KEY;
     }
-    
+
     public void init() {
-        descriptors = new HashMap<>();
+        strokes = new HashMap<>();
         ImagePattern roadImagePattern = new ImagePattern(new Image(R.class.getResourceAsStream("roadTexture.jpg")), 0, 0, 100, 100, false);
 
-        descriptors.put("primary", new EdgeDescriptor(
+        strokes.put("primary",
                 new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.BLACK),
-                new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.WHITE)));
-        descriptors.put("secondary", new EdgeDescriptor(
+                        Color.rgb(220, 158, 158)));
+        strokes.put("secondary",
                 new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.BLACK),
-                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.GRAY)));
+                        Color.rgb(248, 214, 170)));
 
-        descriptors.put("tertiary", new EdgeDescriptor(
+        strokes.put("tertiary",
                 new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        roadImagePattern),
-                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        roadImagePattern)));
+                        Color.rgb(248, 248, 186)));
 
 //        descriptors.put("tertiary", new EdgeDescriptor(
 //                new EdgeStroke(MAIN_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
 //                        Color.BLACK),
 //                new EdgeStroke(INNER_THICKNESS, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
 //                        Color.BLUE)));
-        descriptors.put("trunk", new EdgeDescriptor(
+        strokes.put("trunk",
                 new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.BLACK),
+                        Color.rgb(148, 212, 148)));
+        strokes.put("residential",
                 new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.MAGENTA)));
-        descriptors.put("residential", new EdgeDescriptor(
-                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.BLACK),
-                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.YELLOW)));
-        descriptors.put("primary_link", new EdgeDescriptor(
+                        Color.WHITE));
+        strokes.put("primary_link",
                 new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.BLACK),
+                        Color.ORANGE));
+        strokes.put("service",
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                        Color.WHITE));
+        strokes.put("road",
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                        Color.WHITE));
+        strokes.put("pedestrian",
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                        Color.GRAY));
+        strokes.put("living_street",
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                        Color.CORNFLOWERBLUE));
+        strokes.put("footway",
+                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                        Color.BURLYWOOD));
+
+        strokes.put("motorway",
                 new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.ORANGE)));
-        descriptors.put("service", new EdgeDescriptor(
-                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.BLACK),
-                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.WHITE)));
-        descriptors.put("road", new EdgeDescriptor(
-                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.BLACK),
-                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.WHITE)));
-        descriptors.put("pedestrian", new EdgeDescriptor(
-                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.BLACK),
-                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.GRAY)));
-        descriptors.put("living_street", new EdgeDescriptor(
-                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.BLACK),
-                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.CYAN)));
-        descriptors.put("footway", new EdgeDescriptor(
-                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.BLACK),
-                new EdgeStroke(1, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.GREEN)));
-        
-         defaultDescriptor = new EdgeDescriptor(
-                new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.ORANGE),
-                new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
-                        Color.BLACK));
-        
+                        Color.rgb(137, 164, 202)));
+
+        defaultStroke
+                = new EdgeStroke(2, StrokeLineCap.ROUND, StrokeLineJoin.ROUND,
+                        Color.GRAY);
+
     }
-    
-    
-        
+
 }

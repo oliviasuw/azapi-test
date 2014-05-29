@@ -44,7 +44,7 @@ public class MapTester extends Application {
 
         //change to beershevagraph.txt to get beersheva back
         //graph2_1.txt is telaviv
-        vs = new MapVisualScene(100, "beershevagraph.txt", boundingQuery, drawer);
+        vs = new MapVisualScene(100, "graph2_1.txt", boundingQuery, drawer);
 
         SimplePlayer player = new SimplePlayer(boundingQuery, drawer, 1000, 0);
 
@@ -88,15 +88,15 @@ public class MapTester extends Application {
         @Override
         public void run() {
             Tick tick = eventTester.read();
-            Collection<SimulatorEvent> read = tick.getEvents();
-            if (!read.isEmpty() && !isStopped) {
+//            Collection<SimulatorEvent> read = tick.getEvents();
+            if (!isStopped) {
                 eventTester.AddNewMovesFromTick(tick, player);
             }
             player.addFrameFinishListener(new ChangeListener<Boolean>() {
 
                 @Override
                 public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
-                    if (t1 && !read.isEmpty() && !isStopped) {
+                    if (t1 && !isStopped) {
                         Tick tick = eventTester.read();
                         eventTester.AddNewMovesFromTick(tick, player);
                     }

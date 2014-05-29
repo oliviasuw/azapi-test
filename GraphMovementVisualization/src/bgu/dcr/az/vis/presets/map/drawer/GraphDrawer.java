@@ -6,6 +6,7 @@
 package bgu.dcr.az.vis.presets.map.drawer;
 
 import bgu.dcr.az.vis.player.impl.CanvasLayer;
+import bgu.dcr.az.vis.presets.map.GroupScale;
 import bgu.dcr.az.vis.tools.Location;
 import bgu.dcr.az.vis.tools.StringPair;
 import data.map.impl.wersdfawer.AZVisVertex;
@@ -13,7 +14,6 @@ import data.map.impl.wersdfawer.Edge;
 import data.map.impl.wersdfawer.GraphData;
 import data.map.impl.wersdfawer.GraphPolygon;
 import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
-import graphics.graph.EdgeDescriptor;
 import graphics.graph.EdgeStroke;
 import java.util.Collection;
 import java.util.Comparator;
@@ -54,6 +54,12 @@ public class GraphDrawer extends GroupDrawer {
 
         GroupBoundingQuery boundingQuery = drawer.getQuery();
         double scale = drawer.getScale();
+
+        GroupScale groupScale = (GroupScale) drawer.getQuery().getMetaData(group, GroupScale.class);
+        if (groupScale != null) {
+            scale *= groupScale.getCurrentScale(scale, subgroup);
+        }
+
         CanvasLayer canvasLayer = (CanvasLayer) drawer.getQuery().getMetaData("GRAPH", CanvasLayer.class);
         Canvas canvas = canvasLayer.getCanvas();
 
@@ -64,7 +70,6 @@ public class GraphDrawer extends GroupDrawer {
         double epsilonW = boundingQuery.getEpsilon(group, subgroup)[0];
 
         //print what im asking for
-        
         if (subgroup.contains("EDGES")) {
             Collection edges = boundingQuery.get(group, subgroup, drawer.getViewPortLocation().getX() - epsilonW * scale, drawer.getViewPortLocation().getX() + viewPortWidth + epsilonW * scale, drawer.getViewPortLocation().getY() + viewPortHeight + epsilonH * scale, drawer.getViewPortLocation().getY() - epsilonH * scale);
             draw(canvas, graphData, edges, scale);
@@ -85,10 +90,6 @@ public class GraphDrawer extends GroupDrawer {
     public void draw(Canvas canvas, GraphData graphData, Collection edges, double scale) {
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
-//        double tx = canvas.getTranslateX();
-//        double ty = canvas.getTranslateY();
-        double tx = drawer.getViewPortLocation().getX();
-        double ty = drawer.getViewPortLocation().getY();
 
         EdgesMetaData edgeMeta = (EdgesMetaData) drawer.getQuery().getMetaData("GRAPH", EdgesMetaData.class);
 
@@ -96,44 +97,57 @@ public class GraphDrawer extends GroupDrawer {
             //temporary hack (Edge)
             String name = ((Edge) edges.iterator().next()).getId();
             HashMap<String, String> edgeData = (HashMap<String, String>) graphData.getData(name);
-            EdgeDescriptor ed = edgeMeta.getDescriptors().get(edgeData.get(edgeMeta.ROAD_KEY()));
-            if (ed == null) {
-                ed = edgeMeta.getDefaultDescriptor();
+            EdgeStroke edgeStroke = edgeMeta.getStroke(edgeData.get(edgeMeta.ROAD_KEY()));
+            if (edgeStroke == null) {
+                edgeStroke = edgeMeta.getDefaultStroke();
             }
 
+            //get entity zoom and double here
             double pixelLaneWidth = edgeMeta.LANE_WIDTH();
+            GroupScale groupScale = (GroupScale) drawer.getQuery().getMetaData("GRAPH", GroupScale.class);
+            if (groupScale != null) {
+                pixelLaneWidth *= groupScale.getCurrentScale(scale);
+            }
+            double tx = drawer.getViewPortLocation().getX();
+            double ty = drawer.getViewPortLocation().getY();
 
             gc.save();
-            gc.beginPath();
-            for (Object edgeObj : edges) {
-//                String edgeName = (String) edgeObj;
-                //temporary hack:
-                String edgeName = ((Edge) edgeObj).getId();
+            gc.setLineCap(edgeStroke.getLineCap());
+            gc.setLineJoin(edgeStroke.getLineJoin());
 
-                AZVisVertex source = null;
-                AZVisVertex target = null;
-                try {
-                    source = (AZVisVertex) graphData.getData(graphData.getEdgeSource(edgeName));
-                    target = (AZVisVertex) graphData.getData(graphData.getEdgeTarget(edgeName));
-                } catch (Exception e) {
-                    System.out.println("problem with drawing! cant find some node.");
-                    continue;
-                }
-                gc.setLineCap(ed.getOuterStroke().getLineCap());
-                gc.setLineJoin(ed.getOuterStroke().getLineJoin());
-                gc.setLineWidth(ed.getOuterStroke().getLanes() * pixelLaneWidth * scale);
-                gc.setStroke(ed.getOuterStroke().getPaint());
+            gc.setStroke(Color.BLACK);
+            gc.setLineWidth(edgeStroke.getLanes() * pixelLaneWidth * scale);
+            strokeEdges(gc, edges, graphData, tx, scale, ty);
 
-//            gc.setLineCap(ed.getInnerStroke().getLineCap());
-//            gc.setLineJoin(ed.getInnerStroke().getLineJoin());
-//            gc.setLineWidth(pixelLaneWidth * scale);
-//            gc.setStroke(ed.getInnerStroke().getPaint());
-                gc.moveTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
-                gc.lineTo((target.getX() - tx) * scale, (target.getY() - ty) * scale);
-            }
-            gc.stroke();
+            gc.setLineWidth(edgeStroke.getLanes() * (pixelLaneWidth * 0.8) * scale);
+            gc.setStroke(edgeStroke.getPaint());
+            strokeEdges(gc, edges, graphData, tx, scale, ty);
+
             gc.restore();
+
         }
+    }
+
+    private void strokeEdges(GraphicsContext gc, Collection edges, GraphData graphData, double tx, double scale, double ty) {
+        gc.beginPath();
+        for (Object edgeObj : edges) {
+//                String edgeName = (String) edgeObj;
+            //temporary hack:
+            String edgeName = ((Edge) edgeObj).getId();
+
+            AZVisVertex source = null;
+            AZVisVertex target = null;
+            try {
+                source = (AZVisVertex) graphData.getData(graphData.getEdgeSource(edgeName));
+                target = (AZVisVertex) graphData.getData(graphData.getEdgeTarget(edgeName));
+            } catch (Exception e) {
+                System.out.println("problem with drawing! cant find some node.");
+                continue;
+            }
+            gc.moveTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
+            gc.lineTo((target.getX() - tx) * scale, (target.getY() - ty) * scale);
+        }
+        gc.stroke();
     }
 
     private void draw(Canvas canvas, GraphData graphData, GraphPolygon polygon, double scale) {
@@ -159,7 +173,13 @@ public class GraphDrawer extends GroupDrawer {
             //System.out.println("unsupported polygon " + keyVal.getFirst() + "=" + keyVal.getSecond());
             get = metaData.getDefaultPaint();
         }
+        if (get instanceof Color) {
+            gc.setStroke(((Color) get).darker().darker());
+        } else {
+            gc.setStroke(Color.RED);
+        }
         gc.setFill(get);
+        gc.setLineWidth(gc.getLineWidth() * 2);
         gc.beginPath();
 
         gc.moveTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
@@ -170,6 +190,7 @@ public class GraphDrawer extends GroupDrawer {
             gc.lineTo((source.getX() - tx) * scale, (source.getY() - ty) * scale);
         }
         gc.closePath();
+        gc.stroke();
         gc.fill();
 //        gc.fillPolygon(xs, ys, polygon.getNodes().size());
 

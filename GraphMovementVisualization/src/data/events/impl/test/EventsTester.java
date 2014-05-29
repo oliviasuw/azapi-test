@@ -101,9 +101,11 @@ public class EventsTester {
                 Integer who = movee.getId();
                 String from = movee.getFromNode();
                 String to = movee.getToNode();
-
-                double endPrecent = ((tick.getTickNum() - movee.getStartTick() + 1.0) / (movee.getEndTick() - movee.getStartTick() + 1.0)) * 100.0;
-                double startPrecent = ((tick.getTickNum() - movee.getStartTick()) / (movee.getEndTick() - movee.getStartTick() + 1.0)) * 100.0;
+                double startPrecent = movee.getStartPrecent();
+                double endPrecent = movee.getEndPrecent();
+//                double endPrecent = ((tick.getTickNum() - movee.getStartTick() + 1.0) / (movee.getEndTick() - movee.getStartTick() + 1.0)) * 100.0;
+//                double startPrecent = ((tick.getTickNum() - movee.getStartTick()) / (movee.getEndTick() - movee.getStartTick() + 1.0)) * 100.0;
+                
                 Location startLocation = translateToLocation(from, to, startPrecent);
                 Location endLocation = translateToLocation(from, to, endPrecent);
                 frame.directedMove(who, startLocation, endLocation);

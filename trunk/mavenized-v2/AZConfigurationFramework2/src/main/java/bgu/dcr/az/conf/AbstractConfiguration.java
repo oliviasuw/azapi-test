@@ -32,7 +32,7 @@ public abstract class AbstractConfiguration implements Configuration {
     protected JavaDocInfo javadoc;
     protected MethodAccess accessor;
     protected ConstructorAccess cAccessor;
-    
+
     @Override
     public Collection<Property> properties() {
         return properties.values();
@@ -78,7 +78,6 @@ public abstract class AbstractConfiguration implements Configuration {
         }
     }
 
-
     @Override
     public <T> T create() throws ConfigurationException {
         T result = (T) cAccessor.newInstance();
@@ -88,44 +87,59 @@ public abstract class AbstractConfiguration implements Configuration {
 
     @Override
     public void configure(Object o) throws ConfigurationException {
-        try {
-            for (Property p : properties.values()) {
-                PropertyValue value = p.get();
-                if (value != null) {
-                    if (p instanceof VariablePropertyImpl) {
-                        VariablePropertyImpl vprop = (VariablePropertyImpl) p;
-                        vprop.getField().set(o, value.create(p.typeInfo()));
-                    } else {
-                        PropertyImpl iprop = (PropertyImpl) p;
-                        if (iprop.isReadOnly()) {
-                            if (iprop.isCollection()) {
-                                Collection collection = (Collection) accessor.invoke(o, iprop.getGetterIndex());
-                                if (collection == null) {
-                                    throw new UnsupportedOperationException("cannot configure property " + p.name() + " this property is a collection which has no initial value (get return null)");
-                                }
-
-                                //TypeInfo elementType = iprop.typeInfo().getGenericParameters().isEmpty() ? JavaTypeParser.OBJECT_TYPE : iprop.typeInfo().getGenericParameters().get(0);
-                                collection.clear();
-                                collection.addAll(value.create(iprop.typeInfo()));
-                            } else {
-                                System.out.println("Ignoring configuration for " + p.name() + " since this property is readonly.");
-                                //throw new UnsupportedOperationException("cannot configure property " + p.name() + " this property does not have setter and it is not a collection");
-                            }
-                        } else {
-                            accessor.invoke(o, iprop.getSetterIndex(), new Object[]{value.create(iprop.typeInfo())});
-                        }
-                    }
-                }
+        for (Property p : properties.values()) {
+            PropertyValue value = p.get();
+            if (value != null) {
+                configureProperty(p, o, value);
             }
-        } catch (IllegalArgumentException | IllegalAccessException ex) {
-            throw new ConfigurationException("cannot configure object " + o, ex);
+        }
+    }
+
+    @Override
+    public void configureProperty(Object o, String propertyName, PropertyValue value) throws ConfigurationException {
+        Property p = properties.get(propertyName);
+        if (p == null) {
+            throw new ConfigurationException("no such property: " + p.name());
+        }
+
+        configureProperty(p, o, value);
+    }
+
+    private void configureProperty(Property p, Object o, PropertyValue value) throws UnsupportedOperationException, ConfigurationException {
+
+        if (p instanceof VariablePropertyImpl) {
+            VariablePropertyImpl vprop = (VariablePropertyImpl) p;
+            try {
+                vprop.getField().set(o, value.create(p.typeInfo()));
+            } catch (IllegalArgumentException | IllegalAccessException ex) {
+                throw new ConfigurationException("cannot configure object " + o, ex);
+            }
+        } else {
+            PropertyImpl iprop = (PropertyImpl) p;
+            if (iprop.isReadOnly()) {
+                if (iprop.isCollection()) {
+                    Collection collection = (Collection) accessor.invoke(o, iprop.getGetterIndex());
+                    if (collection == null) {
+                        throw new UnsupportedOperationException("cannot configure property " + p.name() + " this property is a collection which has no initial value (get return null)");
+                    }
+
+                    //TypeInfo elementType = iprop.typeInfo().getGenericParameters().isEmpty() ? JavaTypeParser.OBJECT_TYPE : iprop.typeInfo().getGenericParameters().get(0);
+                    collection.clear();
+                    collection.addAll(value.create(iprop.typeInfo()));
+                } else {
+                    System.out.println("Ignoring configuration for " + p.name() + " since this property is readonly.");
+                    //throw new UnsupportedOperationException("cannot configure property " + p.name() + " this property does not have setter and it is not a collection");
+                }
+            } else {
+                accessor.invoke(o, iprop.getSetterIndex(), new Object[]{value.create(iprop.typeInfo())});
+            }
         }
     }
 
     @Override
     public Configuration loadFrom(Object o) throws ConfigurationException {
         Object propertyValue = null;
- 
+
         try {
             for (Property p : properties.values()) {
 
@@ -136,7 +150,7 @@ public abstract class AbstractConfiguration implements Configuration {
                     PropertyImpl ip = (PropertyImpl) p;
                     propertyValue = accessor.invoke(o, ip.getGetterIndex());
                 }
-                
+
                 p.set(ConfigurationUtils.toPropertyValue(propertyValue));
             }
         } catch (Exception ex) {

@@ -1,5 +1,6 @@
 package bgu.dcr.az.dcr.api;
 
+import bgu.dcr.az.conf.api.ConfigurationException;
 import bgu.dcr.az.execs.sim.nest.ContinuationMediator;
 import bgu.dcr.az.execs.sim.net.Message;
 import static bgu.dcr.az.execs.sim.Agt0DSL.range;
@@ -71,7 +72,7 @@ public abstract class CPAgent<P extends ImmutableProblem> extends Agent {
             AgentManipulator manipulator;
 
             @Override
-            public void initialize(int id, SimulatedMachine ac, Agent a) {
+            public void initialize(int id, SimulatedMachine ac, Agent a, Map<String, String> args) {
                 this.a = (CPAgent) a;
                 this.a.controller = ac;
                 this.manipulator = manipulators.get(a.getClass());
@@ -83,6 +84,14 @@ public abstract class CPAgent<P extends ImmutableProblem> extends Agent {
                 final CPData data = (CPData) ac.getSimulation().data();
                 this.a.solution = data.currentSolution();
                 this.a.prob = data.getProblem().createLocalProblem(id);
+
+                for (Map.Entry<String, String> c : args.entrySet()) {
+                    try {
+                        manipulator.configureProperty(a, c.getKey(), c.getValue());
+                    } catch (ConfigurationException ex) {
+                        System.err.println("Agent " + a + " could not configure property " + c.getKey());
+                    }
+                }
             }
 
             @Override

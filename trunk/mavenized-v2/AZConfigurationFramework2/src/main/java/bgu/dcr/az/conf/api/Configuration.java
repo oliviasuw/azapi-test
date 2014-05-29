@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.conf.api;
 
+import bgu.dcr.az.conf.FromStringPropertyValue;
 import java.util.Collection;
 
 /**
@@ -30,7 +31,14 @@ public interface Configuration extends Iterable<Property>, Documented {
 
     void configure(Object o) throws ConfigurationException;
 
+    void configureProperty(Object o, String propertyName, PropertyValue pval) throws ConfigurationException;
+
     Property get(String name);
 
     Configuration loadFrom(Object o) throws ConfigurationException;
+
+    default void configureProperty(Object o, String propertyName, String pval) throws ConfigurationException {
+        configureProperty(o, propertyName, new FromStringPropertyValue(pval));
+    }
+
 }

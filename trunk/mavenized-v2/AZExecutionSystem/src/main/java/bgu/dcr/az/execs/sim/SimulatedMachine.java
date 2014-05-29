@@ -153,7 +153,7 @@ public class SimulatedMachine extends AbstractProc implements Module<Simulation>
                 activeAgent.finilize();
             }
         }
-        
+
         unsetActiveAgent();
     }
 
@@ -270,7 +270,7 @@ public class SimulatedMachine extends AbstractProc implements Module<Simulation>
     private Agent createAgent(Integer aId) {
         Class<? extends Agent> aclass = simulation.configuration().agentClass(aId);
         Agent result = ConstructorAccess.get(aclass).newInstance();
-        Agent.internalsOf(result).initialize(aId, this, result);
+        Agent.internalsOf(result).initialize(aId, this, result, simulation.configuration().agentInitializationArgs(aId));
         return result;
     }
 
@@ -335,7 +335,7 @@ public class SimulatedMachine extends AbstractProc implements Module<Simulation>
                     super.andWhenDoneDo(c);
 
                     Agent.Internals internals = Agent.internalsOf(agent);
-                    internals.initialize(aId, SimulatedMachine.this, agent);
+                    internals.initialize(aId, SimulatedMachine.this, agent, simulation.configuration().agentInitializationArgs(aId));
                     AgentContext context = cGen.getContext(contextId);
                     AgentState nestedAgent = new AgentState(internals, context, this);
                     stack.addFirst(nestedAgent);

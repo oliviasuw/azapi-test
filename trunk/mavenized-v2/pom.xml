@@ -41,6 +41,7 @@
                 
             <plugin>
                 <groupId>org.bsc.maven</groupId>
+                <version> 2.2.4 </version>
                 <artifactId>maven-processor-plugin</artifactId>
                 <executions>
                     <execution>

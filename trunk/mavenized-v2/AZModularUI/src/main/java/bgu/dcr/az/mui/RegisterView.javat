@@ -2,8 +2,12 @@
     if (!hasMethod("public static boolean accept(bgu.dcr.az.mui.ViewContainer)")){
         error("view must provide a method: 'public static boolean accept(bgu.dcr.az.mui.ViewContainer)'", this);
     }
-}
 
+    if (!hasDefaultConstructor()){
+        error("view must have a default constructor", this);
+    }
+}
+@if{!hasErrors()}
 package bgu.dcr.az.conf.autogen;
 
 import bgu.dcr.az.conf.api.JavaDocInfo;
@@ -17,11 +21,6 @@ import bgu.dcr.az.conf.registery.RegistrationMarker;
 
 public class @{underscoredFQN} implements ViewManipulator, RegistrationMarker{
     
-    /*
-    @foreach{m : methods} @{m.getFullSignature();} @end{"\n"}
-
-    */
-
     //store configured class javadoc
     public static JavaDocInfo DOC = JavaDocParser.parse("@{javadoc}");
 
@@ -35,7 +34,7 @@ public class @{underscoredFQN} implements ViewManipulator, RegistrationMarker{
 
     @Override
     public boolean accept(ViewContainer container) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return @{getFQN()}.accept(container);
     }
 
     @Override
@@ -44,8 +43,8 @@ public class @{underscoredFQN} implements ViewManipulator, RegistrationMarker{
     }
 
     @Override
-    public bgu.dcr.az.metagen.util.JavaDocInfo doc() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public JavaDocInfo doc() {
+        return DOC;
     }
     
     @Override
@@ -54,3 +53,4 @@ public class @{underscoredFQN} implements ViewManipulator, RegistrationMarker{
     }
     
 }
+@end{}

@@ -209,6 +209,8 @@ public class Processor extends AbstractProcessor {
 
     public final class ClassGenContext extends ClassMetadata {
 
+        private boolean error = false;
+
         public ClassGenContext(Element classElement) {
             super(classElement);
         }
@@ -228,11 +230,17 @@ public class Processor extends AbstractProcessor {
         }
 
         public void error(String error) {
+            this.error = true;
             Processor.this.error(error);
         }
 
         public void error(String error, Metadata m) {
+            this.error = true;
             Processor.this.error(error, m.getElement());
+        }
+
+        public boolean hasErrors() {
+            return error;
         }
     }
 }

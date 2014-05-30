@@ -7,6 +7,8 @@ package bgu.dcr.az.mui.containers;
 
 import bgu.dcr.az.mui.View;
 import bgu.dcr.az.mui.ViewContainer;
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.scene.control.TabPane;
 
 /**
@@ -17,6 +19,7 @@ public class TabContainer extends TabPane implements View {
 
     private String prefix = null;
     private ViewContainer container;
+    private String tokens = "";
 
     public TabContainer() {
     }
@@ -29,14 +32,19 @@ public class TabContainer extends TabPane implements View {
         this.prefix = prefix;
     }
 
-    @Override
-    public void bind(ViewContainer container) {
-        this.container = new ViewContainer(container);
-        updatePrefix();
+    /**
+     * set of comma separated tokens (e.g., token1, token2, ..., tokenN)
+     *
+     * @param tokens
+     */
+    public void setTokens(String tokens) {
+        this.tokens = tokens;
     }
 
-    private void updatePrefix() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    @Override
+    public void onJoined(ViewContainer container) {
+        this.container = new ViewContainer(container, tokens.split("\\s*,\\s*"));
+        //search for views that are willing to join
     }
 
 }

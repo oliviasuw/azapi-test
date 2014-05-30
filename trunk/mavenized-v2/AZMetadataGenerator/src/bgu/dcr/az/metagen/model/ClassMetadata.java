@@ -15,6 +15,7 @@ public class ClassMetadata extends Metadata<TypeElement> {
 
     private List<FieldMetadata> fields = null;
     private List<MethodMetadata> methods = null;
+    private List<MethodMetadata> constructors = null;
     private ClassMetadata parent = null;
 
     public ClassMetadata(Element classElement) {
@@ -74,6 +75,28 @@ public class ClassMetadata extends Metadata<TypeElement> {
         }
 
         return methods;
+    }
+
+    public List<MethodMetadata> getConstructors() {
+        if (constructors == null) {
+            constructors = new LinkedList<>();
+
+            for (ExecutableElement f : ElementFilter.constructorsIn(getElement().getEnclosedElements())) {
+                constructors.add(new MethodMetadata(f));
+            }
+        }
+
+        return constructors;
+    }
+
+    public boolean hasDefaultConstructor() {
+        for (MethodMetadata c : getConstructors()) {
+            if (c.hasNoArguments()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean hasMethod(String fullSignature) {

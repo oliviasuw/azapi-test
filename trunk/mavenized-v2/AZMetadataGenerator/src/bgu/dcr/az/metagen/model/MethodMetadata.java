@@ -22,6 +22,10 @@ public class MethodMetadata extends Metadata<ExecutableElement> {
         return getModifiers() + " " + getReturnType() + " " + getSignature();
     }
 
+    public boolean hasNoArguments() {
+        return getElement().getParameters().isEmpty();
+    }
+
     public List<ArgumentMetadata> getArguments() {
         if (args == null) {
             args = new LinkedList<ArgumentMetadata>();

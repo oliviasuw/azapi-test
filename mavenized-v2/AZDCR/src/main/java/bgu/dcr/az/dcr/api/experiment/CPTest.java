@@ -6,6 +6,7 @@
 package bgu.dcr.az.dcr.api.experiment;
 
 import bgu.dcr.az.common.random.RandomSequance;
+import bgu.dcr.az.conf.registery.Register;
 import bgu.dcr.az.dcr.api.modules.CPCorrectnessTester;
 import bgu.dcr.az.dcr.api.modules.ProblemGenerator;
 import bgu.dcr.az.dcr.api.problems.Problem;
@@ -15,6 +16,7 @@ import bgu.dcr.az.execs.exps.exe.Looper;
 import bgu.dcr.az.execs.exps.exe.Simulation;
 import bgu.dcr.az.execs.exps.exe.SimulationConfiguration;
 import bgu.dcr.az.execs.exps.exe.BaseStatisticFields;
+import bgu.dcr.az.execs.exps.exe.DefaultExperimentRoot;
 import bgu.dcr.az.execs.exps.exe.Test;
 import bgu.dcr.az.execs.sim.Agt0DSL;
 import java.lang.ref.WeakReference;
@@ -26,7 +28,9 @@ import java.util.stream.Collectors;
  *
  * @author bennyl
  */
+@Register("cp-test")
 public class CPTest extends Test {
+    private ProblemGenerator pgen;
 
     private ExecutionEnvironment env;
     private RandomSequance seq = new RandomSequance();
@@ -41,12 +45,7 @@ public class CPTest extends Test {
 
     @Override
     public Simulation child(int index) {
-        ProblemGenerator pgen = require(ProblemGenerator.class);
         List<AlgorithmDef> algorithms = getAlgorithms();
-
-        if (algorithms.isEmpty()) {
-            Agt0DSL.panic("cannot run experiment without any algorithm defined. (please add one in test.xml file)");
-        }
 
         //note that the iteration number is different than the execution index since each iteration can contain several algorithms execution
         int iteration = index / algorithms.size();
@@ -158,6 +157,14 @@ public class CPTest extends Test {
 
     public void setCorrectnessTester(CPCorrectnessTester correctnessTester) {
         supply(correctnessTester);
+    }
+
+    @Override
+    public void initialize(DefaultExperimentRoot root) {
+        pgen = require(ProblemGenerator.class);
+        if (getAlgorithms().isEmpty()){
+            Agt0DSL.panic("cannot run experiment without any algorithm defined. (please add one in test.xml file)");
+        }
     }
 
     public static class BaseCPStatisticFields extends BaseStatisticFields {

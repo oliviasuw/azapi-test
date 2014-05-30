@@ -6,7 +6,7 @@
 
 package bgu.dcr.az.mui;
 
-import bgu.dcr.az.metagen.util.JavaDocInfo;
+import bgu.dcr.az.conf.api.JavaDocInfo;
 
 /**
  *

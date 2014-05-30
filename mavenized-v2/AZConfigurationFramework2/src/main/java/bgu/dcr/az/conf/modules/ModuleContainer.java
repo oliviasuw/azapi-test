@@ -46,7 +46,7 @@ public class ModuleContainer implements Module {
      * recursively call the start method. once the module container was started
      * there will be no module additions allowed!
      */
-    protected void startModuleContainer() {
+    protected void initializeModules() {
         List<ModuleContainer> awaitingModuleContainers = new LinkedList<>();
 
         while (!awaitingInitializationModules.isEmpty()) {
@@ -62,7 +62,7 @@ public class ModuleContainer implements Module {
 
         awaitingInitializationModules = null; //no more module addition allowed!
         initializedModules = null;
-        awaitingModuleContainers.forEach(ModuleContainer::startModuleContainer);
+        awaitingModuleContainers.forEach(ModuleContainer::initializeModules);
     }
 
     /**

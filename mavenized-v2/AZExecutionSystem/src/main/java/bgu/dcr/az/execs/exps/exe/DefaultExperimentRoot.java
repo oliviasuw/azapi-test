@@ -9,12 +9,14 @@ import bgu.dcr.az.execs.exps.ExecutionTree;
 import bgu.dcr.az.execs.exps.ExperimentProgressEnhancer;
 import bgu.dcr.az.execs.exps.prog.DefaultProgress;
 import bgu.dcr.az.conf.modules.ModuleContainer;
+import bgu.dcr.az.conf.registery.Register;
 import java.util.Iterator;
 
 /**
  *
  * @author bennyl
  */
+@Register("experiment")
 public class DefaultExperimentRoot extends ExecutionTree {
 
     private String name = "UNNAMED EXPERIMENT";
@@ -23,6 +25,10 @@ public class DefaultExperimentRoot extends ExecutionTree {
         this.name = name;
     }
 
+    /**
+     * @propertyName name
+     * @return
+     */
     @Override
     public String getName() {
         return name;

@@ -46,7 +46,7 @@ public final class ModularExperiment extends ModuleContainer {
 
     public ExperimentProgress execute() {
         ExecutionTree ex = require(ExecutionTree.class);
-        startModuleContainer(); //start the container
+        initializeModules(); //start the container
         final ExperimentProgress experimentProgress = new ExperimentProgress(this);
 
         pool.execute(() -> {

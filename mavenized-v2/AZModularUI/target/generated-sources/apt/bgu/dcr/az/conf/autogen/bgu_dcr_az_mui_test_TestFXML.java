@@ -13,11 +13,6 @@ import bgu.dcr.az.conf.registery.RegistrationMarker;
 
 public class bgu_dcr_az_mui_test_TestFXML implements ViewManipulator, RegistrationMarker{
     
-    /*
-     public static boolean accept(bgu.dcr.az.mui.ViewContainer) 
-
-    */
-
     //store configured class javadoc
     public static JavaDocInfo DOC = JavaDocParser.parse("FXML Controller class\n\n @author bennyl");
 
@@ -26,12 +21,12 @@ public class bgu_dcr_az_mui_test_TestFXML implements ViewManipulator, Registrati
 
     //registration on class loading time
     static {
-        ViewRegistery.get().register(new bgu_dcr_az_mui_test_TestFXML(), "test.fxml.bla");
+        ViewRegistery.get().register(new bgu_dcr_az_mui_test_TestFXML(), "test.fxml.test");
     }
 
     @Override
     public boolean accept(ViewContainer container) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return bgu.dcr.az.mui.test.TestFXML.accept(container);
     }
 
     @Override
@@ -40,8 +35,8 @@ public class bgu_dcr_az_mui_test_TestFXML implements ViewManipulator, Registrati
     }
 
     @Override
-    public bgu.dcr.az.metagen.util.JavaDocInfo doc() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public JavaDocInfo doc() {
+        return DOC;
     }
     
     @Override

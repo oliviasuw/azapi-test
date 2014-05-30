@@ -14,7 +14,7 @@ import bgu.dcr.az.mui.ViewContainer;
  *
  * @author bennyl
  */
-@RegisterView("test.fxml.bla")
+@RegisterView("test.fxml.test")
 public class TestFXML implements View {
 
     public static boolean accept(ViewContainer vc) {
@@ -22,8 +22,13 @@ public class TestFXML implements View {
     }
 
     @Override
-    public void bind(ViewContainer container) {
+    public void onJoined(ViewContainer container) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

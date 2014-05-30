@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.execs.exps.exe;
 
+import bgu.dcr.az.conf.modules.ModuleContainer;
 import bgu.dcr.az.conf.registery.Register;
 import bgu.dcr.az.execs.api.statistics.InfoStream;
 import bgu.dcr.az.execs.exps.ExecutionTree;
@@ -41,12 +42,19 @@ public abstract class Test extends ExecutionTree {
     @Override
     public void execute() {
         final InfoStream infoStream = infoStream();
-        
+
         for (ExecutionTree e : this) {
             infoStream.write(e, Simulation.class);
             e.execute();
         }
     }
+
+    @Override
+    public final void initialize(ModuleContainer mc) {
+        initialize((DefaultExperimentRoot) mc);
+    }
+
+    public abstract void initialize(DefaultExperimentRoot root);
 
     @Override
     public abstract Simulation child(int index);

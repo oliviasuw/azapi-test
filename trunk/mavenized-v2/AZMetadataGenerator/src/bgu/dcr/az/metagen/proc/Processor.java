@@ -40,6 +40,7 @@ import org.mvel2.templates.TemplateRuntime;
 
 import bgu.dcr.az.metagen.model.AnnotationMetadata;
 import bgu.dcr.az.metagen.model.ClassMetadata;
+import bgu.dcr.az.metagen.model.Metadata;
 
 @SupportedAnnotationTypes({"*"})
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
@@ -83,7 +84,6 @@ public class Processor extends AbstractProcessor {
                 list.add((TypeElement) element);
                 while (!list.isEmpty()) {
                     TypeElement type = list.removeFirst();
-                    System.out.println("called for element: " + type);
                     list.addAll(ElementFilter.typesIn(type.getEnclosedElements()));
 
                     for (AnnotationMirror a : type.getAnnotationMirrors()) {
@@ -101,9 +101,8 @@ public class Processor extends AbstractProcessor {
         if (template != null) { // template found lets create
             // it!
             try {
-				// creating the context - this is the class metadata with some
+                // creating the context - this is the class metadata with some
                 // additional methods
-
                 String code = (String) TemplateRuntime.execute(template, type, new HashMap());
 
                 String packageName = "";
@@ -141,22 +140,26 @@ public class Processor extends AbstractProcessor {
         MESSAGER.printMessage(Kind.ERROR, string);
     }
 
+    private void error(String string, Element e) {
+        MESSAGER.printMessage(Kind.ERROR, string, e);
+    }
+
     private CompiledTemplate lookupTemplate(String typeFQN) {
         CompiledTemplate cached = classGenerationTemplates.get(typeFQN);
         if (cached == null) {
             int lastDot = typeFQN.lastIndexOf('.');
             InputStream templateStream = null;
             String templateFileName = typeFQN.substring(lastDot + 1) + ".javat";
-            System.out.println("searching for: " + templateFileName);
+//            System.out.println("searching for: " + templateFileName);
 
             try {
                 templateStream = Class.forName(typeFQN).getResourceAsStream(templateFileName);
             } catch (ClassNotFoundException e) {
-                System.out.println("not in class path");
+//                System.out.println("not in class path");
                 try {
                     templateStream = FILER.getResource(StandardLocation.CLASS_OUTPUT, typeFQN.substring(0, lastDot), templateFileName).openInputStream();
                 } catch (IOException ex) {
-                    System.out.println("not in source path");
+//                    System.out.println("not in source path");
                     if (annotationsLoader != null) {
                         try {
                             templateStream = annotationsLoader.loadClass(typeFQN).getResourceAsStream(templateFileName);
@@ -191,7 +194,8 @@ public class Processor extends AbstractProcessor {
         Filer filler = processingEnv.getFiler();
 
         try {
-            note("creating source file: " + fqn);
+            System.out.println("creating source file: " + fqn);
+
             JavaFileObject source = filler.createSourceFile(fqn, originatingElement);
 
             try (Writer w = source.openWriter()) {
@@ -226,6 +230,9 @@ public class Processor extends AbstractProcessor {
         public void error(String error) {
             Processor.this.error(error);
         }
-    }
 
+        public void error(String error, Metadata m) {
+            Processor.this.error(error, m.getElement());
+        }
+    }
 }

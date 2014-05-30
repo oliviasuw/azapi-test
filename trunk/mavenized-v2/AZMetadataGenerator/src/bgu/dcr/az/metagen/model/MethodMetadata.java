@@ -8,34 +8,38 @@ import javax.lang.model.element.VariableElement;
 
 public class MethodMetadata extends Metadata<ExecutableElement> {
 
-	List<ArgumentMetadata> args = null;
+    List<ArgumentMetadata> args = null;
 
-	public MethodMetadata(ExecutableElement f) {
-		super(f);
-	}
+    public MethodMetadata(ExecutableElement f) {
+        super(f);
+    }
 
-	public String getSignature() {
-		return getElement().toString();
-	}
+    public String getSignature() {
+        return getElement().toString();
+    }
 
-	public List<ArgumentMetadata> getArguments() {
-		if (args == null) {
-			args = new LinkedList<ArgumentMetadata>();
+    public String getFullSignature() {
+        return getModifiers() + " " + getReturnType() + " " + getSignature();
+    }
 
-			for (VariableElement v : getElement().getParameters()) {
-				args.add(new ArgumentMetadata((VariableElement) v));
-			}
-		}
+    public List<ArgumentMetadata> getArguments() {
+        if (args == null) {
+            args = new LinkedList<ArgumentMetadata>();
 
-		return args;
-	}
+            for (VariableElement v : getElement().getParameters()) {
+                args.add(new ArgumentMetadata((VariableElement) v));
+            }
+        }
 
-	public String getReturnType() {
-		return getElement().getReturnType().toString();
-	}
+        return args;
+    }
 
-	public boolean hasNoReturnValue() {
-		return getElement().getReturnType().toString().equals("void"); 
-	}
+    public String getReturnType() {
+        return getElement().getReturnType().toString();
+    }
+
+    public boolean hasNoReturnValue() {
+        return getElement().getReturnType().toString().equals("void");
+    }
 
 }

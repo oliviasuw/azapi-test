@@ -274,6 +274,10 @@ public class ModuleContainer implements Module {
         parent = mc;
     }
 
+    protected void setParent(ModuleContainer mc) {
+        parent = mc;
+    }
+
     public Collection<Module> getAllModules() {
         return new ModuleCollection();
     }

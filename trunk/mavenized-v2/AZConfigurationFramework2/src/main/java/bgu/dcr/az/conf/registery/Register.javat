@@ -26,8 +26,9 @@ import bgu.dcr.az.conf.utils.JavaDocParser;
 import bgu.dcr.az.conf.utils.JavaTypeParser;
 import com.esotericsoftware.reflectasm.ConstructorAccess;
 import com.esotericsoftware.reflectasm.MethodAccess;
+import bgu.dcr.az.conf.registery.RegistrationMarker;
 
-public class @{underscoredFQN} extends @{super}{
+public class @{underscoredFQN} extends @{super} implements RegistrationMarker{
     
     //store type info for each property
     @foreach{p : properties}public static final TypeInfo @{p.name.toUpperCase()}_TYPE = JavaTypeParser.parse("@{p.type}");@end{"\n    "}

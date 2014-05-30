@@ -38,5 +38,10 @@
             <artifactId>reflectasm</artifactId>
             <version>1.09</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>AZMetaGen</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

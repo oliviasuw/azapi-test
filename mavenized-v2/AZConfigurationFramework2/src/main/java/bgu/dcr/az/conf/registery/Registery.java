@@ -40,7 +40,7 @@ public class Registery {
             System.err.println("Scanning registery");
 
             Reflections ref = new Reflections(AUTOGEN_CONF_PACKEGE, new SubTypesScanner());
-            Set services = ref.getSubTypesOf(AbstractConfiguration.class);
+            Set services = ref.getSubTypesOf(RegistrationMarker.class);
             for (Object service : services) {
                 try {
                     Class.forName(((Class)service).getCanonicalName());

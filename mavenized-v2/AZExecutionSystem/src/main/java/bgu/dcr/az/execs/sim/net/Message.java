@@ -3,7 +3,7 @@ package bgu.dcr.az.execs.sim.net;
 import bgu.dcr.az.common.deepcopy.DeepCopyUtil;
 import bgu.dcr.az.common.deepcopy.DeepCopyable;
 import bgu.dcr.az.common.tos.ToStringUtils;
-import bgu.dcr.az.common.unchecks.UncheckedInterruptedException;
+import bgu.dcr.az.common.exceptions.UncheckedInterruptedException;
 import bgu.dcr.az.execs.exceptions.PanicException;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;

@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.execs.api.statistics;
+package bgu.dcr.az.conf.modules.info;
 
+import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.common.events.EventListeners;
 import java.util.IdentityHashMap;
 import java.util.Map;

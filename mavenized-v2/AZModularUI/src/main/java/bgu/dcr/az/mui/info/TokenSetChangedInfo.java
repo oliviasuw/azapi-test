@@ -3,21 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.mui.test;
+package bgu.dcr.az.mui.info;
 
 import bgu.dcr.az.mui.Controller;
-import bgu.dcr.az.mui.RegisterController;
 
 /**
- * FXML Controller class
  *
  * @author bennyl
  */
-public class TestFXML  {
+public class TokenSetChangedInfo {
 
-    public static boolean accept(Controller vc) {
-        return false;
+    Controller source;
+
+    public TokenSetChangedInfo(Controller source) {
+        this.source = source;
     }
 
+    public Controller getSource() {
+        return source;
+    }
 
 }

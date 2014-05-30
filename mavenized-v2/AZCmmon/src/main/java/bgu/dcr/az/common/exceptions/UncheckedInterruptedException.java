@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.common.unchecks;
+package bgu.dcr.az.common.exceptions;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;

@@ -1,0 +1,64 @@
+@code{
+    hasAcceptor = hasMethod("public static boolean accept(bgu.dcr.az.mui.Controller)");
+
+    if (!hasAcceptor){
+        warn("controller did not provide a method: 'public static boolean accept(bgu.dcr.az.mui.Controller)' - all parents will be accepted", this);
+    }
+
+    if (!hasDefaultConstructor()){
+        error("controller must have a default constructor", this);
+    }
+
+    if (!isInstanceOf("bgu.dcr.az.mui.Controller")){
+        error("registered class must be instance of bgu.dcr.az.mui.Controller", this);
+    }
+}
+@if{!hasErrors()}
+package bgu.dcr.az.conf.autogen;
+
+import bgu.dcr.az.conf.api.JavaDocInfo;
+import bgu.dcr.az.conf.utils.JavaDocParser;
+import bgu.dcr.az.mui.Controller;
+import bgu.dcr.az.mui.ControllerManipulator;
+import bgu.dcr.az.mui.ControllerRegistery;
+import bgu.dcr.az.conf.registery.RegistrationMarker;
+
+public class @{underscoredFQN} implements ControllerManipulator, RegistrationMarker{
+    
+    //store configured class javadoc
+    public static JavaDocInfo DOC = JavaDocParser.parse("@{javadoc}");
+
+    //registration on class loading time
+    static {
+        ControllerRegistery.get().register(new @{underscoredFQN}(), "@{getAnnotation("bgu.dcr.az.mui.RegisterController").value}");
+    }
+
+    @Override
+    public boolean accept(Controller container) {
+        @if{hasAcceptor}return @{getFQN()}.accept(container);@else{}return true;@end{}
+    }
+
+    @Override
+    public Controller create(Controller c) {
+        Controller cc = @{getFQN()}.create(@{getFQN()}.class);
+        if (c != null) c.manage(cc);
+        return cc;
+    }
+
+    @Override
+    public JavaDocInfo doc() {
+        return DOC;
+    }
+    
+    @Override
+    public String toString() {
+        return "@{getFQN()}";
+    }
+
+    @Override
+    public Class controllerClass() {
+        return @{getFQN()}.class;
+    }
+    
+}
+@end{}

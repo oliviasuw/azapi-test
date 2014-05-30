@@ -7,7 +7,7 @@ package bgu.dcr.az.execs.exps.exe;
 
 import bgu.dcr.az.conf.modules.Module;
 import bgu.dcr.az.conf.modules.ModuleContainer;
-import bgu.dcr.az.execs.api.statistics.InfoStream;
+import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.execs.lowlevel.MultithreadedScheduler;
 import bgu.dcr.az.execs.lowlevel.Scheduler;
 import bgu.dcr.az.execs.lowlevel.TerminationReason;

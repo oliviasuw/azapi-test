@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bgu.dcr.az.execs.api.statistics;
+package bgu.dcr.az.conf.modules.info;
 
+import bgu.dcr.az.conf.modules.Module;
 import bgu.dcr.az.conf.modules.Module;
 import java.util.function.Supplier;
 
@@ -13,12 +14,14 @@ import java.util.function.Supplier;
  * @author User
  */
 public interface InfoStream extends Module {
-    
+
     <T> void listen(Class<T> dataType, InfoStreamListener<T> listener);
 
-    void write(Object data);
-
     void write(Object data, Class... recepients);
+
+    default void write(Object data) {
+        write(data, data.getClass());
+    }
 
     default void writeIfListening(Supplier data, Class... recepients) {
         Object resolved = null;

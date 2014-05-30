@@ -6,8 +6,8 @@
 package bgu.dcr.az.execs.statistics;
 
 import bgu.dcr.az.execs.lowlevel.AbstractProc;
-import bgu.dcr.az.execs.api.statistics.InfoStream;
-import bgu.dcr.az.execs.api.statistics.SimpleInfoStream;
+import bgu.dcr.az.conf.modules.info.InfoStream;
+import bgu.dcr.az.conf.modules.info.SimpleInfoStream;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**

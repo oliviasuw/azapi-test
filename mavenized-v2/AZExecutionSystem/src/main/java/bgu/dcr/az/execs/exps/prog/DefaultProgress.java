@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.execs.exps.prog;
 
-import bgu.dcr.az.execs.api.statistics.InfoStream;
+import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.execs.exps.ExperimentProgressEnhancer;
 import bgu.dcr.az.execs.exps.ModularExperiment;
 import bgu.dcr.az.execs.exps.exe.Simulation;

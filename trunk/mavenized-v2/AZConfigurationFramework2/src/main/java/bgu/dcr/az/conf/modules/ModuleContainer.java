@@ -5,14 +5,19 @@
  */
 package bgu.dcr.az.conf.modules;
 
+import bgu.dcr.az.conf.modules.info.ModuleRemovedInfo;
 import bgu.dcr.az.common.collections.IterableUtils;
+import bgu.dcr.az.conf.modules.info.InfoStream;
+import bgu.dcr.az.conf.modules.info.ModuleContainerParentChangedInfo;
 import bgu.dcr.az.conf.registery.Register;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -37,31 +42,34 @@ public class ModuleContainer implements Module {
     private final Map<Class, List<Module>> supplied = new HashMap<>();
     private ModuleContainer parent = null;
 
-    // THE FOLLOWING ONLY USED FOR THE INITIALIZATION STEP AND THEN THEY ARE NULLED OUT!
-    private Set<Module> awaitingInitializationModules = new LinkedHashSet<>();
-    private Set<Module> initializedModules = new HashSet<>();
+    private Map<Module, ModuleInfo> reverseLookup = new IdentityHashMap<>();
+    private Map<Module, ModuleInfo> awaitingInitializationModules = new IdentityHashMap<Module, ModuleInfo>();
 
     /**
-     * initialize all the supplied modules, for each supplied module container
-     * recursively call the start method. once the module container was started
-     * there will be no module additions allowed!
+     * initialize all the supplied modules that wasn't been initialized yet
+     * (added after the previous call to this method of before the first call to
+     * this method and was never required or got), for each supplied module
+     * container recursively call the start method.
      */
     protected void initializeModules() {
         List<ModuleContainer> awaitingModuleContainers = new LinkedList<>();
 
         while (!awaitingInitializationModules.isEmpty()) {
-            final Iterator<Module> i = awaitingInitializationModules.iterator();
-            Module module = i.next();
-            i.remove();
-            initializedModules.add(module);
-            module.initialize(this);
-            if (module instanceof ModuleContainer) {
-                awaitingModuleContainers.add((ModuleContainer) module);
+            try {
+                for (Iterator<Map.Entry<Module, ModuleInfo>> it = awaitingInitializationModules.entrySet().iterator(); it.hasNext();) {
+                    Map.Entry<Module, ModuleInfo> e = it.next();
+                    it.remove();
+
+                    initModule(e.getKey(), e.getValue());
+
+                    if (e.getKey() instanceof ModuleContainer) {
+                        awaitingModuleContainers.add((ModuleContainer) e.getKey());
+                    }
+                }
+            } catch (ConcurrentModificationException ex) {
             }
         }
 
-        awaitingInitializationModules = null; //no more module addition allowed!
-        initializedModules = null;
         awaitingModuleContainers.forEach(ModuleContainer::initializeModules);
     }
 
@@ -80,7 +88,7 @@ public class ModuleContainer implements Module {
 
     /**
      * same as {@link #require(java.lang.Class)} but requires the i'th supplied
-     * module
+     * moduleObject
      *
      * @param <T>
      * @param moduleClass
@@ -116,19 +124,28 @@ public class ModuleContainer implements Module {
 
         T result = (T) resultList.get(i);
         if (result != null && awaitingInitializationModules != null) {
-            if (awaitingInitializationModules.contains(result)) {
-                awaitingInitializationModules.remove(result);
-                initializedModules.add(result);
-                result.initialize(this);
-            }
+            initModule(result);
         }
 
         return result;
     }
 
+    private <T extends Module> void initModule(T result) {
+        if (awaitingInitializationModules.containsKey(result)) {
+            ModuleInfo info = awaitingInitializationModules.remove(result);
+            reverseLookup.put(result, info);
+            result.initialize(this);
+        }
+    }
+
+    private void initModule(Module result, ModuleInfo info) {
+        reverseLookup.put(result, info);
+        result.initialize(this);
+    }
+
     /**
      * same as {@link #require(java.lang.Class) } but will return null if not
-     * exists instead of throwing exception.
+     * exists instead of throwing exception.Object
      *
      * @param <T>
      * @param moduleClass
@@ -182,14 +199,26 @@ public class ModuleContainer implements Module {
     }
 
     /**
-     * supply all the given modules under the given type.
+     * supply all the given modules under the given type. - delay initialization
      *
      * @see #supply(java.lang.Class, bgu.dcr.az.conf.modules.Module)
      * @param modules
      * @param moduleType
      */
-    public void supplyAll(Class moduleType, Collection<? extends Module> modules) {
-        getDirectList(moduleType).addAll(modules);
+    public void supplyAll(Class moduleType, Iterable<? extends Module> modules) {
+        supplyAll(moduleType, modules, false);
+    }
+
+    /**
+     * supply all the given modules under the given type.
+     *
+     * @param immidiateInstall
+     * @see #supply(java.lang.Class, bgu.dcr.az.conf.modules.Module)
+     * @param modules
+     * @param moduleType if true all the modules will be initialize immidiatly
+     */
+    public void supplyAll(Class moduleType, Iterable<? extends Module> modules, boolean immidiateInstall) {
+        modules.forEach(m -> supply(moduleType, m, immidiateInstall));
     }
 
     /**
@@ -217,16 +246,26 @@ public class ModuleContainer implements Module {
     }
 
     /**
-     * supply the given module with the given module key
+     * supply the given module with the given module key - will delay
+     * initialization
      *
      * @param moduleKey
      * @param module
      */
     public void supply(Class<? extends Module> moduleKey, Module module) {
+        supply(moduleKey, module, false);
+    }
 
-        if (awaitingInitializationModules == null) {
-            throw new UnsupportedOperationException("cannot supply new modules on a started module container");
-        }
+    /**
+     * supply the given module with the given module key
+     *
+     * @param moduleKey
+     * @param module
+     * @param immidiateInit - if true the module will be immidiatly initialized,
+     * otherwise it will be initialized upon the next call to {@link #initializeModules()
+     * } or if another module will require it
+     */
+    public void supply(Class<? extends Module> moduleKey, Module module, boolean immidiateInit) {
 
         List<Module> result = supplied.get(moduleKey);
         if (result == null || result.isEmpty()) {
@@ -235,7 +274,36 @@ public class ModuleContainer implements Module {
         }
 
         result.add(module);
-        awaitingInitializationModules.add(module);
+        if (immidiateInit) {
+            initModule(module, new ModuleInfo(moduleKey));
+        } else {
+            awaitingInitializationModules.computeIfAbsent(module, m -> new ModuleInfo()).registration.add(moduleKey);
+        }
+    }
+
+    /**
+     * remove the given module from the module container, if this module
+     * container contains {@link InfoStream} then he will notify on the stream
+     * about this removal using the info-class: {@link ModuleRemovedInfo}
+     *
+     * @param module
+     */
+    public void remove(Module module) {
+        if (awaitingInitializationModules.remove(module) != null) {
+            return;
+        }
+
+        ModuleInfo info = reverseLookup.remove(module);
+        if (info != null) {
+            for (Class registered : info.registration) {
+                getDirectList(registered).remove(module);
+            }
+        }
+
+        InfoStream i = get(InfoStream.class);
+        if (i != null) {
+            i.writeIfListening(() -> new ModuleRemovedInfo(module, this), ModuleRemovedInfo.class);
+        }
     }
 
     /**
@@ -274,8 +342,26 @@ public class ModuleContainer implements Module {
         parent = mc;
     }
 
+    /**
+     * sets to the given parent, if this module container contains
+     * {@link InfoStream} this parent change will be notified via the
+     *
+     * @param mc
+     */
     protected void setParent(ModuleContainer mc) {
+        ModuleContainer oldParent = parent;
         parent = mc;
+
+        InfoStream is = get(InfoStream.class);
+        if (is != null) {
+            is.writeIfListening(() -> new ModuleContainerParentChangedInfo(this), ModuleContainerParentChangedInfo.class);
+        }
+        if (oldParent != null) {
+            is = oldParent.get(InfoStream.class);
+            if (is != null) {
+                is.writeIfListening(() -> new ModuleContainerParentChangedInfo(this), ModuleContainerParentChangedInfo.class);
+            }
+        }
     }
 
     public Collection<Module> getAllModules() {
@@ -491,6 +577,18 @@ public class ModuleContainer implements Module {
         @Override
         public List<Module> subList(int fromIndex, int toIndex) {
             return new BackedList(internal.subList(fromIndex, toIndex), key);
+        }
+    }
+
+    private static class ModuleInfo {
+
+        ArrayList<Class> registration = new ArrayList<>();
+
+        public ModuleInfo() {
+        }
+
+        public ModuleInfo(Class... registrations) {
+            this.registration.addAll(Arrays.asList(registrations));
         }
 
     }

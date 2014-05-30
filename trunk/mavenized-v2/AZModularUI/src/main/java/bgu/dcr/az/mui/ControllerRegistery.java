@@ -6,41 +6,49 @@
 package bgu.dcr.az.mui;
 
 import bgu.dcr.az.conf.registery.Registery;
+import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
  *
  * @author bennyl
  */
-public class ViewRegistery {
+public class ControllerRegistery {
 
-    private static ViewRegistery registery = null;
-    private TreeMap<String, List<ViewManipulator>> manipulators = new TreeMap<>();
+    private static ControllerRegistery registery = null;
+    private TreeMap<String, List<ControllerManipulator>> manipulators = new TreeMap<>();
+    private Map<Class, ControllerAttributes> attributes = new IdentityHashMap<>();
 
-    public static ViewRegistery get() {
+    public static ControllerRegistery get() {
         if (registery == null) {
-            registery = new ViewRegistery();
+            registery = new ControllerRegistery();
             Registery.get();
         }
 
         return registery;
     }
 
-    public void register(ViewManipulator vm, String category) {
+    public void register(ControllerManipulator vm, String category) {
         System.err.println("View " + vm + " is submited to " + category);
-        List<ViewManipulator> list = manipulators.get(category);
+        List<ControllerManipulator> list = manipulators.get(category);
         if (list == null) {
             list = new LinkedList<>();
             manipulators.put(category, list);
         }
 
+        attributes.put(vm.controllerClass(), new ControllerAttributes(category, vm.doc()));
         list.add(vm);
     }
 
-    public View createView(String name, ViewContainer container) {
-        List<ViewManipulator> ms = manipulators.get(name);
+    public ControllerAttributes getAttributes(Controller v) {
+        return attributes.get(v.getClass());
+    }
+
+    public Controller createController(String name, Controller container) {
+        List<ControllerManipulator> ms = manipulators.get(name);
         if (ms == null) {
             return null;
         }
@@ -51,7 +59,7 @@ public class ViewRegistery {
                 .findFirst().orElse(null);
     }
 
-    public Iterable<View> createViews(String namePrefix, ViewContainer container) {
+    public Iterable<Controller> createControllers(String namePrefix, Controller container) {
         return () -> manipulators.subMap(namePrefix, namePrefix + Character.MAX_VALUE).values().stream()
                 .flatMap(List::stream)
                 .filter(v -> v.accept(container))

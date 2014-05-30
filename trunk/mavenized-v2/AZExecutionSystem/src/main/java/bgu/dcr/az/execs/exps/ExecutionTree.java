@@ -7,7 +7,7 @@ package bgu.dcr.az.execs.exps;
 
 import bgu.dcr.az.conf.modules.Module;
 import bgu.dcr.az.conf.modules.ModuleContainer;
-import bgu.dcr.az.execs.api.statistics.InfoStream;
+import bgu.dcr.az.conf.modules.info.InfoStream;
 
 /**
  * represents a sub tree of executions, the children in this sub tree are the

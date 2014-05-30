@@ -8,7 +8,7 @@ package bgu.dcr.az.dcr.modules.progress;
 import bgu.dcr.az.dcr.api.experiment.AlgorithmDef;
 import bgu.dcr.az.dcr.api.experiment.CPData;
 import bgu.dcr.az.dcr.api.experiment.CPTest;
-import bgu.dcr.az.execs.api.statistics.InfoStream;
+import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.execs.exps.ExecutionTree;
 import bgu.dcr.az.execs.exps.ExperimentProgressEnhancer;
 import bgu.dcr.az.execs.exps.ModularExperiment;

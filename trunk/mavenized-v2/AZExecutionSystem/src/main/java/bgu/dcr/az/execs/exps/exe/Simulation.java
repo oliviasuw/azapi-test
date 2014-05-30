@@ -5,8 +5,8 @@
  */
 package bgu.dcr.az.execs.exps.exe;
 
-import bgu.dcr.az.common.unchecks.UncheckedInterruptedException;
-import bgu.dcr.az.execs.api.statistics.InfoStream;
+import bgu.dcr.az.common.exceptions.UncheckedInterruptedException;
+import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.execs.exps.ExecutionTree;
 import bgu.dcr.az.conf.modules.ModuleContainer;
 import bgu.dcr.az.execs.lowlevel.TerminationReason;

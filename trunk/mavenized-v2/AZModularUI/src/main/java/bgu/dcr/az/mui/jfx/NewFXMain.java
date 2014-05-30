@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package bgu.dcr.az.mui.jfx;
 
-package bgu.dcr.az.mui.test;
-
-import bgu.dcr.az.mui.ViewRegistery;
+import bgu.dcr.az.mui.Controller;
+import bgu.dcr.az.mui.ControllerRegistery;
+import bgu.dcr.az.mui.test.TestFXML;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -20,16 +21,12 @@ import javafx.stage.Stage;
  * @author bennyl
  */
 public class NewFXMain extends Application {
-    
+
     @Override
     public void start(Stage primaryStage) throws IOException {
-        ViewRegistery.get();
-        Button btn = new Button();
-        FXMLLoader loader = new FXMLLoader();
-        Parent p = loader.load(TestFXML.class.getResource("TestFXML.fxml"));
-        
-        Scene scene = new Scene(p, 300, 250);
-        
+        Controller p = ControllerRegistery.get().createController("main", null);
+        Scene scene = new Scene((Parent) p.getView());
+
         primaryStage.setTitle("Hello World!");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -41,5 +38,5 @@ public class NewFXMain extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    
+
 }

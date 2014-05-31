@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.mui.jfx;
 
+import bgu.dcr.az.conf.modules.Module;
 import bgu.dcr.az.mui.Controller;
 import bgu.dcr.az.mui.ControllerAttributes;
 import bgu.dcr.az.mui.ControllerRegistery;
@@ -19,16 +20,16 @@ import javafx.scene.control.TabPane;
 public class TabPaneController extends Controller<TabPane> {
 
     private TabPane view;
-    private String subcontrollersPrefix;
+    private String subcontrollersGroup;
 
     public TabPaneController(Controller owner, TabPane view, String subcontrollersPrefix) {
         this.view = view;
-        this.subcontrollersPrefix = subcontrollersPrefix;
+        this.subcontrollersGroup = subcontrollersPrefix;
         owner.manage(this);
     }
 
     public void setSubcontrollersPrefix(String subcontrollersPrefix) {
-        this.subcontrollersPrefix = subcontrollersPrefix;
+        this.subcontrollersGroup = subcontrollersPrefix;
     }
 
     @Override
@@ -37,18 +38,31 @@ public class TabPaneController extends Controller<TabPane> {
     }
 
     @Override
+    public void supply(Class<? extends Module> moduleKey, Module module, boolean immidiateInit) {
+        super.supply(moduleKey, module, immidiateInit); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
+
+    @Override
     public void onLoadView() {
-        
+
         if (view == null) {
             throw new UnsupportedOperationException("tab pane controller must be supplied with a tab pane");
         }
         
-        manageAll(ControllerRegistery.get().createControllers(subcontrollersPrefix, this));
-        for (Controller g : this) {
+        System.out.println("manages: " + amountManaged());
+
+        findAndManageAll(subcontrollersGroup);
+        
+        System.out.println("manages: " + amountManaged());
+        
+        for (Controller g : managedControllers()) {
+            System.out.println("check " + g.getClass().getSimpleName());
             ControllerAttributes attr = ControllerRegistery.get().getAttributes(g);
 
             Tab t = new Tab(attr.title());
-            g.onLoadView();
+            g.loadView();
             t.setContent((Node) g.getView());
 
             view.getTabs().add(t);

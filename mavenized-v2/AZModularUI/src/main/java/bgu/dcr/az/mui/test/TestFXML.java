@@ -7,17 +7,18 @@ package bgu.dcr.az.mui.test;
 
 import bgu.dcr.az.mui.Controller;
 import bgu.dcr.az.mui.RegisterController;
+import bgu.dcr.az.mui.jfx.FXMLController;
 
 /**
  * FXML Controller class
  *
- * @author bennyl
+ * @title test
  */
-public class TestFXML  {
+@RegisterController("main.pages.test")
+public class TestFXML extends FXMLController {
 
-    public static boolean accept(Controller vc) {
-        return false;
+    @Override
+    public void onLoadView() {
     }
-
 
 }

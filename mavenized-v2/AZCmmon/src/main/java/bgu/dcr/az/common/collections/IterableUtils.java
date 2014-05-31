@@ -5,7 +5,11 @@
  */
 package bgu.dcr.az.common.collections;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -50,5 +54,17 @@ public class IterableUtils {
             };
 
         };
+    }
+
+    public static <T> List<T> toList(Iterable<T> iall) {
+        LinkedList ll = new LinkedList();
+        iall.forEach(ll::add);
+        return ll;
+    }
+
+    public static <T> Set<T> toSet(Iterable<T> iall) {
+        HashSet ll = new HashSet();
+        iall.forEach(ll::add);
+        return ll;
     }
 }

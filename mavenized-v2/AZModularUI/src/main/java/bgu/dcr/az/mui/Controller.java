@@ -13,7 +13,6 @@ import bgu.dcr.az.conf.modules.info.PipeInfoStream;
 import bgu.dcr.az.mui.info.TokenSetChangedInfo;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import javafx.fxml.FXMLLoader;
 
@@ -75,18 +74,23 @@ import javafx.fxml.FXMLLoader;
  * @author bennyl
  * @param <V> view type
  */
-public abstract class Controller<V> extends ModuleContainer implements Iterable<Controller> {
+public abstract class Controller<V> extends ModuleContainer {
 
     private Set<String> tokens = new HashSet<>();
     private PipeInfoStream infoStream;
+    private boolean viewLoaded = false;
 
     public Controller() {
-        supply(InfoStream.class, infoStream = new PipeInfoStream());
+
     }
 
     public abstract V getView();
 
     public InfoStream infoStream() {
+        if (infoStream == null) {
+            supply(InfoStream.class, infoStream = new PipeInfoStream());
+        }
+
         return infoStream;
     }
 
@@ -131,35 +135,98 @@ public abstract class Controller<V> extends ModuleContainer implements Iterable<
     }
 
     @Override
-    public Iterator<Controller> iterator() {
-        return requireAll(Controller.class).iterator();
-    }
-
-    @Override
     public Controller<?> parent() {
         return (Controller) super.parent();
     }
-
 
     @Override
     public void initialize(ModuleContainer mc) {
         super.initialize(mc);
         if (mc.hasRequirement(InfoStream.class)) {
-            infoStream.setPipeTarget(mc.require(InfoStream.class));
+            ((PipeInfoStream) infoStream()).setPipeTarget(mc.require(InfoStream.class));
         }
     }
 
+    /**
+     * @see #manage(bgu.dcr.az.mui.Controller)
+     * @param children
+     */
     public void manageAll(Iterable<? extends Controller> children) {
         supplyAll(Controller.class, children, true);
     }
 
+    /**
+     * became the parent of the given children and immidiatly call its
+     * initialize method, this children will be added into the supplied modules
+     * as well
+     *
+     * @param children
+     */
     public void manage(Controller children) {
         supply(Controller.class, children, true);
+    }
+
+    /**
+     * search for the first controller that is willing to accept this one as its
+     * leader, create and manage it. the found controller will be returned
+     *
+     * @param children
+     * @return
+     */
+    public Controller findAndManage(String children) {
+        return ControllerRegistery.get().createController(children, this);
+    }
+
+    /**
+     * search for all the controller that are willing to accept this one as
+     * their leader, create and manage them. the found controller will be
+     * returned
+     *
+     * @param group
+     * @return
+     */
+    public Iterable<Controller> findAndManageAll(String group) {
+        return ControllerRegistery.get().createControllers(group, this);
+    }
+
+    /**
+     * @return iterable of all the currently managed controllers
+     */
+    public Iterable<Controller> managedControllers() {
+        return requireAllLocal(Controller.class);
+    }
+
+    /**
+     * @return the amount of managed controllers
+     */
+    public int amountManaged() {
+        return amountSuppliedLocally(Controller.class);
+    }
+
+    /**
+     * return true if the given child is managed by this controller
+     *
+     * @param child
+     * @return
+     */
+    boolean isManageing(Controller child) {
+        return isSupplied(child, Controller.class);
     }
 
     public void leave() {
         if (parent() != null) {
             parent().remove(this);
+        }
+    }
+
+    public final void loadView() {
+        if (viewLoaded) {
+            return;
+        }
+        viewLoaded = true;
+        onLoadView();
+        for (Controller c : managedControllers()) {
+            c.loadView();
         }
     }
 
@@ -192,7 +259,7 @@ public abstract class Controller<V> extends ModuleContainer implements Iterable<
      * this method will get called when the need to load the view is arise
      * (mainly after done joining all the controllers)
      */
-    public abstract void onLoadView();
+    protected abstract void onLoadView();
 
     /**
      * do nothing currently - see interface comments
@@ -208,4 +275,5 @@ public abstract class Controller<V> extends ModuleContainer implements Iterable<
         }
     }
 
+    
 }

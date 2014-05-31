@@ -1,0 +1,70 @@
+ui framework running for the first time 
+
+UNSTABLE!
+--This line, and those below, will be ignored--
+
+A  + AZCmmon/src/main/java/bgu/dcr/az/common/exceptions/UncheckedInterruptedException.java
+A    AZCmmon/src/main/java/bgu/dcr/az/common/exceptions/UnexpectedException.java
+M    AZCmmon/src/main/java/bgu/dcr/az/common/ui/FXUtils.java
+D    AZCmmon/src/main/java/bgu/dcr/az/common/unchecks
+M    AZConfigurationFramework2/src/main/java/bgu/dcr/az/conf/modules/ModuleContainer.java
+A    AZConfigurationFramework2/src/main/java/bgu/dcr/az/conf/modules/info
+A  + AZConfigurationFramework2/src/main/java/bgu/dcr/az/conf/modules/info/InfoStream.java
+A    AZConfigurationFramework2/src/main/java/bgu/dcr/az/conf/modules/info/ModuleContainerParentChangedInfo.java
+A    AZConfigurationFramework2/src/main/java/bgu/dcr/az/conf/modules/info/ModuleRemovedInfo.java
+A    AZConfigurationFramework2/src/main/java/bgu/dcr/az/conf/modules/info/PipeInfoStream.java
+A  + AZConfigurationFramework2/src/main/java/bgu/dcr/az/conf/modules/info/SimpleInfoStream.java
+M    AZDCR/src/main/java/bgu/dcr/az/dcr/modules/progress/DCRProgress.java
+D    AZExecutionSystem/src/main/java/bgu/dcr/az/execs/api/statistics/InfoStream.java
+D    AZExecutionSystem/src/main/java/bgu/dcr/az/execs/api/statistics/SimpleInfoStream.java
+M    AZExecutionSystem/src/main/java/bgu/dcr/az/execs/exps/ExecutionTree.java
+M    AZExecutionSystem/src/main/java/bgu/dcr/az/execs/exps/ModularExperiment.java
+M    AZExecutionSystem/src/main/java/bgu/dcr/az/execs/exps/exe/AdaptiveScheduler.java
+M    AZExecutionSystem/src/main/java/bgu/dcr/az/execs/exps/exe/Simulation.java
+M    AZExecutionSystem/src/main/java/bgu/dcr/az/execs/exps/exe/Test.java
+M    AZExecutionSystem/src/main/java/bgu/dcr/az/execs/exps/prog/DefaultProgress.java
+M    AZExecutionSystem/src/main/java/bgu/dcr/az/execs/sim/net/Message.java
+M    AZExecutionSystem/src/main/java/bgu/dcr/az/execs/statistics/InfoStreamWrapperProc.java
+A  + AZModularUI/src/main/java/bgu/dcr/az/mui/Controller.java
+A    AZModularUI/src/main/java/bgu/dcr/az/mui/ControllerAttributes.java
+A  + AZModularUI/src/main/java/bgu/dcr/az/mui/ControllerManipulator.java
+A  + AZModularUI/src/main/java/bgu/dcr/az/mui/ControllerRegistery.java
+A  + AZModularUI/src/main/java/bgu/dcr/az/mui/RegisterController.java
+A  + AZModularUI/src/main/java/bgu/dcr/az/mui/RegisterController.javat
+D    AZModularUI/src/main/java/bgu/dcr/az/mui/RegisterView.java
+D    AZModularUI/src/main/java/bgu/dcr/az/mui/RegisterView.javat
+D    AZModularUI/src/main/java/bgu/dcr/az/mui/View.java
+D    AZModularUI/src/main/java/bgu/dcr/az/mui/ViewContainer.java
+D    AZModularUI/src/main/java/bgu/dcr/az/mui/ViewManipulator.java
+D    AZModularUI/src/main/java/bgu/dcr/az/mui/ViewRegistery.java
+D    AZModularUI/src/main/java/bgu/dcr/az/mui/containers
+A    AZModularUI/src/main/java/bgu/dcr/az/mui/info
+A    AZModularUI/src/main/java/bgu/dcr/az/mui/info/TokenSetChangedInfo.java
+A    AZModularUI/src/main/java/bgu/dcr/az/mui/jfx
+A    AZModularUI/src/main/java/bgu/dcr/az/mui/jfx/FXMLController.java
+A  + AZModularUI/src/main/java/bgu/dcr/az/mui/jfx/NewFXMain.java
+A  + AZModularUI/src/main/java/bgu/dcr/az/mui/jfx/TabPaneController.java
+A    AZModularUI/src/main/java/bgu/dcr/az/mui/scr
+A    AZModularUI/src/main/java/bgu/dcr/az/mui/scr/main
+A    AZModularUI/src/main/java/bgu/dcr/az/mui/scr/main/Main.css
+A    AZModularUI/src/main/java/bgu/dcr/az/mui/scr/main/MainPage.fxml
+A    AZModularUI/src/main/java/bgu/dcr/az/mui/scr/main/MainPage.java
+D    AZModularUI/src/main/java/bgu/dcr/az/mui/test/NewFXMain.java
+M    AZModularUI/src/main/java/bgu/dcr/az/mui/test/TestFXML.java
+A    AZModularUI/src/main/java/resources
+A    AZModularUI/src/main/java/resources/img
+AM   AZModularUI/src/main/java/resources/img/logo.png
+M    AZModularUI/target/AZModularUI-1.0-SNAPSHOT.jar
+A    AZModularUI/target/classes/bgu/dcr/az/mui/RegisterController.javat
+A    AZModularUI/target/classes/bgu/dcr/az/mui/info
+A    AZModularUI/target/classes/bgu/dcr/az/mui/jfx
+A    AZModularUI/target/classes/bgu/dcr/az/mui/scr
+A    AZModularUI/target/classes/bgu/dcr/az/mui/scr/main
+A    AZModularUI/target/classes/bgu/dcr/az/mui/scr/main/Main.css
+A    AZModularUI/target/classes/bgu/dcr/az/mui/scr/main/MainPage.fxml
+A    AZModularUI/target/classes/resources
+A    AZModularUI/target/classes/resources/img
+AM   AZModularUI/target/classes/resources/img/logo.png
+A    AZModularUI/target/generated-sources/annotations/bgu/dcr/az/conf/autogen/bgu_dcr_az_mui_scr_main_MainPage.java
+A    AZModularUI/target/generated-sources/apt/bgu/dcr/az/conf/autogen/bgu_dcr_az_mui_scr_main_MainPage.java
+M    AZModularUI/target/maven-archiver/pom.properties

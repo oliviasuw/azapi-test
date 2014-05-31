@@ -16,15 +16,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -178,6 +175,25 @@ public class ModuleContainer implements Module {
     }
 
     /**
+     * same as {@link #requireAll(java.lang.Class) } but will return list of all
+     * the modules which are supplied by the given key directly to this
+     * container = without taking into consideration the modules that supplied
+     * to the parent container
+     *
+     * @param <T>
+     * @param moduleClass
+     * @return
+     */
+    public <T extends Module> Iterable<T> requireAllLocal(Class<T> moduleClass) {
+        List<Module> result = supplied.get(moduleClass);
+        if (result == null) {
+            result = Collections.EMPTY_LIST;
+        }
+        
+        return (Iterable<T>) result;
+    }
+
+    /**
      * return a list that contain all the supplied object for the given module
      * class in this container only (=not including parent containers). a
      *
@@ -210,6 +226,17 @@ public class ModuleContainer implements Module {
     }
 
     /**
+     * supply all the given modules under the given type. - delay initialization
+     *
+     * @see #supply(java.lang.Class, bgu.dcr.az.conf.modules.Module)
+     * @param modules
+     * @param moduleType
+     */
+    public void supplyAll(Class moduleType, Module... modules) {
+        supplyAll(moduleType, Arrays.asList(modules), false);
+    }
+
+    /**
      * supply all the given modules under the given type.
      *
      * @param immidiateInstall
@@ -230,6 +257,20 @@ public class ModuleContainer implements Module {
         List<Module> result = supplied.get(moduleClass);
         return (result == null ? 0 : result.size()) + (parent == null ? 0 : parent.amountSupplied(moduleClass));
     }
+    
+    /**
+     * same as {@link #amountSupplied(java.lang.Class) } but take into
+     * consideration only the modules that were supplied directly into this
+     * container - not considering parents
+     *
+     * @param moduleClass
+     * @return
+     */
+    public int amountSuppliedLocally(Class<? extends Module> moduleClass) {
+        List<Module> result = supplied.get(moduleClass);
+        return result == null ? 0 : result.size();
+    }
+
 
     /**
      * @param moduleClass
@@ -304,6 +345,24 @@ public class ModuleContainer implements Module {
         if (i != null) {
             i.writeIfListening(() -> new ModuleRemovedInfo(module, this), ModuleRemovedInfo.class);
         }
+    }
+
+    /**
+     * @param m
+     * @param c
+     * @return true if the given module is supplied with the given moduleClass
+     */
+    public boolean isSupplied(Module m, Class c) {
+        ModuleInfo minfo = reverseLookup.get(m);
+        if (minfo == null) {
+            minfo = awaitingInitializationModules.get(m);
+        }
+
+        if (minfo == null) {
+            return false;
+        }
+
+        return minfo.registration.contains(c);
     }
 
     /**

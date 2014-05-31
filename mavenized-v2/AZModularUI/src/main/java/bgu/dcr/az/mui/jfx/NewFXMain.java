@@ -7,13 +7,11 @@ package bgu.dcr.az.mui.jfx;
 
 import bgu.dcr.az.mui.Controller;
 import bgu.dcr.az.mui.ControllerRegistery;
-import bgu.dcr.az.mui.test.TestFXML;
+import bgu.dcr.az.mui.RootController;
 import java.io.IOException;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 /**
@@ -24,7 +22,10 @@ public class NewFXMain extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        Controller p = ControllerRegistery.get().createController("main", null);
+        RootController root = new RootController();
+        Controller p = root.findAndManage("main");
+
+        root.loadView();
         Scene scene = new Scene((Parent) p.getView());
 
         primaryStage.setTitle("Hello World!");

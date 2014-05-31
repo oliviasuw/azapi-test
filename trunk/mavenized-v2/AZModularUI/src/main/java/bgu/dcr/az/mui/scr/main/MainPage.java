@@ -26,7 +26,7 @@ public class MainPage extends FXMLController {
 
     @Override
     public void onLoadView() {
-        tabsController = new TabPaneController(this, tabs, "main.pages.");
+        tabsController = new TabPaneController(this, tabs, "main.pages");
     }
     
     public static boolean accept(Controller parent){

@@ -132,6 +132,10 @@ public class Processor extends AbstractProcessor {
         MESSAGER.printMessage(Kind.WARNING, string);
     }
 
+    private void warn(String string, Element blame) {
+        MESSAGER.printMessage(Kind.WARNING, string, blame);
+    }
+
     private void note(String string) {
         MESSAGER.printMessage(Kind.NOTE, string);
     }
@@ -223,6 +227,10 @@ public class Processor extends AbstractProcessor {
 
         public void warn(String warning) {
             Processor.this.warn(warning);
+        }
+
+        public void warn(String warning, Metadata blame) {
+            Processor.this.warn(warning, blame.getElement());
         }
 
         public void note(String note) {

@@ -4,34 +4,31 @@ package bgu.dcr.az.conf.autogen;
 
 import bgu.dcr.az.conf.api.JavaDocInfo;
 import bgu.dcr.az.conf.utils.JavaDocParser;
-import bgu.dcr.az.mui.View;
-import bgu.dcr.az.mui.ViewContainer;
-import bgu.dcr.az.mui.ViewManipulator;
-import bgu.dcr.az.mui.ViewRegistery;
-import com.esotericsoftware.reflectasm.ConstructorAccess;
+import bgu.dcr.az.mui.Controller;
+import bgu.dcr.az.mui.ControllerManipulator;
+import bgu.dcr.az.mui.ControllerRegistery;
 import bgu.dcr.az.conf.registery.RegistrationMarker;
 
-public class bgu_dcr_az_mui_test_TestFXML implements ViewManipulator, RegistrationMarker{
+public class bgu_dcr_az_mui_test_TestFXML implements ControllerManipulator, RegistrationMarker{
     
     //store configured class javadoc
-    public static JavaDocInfo DOC = JavaDocParser.parse("FXML Controller class\n\n @author bennyl");
-
-    //store accessors for fast access
-    public static final ConstructorAccess CONSTRUCTOR_ACCESSOR = ConstructorAccess.get(bgu.dcr.az.mui.test.TestFXML.class);
+    public static JavaDocInfo DOC = JavaDocParser.parse("FXML Controller class\n\n @title test");
 
     //registration on class loading time
     static {
-        ViewRegistery.get().register(new bgu_dcr_az_mui_test_TestFXML(), "test.fxml.test");
+        ControllerRegistery.get().register(new bgu_dcr_az_mui_test_TestFXML(), "main.pages.test");
     }
 
     @Override
-    public boolean accept(ViewContainer container) {
-        return bgu.dcr.az.mui.test.TestFXML.accept(container);
+    public boolean accept(Controller container) {
+        return true;
     }
 
     @Override
-    public View create(ViewContainer container) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Controller create(Controller c) {
+        Controller cc = bgu.dcr.az.mui.test.TestFXML.create(bgu.dcr.az.mui.test.TestFXML.class);
+        if (c != null) c.manage(cc);
+        return cc;
     }
 
     @Override
@@ -42,6 +39,11 @@ public class bgu_dcr_az_mui_test_TestFXML implements ViewManipulator, Registrati
     @Override
     public String toString() {
         return "bgu.dcr.az.mui.test.TestFXML";
+    }
+
+    @Override
+    public Class controllerClass() {
+        return bgu.dcr.az.mui.test.TestFXML.class;
     }
     
 }

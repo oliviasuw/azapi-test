@@ -55,7 +55,7 @@ public class LogManagerImpl implements LogManager {
     }
 
     @Override
-    public void initialize(Simulation ex) {
+    public void installInto(Simulation ex) {
         
         this.exec = ex;
         

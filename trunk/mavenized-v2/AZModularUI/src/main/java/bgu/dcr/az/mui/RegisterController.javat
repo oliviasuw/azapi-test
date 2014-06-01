@@ -42,7 +42,7 @@ public class @{underscoredFQN} implements ControllerManipulator, RegistrationMar
     @Override
     public Controller create(BaseController c) {
         Controller cc = @{getFQN()}.create(@{getFQN()}.class);
-        if (c != null) c.manage(cc);
+        if (c != null) c.install(cc);
         return cc;
     }
 

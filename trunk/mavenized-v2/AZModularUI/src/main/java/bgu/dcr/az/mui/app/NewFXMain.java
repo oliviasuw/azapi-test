@@ -32,10 +32,10 @@ public class NewFXMain extends Application {
             ModularExperiment exp = ModularExperiment.createDefault(getClass().getResourceAsStream("test.xml"));
             ExperimentProgress progress = exp.execute();
             
-            root.supply(ModularExperiment.class, exp);
-            root.supply(StatusSyncer.class, new StatusSyncer(5, progress));
+            root.install(ModularExperiment.class, exp);
+            root.install(StatusSyncer.class, new StatusSyncer(5, progress));
             
-            MainPage p = root.findAndManage("main");
+            MainPage p = root.findAndInstall("main");
             
             root.loadView();
             Scene scene = new Scene(p.getView());

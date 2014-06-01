@@ -63,8 +63,8 @@ public class SimulatedMachine extends AbstractProc {
         final SimulationConfiguration configuration = mc.configuration();
         env = configuration.env();
 
-        if (!mc.hasRequirement(ContextGenerator.class)) {
-            mc.supply(ContextGenerator.class, new ContextGenerator());
+        if (!mc.isInstalled(ContextGenerator.class)) {
+            mc.install(ContextGenerator.class, new ContextGenerator());
         }
 
         cGen = mc.require(ContextGenerator.class);

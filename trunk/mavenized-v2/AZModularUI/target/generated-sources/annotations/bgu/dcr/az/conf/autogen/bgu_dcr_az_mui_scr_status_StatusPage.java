@@ -22,13 +22,13 @@ public class bgu_dcr_az_mui_scr_status_StatusPage implements ControllerManipulat
 
     @Override
     public boolean accept(BaseController container) {
-        return true;
+        return bgu.dcr.az.mui.scr.status.StatusPage.accept(container);
     }
 
     @Override
     public Controller create(BaseController c) {
         Controller cc = bgu.dcr.az.mui.scr.status.StatusPage.create(bgu.dcr.az.mui.scr.status.StatusPage.class);
-        if (c != null) c.manage(cc);
+        if (c != null) c.install(cc);
         return cc;
     }
 

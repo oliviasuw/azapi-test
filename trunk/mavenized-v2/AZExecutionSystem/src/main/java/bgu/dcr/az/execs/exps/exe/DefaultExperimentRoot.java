@@ -7,7 +7,7 @@ package bgu.dcr.az.execs.exps.exe;
 
 import bgu.dcr.az.execs.exps.ExecutionTree;
 import bgu.dcr.az.execs.exps.ExperimentProgressEnhancer;
-import bgu.dcr.az.execs.exps.prog.DefaultProgress;
+import bgu.dcr.az.execs.exps.prog.DefaultExperimentProgress;
 import bgu.dcr.az.conf.modules.ModuleContainer;
 import bgu.dcr.az.conf.registery.Register;
 import java.util.Iterator;
@@ -36,7 +36,7 @@ public class DefaultExperimentRoot extends ExecutionTree {
 
     @Override
     public int numChildren() {
-        return amountSupplied(Test.class);
+        return amountInstalled(Test.class);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class DefaultExperimentRoot extends ExecutionTree {
 
     @Override
     public Iterator<ExecutionTree> iterator() {
-        return (Iterator) requireAll(Test.class);
+        return (Iterator) requireAll(Test.class).iterator();
     }
 
     @Override
@@ -68,9 +68,9 @@ public class DefaultExperimentRoot extends ExecutionTree {
     }
 
     @Override
-    public void initialize(ModuleContainer mc) {
-        super.initialize(mc);
-        supply(ExperimentProgressEnhancer.class, new DefaultProgress());
+    public void installInto(ModuleContainer mc) {
+        super.installInto(mc);
+        install(ExperimentProgressEnhancer.class, new DefaultExperimentProgress());
     }
 
 }

@@ -28,10 +28,10 @@ public abstract class Controller<T> extends BaseController<T> {
     }
 
     @Override
-    public void initialize(ModuleContainer mc) {
-        super.initialize(mc);
+    public void installInto(ModuleContainer mc) {
+        super.installInto(mc);
         if (mc instanceof BaseController) {
-            supply(InfoStream.class, istream = new RemovalTrackingInfoStream(mc.require(InfoStream.class)));
+            install(InfoStream.class, istream = new RemovalTrackingInfoStream(mc.require(InfoStream.class)));
         } else {
             throw new UnsupportedOperationException("controllers can only reside inside other controllers");
         }

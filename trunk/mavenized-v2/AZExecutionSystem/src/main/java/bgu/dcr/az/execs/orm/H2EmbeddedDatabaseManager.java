@@ -45,7 +45,7 @@ public class H2EmbeddedDatabaseManager implements EmbeddedDatabaseManager {
     private PreparedStatementLRUCache cachedQueries;
 
     @Override
-    public void initialize(ModuleContainer mc) {
+    public void installInto(ModuleContainer mc) {
         if (connection != null) {
             throw new InitializationException("attempting to initialize already initialized database");
         }

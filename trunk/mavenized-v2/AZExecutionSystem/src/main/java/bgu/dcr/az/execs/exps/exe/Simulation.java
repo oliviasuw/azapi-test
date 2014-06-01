@@ -44,14 +44,14 @@ public class Simulation<T extends SimulationData, R> extends ExecutionTree {
         this.simulationData = executionData;
         this.executionNumber = executionNumber;
         this.conf = conf;
-        this.initialize(container); //sets the container as my parent..
+        this.installInto(container); //sets the container as my parent..
     }
 
     @Override
-    public final void initialize(ModuleContainer mc) {
-        super.initialize(mc);
-        supply(istream = new InfoStreamWrapperProc(parent().require(InfoStream.class), -1000));
-        supply(MessageRouter.class, new BaseMessageRouter());
+    public final void installInto(ModuleContainer mc) {
+        super.installInto(mc);
+        install(istream = new InfoStreamWrapperProc(parent().require(InfoStream.class), -1000));
+        install(MessageRouter.class, new BaseMessageRouter());
     }
 
     public ExecutionEnvironment getExecutionEnvironment() {

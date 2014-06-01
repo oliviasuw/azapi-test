@@ -28,7 +28,7 @@ public class bgu_dcr_az_mui_scr_main_MainPage implements ControllerManipulator, 
     @Override
     public Controller create(BaseController c) {
         Controller cc = bgu.dcr.az.mui.scr.main.MainPage.create(bgu.dcr.az.mui.scr.main.MainPage.class);
-        if (c != null) c.manage(cc);
+        if (c != null) c.install(cc);
         return cc;
     }
 

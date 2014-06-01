@@ -45,12 +45,12 @@ public class ControllerTest {
 
         //check the lifecycle of load view
         verify(child, times(0)).onLoadView();
-        root.manage(child);
+        root.install(child);
 
         verify(child, times(0)).onLoadView();
-        verify(child, times(1)).initialize(root);
+        verify(child, times(1)).installInto(root);
 
-        assertTrue(root.isManageing(child));
+        assertTrue(root.isInstalled(child));
 
         root.loadView();
         verify(child, times(1)).loadView();
@@ -59,14 +59,14 @@ public class ControllerTest {
     @Test
     public void testFindAndManageControllers() {
         RootController root = new RootController();
-        Controller dummy = root.findAndManage("test.dummy");
+        Controller dummy = root.findAndInstall("test.dummy");
 
         checkControllerManagement(root, dummy, false);
 
     }
 
     private void checkControllerManagement(RootController root, Controller dummy, boolean isLoaded) {
-        assertTrue(root.isManageing(dummy));
+        assertTrue(root.isInstalled(dummy));
         assertTrue("dummy type: " + dummy.getClass().getSimpleName(), dummy instanceof TestDummyController);
 
         TestDummyController tdummy = (TestDummyController) dummy;
@@ -82,7 +82,7 @@ public class ControllerTest {
     @Test
     public void testFindAndManageAllControllers() {
         RootController root = new RootController();
-        Iterable<Controller> dummy = root.findAndManageAll("test");
+        Iterable<Controller> dummy = root.findAndInstallAll("test");
 
         root.loadView();
         dummy.forEach(d -> {
@@ -93,14 +93,14 @@ public class ControllerTest {
     @Test
     public void testListenersRemovedWhenControllerRemoved(){
         RootController root = new RootController();
-        TestDummyController dummy = root.findAndManage("test.dummy");
+        TestDummyController dummy = root.findAndInstall("test.dummy");
         
         int[] calls = {0};
         dummy.infoStream().listen(Info.class, i -> calls[0]++);
         
         root.infoStream().write(new Info());
         assertTrue(calls[0] == 1);
-        dummy.leave();
+        dummy.uninstall();
         root.infoStream().write(new Info());
         assertTrue(calls[0] == 1);
     }

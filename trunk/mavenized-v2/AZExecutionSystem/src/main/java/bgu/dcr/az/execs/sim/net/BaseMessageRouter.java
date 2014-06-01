@@ -27,7 +27,7 @@ public class BaseMessageRouter implements MessageRouter {
     }
 
     @Override
-    public void initialize(Simulation ex) throws InitializationException {
+    public void installInto(Simulation ex) throws InitializationException {
         routingTable = new SimulatedMachine[ex.configuration().numMachines()];
         messageCounts = new long[routingTable.length];
         

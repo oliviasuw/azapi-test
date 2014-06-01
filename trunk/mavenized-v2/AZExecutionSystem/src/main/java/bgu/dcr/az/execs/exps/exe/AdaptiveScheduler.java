@@ -46,7 +46,7 @@ public class AdaptiveScheduler implements Module {
     }
 
     @Override
-    public void initialize(ModuleContainer mc) {
+    public void installInto(ModuleContainer mc) {
         istream = mc.require(InfoStream.class);
     }
 

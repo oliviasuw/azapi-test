@@ -34,7 +34,7 @@ public class TabPaneController extends Controller<TabPane> {
     public TabPaneController(Controller owner, TabPane view, String subcontrollersPrefix) {
         this.view = view;
         this.subcontrollersGroup = subcontrollersPrefix;
-        owner.manage(this);
+        owner.install(this);
     }
 
     public void setSubcontrollersPrefix(String subcontrollersPrefix) {
@@ -55,9 +55,9 @@ public class TabPaneController extends Controller<TabPane> {
 
         view.getTabs().clear();
 
-        findAndManageAll(subcontrollersGroup);
+        findAndInstallAll(subcontrollersGroup);
 
-        List<Controller> managed = IterableUtils.toList(managedControllers(), new ArrayList());
+        List<Controller> managed = IterableUtils.toList(installedControllers(), new ArrayList());
         Collections.sort(managed, (a, b) -> {
             String pa = ControllerRegistery.get().getAttributes(a).attr("tabIndex");
             String pb = ControllerRegistery.get().getAttributes(b).attr("tabIndex");

@@ -40,7 +40,7 @@ public class CPTest extends Test {
 
     @Override
     public int numChildren() {
-        return getLooper().count() * amountSupplied(AlgorithmDef.class);
+        return getLooper().count() * amountInstalled(AlgorithmDef.class);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class CPTest extends Test {
     }
 
     public void setLooper(Looper looper) {
-        supply(looper);
+        install(looper);
     }
 
     /**
@@ -144,7 +144,7 @@ public class CPTest extends Test {
     }
 
     public void setProblemGenerator(ProblemGenerator pgen) {
-        supply(pgen);
+        install(pgen);
     }
 
     /**
@@ -156,7 +156,7 @@ public class CPTest extends Test {
     }
 
     public void setCorrectnessTester(CPCorrectnessTester correctnessTester) {
-        supply(correctnessTester);
+        install(correctnessTester);
     }
 
     @Override

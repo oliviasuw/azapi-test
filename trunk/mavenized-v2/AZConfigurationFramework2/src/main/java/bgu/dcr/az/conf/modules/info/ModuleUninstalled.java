@@ -12,12 +12,12 @@ import bgu.dcr.az.conf.modules.ModuleContainer;
  *
  * @author bennyl
  */
-public class ModuleRemovedInfo {
+public class ModuleUninstalled {
 
     private Module module;
     private ModuleContainer container;
 
-    public ModuleRemovedInfo(Module module, ModuleContainer container) {
+    public ModuleUninstalled(Module module, ModuleContainer container) {
         this.module = module;
         this.container = container;
     }

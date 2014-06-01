@@ -22,7 +22,7 @@ public abstract class Logger<T extends Simulation> implements Module<T> {
     private LogManager lman;
 
     @Override
-    public final void initialize(T mc) {
+    public final void installInto(T mc) {
         this.mc = mc;
         lman = mc.require(LogManager.class);
         EmbeddedDatabaseManager db = mc.require(EmbeddedDatabaseManager.class);

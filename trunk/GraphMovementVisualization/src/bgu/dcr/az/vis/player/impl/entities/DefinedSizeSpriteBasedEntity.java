@@ -21,28 +21,26 @@ import javafx.scene.image.Image;
  * 
  * @author Shl
  */
-public class DefinedSizeSpriteBasedEntity extends CanvasLayeredEntity implements HasId {
+public class DefinedSizeSpriteBasedEntity extends SpriteBasedEntity {
 
     private double realWidth;
     private double realHeight;
-    private final Image image;
 
     public enum SizeParameter {
 
         WIDTH, HEIGHT;
     }
 
-    public DefinedSizeSpriteBasedEntity(long entityId, Class<? extends Layer> layerClazz, String filepath, double realWidth, double realHeight) throws FileNotFoundException {
-        this(entityId, layerClazz, new FileInputStream(filepath), realWidth, realHeight);
+    public DefinedSizeSpriteBasedEntity(long entityId, String filepath, double realWidth, double realHeight) throws FileNotFoundException {
+        this(entityId, new FileInputStream(filepath), realWidth, realHeight);
     }
 
-    public DefinedSizeSpriteBasedEntity(long entityId, Class<? extends Layer> layerClazz, InputStream in, double realWidth, double realHeight) {
-        this(entityId, layerClazz, new Image(in), realWidth, realHeight);
+    public DefinedSizeSpriteBasedEntity(long entityId, InputStream in, double realWidth, double realHeight) {
+        this(entityId, new Image(in), realWidth, realHeight);
     }
 
-    public DefinedSizeSpriteBasedEntity(long entityId, Class<? extends Layer> layerClazz, Image image, double realWidth, double realHeight) {
-        super(entityId, layerClazz);
-        this.image = image;
+    public DefinedSizeSpriteBasedEntity(long entityId, Image image, double realWidth, double realHeight) {
+        super(entityId, image);
         this.realWidth = realWidth;
         this.realHeight = realHeight;
     }
@@ -52,20 +50,18 @@ public class DefinedSizeSpriteBasedEntity extends CanvasLayeredEntity implements
     }
 
     public DefinedSizeSpriteBasedEntity(long entityId, Class<? extends Layer> layerClazz, InputStream in, SizeParameter type, double param) {
-        this(entityId, layerClazz, new Image(in), type, param);
+        this(entityId, new Image(in), type, param);
     }
 
     /**
      * sets one size parameter in meters. the other will be determined according to image width-height ratio.
      * @param entityId
-     * @param layerClazz
      * @param image
      * @param type
      * @param param 
      */
-    public DefinedSizeSpriteBasedEntity(long entityId, Class<? extends Layer> layerClazz, Image image, SizeParameter type, double param) {
-        super(entityId, layerClazz);
-        this.image = image;
+    public DefinedSizeSpriteBasedEntity(long entityId, Image image, SizeParameter type, double param) {
+        super(entityId, image);
         if (type == SizeParameter.HEIGHT) {
             this.realHeight = param;
             this.realWidth = image.getWidth() * (param / image.getHeight());
@@ -75,12 +71,6 @@ public class DefinedSizeSpriteBasedEntity extends CanvasLayeredEntity implements
         }
     }
 
-    @Override
-    protected final void _draw(GraphicsContext gc) {
-        gc.translate(-realWidth / 2.0, -realHeight / 2.0);
-        gc.drawImage(image, 0, 0, realWidth, realHeight);
-    }
-
     public double getRealWidth() {
         return realWidth;
     }
@@ -88,15 +78,5 @@ public class DefinedSizeSpriteBasedEntity extends CanvasLayeredEntity implements
     public double getRealHeight() {
         return realHeight;
     }
-
-    public Image getImage() {
-        return image;
-    }
-
-    @Override
-    public String getId() {
-        return String.valueOf(this.getEntityId());
-    }
-    
     
 }

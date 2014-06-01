@@ -50,17 +50,6 @@ public class SimpleFrame implements Frame {
                 query.addToGroup(groupDetails[0], groupDetails[1], moveAction.getTo().getX(), moveAction.getTo().getY(), entity.getRealWidth(), entity.getRealHeight(), entity);
             }
         }
-
-//        actions.forEach(a -> {
-//            a.update(percentage);
-//            if (a instanceof MoveAction) {
-//                MoveAction moveAction = (MoveAction) a;
-//                DefinedSizeSpriteBasedEntity entity = (DefinedSizeSpriteBasedEntity) query.getById(String.valueOf(a.getEntityId()));
-//                String[] groupDetails = query.getGroupDetails(a.getEntityId());
-//                query.remove(entity, moveAction.getFrom().getX(), moveAction.getFrom().getY());
-//                query.addToGroup(groupDetails[0], groupDetails[1], moveAction.getTo().getX(), moveAction.getTo().getY(), entity.getRealWidth(), entity.getRealHeight(), entity);
-//            }
-//        });
     }
 
 }

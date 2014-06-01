@@ -68,20 +68,6 @@ public abstract class SimpleScrollableVisualScene extends ScrollPane implements 
         return layers.values();
     }
 
-    public void addEntity(long entityId, Entity entity) {
-        entities.put(entityId, entity);
-    }
-
-    @Override
-    public Entity getEntity(long id) {
-        return entities.get(id);
-    }
-
-    @Override
-    public Collection<? extends Entity> getEntities() {
-        return entities.values();
-    }
-
     @Override
     public DoubleProperty rotationProperty() {
         return rotationProperty;

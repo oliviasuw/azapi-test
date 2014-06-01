@@ -5,15 +5,11 @@
  */
 package data.map.impl.wersdfawer;
 
-import bgu.dcr.az.vis.tools.Location;
-import com.bbn.openmap.util.quadtree.QuadTree;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import org.jgrapht.graph.SimpleWeightedGraph;
 

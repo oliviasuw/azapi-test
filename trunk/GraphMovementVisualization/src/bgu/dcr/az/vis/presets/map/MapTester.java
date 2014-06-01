@@ -44,7 +44,7 @@ public class MapTester extends Application {
 
         //change to beershevagraph.txt to get beersheva back
         //graph2_1.txt is telaviv
-        vs = new MapVisualScene(100, "graph2_1.txt", boundingQuery, drawer);
+        vs = new MapVisualScene(101, "graph2_1.txt", boundingQuery, drawer);
 
         SimplePlayer player = new SimplePlayer(boundingQuery, drawer, 1000, 0);
 
@@ -102,34 +102,7 @@ public class MapTester extends Application {
                     }
                 }
             });
-//            
-//            while (!read.isEmpty() && !isStopped) {
-//                if (player.isFinishedCurrFrame()) {
-//                    eventTester.AddNewMovesFromTick(tick, player);
-//                    tick = eventTester.read();
-//                }
-//            }
-//
-//            long i = 0;
-//            while (true) {
-//                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(100, 100), new Location(100, 500)));
-//                if (isStopped) {
-//                    break;
-//                }
-//                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(100, 500), new Location(500, 500)));
-//                if (isStopped) {
-//                    break;
-//                }
-//                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(500, 500), new Location(500, 100)));
-//                if (isStopped) {
-//                    break;
-//                }
-//                stream.writeFrame(new BasicOperationsFrame().directedMove(0, new Location(500, 100), new Location(100, 100)));
-//                if (isStopped) {
-//                    break;
-//                }
-//                i++;
-//            }
+
         }
 
         public void cancel() {

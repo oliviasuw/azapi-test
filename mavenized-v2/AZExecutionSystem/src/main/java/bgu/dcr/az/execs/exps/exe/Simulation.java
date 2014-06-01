@@ -151,7 +151,12 @@ public class Simulation<T extends SimulationData, R> extends ExecutionTree {
 
     private Iterable<SimulatedMachine> createMachines() {
         return () -> { //some lazy ass iterable :)
-            return IntStream.range(0, configuration().numMachines()).mapToObj(SimulatedMachine::new).iterator();
+            return IntStream.range(0, configuration().numMachines()).mapToObj(i -> {
+                SimulatedMachine sim = new SimulatedMachine(i);
+                sim.initialize(this);
+                return sim;
+                
+            }).iterator();
         };
     }
 

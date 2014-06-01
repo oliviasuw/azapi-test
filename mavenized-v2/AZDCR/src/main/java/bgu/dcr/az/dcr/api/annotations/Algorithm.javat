@@ -28,8 +28,9 @@ package bgu.dcr.az.dcr.autogen;
 
 import bgu.dcr.az.conf.api.JavaDocInfo;
 import static bgu.dcr.az.conf.autogen.bgu_dcr_az_dcr_modules_pgenerators_UnstructuredDCOPGen.METHOD_ACCESSOR;
-import bgu.dcr.az.conf.utils.JavaDocParser;
 import bgu.dcr.az.dcr.execution.manipulators.AgentManipulator;
+import bgu.dcr.az.conf.utils.JavaTypeParser;
+import bgu.dcr.az.conf.utils.JavaDocParser;
 import bgu.dcr.az.dcr.execution.manipulators.HandlerInfo;
 import bgu.dcr.az.dcr.execution.manipulators.ParameterInfo;
 import bgu.dcr.az.execs.sim.Agent;

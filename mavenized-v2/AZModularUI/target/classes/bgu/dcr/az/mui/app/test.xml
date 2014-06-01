@@ -1,0 +1,7 @@
+<experiment>
+    <cp-test>
+        <for-loop run-var="p1" start="0.1" end="0.9" tick-size="0.1" repeat-count="1"/>
+        <algorithm name="SBB"/>
+        <dcop-unstructured/>
+    </cp-test>
+</experiment>

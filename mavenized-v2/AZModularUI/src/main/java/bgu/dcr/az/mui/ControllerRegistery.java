@@ -48,7 +48,7 @@ public class ControllerRegistery {
         return attributes.get(v.getClass());
     }
 
-    public Controller createController(String name, Controller container) {
+    public Controller createController(String name, BaseController container) {
         List<ControllerManipulator> ms = manipulators.get(name);
         if (ms == null) {
             return null;
@@ -60,7 +60,7 @@ public class ControllerRegistery {
                 .findFirst().orElse(null);
     }
 
-    public Iterable<Controller> createControllers(String group, Controller container) {
+    public Iterable<Controller> createControllers(String group, BaseController container) {
         return manipulators.subMap(group, group + Character.MAX_VALUE).entrySet().stream()
                 .filter(e -> e.getKey().lastIndexOf(".") == group.length())
                 .flatMap(e -> e.getValue().stream())

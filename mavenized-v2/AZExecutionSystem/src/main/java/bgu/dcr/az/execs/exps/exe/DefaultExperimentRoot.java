@@ -69,6 +69,7 @@ public class DefaultExperimentRoot extends ExecutionTree {
 
     @Override
     public void initialize(ModuleContainer mc) {
+        super.initialize(mc);
         supply(ExperimentProgressEnhancer.class, new DefaultProgress());
     }
 

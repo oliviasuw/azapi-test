@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class CPTest extends Test {
     private ProblemGenerator pgen;
 
-    private ExecutionEnvironment env;
+    private ExecutionEnvironment env = ExecutionEnvironment.async;
     private RandomSequance seq = new RandomSequance();
 
     private WeakReference<Problem> cachedLastProblem;

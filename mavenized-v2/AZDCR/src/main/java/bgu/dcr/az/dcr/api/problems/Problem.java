@@ -28,7 +28,7 @@ public class Problem implements ImmutableProblem {
     protected ProblemType type;
     protected int maxCost = 0;
     protected boolean singleDomain = true;
-    private SimulationConfiguration.Builder initialConfiguration;
+    private SimulationConfiguration.Builder initialConfiguration = SimulationConfiguration.builder();
     private long[] ccCount;
 
     public SimulationConfiguration.Builder getInitialConfiguration() {

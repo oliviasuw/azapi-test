@@ -26,6 +26,10 @@ public class EventListeners<T> {
         listeners.add(listener);
     }
 
+    public int countListeners() {
+        return listeners.size();
+    }
+
     public boolean isNotificationsEnabled() {
         return notificationsEnabled;
     }
@@ -35,8 +39,8 @@ public class EventListeners<T> {
     }
 
     /**
-     * remove the listener from this list.
-     * note that unlike most lists removing the listener from within the event handling code is permitted.
+     * remove the listener from this list. note that unlike most lists removing
+     * the listener from within the event handling code is permitted.
      *
      * @param listener
      */

@@ -1,0 +1,43 @@
+
+/*+++++++++++++++++++++++ LIGHT TABS ++++++++++++++++++++++++*/
+
+.light-tabs {
+    -light-tabs-border-color: rgb(150,150,150);
+}
+
+.light-tabs * {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgb(245,245,245);
+    -fx-border-width: 0;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+.light-tabs .tab-header-background {
+    -fx-border-width: 0 0 1.5 0;
+    -fx-border-color: -light-tabs-border-color;
+}
+
+.light-tabs .tab {
+    -fx-border-width: 0 1.5 0 0;
+    -fx-border-color: -light-tabs-border-color;
+}
+
+.light-tabs .tab:selected {
+    -fx-background-color: #3366ff;
+}
+
+/* ++++++++++++++++++ MAIN PAGE ++++++++++++++++++++ */
+
+#main-page {
+    -fx-background-image: url("../../../../../resources/img/bgpattern.png");
+    -fx-background-repeat: repeat;
+    -fx-background-size: auto;
+    -fx-padding: 5;
+}
+
+/* ++++++++++++++++ STATUS PAGE ++++++++++++++++++ */
+
+#status-page {
+    
+}

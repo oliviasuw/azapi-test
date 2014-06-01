@@ -38,9 +38,42 @@ public class ModuleContainer implements Module {
 
     private final Map<Class, List<Module>> supplied = new HashMap<>();
     private ModuleContainer parent = null;
+    private boolean eagerInitialization = false;
 
     private Map<Module, ModuleInfo> reverseLookup = new IdentityHashMap<>();
     private Map<Module, ModuleInfo> awaitingInitializationModules = new IdentityHashMap<Module, ModuleInfo>();
+
+    /**
+     * construct new module container which will delay initialization of new
+     * modules until a call to the {@link #initializeModules() } is made or they
+     * are explicitely required
+     */
+    public ModuleContainer() {
+    }
+
+    /**
+     * a nasty hack to allow the configuration framework to work with module
+     * container - do not call this method yourself!
+     *
+     * @return
+     */
+    public Collection<Module> getAllModules() {
+        return new ModuleCollection();
+    }
+
+    /**
+     * construct new module container which its initialization strategy is
+     * dependant on the given argumenr
+     *
+     *
+     * @param eagerInitialization if this argument is set to true this
+     * constructor will create a module container which will initialize new
+     * modules immidiatly, in this case a call to {@link #initializeModules()}
+     * will result in an exception
+     */
+    public ModuleContainer(boolean eagerInitialization) {
+        this.eagerInitialization = eagerInitialization;
+    }
 
     /**
      * initialize all the supplied modules that wasn't been initialized yet
@@ -49,25 +82,23 @@ public class ModuleContainer implements Module {
      * container recursively call the start method.
      */
     protected void initializeModules() {
-        List<ModuleContainer> awaitingModuleContainers = new LinkedList<>();
+        if (eagerInitialization) {
+            throw new UnsupportedOperationException("explisit initialization is not allowed for this module container");
+        }
 
         while (!awaitingInitializationModules.isEmpty()) {
             try {
                 for (Iterator<Map.Entry<Module, ModuleInfo>> it = awaitingInitializationModules.entrySet().iterator(); it.hasNext();) {
                     Map.Entry<Module, ModuleInfo> e = it.next();
-                    it.remove();
 
                     initModule(e.getKey(), e.getValue());
 
-                    if (e.getKey() instanceof ModuleContainer) {
-                        awaitingModuleContainers.add((ModuleContainer) e.getKey());
-                    }
+                    it.remove();
                 }
             } catch (ConcurrentModificationException ex) {
             }
         }
 
-        awaitingModuleContainers.forEach(ModuleContainer::initializeModules);
     }
 
     /**
@@ -189,7 +220,7 @@ public class ModuleContainer implements Module {
         if (result == null) {
             result = Collections.EMPTY_LIST;
         }
-        
+
         return (Iterable<T>) result;
     }
 
@@ -214,35 +245,42 @@ public class ModuleContainer implements Module {
         return (List<T>) new BackedList(result, moduleClass);
     }
 
+    public boolean isEagerInitialization() {
+        return eagerInitialization;
+    }
+
     /**
-     * supply all the given modules under the given type. - delay initialization
+     * supply all the given modules under the given type. - initialization is
+     * dependent on the value of {@link #isEagerInitialization()}
      *
      * @see #supply(java.lang.Class, bgu.dcr.az.conf.modules.Module)
      * @param modules
      * @param moduleType
      */
     public void supplyAll(Class moduleType, Iterable<? extends Module> modules) {
-        supplyAll(moduleType, modules, false);
+        supplyAll(moduleType, modules, eagerInitialization);
     }
 
     /**
-     * supply all the given modules under the given type. - delay initialization
+     * supply all the given modules under the given type. - initialization is
+     * dependent on the value of {@link #isEagerInitialization()}
      *
      * @see #supply(java.lang.Class, bgu.dcr.az.conf.modules.Module)
      * @param modules
      * @param moduleType
      */
     public void supplyAll(Class moduleType, Module... modules) {
-        supplyAll(moduleType, Arrays.asList(modules), false);
+        supplyAll(moduleType, Arrays.asList(modules), eagerInitialization);
     }
 
     /**
      * supply all the given modules under the given type.
      *
-     * @param immidiateInstall
+     * @param immidiateInstall if true all the modules will be initialize
+     * immidiatly
      * @see #supply(java.lang.Class, bgu.dcr.az.conf.modules.Module)
      * @param modules
-     * @param moduleType if true all the modules will be initialize immidiatly
+     * @param moduleType
      */
     public void supplyAll(Class moduleType, Iterable<? extends Module> modules, boolean immidiateInstall) {
         modules.forEach(m -> supply(moduleType, m, immidiateInstall));
@@ -257,7 +295,7 @@ public class ModuleContainer implements Module {
         List<Module> result = supplied.get(moduleClass);
         return (result == null ? 0 : result.size()) + (parent == null ? 0 : parent.amountSupplied(moduleClass));
     }
-    
+
     /**
      * same as {@link #amountSupplied(java.lang.Class) } but take into
      * consideration only the modules that were supplied directly into this
@@ -270,7 +308,6 @@ public class ModuleContainer implements Module {
         List<Module> result = supplied.get(moduleClass);
         return result == null ? 0 : result.size();
     }
-
 
     /**
      * @param moduleClass
@@ -287,14 +324,14 @@ public class ModuleContainer implements Module {
     }
 
     /**
-     * supply the given module with the given module key - will delay
-     * initialization
+     * supply the given module with the given module key - - initialization is
+     * dependent on the value of {@link #isEagerInitialization()}
      *
      * @param moduleKey
      * @param module
      */
     public void supply(Class<? extends Module> moduleKey, Module module) {
-        supply(moduleKey, module, false);
+        supply(moduleKey, module, eagerInitialization);
     }
 
     /**
@@ -308,8 +345,16 @@ public class ModuleContainer implements Module {
      */
     public void supply(Class<? extends Module> moduleKey, Module module, boolean immidiateInit) {
 
+        if (module == null) {
+            throw new NullPointerException("cannot supply null module");
+        }
+
+        if (module == this) {
+            throw new UnsupportedOperationException("module container cannot contain itself");
+        }
+
         List<Module> result = supplied.get(moduleKey);
-        if (result == null || result.isEmpty()) {
+        if (result == null) {
             result = new ArrayList<>();
             supplied.put(moduleKey, result);
         }
@@ -337,7 +382,7 @@ public class ModuleContainer implements Module {
         ModuleInfo info = reverseLookup.remove(module);
         if (info != null) {
             for (Class registered : info.registration) {
-                getDirectList(registered).remove(module);
+                supplied.get(registered).remove(module);
             }
         }
 
@@ -367,21 +412,22 @@ public class ModuleContainer implements Module {
 
     /**
      * supply the given module with all the keys that can be retrieved from its
-     * inheritance tree
+     * inheritance tree - initialization is dependent on the value of
+     * {@link #isEagerInitialization()}
      *
      * @param module
      */
     public void supply(Module module) {
-        if (module == null) {
-            throw new NullPointerException("cannot supply null module");
-        }
 
         LinkedList<Class> open = new LinkedList<>();
         open.add(module.getClass());
         while (!open.isEmpty()) {
             Class c = open.remove();
             if (Module.class.isAssignableFrom(c) && c != Module.class) {
-                open.add(c.getSuperclass());
+                final Class superclass = c.getSuperclass();
+                if (superclass != null) {
+                    open.add(superclass);
+                }
                 open.addAll(Arrays.asList(c.getInterfaces()));
                 supply(c, module);
             }
@@ -399,6 +445,9 @@ public class ModuleContainer implements Module {
     @Override
     public void initialize(ModuleContainer mc) {
         parent = mc;
+        if (!eagerInitialization) {
+            initializeModules();
+        }
     }
 
     /**
@@ -421,10 +470,6 @@ public class ModuleContainer implements Module {
                 is.writeIfListening(() -> new ModuleContainerParentChangedInfo(this), ModuleContainerParentChangedInfo.class);
             }
         }
-    }
-
-    public Collection<Module> getAllModules() {
-        return new ModuleCollection();
     }
 
     private class ModuleCollection implements Collection<Module> {
@@ -493,7 +538,7 @@ public class ModuleContainer implements Module {
 
         @Override
         public void clear() {
-            supplied.clear();
+//            supplied.clear();
         }
 
     }

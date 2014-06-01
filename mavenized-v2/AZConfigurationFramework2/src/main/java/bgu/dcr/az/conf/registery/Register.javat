@@ -1,4 +1,6 @@
 @code{
+    regA = "bgu.dcr.az.conf.registery.Register";
+
     def propertyRequestedName(p){
         rname = p.javadoc.tag("propertyName");
         if (rname.isEmpty()){
@@ -7,7 +9,7 @@
         return rname.get(0);
     }
     
-    super = lookupSuperClassWithAnnotation("bgu.dcr.az.conf.registery.Register");
+    super = lookupSuperClassWithAnnotation(regA);
     if (super == null) {
         super = "AbstractConfiguration";
     } else {
@@ -43,9 +45,47 @@ public class @{underscoredFQN} extends @{super} implements RegistrationMarker{
     public static final MethodAccess METHOD_ACCESSOR = MethodAccess.get(@{getFQN()}.class);
     public static final ConstructorAccess CONSTRUCTOR_ACCESSOR = ConstructorAccess.get(@{getFQN()}.class);
 
-    //store access index for each property
-    @foreach{p : properties}public static final int @{p.name.toUpperCase()}_GIDX = METHOD_ACCESSOR.getIndex("get@{p.name}");@end{"\n    "}
-    @foreach{p : properties}public static final int @{p.name.toUpperCase()}_SIDX = @if{p.readOnly}-1@else{}METHOD_ACCESSOR.getIndex("set@{p.name}")@end{};@end{"\n    "}
+    //store access index for me and each of my configurable parents properties
+    @{
+        sb = new StringBuilder();
+        super = this;
+        
+        alreadyResolvedProperties = new java.util.HashSet();
+        allProperties = new java.util.HashSet();
+
+        while (super != null){
+            for (prop : super.properties){
+                propUCase = prop.name.toUpperCase();
+                if (!alreadyResolvedProperties.contains(propUCase)){
+
+                    alreadyResolvedProperties.add(propUCase);
+                    allProperties.add(prop);
+
+                    sb.append("public static final int ")
+                        .append(prop.name.toUpperCase())
+                        .append("_GIDX = METHOD_ACCESSOR.getIndex(\"get")
+                        .append(prop.name)
+                        .append("\");\n    ");
+
+                    sb.append("public static final int ")
+                        .append(prop.name.toUpperCase())
+                        .append("_SIDX = ");
+
+                    if (prop.readOnly){
+                        sb.append("-1;\n    ");
+                    }else {
+                        sb.append("METHOD_ACCESSOR.getIndex(\"set")
+                            .append(prop.name)
+                            .append("\");\n    ");
+                    }
+                }
+            }
+
+            super = super.lookupSuperClassWithAnnotation(regA);
+        }
+        
+        sb.toString();
+    }
 
     //registration on class loading time
     static {
@@ -58,8 +98,8 @@ public class @{underscoredFQN} extends @{super} implements RegistrationMarker{
         super.accessor = METHOD_ACCESSOR;
         super.cAccessor = CONSTRUCTOR_ACCESSOR;
 
-        //insert my properties
-        @foreach{p : properties}properties.put("@{propertyRequestedName(p)}", new PropertyImpl("@{propertyRequestedName(p)}", this, @{p.name.toUpperCase()}_TYPE, @{p.name.toUpperCase()}_DOC, @{p.name.toUpperCase()}_GIDX, @{p.name.toUpperCase()}_SIDX));@end{"\n        "}
+        //insert all properties
+        @foreach{p : allProperties}properties.put("@{propertyRequestedName(p)}", new PropertyImpl("@{propertyRequestedName(p)}", this, @{p.name.toUpperCase()}_TYPE, @{p.name.toUpperCase()}_DOC, @{p.name.toUpperCase()}_GIDX, @{p.name.toUpperCase()}_SIDX));@end{"\n        "}
 
         @if{!lookupFieldsWithAnnotation("bgu.dcr.az.conf.api.Variable").isEmpty()}scanVariables();@end{}
     }

@@ -119,6 +119,7 @@ public class MultithreadedScheduler implements Scheduler {
 
         if (failingCore == null) {
             failingCore = core;
+            core.exitError.printStackTrace();
         }
 
         for (Core c : cores) {

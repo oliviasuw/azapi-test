@@ -57,7 +57,10 @@ public class IterableUtils {
     }
 
     public static <T> List<T> toList(Iterable<T> iall) {
-        LinkedList ll = new LinkedList();
+        return toList(iall, new LinkedList());
+    }
+
+    public static <T> List<T> toList(Iterable<T> iall, List ll) {
         iall.forEach(ll::add);
         return ll;
     }

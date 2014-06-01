@@ -36,4 +36,5 @@ public interface Property extends Documented {
     String stringValue();
 
     boolean isReadOnly();
+
 }

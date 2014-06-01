@@ -26,11 +26,6 @@ public class InfoStreamWrapperProc extends AbstractProc implements InfoStream {
     }
 
     @Override
-    public <T> void listen(Class<T> dataType, InfoStreamListener<T> listener) {
-        inner.listen(dataType, listener);
-    }
-
-    @Override
     public boolean hasListeners(Class dataType) {
         return inner.hasListeners(dataType) || parent.hasListeners(dataType);
     }
@@ -83,6 +78,16 @@ public class InfoStreamWrapperProc extends AbstractProc implements InfoStream {
         if (dataQueue.isEmpty()) {
             sleep();
         }
+    }
+
+    @Override
+    public <T> void listen(Class<T> channel, Object removalKey, InfoStreamListener<T> listener) {
+        inner.listen(channel, removalKey, listener);
+    }
+
+    @Override
+    public void removeListeners(Object removalKey) {
+        inner.removeListeners(removalKey);
     }
 
     private class DataWithRecepients {

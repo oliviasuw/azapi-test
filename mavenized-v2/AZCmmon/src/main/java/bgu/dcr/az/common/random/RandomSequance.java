@@ -34,7 +34,7 @@ public class RandomSequance {
     }
 
     public RandomSequance() {
-        seed = System.currentTimeMillis();
+        this(System.currentTimeMillis());
     }
 
     public int getIthPositiveInteger(long i) {

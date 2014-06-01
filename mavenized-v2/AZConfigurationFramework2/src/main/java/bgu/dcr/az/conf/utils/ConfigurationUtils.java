@@ -13,6 +13,7 @@ import bgu.dcr.az.conf.api.Configuration;
 import bgu.dcr.az.conf.api.ConfigurationException;
 import bgu.dcr.az.conf.api.Property;
 import bgu.dcr.az.conf.api.PropertyValue;
+import bgu.dcr.az.conf.api.TypeInfo;
 import bgu.dcr.az.conf.registery.Registery;
 import java.io.File;
 import java.io.IOException;
@@ -180,7 +181,7 @@ public class ConfigurationUtils {
             if (valueType != null) {
 
                 for (Property p : c) {
-                    
+
                     if (p.typeInfo().getType().isAssignableFrom(valueType)) {
                         property = p;
 
@@ -188,7 +189,7 @@ public class ConfigurationUtils {
                         p.set(value);
 
                         break;
-                    } else if (!p.typeInfo().getGenericParameters().isEmpty() && p.typeInfo().getGenericParameters().get(0).getType().isAssignableFrom(valueType)) {
+                    } else if (canContain(p, valueType)) {
                         property = p;
 
                         PropertyValue value = resolvePropertyValueFromConfigurationElement(child);
@@ -400,6 +401,23 @@ public class ConfigurationUtils {
         }
 
         return results;
+    }
+
+    private static boolean isCollection(Property p) {
+        return Collection.class.isAssignableFrom(p.typeInfo().getType());
+    }
+
+    /**
+     * return true if the given property is a collection that can contain
+     * objects from the given class
+     *
+     * @param p
+     * @param c
+     * @return
+     */
+    private static boolean canContain(Property p, Class c) {
+        List<TypeInfo> ti = p.typeInfo().getGenericParameters();
+        return isCollection(p) && ti.size() == 1 && ti.get(0).getType().isAssignableFrom(c);
     }
 
 }

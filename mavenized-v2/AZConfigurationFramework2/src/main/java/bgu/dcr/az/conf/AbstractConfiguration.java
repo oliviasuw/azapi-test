@@ -118,13 +118,18 @@ public abstract class AbstractConfiguration implements Configuration {
             PropertyImpl iprop = (PropertyImpl) p;
             if (iprop.isReadOnly()) {
                 if (iprop.isCollection()) {
-                    Collection collection = (Collection) accessor.invoke(o, iprop.getGetterIndex());
-                    if (collection == null) {
+                    final Object val = accessor.invoke(o, iprop.getGetterIndex());
+                    if (val == null) {
                         throw new UnsupportedOperationException("cannot configure property " + p.name() + " this property is a collection which has no initial value (get return null)");
                     }
 
+//                    if (!(val instanceof Collection)) {
+//                        throw new UnsupportedOperationException("cannot configure property " + p.name() + " its value type is collection but value of type " + val.getClass().getCanonicalName() + " is given (" + val + ")");
+//                    }
+
+                    Collection collection = (Collection) val;
                     //TypeInfo elementType = iprop.typeInfo().getGenericParameters().isEmpty() ? JavaTypeParser.OBJECT_TYPE : iprop.typeInfo().getGenericParameters().get(0);
-                    collection.clear();
+                    collection.clear(); 
                     collection.addAll(value.create(iprop.typeInfo()));
                 } else {
                     System.out.println("Ignoring configuration for " + p.name() + " since this property is readonly.");

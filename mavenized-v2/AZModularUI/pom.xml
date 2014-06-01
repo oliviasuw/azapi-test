@@ -30,6 +30,17 @@
             <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>bgu.dcr.az</groupId>
+            <artifactId>AZExecutionSystem</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>AZDCR</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     
     <properties>

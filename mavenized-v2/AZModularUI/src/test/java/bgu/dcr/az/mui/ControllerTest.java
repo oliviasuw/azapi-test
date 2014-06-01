@@ -41,7 +41,7 @@ public class ControllerTest {
     @Test
     public void testManageControllers() {
         RootController root = new RootController();
-        Controller child = spy(new RootController());
+        Controller child = spy(new TestDummyController());
 
         //check the lifecycle of load view
         verify(child, times(0)).onLoadView();
@@ -88,6 +88,25 @@ public class ControllerTest {
         dummy.forEach(d -> {
             checkControllerManagement(root, d, true);
         });
+    }
+    
+    @Test
+    public void testListenersRemovedWhenControllerRemoved(){
+        RootController root = new RootController();
+        TestDummyController dummy = root.findAndManage("test.dummy");
+        
+        int[] calls = {0};
+        dummy.infoStream().listen(Info.class, i -> calls[0]++);
+        
+        root.infoStream().write(new Info());
+        assertTrue(calls[0] == 1);
+        dummy.leave();
+        root.infoStream().write(new Info());
+        assertTrue(calls[0] == 1);
+    }
+    
+    private static final class Info{
+        
     }
 
 }

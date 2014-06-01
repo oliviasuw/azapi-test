@@ -73,5 +73,25 @@ public class ModuleContainerTest {
         assertTrue(0 == IterableUtils.toList(root.requireAll(TestModule1.class)).size());
         assertTrue(IterableUtils.toList(child.requireAll(TestModule1.class)).size() == 1);
     }
+    
+    @Test
+    public void testLazyInitialization(){
+        ModuleContainer root = new ModuleContainer();
+        TestModule1 tm1 = new TestModule1();
+        root.supply(tm1);
+        
+        assertTrue(!tm1.isInitialized());
+        root.initializeModules();
+        assertTrue(tm1.isInitialized());
+    }
+    
+    @Test
+    public void testEagerInitialization(){
+        ModuleContainer root = new ModuleContainer(true);
+        TestModule1 tm1 = new TestModule1();
+        root.supply(tm1);
+        
+        assertTrue(tm1.isInitialized());
+    }
 
 }

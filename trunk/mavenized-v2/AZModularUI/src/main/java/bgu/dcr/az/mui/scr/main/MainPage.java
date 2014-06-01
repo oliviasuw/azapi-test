@@ -5,8 +5,9 @@
  */
 package bgu.dcr.az.mui.scr.main;
 
-import bgu.dcr.az.mui.Controller;
 import bgu.dcr.az.mui.RegisterController;
+import bgu.dcr.az.mui.RootController;
+import bgu.dcr.az.mui.BaseController;
 import bgu.dcr.az.mui.jfx.FXMLController;
 import bgu.dcr.az.mui.jfx.TabPaneController;
 import javafx.fxml.FXML;
@@ -28,9 +29,9 @@ public class MainPage extends FXMLController {
     public void onLoadView() {
         tabsController = new TabPaneController(this, tabs, "main.pages");
     }
-    
-    public static boolean accept(Controller parent){
-        return true;
+
+    public static boolean accept(BaseController parent) {
+        return parent instanceof RootController;
     }
 
 }

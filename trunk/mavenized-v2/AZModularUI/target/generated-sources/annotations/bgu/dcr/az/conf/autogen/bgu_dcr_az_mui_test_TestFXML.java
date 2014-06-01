@@ -4,6 +4,7 @@ package bgu.dcr.az.conf.autogen;
 
 import bgu.dcr.az.conf.api.JavaDocInfo;
 import bgu.dcr.az.conf.utils.JavaDocParser;
+import bgu.dcr.az.mui.BaseController;
 import bgu.dcr.az.mui.Controller;
 import bgu.dcr.az.mui.ControllerManipulator;
 import bgu.dcr.az.mui.ControllerRegistery;
@@ -20,12 +21,12 @@ public class bgu_dcr_az_mui_test_TestFXML implements ControllerManipulator, Regi
     }
 
     @Override
-    public boolean accept(Controller container) {
+    public boolean accept(BaseController container) {
         return true;
     }
 
     @Override
-    public Controller create(Controller c) {
+    public Controller create(BaseController c) {
         Controller cc = bgu.dcr.az.mui.test.TestFXML.create(bgu.dcr.az.mui.test.TestFXML.class);
         if (c != null) c.manage(cc);
         return cc;

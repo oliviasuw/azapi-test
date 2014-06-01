@@ -4,6 +4,7 @@ package bgu.dcr.az.conf.autogen;
 
 import bgu.dcr.az.conf.api.JavaDocInfo;
 import bgu.dcr.az.conf.utils.JavaDocParser;
+import bgu.dcr.az.mui.BaseController;
 import bgu.dcr.az.mui.Controller;
 import bgu.dcr.az.mui.ControllerManipulator;
 import bgu.dcr.az.mui.ControllerRegistery;
@@ -20,12 +21,12 @@ public class bgu_dcr_az_mui_scr_main_MainPage implements ControllerManipulator, 
     }
 
     @Override
-    public boolean accept(Controller container) {
+    public boolean accept(BaseController container) {
         return bgu.dcr.az.mui.scr.main.MainPage.accept(container);
     }
 
     @Override
-    public Controller create(Controller c) {
+    public Controller create(BaseController c) {
         Controller cc = bgu.dcr.az.mui.scr.main.MainPage.create(bgu.dcr.az.mui.scr.main.MainPage.class);
         if (c != null) c.manage(cc);
         return cc;

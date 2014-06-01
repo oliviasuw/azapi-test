@@ -22,7 +22,7 @@ public abstract class ExecutionTree extends ModuleContainer implements Iterable<
 
     @Override
     public void supply(Class<? extends Module> moduleKey, Module module) {
-        if (moduleKey == ExperimentProgressEnhancer.class) { //experiment progress enhancers should allways reside under the modular experiment itself.
+        if (moduleKey == ExperimentProgressEnhancer.class && parent() != null) { //experiment progress enhancers should allways reside under the modular experiment itself.
             parent().supply(moduleKey, module);
         } else {
             super.supply(moduleKey, module); 

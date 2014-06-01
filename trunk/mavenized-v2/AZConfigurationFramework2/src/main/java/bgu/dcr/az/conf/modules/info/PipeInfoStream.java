@@ -22,10 +22,6 @@ public class PipeInfoStream implements InfoStream {
         this.target = target;
     }
 
-    @Override
-    public <T> void listen(Class<T> dataType, InfoStreamListener<T> listener) {
-        current.listen(dataType, listener);
-    }
 
     @Override
     public void write(Object data, Class... recepients) {
@@ -38,6 +34,16 @@ public class PipeInfoStream implements InfoStream {
     @Override
     public boolean hasListeners(Class dataType) {
         return current.hasListeners(dataType) || target.hasListeners(dataType);
+    }
+
+    @Override
+    public <T> void listen(Class<T> channel, Object removalKey, InfoStreamListener<T> listener) {
+        current.listen(channel, removalKey, listener);
+    }
+
+    @Override
+    public void removeListeners(Object removalKey) {
+        current.removeListeners(removalKey);
     }
 
 }

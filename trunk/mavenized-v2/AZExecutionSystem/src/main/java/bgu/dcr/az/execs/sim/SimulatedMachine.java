@@ -60,6 +60,9 @@ public class SimulatedMachine extends AbstractProc implements Module<Simulation>
     @Override
     public void initialize(Simulation mc) {
         simulation = mc;
+        final SimulationConfiguration configuration = mc.configuration();
+        env = configuration.env();
+        
         if (!mc.hasRequirement(ContextGenerator.class)) {
             mc.supply(ContextGenerator.class, new ContextGenerator());
         }
@@ -68,8 +71,6 @@ public class SimulatedMachine extends AbstractProc implements Module<Simulation>
         this.mailbox = new Mailbox();
         this.router = mc.require(MessageRouter.class);
 
-        final SimulationConfiguration configuration = mc.configuration();
-        env = configuration.env();
         int[] controlled = configuration.agentsInMachine(pid());
 
         if (controlled.length == 1) {

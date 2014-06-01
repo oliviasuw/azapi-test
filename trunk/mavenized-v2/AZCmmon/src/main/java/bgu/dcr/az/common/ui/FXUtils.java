@@ -409,7 +409,7 @@ public class FXUtils {
                         System.err.println("RELOADING CSS...");
                         reloadSceneStylesheet(parent);
                     }
-                }, 1000);
+                }, 1000, true);
 
             } catch (MalformedURLException ex) {
                 Logger.getLogger(FXUtils.class

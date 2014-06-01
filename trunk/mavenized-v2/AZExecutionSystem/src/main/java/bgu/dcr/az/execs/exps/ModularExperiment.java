@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * an experiment is a wrapper for an execution. it is intendent to hold modules
@@ -66,9 +67,9 @@ public final class ModularExperiment extends ModuleContainer {
      * </br>
      * default modules are: </br>
      * <ul>
-     * <li> database [EmbeddedDatabaseManager] </li>
-     * <li> info-stream [InfoStream] </li>
-     * <li> scheduler-provider [***?]</li>
+     * <li> {@link EmbeddedDatabaseManager} </li>
+     * <li> {@link InfoStream} </li>
+     * <li> {@link AdaptiveScheduler} </li>
      * </ul>
      *
      * @param es
@@ -84,6 +85,17 @@ public final class ModularExperiment extends ModuleContainer {
         return result;
     }
 
+    /**
+     * same as {@link #createDefault(java.util.concurrent.ExecutorService) } but
+     * also set the execution tree to be the one loaded from the given input
+     * stream (using the configuration framework)
+     *
+     * @param executionConfiguration
+     * @param es
+     * @return
+     * @throws IOException
+     * @throws ConfigurationException
+     */
     public static ModularExperiment createDefault(InputStream executionConfiguration, ExecutorService es) throws IOException, ConfigurationException {
         Configuration conf = ConfigurationUtils.read(executionConfiguration);
         ExecutionTree exec = conf.create();
@@ -91,6 +103,21 @@ public final class ModularExperiment extends ModuleContainer {
 
         exper.setExecution(exec);
         return exper;
+    }
+
+    /**
+     * same as
+     * {@link #createDefault(java.io.InputStream, java.util.concurrent.ExecutorService)}
+     * but the execution service is a new
+     * {@link Executors#newCachedThreadPool()}
+     *
+     * @param executionConfiguration
+     * @return
+     * @throws IOException
+     * @throws ConfigurationException
+     */
+    public static ModularExperiment createDefault(InputStream executionConfiguration) throws IOException, ConfigurationException {
+        return createDefault(executionConfiguration, Executors.newCachedThreadPool());
     }
 
     @Override

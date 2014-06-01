@@ -1,8 +1,8 @@
 @code{
-    hasAcceptor = hasMethod("public static boolean accept(bgu.dcr.az.mui.Controller)");
+    hasAcceptor = hasMethod("public static boolean accept(bgu.dcr.az.mui.BaseController)");
 
     if (!hasAcceptor){
-        warn("controller did not provide a method: 'public static boolean accept(bgu.dcr.az.mui.Controller)' - all parents will be accepted", this);
+        warn("controller did not provide a method: 'public static boolean accept(bgu.dcr.az.mui.BaseController)' - all parents will be accepted", this);
     }
 
     if (!hasDefaultConstructor()){
@@ -18,6 +18,7 @@ package bgu.dcr.az.conf.autogen;
 
 import bgu.dcr.az.conf.api.JavaDocInfo;
 import bgu.dcr.az.conf.utils.JavaDocParser;
+import bgu.dcr.az.mui.BaseController;
 import bgu.dcr.az.mui.Controller;
 import bgu.dcr.az.mui.ControllerManipulator;
 import bgu.dcr.az.mui.ControllerRegistery;
@@ -34,12 +35,12 @@ public class @{underscoredFQN} implements ControllerManipulator, RegistrationMar
     }
 
     @Override
-    public boolean accept(Controller container) {
+    public boolean accept(BaseController container) {
         @if{hasAcceptor}return @{getFQN()}.accept(container);@else{}return true;@end{}
     }
 
     @Override
-    public Controller create(Controller c) {
+    public Controller create(BaseController c) {
         Controller cc = @{getFQN()}.create(@{getFQN()}.class);
         if (c != null) c.manage(cc);
         return cc;

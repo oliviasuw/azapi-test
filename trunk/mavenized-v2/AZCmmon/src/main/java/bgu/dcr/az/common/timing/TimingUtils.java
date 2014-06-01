@@ -33,10 +33,11 @@ public class TimingUtils {
      *
      * @param r
      * @param interval
+     * @param deamon
      * @return
      */
-    public static Timer scheduleRepeating(Runnable r, long interval) {
-        final Timer t = new Timer();
+    public static Timer scheduleRepeating(Runnable r, long interval, boolean deamon) {
+        final Timer t = new Timer(deamon);
         t.schedule(new TimerTask() {
 
             @Override

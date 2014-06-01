@@ -13,9 +13,9 @@ import bgu.dcr.az.conf.api.JavaDocInfo;
  */
 public interface ControllerManipulator {
 
-    boolean accept(Controller container);
+    boolean accept(BaseController container);
 
-    Controller create(Controller container);
+    Controller create(BaseController container);
 
     JavaDocInfo doc();
 

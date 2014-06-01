@@ -19,7 +19,7 @@ public class RootController extends BaseController<Void> {
     InfoStream istream;
 
     public RootController() {
-        supply(InfoStream.class, istream = new SimpleInfoStream());
+        install(InfoStream.class, istream = new SimpleInfoStream());
     }
 
     public InfoStream infoStream() {

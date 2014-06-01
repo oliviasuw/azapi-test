@@ -43,7 +43,7 @@ public abstract class AbstractStatisticCollector implements StatisticCollector, 
     }
 
     @Override
-    public final void initialize(ExecutionTree exec) {
+    public final void installInto(ExecutionTree exec) {
         db = exec.require(EmbeddedDatabaseManager.class);
 
         class CachedDDB implements DefinitionDatabase {

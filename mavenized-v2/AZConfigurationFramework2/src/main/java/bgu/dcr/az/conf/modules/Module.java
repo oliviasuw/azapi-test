@@ -12,7 +12,7 @@ package bgu.dcr.az.conf.modules;
  */
 public interface Module<T extends ModuleContainer> {
 
-    default void initialize(T mc) {
+    default void installInto(T mc) {
 
     }
 }

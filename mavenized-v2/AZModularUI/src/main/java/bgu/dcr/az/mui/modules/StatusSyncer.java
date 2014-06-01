@@ -36,18 +36,22 @@ public class StatusSyncer implements Module<RootController> {
         return sps;
     }
 
+    public ExperimentProgress getProgress() {
+        return progress;
+    }
+
     @Override
-    public void initialize(RootController mc) {
+    public void installInto(RootController mc) {
         Sync s = new Sync(progress);
         InfoStream is = mc.require(InfoStream.class);
-        
+
         timer = new Timeline(new KeyFrame(Duration.millis(1000.0 / sps), a -> {
             is.write(s, Sync.class);
-            if (!progress.isExperimentRunning()){
+            if (!progress.isExperimentRunning()) {
                 timer.stop();
             }
         }));
-        
+
         timer.setCycleCount(Timeline.INDEFINITE);
         timer.play();
     }

@@ -47,7 +47,7 @@ public class ModularExperimentTest {
         ExecutionTree etree = conf.create();
         
         assertTrue(etree.getName().equals("test"));
-        assertTrue(etree.hasRequirement(RegisteredModule1.class));
+        assertTrue(etree.isInstalled(RegisteredModule1.class));
         
     }
 }

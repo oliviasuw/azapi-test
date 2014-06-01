@@ -13,6 +13,7 @@ import bgu.dcr.az.conf.modules.ModuleContainer;
 import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.conf.modules.info.SimpleInfoStream;
 import bgu.dcr.az.execs.exps.exe.AdaptiveScheduler;
+import bgu.dcr.az.execs.exps.prog.DefaultExperimentProgress;
 import bgu.dcr.az.execs.orm.api.EmbeddedDatabaseManager;
 import bgu.dcr.az.execs.orm.H2EmbeddedDatabaseManager;
 import java.io.IOException;
@@ -42,7 +43,7 @@ public final class ModularExperiment extends ModuleContainer {
     }
 
     public void setExecution(ExecutionTree exec) {
-        supply(exec);
+        install(exec);
     }
 
     public ExperimentProgress execute() {
@@ -71,6 +72,7 @@ public final class ModularExperiment extends ModuleContainer {
      * <li> {@link EmbeddedDatabaseManager} </li>
      * <li> {@link InfoStream} </li>
      * <li> {@link AdaptiveScheduler} </li>
+     * <li> {@link DefaultExperimentProgress} </li>
      * </ul>
      *
      * @param es
@@ -80,9 +82,10 @@ public final class ModularExperiment extends ModuleContainer {
         H2EmbeddedDatabaseManager manager = new H2EmbeddedDatabaseManager();
         ModularExperiment result = new ModularExperiment(es);
 
-        result.supply(EmbeddedDatabaseManager.class, manager);
-        result.supply(InfoStream.class, new SimpleInfoStream());
-        result.supply(AdaptiveScheduler.class, new AdaptiveScheduler(es));
+        result.install(EmbeddedDatabaseManager.class, manager);
+        result.install(InfoStream.class, new SimpleInfoStream());
+        result.install(AdaptiveScheduler.class, new AdaptiveScheduler(es));
+        result.install(new DefaultExperimentProgress());
         return result;
     }
 

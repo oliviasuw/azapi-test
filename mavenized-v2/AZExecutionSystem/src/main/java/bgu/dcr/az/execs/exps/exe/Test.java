@@ -44,15 +44,15 @@ public abstract class Test extends ExecutionTree {
         final InfoStream infoStream = infoStream();
 
         for (ExecutionTree e : this) {
-            e.initialize(this);
+            e.installInto(this);
             infoStream.write(e, Simulation.class);
             e.execute();
         }
     }
 
     @Override
-    public final void initialize(ModuleContainer mc) {
-        super.initialize(mc);
+    public final void installInto(ModuleContainer mc) {
+        super.installInto(mc);
         initialize((DefaultExperimentRoot) mc);
     }
 

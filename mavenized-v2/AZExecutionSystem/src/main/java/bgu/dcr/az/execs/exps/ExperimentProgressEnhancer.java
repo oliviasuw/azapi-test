@@ -15,7 +15,7 @@ import bgu.dcr.az.conf.modules.ModuleContainer;
 public abstract class ExperimentProgressEnhancer implements Module {
 
     @Override
-    public final void initialize(ModuleContainer mc) {
+    public final void installInto(ModuleContainer mc) {
         if (!(mc instanceof ModularExperiment)) {
             throw new UnsupportedOperationException("Progress Enhancers only support ModularExperiment containers!");
         }

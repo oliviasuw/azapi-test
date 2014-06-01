@@ -52,7 +52,7 @@ public class ModuleContainerTest {
         TestModule1 tm1 = new TestModule1();
         TestModule1 tm12 = new TestModule1();
 
-        mc.supplyAll(TestModule1.class, tm1, tm12);
+        mc.installAll(TestModule1.class, tm1, tm12);
         Iterable<TestModule1> iall = mc.requireAll(TestModule1.class);
         Set<TestModule1> lall = IterableUtils.toSet(iall);
 
@@ -65,8 +65,8 @@ public class ModuleContainerTest {
         ModuleContainer root = new ModuleContainer();
         ModuleContainer child = new ModuleContainer();
         
-        root.supply(ModuleContainer.class, child);
-        child.supply(TestModule1.class, new TestModule1());
+        root.install(ModuleContainer.class, child);
+        child.install(TestModule1.class, new TestModule1());
         
         assertTrue(IterableUtils.toList(root.requireAll(ModuleContainer.class)).size() == 1);
         assertTrue(IterableUtils.toList(child.requireAll(ModuleContainer.class)).isEmpty());
@@ -78,7 +78,7 @@ public class ModuleContainerTest {
     public void testLazyInitialization(){
         ModuleContainer root = new ModuleContainer();
         TestModule1 tm1 = new TestModule1();
-        root.supply(tm1);
+        root.install(tm1);
         
         assertTrue(!tm1.isInitialized());
         root.initializeModules();
@@ -89,7 +89,7 @@ public class ModuleContainerTest {
     public void testEagerInitialization(){
         ModuleContainer root = new ModuleContainer(true);
         TestModule1 tm1 = new TestModule1();
-        root.supply(tm1);
+        root.install(tm1);
         
         assertTrue(tm1.isInitialized());
     }

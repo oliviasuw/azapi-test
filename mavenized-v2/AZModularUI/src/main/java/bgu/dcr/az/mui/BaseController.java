@@ -18,14 +18,14 @@ import javafx.fxml.FXMLLoader;
 /**
  * a controller is a class responsible for controlling and presenting views, it
  * can do so by itself or by an child controllers that it contains. the
- * controllers that a controller contain must accept to join it via their static
- * accept method.
- *
- * controller also contain a set of tokens, these tokens is there to supply
- * additional information for the internal controllers, this information will
- * help them decide if they wish to join the controller parent.
- *
- * controllers should be registered via the @{@link RegisterController}
+ controllers that a controller contain must accept to join it via their static
+ accept method.
+
+ controller also contain a set of tokens, these tokens is there to installInto
+ additional information for the internal controllers, this information will
+ help them decide if they wish to join the controller parent.
+
+ controllers should be registered via the @{@link RegisterController}
  * annotation, this annotation will also force at compile time that the
  * controller has a
  * {@code public static boolean accept(bgu.dcr.az.mui.Controller)} method
@@ -130,25 +130,6 @@ public abstract class BaseController<V> extends ModuleContainer {
     }
 
     /**
-     * @see #manage(bgu.dcr.az.mui.Controller)
-     * @param children
-     */
-    public void manageAll(Iterable<? extends Controller> children) {
-        supplyAll(Controller.class, children);
-    }
-
-    /**
-     * became the parent of the given children and immidiatly call its
-     * initialize method, this children will be added into the supplied modules
-     * as well
-     *
-     * @param children
-     */
-    public void manage(Controller children) {
-        supply(Controller.class, children);
-    }
-
-    /**
      * search for the first controller that is willing to accept this one as its
      * leader, create and manage it. the found controller will be returned
      *
@@ -156,7 +137,7 @@ public abstract class BaseController<V> extends ModuleContainer {
      * @param children
      * @return
      */
-    public <T extends Controller> T findAndManage(String children) {
+    public <T extends Controller> T findAndInstall(String children) {
         return (T) ControllerRegistery.get().createController(children, (BaseController) this);
     }
 
@@ -168,22 +149,22 @@ public abstract class BaseController<V> extends ModuleContainer {
      * @param group
      * @return
      */
-    public Iterable<Controller> findAndManageAll(String group) {
+    public Iterable<Controller> findAndInstallAll(String group) {
         return ControllerRegistery.get().createControllers(group, (BaseController) this);
     }
 
     /**
      * @return iterable of all the currently managed controllers
      */
-    public Iterable<Controller> managedControllers() {
+    public Iterable<Controller> installedControllers() {
         return requireAllLocal(Controller.class);
     }
 
     /**
      * @return the amount of managed controllers
      */
-    public int amountManaged() {
-        return amountSuppliedLocally(Controller.class);
+    public int amountInstalledControllers() {
+        return amountInstalledLocally(Controller.class);
     }
 
     /**
@@ -192,21 +173,21 @@ public abstract class BaseController<V> extends ModuleContainer {
      * @param child
      * @return
      */
-    boolean isManageing(Controller child) {
-        return isSupplied(child, Controller.class);
+    boolean isInstalled(Controller child) {
+        return isInstalled(child, Controller.class);
     }
 
     @Override
-    public void remove(Module module) {
-        super.remove(module);
+    public void uninstall(Module module) {
+        super.uninstall(module);
         if (module instanceof Controller) {
             ((Controller) module).onRemovedFromParent();
         }
     }
 
-    public void leave() {
+    public void uninstall() {
         if (parent() != null) {
-            parent().remove(this);
+            parent().uninstall(this);
         }
     }
 
@@ -216,7 +197,7 @@ public abstract class BaseController<V> extends ModuleContainer {
         }
         viewLoaded = true;
         onLoadView();
-        for (Controller c : managedControllers()) {
+        for (Controller c : installedControllers()) {
             c.loadView();
         }
     }

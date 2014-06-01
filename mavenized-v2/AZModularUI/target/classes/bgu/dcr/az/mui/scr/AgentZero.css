@@ -1,4 +1,62 @@
 
+/*+++++++++++++++++++++++ BASE THEME ++++++++++++++++++++++++*/
+.root {
+    -base-screen-color: rgb(120,120,120);
+
+    -treeview-background: rgb(222,227,233);
+    -treeview-selected-cell-color: rgb(83,135,182);
+    -treeview-selected-cell-fgcolor: rgb(230,230,230);
+
+    -fx-background-color: -base-screen-color;
+}
+
+/*------------ PROGRESS BAR ------------*/
+
+
+/*------------ SPLIT PANE  -------------*/
+
+.split-pane .split-pane-divider{
+    -fx-cursor: move;
+    -fx-background-color: derive(-base-screen-color, -20%);
+    -fx-padding: 2;
+}
+
+.split-pane:horizontal .split-pane-divider{
+    -fx-cursor: move;
+}
+
+/*------------ TREE AND LIST VIEWS -------------*/
+
+.tree-view, .list-view {
+    -fx-background-color: -treeview-background;
+    -fx-background-insets: 0;
+}
+
+.tree-cell, .list-cell{
+    -fx-background-color: -treeview-background;
+    -fx-text-fill: rgb(30,30,30);
+    -fx-border-color: -treeview-background;
+    -fx-padding: 0;
+}
+
+.tree-cell:filled, .list-cell:filled{
+    -fx-cursor:hand;
+}
+
+.tree-cell:empty, .list-cell:empty{
+    -fx-cursor:arrow;
+}
+
+.tree-cell .label, .list-cell .label {
+    -fx-padding: 4;
+}
+
+.tree-cell:selected, .list-cell:selected {
+    -fx-background-color: -treeview-selected-cell-color;
+    -fx-border-color: -treeview-selected-cell-color;
+    -fx-text-fill: -treeview-selected-cell-fgcolor;
+}
+
 /*+++++++++++++++++++++++ LIGHT TABS ++++++++++++++++++++++++*/
 
 .light-tabs {
@@ -27,6 +85,34 @@
     -fx-background-color: #3366ff;
 }
 
+/* ++++++++++++++++++ SECTIONS ++++++++++++++++++++ */
+.section-header.label {
+    -fx-background-color: -base-screen-color;
+    -fx-padding: 4;
+}
+
+.section-pane {
+    -fx-border-color: transparent;
+    -fx-border-width: 1px;
+}
+
+.section-pane > .title{
+    -fx-background-color: rgb(100, 100, 100);
+    -fx-background-radius: 0 0 0 0, 0 0 0 0, 0 0 0 0;
+}
+
+.section-pane > .title .text{
+    -fx-fill:#f3f3f3;
+}
+
+.section-pane > .content{
+    -fx-background-color: rgb(220, 220, 220);
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+}
+
+
 /* ++++++++++++++++++ MAIN PAGE ++++++++++++++++++++ */
 
 #main-page {
@@ -39,5 +125,42 @@
 /* ++++++++++++++++ STATUS PAGE ++++++++++++++++++ */
 
 #status-page {
-    
+    -fx-background-color: transparent;
+    -base-screen-color: rgb(102,102,102);
+}
+
+#status-page #progress-pane * {
+    -fx-background-color: transparent;
+}
+
+#status-page #progress-pane .progress-bar .bar {
+    -fx-background-color: #b4c9d7;
+}
+
+#status-page #progress-pane .progress-bar .track {
+    -fx-border-width: 2;
+    -fx-border-color: rgb(80,80,80);
+    -fx-background-color: transparent;
+    -fx-background-insets:  0, 1;
+}
+
+#status-page #content {
+    -fx-background-color: -base-screen-color;
+}
+
+#status-page #experiment-view-container {
+    -fx-background-color: derive(-base-screen-color,-50%);   
+}
+
+#status-page .list-view * {
+    -fx-background-color: -treeview-background;
+}
+
+#status-page .list-view .label {
+    -fx-text-fill: black;
+}
+
+#status-page .list-cell:selected *{
+    -fx-background-color: rgb(83,135,182);
+    -fx-text-fill: rgb(230,230,230);
 }

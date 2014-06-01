@@ -23,7 +23,7 @@ public class ExperimentProgress {
     }
 
     public boolean has(Class<? extends ExperimentProgressEnhancer> type) {
-        return exp.hasRequirement(type);
+        return exp.isInstalled(type);
     }
 
     public boolean isExperimentRunning() {

@@ -21,11 +21,11 @@ public abstract class ExecutionTree extends ModuleContainer implements Iterable<
     private InfoStream istream;
 
     @Override
-    public void supply(Class<? extends Module> moduleKey, Module module) {
+    public void install(Class<? extends Module> moduleKey, Module module) {
         if (moduleKey == ExperimentProgressEnhancer.class && parent() != null) { //experiment progress enhancers should allways reside under the modular experiment itself.
-            parent().supply(moduleKey, module);
+            parent().install(moduleKey, module);
         } else {
-            super.supply(moduleKey, module); 
+            super.install(moduleKey, module); 
         }
     }
 

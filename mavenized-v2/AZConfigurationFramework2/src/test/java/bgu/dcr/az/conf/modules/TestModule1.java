@@ -18,7 +18,7 @@ public class TestModule1 implements Module {
     boolean initialized = false;
 
     @Override
-    public void initialize(ModuleContainer mc) {
+    public void installInto(ModuleContainer mc) {
         initialized = true;
     }
 

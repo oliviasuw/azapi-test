@@ -6,16 +6,23 @@
 package bgu.dcr.az.mui.scr.status;
 
 import bgu.dcr.az.conf.ui.ConfigurationEditor;
+import bgu.dcr.az.execs.exps.ExecutionTree;
+import bgu.dcr.az.execs.exps.ExperimentProgress;
+import bgu.dcr.az.execs.exps.ModularExperiment;
+import bgu.dcr.az.execs.exps.exe.Test;
+import bgu.dcr.az.execs.exps.prog.DefaultExperimentProgress;
+import bgu.dcr.az.mui.BaseController;
 import bgu.dcr.az.mui.RegisterController;
 import bgu.dcr.az.mui.jfx.FXMLController;
+import bgu.dcr.az.mui.modules.StatusSyncer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
+import javafx.util.Callback;
 
 /**
  * FXML Controller class
@@ -38,7 +45,7 @@ public class StatusPage extends FXMLController {
     ProgressBar progressBar;
 
     @FXML
-    ListView testsList;
+    ListView<Test> testsList;
 
     @FXML
     Label executionNumberLabel;
@@ -48,22 +55,25 @@ public class StatusPage extends FXMLController {
 
 //    RealtimeJFXPlotter pieChartPlotter;
 //    RealtimeJFXPlotter barChartPlotter;
-
     ConfigurationEditor experimentView;
 
     @Override
     protected void onLoadView() {
-        //plotterPoke = new UIPoke(this::updateStatistics, 1000);
 
-        
-        
-        experimentView = new ConfigurationEditor();
-        BorderPane.setAlignment(experimentView, Pos.TOP_CENTER);
-        BorderPane.setMargin(experimentView, new Insets(0));
-        experimentViewContainer.setCenter(experimentView);
+        ExecutionTree experimentRoot = require(ModularExperiment.class).execution();
+        loadTestLists(experimentRoot, require(StatusSyncer.class).getProgress());
+
+        //plotterPoke = new UIPoke(this::updateStatistics, 1000);
+//        experimentView = new ConfigurationEditor();
+//        BorderPane.setAlignment(experimentView, Pos.TOP_CENTER);
+//        BorderPane.setMargin(experimentView, new Insets(0));
+//        experimentViewContainer.setCenter(experimentView);
     }
-    
-    
+
+    public static boolean accept(BaseController c) {
+        return c.isInstalled(StatusSyncer.class) && c.isInstalled(ModularExperiment.class);
+    }
+
 //
 //    public void setModel(final Experiment exp) {
 //        
@@ -196,5 +206,19 @@ public class StatusPage extends FXMLController {
 //            }
 //        }
 //    }
+    private void loadTestLists(ExecutionTree root, ExperimentProgress progress) {
+        testsList.setCellFactory(new Callback<ListView<Test>, ListCell<Test>>() {
+            final DefaultExperimentProgress prog = progress.get(DefaultExperimentProgress.class);
+
+            @Override
+            public ListCell<Test> call(ListView<Test> param) {
+                return new TestProgressCell(prog);
+            }
+        });
+
+        for (ExecutionTree test : root) {
+            testsList.getItems().add((Test)test);
+        }
+    }
 
 }

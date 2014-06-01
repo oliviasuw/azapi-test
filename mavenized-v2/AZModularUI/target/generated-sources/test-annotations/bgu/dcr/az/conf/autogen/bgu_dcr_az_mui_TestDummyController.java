@@ -28,7 +28,7 @@ public class bgu_dcr_az_mui_TestDummyController implements ControllerManipulator
     @Override
     public Controller create(BaseController c) {
         Controller cc = bgu.dcr.az.mui.TestDummyController.create(bgu.dcr.az.mui.TestDummyController.class);
-        if (c != null) c.manage(cc);
+        if (c != null) c.install(cc);
         return cc;
     }
 

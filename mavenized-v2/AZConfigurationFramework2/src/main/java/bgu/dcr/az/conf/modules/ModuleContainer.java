@@ -5,7 +5,7 @@
  */
 package bgu.dcr.az.conf.modules;
 
-import bgu.dcr.az.conf.modules.info.ModuleRemovedInfo;
+import bgu.dcr.az.conf.modules.info.ModuleUninstalled;
 import bgu.dcr.az.common.collections.IterableUtils;
 import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.conf.modules.info.ModuleContainerParentChangedInfo;
@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * a class which is responsible to supply and provide modules, a module
+ * a class which is responsible to installInto and provide modules, a module
  * container can include other modules which are themselves module containers -
  * in this case upon initialization the module container children will assign
  * its container as parent and connect its listenable stream into the parent
@@ -162,13 +162,13 @@ public class ModuleContainer implements Module {
         if (awaitingInitializationModules.containsKey(result)) {
             ModuleInfo info = awaitingInitializationModules.remove(result);
             reverseLookup.put(result, info);
-            result.initialize(this);
+            result.installInto(this);
         }
     }
 
     private void initModule(Module result, ModuleInfo info) {
         reverseLookup.put(result, info);
-        result.initialize(this);
+        result.installInto(this);
     }
 
     /**
@@ -250,40 +250,40 @@ public class ModuleContainer implements Module {
     }
 
     /**
-     * supply all the given modules under the given type. - initialization is
-     * dependent on the value of {@link #isEagerInitialization()}
+     * installInto all the given modules under the given type. - initialization
+     * is dependent on the value of {@link #isEagerInitialization()}
      *
-     * @see #supply(java.lang.Class, bgu.dcr.az.conf.modules.Module)
+     * @see #install(java.lang.Class, bgu.dcr.az.conf.modules.Module)
      * @param modules
      * @param moduleType
      */
-    public void supplyAll(Class moduleType, Iterable<? extends Module> modules) {
-        supplyAll(moduleType, modules, eagerInitialization);
+    public void installAll(Class moduleType, Iterable<? extends Module> modules) {
+        installAll(moduleType, modules, eagerInitialization);
     }
 
     /**
-     * supply all the given modules under the given type. - initialization is
-     * dependent on the value of {@link #isEagerInitialization()}
+     * installInto all the given modules under the given type. - initialization
+     * is dependent on the value of {@link #isEagerInitialization()}
      *
-     * @see #supply(java.lang.Class, bgu.dcr.az.conf.modules.Module)
+     * @see #install(java.lang.Class, bgu.dcr.az.conf.modules.Module)
      * @param modules
      * @param moduleType
      */
-    public void supplyAll(Class moduleType, Module... modules) {
-        supplyAll(moduleType, Arrays.asList(modules), eagerInitialization);
+    public void installAll(Class moduleType, Module... modules) {
+        installAll(moduleType, Arrays.asList(modules), eagerInitialization);
     }
 
     /**
-     * supply all the given modules under the given type.
+     * installInto all the given modules under the given type.
      *
      * @param immidiateInstall if true all the modules will be initialize
      * immidiatly
-     * @see #supply(java.lang.Class, bgu.dcr.az.conf.modules.Module)
+     * @see #install(java.lang.Class, bgu.dcr.az.conf.modules.Module)
      * @param modules
      * @param moduleType
      */
-    public void supplyAll(Class moduleType, Iterable<? extends Module> modules, boolean immidiateInstall) {
-        modules.forEach(m -> supply(moduleType, m, immidiateInstall));
+    public void installAll(Class moduleType, Iterable<? extends Module> modules, boolean immidiateInstall) {
+        modules.forEach(m -> ModuleContainer.this.install(moduleType, m, immidiateInstall));
     }
 
     /**
@@ -291,20 +291,20 @@ public class ModuleContainer implements Module {
      * @return the amount of different elements that was supplied with the given
      * key
      */
-    public int amountSupplied(Class<? extends Module> moduleClass) {
+    public int amountInstalled(Class<? extends Module> moduleClass) {
         List<Module> result = supplied.get(moduleClass);
-        return (result == null ? 0 : result.size()) + (parent == null ? 0 : parent.amountSupplied(moduleClass));
+        return (result == null ? 0 : result.size()) + (parent == null ? 0 : parent.amountInstalled(moduleClass));
     }
 
     /**
-     * same as {@link #amountSupplied(java.lang.Class) } but take into
+     * same as {@link #amountInstalled(java.lang.Class) } but take into
      * consideration only the modules that were supplied directly into this
      * container - not considering parents
      *
      * @param moduleClass
      * @return
      */
-    public int amountSuppliedLocally(Class<? extends Module> moduleClass) {
+    public int amountInstalledLocally(Class<? extends Module> moduleClass) {
         List<Module> result = supplied.get(moduleClass);
         return result == null ? 0 : result.size();
     }
@@ -314,28 +314,28 @@ public class ModuleContainer implements Module {
      * @return true if and only if there is at least one module supplied with
      * the given module class
      */
-    public boolean hasRequirement(Class<? extends Module> moduleClass) {
+    public boolean isInstalled(Class<? extends Module> moduleClass) {
         List<Module> result = supplied.get(moduleClass);
         if (result == null || result.isEmpty()) {
-            return parent != null && parent.hasRequirement(moduleClass);
+            return parent != null && parent.isInstalled(moduleClass);
         }
 
         return true;
     }
 
     /**
-     * supply the given module with the given module key - - initialization is
-     * dependent on the value of {@link #isEagerInitialization()}
+     * installInto the given module with the given module key - initialization
+     * is dependent on the value of {@link #isEagerInitialization()}
      *
      * @param moduleKey
      * @param module
      */
-    public void supply(Class<? extends Module> moduleKey, Module module) {
-        supply(moduleKey, module, eagerInitialization);
+    public void install(Class<? extends Module> moduleKey, Module module) {
+        ModuleContainer.this.install(moduleKey, module, eagerInitialization);
     }
 
     /**
-     * supply the given module with the given module key
+     * installInto the given module with the given module key
      *
      * @param moduleKey
      * @param module
@@ -343,7 +343,7 @@ public class ModuleContainer implements Module {
      * otherwise it will be initialized upon the next call to {@link #initializeModules()
      * } or if another module will require it
      */
-    public void supply(Class<? extends Module> moduleKey, Module module, boolean immidiateInit) {
+    private void install(Class<? extends Module> moduleKey, Module module, boolean immidiateInit) {
 
         if (module == null) {
             throw new NullPointerException("cannot supply null module");
@@ -368,13 +368,13 @@ public class ModuleContainer implements Module {
     }
 
     /**
-     * remove the given module from the module container, if this module
+     * uninstall the given module from the module container, if this module
      * container contains {@link InfoStream} then he will notify on the stream
-     * about this removal using the info-class: {@link ModuleRemovedInfo}
+     * about this removal using the info-class: {@link ModuleUninstalled}
      *
      * @param module
      */
-    public void remove(Module module) {
+    public void uninstall(Module module) {
         if (awaitingInitializationModules.remove(module) != null) {
             return;
         }
@@ -388,7 +388,7 @@ public class ModuleContainer implements Module {
 
         InfoStream i = get(InfoStream.class);
         if (i != null) {
-            i.writeIfListening(() -> new ModuleRemovedInfo(module, this), ModuleRemovedInfo.class);
+            i.writeIfListening(() -> new ModuleUninstalled(module, this), ModuleUninstalled.class);
         }
     }
 
@@ -397,7 +397,7 @@ public class ModuleContainer implements Module {
      * @param c
      * @return true if the given module is supplied with the given moduleClass
      */
-    public boolean isSupplied(Module m, Class c) {
+    public boolean isInstalled(Module m, Class c) {
         ModuleInfo minfo = reverseLookup.get(m);
         if (minfo == null) {
             minfo = awaitingInitializationModules.get(m);
@@ -411,13 +411,13 @@ public class ModuleContainer implements Module {
     }
 
     /**
-     * supply the given module with all the keys that can be retrieved from its
-     * inheritance tree - initialization is dependent on the value of
+     * installInto the given module with all the keys that can be retrieved from
+     * its inheritance tree - initialization is dependent on the value of
      * {@link #isEagerInitialization()}
      *
      * @param module
      */
-    public void supply(Module module) {
+    public void install(Module module) {
 
         LinkedList<Class> open = new LinkedList<>();
         open.add(module.getClass());
@@ -429,8 +429,12 @@ public class ModuleContainer implements Module {
                     open.add(superclass);
                 }
                 open.addAll(Arrays.asList(c.getInterfaces()));
-                supply(c, module);
+                install(c, module, false);
             }
+        }
+
+        if (isEagerInitialization()) {
+            initModule(module);
         }
     }
 
@@ -443,7 +447,7 @@ public class ModuleContainer implements Module {
     }
 
     @Override
-    public void initialize(ModuleContainer mc) {
+    public void installInto(ModuleContainer mc) {
         parent = mc;
         if (!eagerInitialization) {
             initializeModules();
@@ -506,7 +510,7 @@ public class ModuleContainer implements Module {
 
         @Override
         public boolean add(Module e) {
-            supply(e);
+            install(e);
             return true;
         }
 
@@ -585,7 +589,7 @@ public class ModuleContainer implements Module {
 
         @Override
         public boolean add(Module e) {
-            supply(key, e);
+            install(key, e);
             return true;
         }
 

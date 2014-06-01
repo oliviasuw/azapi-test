@@ -53,6 +53,7 @@ public final class ModularExperiment extends ModuleContainer {
         pool.execute(() -> {
             ex.execute();
             experimentProgress.setRunning(false);
+            System.out.println("Experiment completed!");
         });
 
         return experimentProgress;

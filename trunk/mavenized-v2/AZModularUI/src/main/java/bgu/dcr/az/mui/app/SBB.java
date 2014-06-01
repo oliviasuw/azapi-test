@@ -1,4 +1,4 @@
-package ext.sim.agents.dcop;
+package bgu.dcr.az.mui.app;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -50,12 +50,6 @@
             <version>4.10</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <artifactId>reflectasm</artifactId>
-            <groupId>com.esotericsoftware.reflectasm</groupId>
-            <type>jar</type>
-            <version>1.08</version>
-        </dependency>
     </dependencies>
 
 </project>

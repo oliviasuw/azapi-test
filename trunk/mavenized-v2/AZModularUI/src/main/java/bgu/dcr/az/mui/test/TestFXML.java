@@ -14,11 +14,14 @@ import bgu.dcr.az.mui.jfx.FXMLController;
  *
  * @title test
  */
-@RegisterController("main.pages.test")
 public class TestFXML extends FXMLController {
 
     @Override
-    public void onLoadView() {
+    protected void onLoadView() {
+    }
+    
+    public static void main(String[] args) throws ClassNotFoundException {
+        Class.forName("bgu.dcr.az.algo.autogen.bgu_dcr_az_mui_app_SBB");
     }
 
 }

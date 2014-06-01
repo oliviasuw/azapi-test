@@ -123,7 +123,7 @@ public class Simulation<T extends SimulationData, R> extends ExecutionTree {
                 result.toSucceefulState((R) data().currentSolution());
             }
 
-            istream.writeNow(new SimulationTerminationInfo(result));
+            istream.writeNow(new SimulationTerminationInfo(result, this));
         } catch (InterruptedException ex) {
             throw new UncheckedInterruptedException(ex);
         }
@@ -152,8 +152,7 @@ public class Simulation<T extends SimulationData, R> extends ExecutionTree {
     private Iterable<SimulatedMachine> createMachines() {
         return () -> { //some lazy ass iterable :)
             return IntStream.range(0, configuration().numMachines()).mapToObj(i -> {
-                SimulatedMachine sim = new SimulatedMachine(i);
-                sim.initialize(this);
+                SimulatedMachine sim = new SimulatedMachine(i, this);
                 return sim;
                 
             }).iterator();

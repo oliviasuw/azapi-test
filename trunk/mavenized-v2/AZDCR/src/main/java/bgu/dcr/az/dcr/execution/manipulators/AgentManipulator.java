@@ -94,7 +94,7 @@ public abstract class AgentManipulator implements Configuration {
 
     public static AgentManipulator lookup(Class<? extends CPAgent> type) {
         try {
-            final Class clazz = Class.forName("bgu.dcr.az.dcr.autogen." + (type.getCanonicalName().replaceAll("\\.", "_")));
+            final Class clazz = Class.forName("bgu.dcr.az.algo.autogen." + (type.getCanonicalName().replaceAll("\\.", "_")));
             return (AgentManipulator) clazz.newInstance();
         } catch (Exception ex) {
             Logger.getLogger(AgentManipulator.class.getName()).log(Level.SEVERE, null, ex);

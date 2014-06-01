@@ -14,7 +14,7 @@
     handlers = lookupMethodWithAnnotation("*WhenReceived");
 
     mySuper = "AgentManipulator";
-    if (super.isInstanceOf("bgu.dcr.az.dcr.api.Agent")) {
+    if (super.isInstanceOf("bgu.dcr.az.dcr.api.CPAgent")) {
         mySuper = super.underscoredFQN;
         if (!super.hasAnnotation("*Algorithm")){
             error("agent (" + simpleName + ") cannot inherit from an agent that does not annotated with @Algorithm annotation");
@@ -24,10 +24,10 @@
     a = getAnnotation("bgu.dcr.az.dcr.api.annotations.Algorithm");
     generateClass("bgu.dcr.az.conf.registery.Register", "ALGORITHM." + a.value);
 }
-package bgu.dcr.az.dcr.autogen;
+package bgu.dcr.az.algo.autogen;
 
 import bgu.dcr.az.conf.api.JavaDocInfo;
-import static bgu.dcr.az.conf.autogen.bgu_dcr_az_dcr_modules_pgenerators_UnstructuredDCOPGen.METHOD_ACCESSOR;
+import static bgu.dcr.az.conf.autogen.@{underscoredFQN}.METHOD_ACCESSOR;
 import bgu.dcr.az.dcr.execution.manipulators.AgentManipulator;
 import bgu.dcr.az.conf.utils.JavaTypeParser;
 import bgu.dcr.az.conf.utils.JavaDocParser;

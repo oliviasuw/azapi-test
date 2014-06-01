@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.execs.statistics.info;
 
+import bgu.dcr.az.execs.exps.exe.Simulation;
 import bgu.dcr.az.execs.exps.exe.SimulationResult;
 
 /**
@@ -14,9 +15,15 @@ import bgu.dcr.az.execs.exps.exe.SimulationResult;
 public class SimulationTerminationInfo {
 
     private final SimulationResult executionResult;
+    private final Simulation sim;
 
-    public SimulationTerminationInfo(SimulationResult executionResult) {
+    public SimulationTerminationInfo(SimulationResult executionResult, Simulation sim) {
         this.executionResult = executionResult;
+        this.sim = sim;
+    }
+
+    public Simulation getSimulation() {
+        return sim;
     }
 
     public SimulationResult getExecutionResult() {

@@ -10,16 +10,11 @@ import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.conf.api.ConfigurationException;
 import bgu.dcr.az.execs.exps.ExperimentProgress;
 import bgu.dcr.az.execs.exps.ModularExperiment;
-import bgu.dcr.az.mui.Controller;
-import bgu.dcr.az.mui.ControllerRegistery;
 import bgu.dcr.az.mui.RootController;
 import bgu.dcr.az.mui.modules.StatusSyncer;
 import bgu.dcr.az.mui.scr.main.MainPage;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 

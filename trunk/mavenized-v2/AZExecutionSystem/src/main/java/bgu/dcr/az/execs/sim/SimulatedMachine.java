@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * @author User
  */
-public class SimulatedMachine extends AbstractProc implements Module<Simulation> {
+public class SimulatedMachine extends AbstractProc {
 
     private MessageRouter router;
     private Mailbox mailbox;
@@ -49,20 +49,20 @@ public class SimulatedMachine extends AbstractProc implements Module<Simulation>
     private ExecutionEnvironment env;
     private int tick;
 
-    public SimulatedMachine(int id) {
+    public SimulatedMachine(int id, Simulation sim) {
         super(id);
+        initialize(sim);
     }
 
     public Simulation getSimulation() {
         return simulation;
     }
 
-    @Override
-    public void initialize(Simulation mc) {
+    private void initialize(Simulation mc) {
         simulation = mc;
         final SimulationConfiguration configuration = mc.configuration();
         env = configuration.env();
-        
+
         if (!mc.hasRequirement(ContextGenerator.class)) {
             mc.supply(ContextGenerator.class, new ContextGenerator());
         }
@@ -79,6 +79,10 @@ public class SimulatedMachine extends AbstractProc implements Module<Simulation>
             controlledAgents = new HashMap<>();
         }
 
+        for (int ca : controlled) {
+            controlledAgents.put(ca, new AgentStateStack(ca));
+        }
+
         finishedAgents = new HashSet<>();
         router.register(this, controlled);
         this.tick = 0;
@@ -89,11 +93,16 @@ public class SimulatedMachine extends AbstractProc implements Module<Simulation>
     }
 
     private void setActiveAgent(AgentState active) {
-        activeAgent = active;
-        Agent.currentAgent.set(active.a.getAgent());
+        if (active == null) {
+            unsetActiveAgent();
+        } else {
+            activeAgent = active;
+            Agent.currentAgent.set(active.a.getAgent());
+        }
     }
 
     private void unsetActiveAgent() {
+        activeAgent = null;
         Agent.currentAgent.set(null);
     }
 
@@ -271,7 +280,7 @@ public class SimulatedMachine extends AbstractProc implements Module<Simulation>
     private Agent createAgent(Integer aId) {
         Class<? extends Agent> aclass = simulation.configuration().agentClass(aId);
         Agent result = ConstructorAccess.get(aclass).newInstance();
-        Agent.internalsOf(result).initialize(aId, this, result, simulation.configuration().agentInitializationArgs(aId));
+//        Agent.internalsOf(result).initialize(aId, this, result, simulation.configuration().agentInitializationArgs(aId));
         return result;
     }
 

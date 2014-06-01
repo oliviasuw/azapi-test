@@ -73,7 +73,9 @@ public abstract class CPAgent<P extends ImmutableProblem> extends Agent {
 
             @Override
             public void initialize(int id, SimulatedMachine ac, Agent a, Map<String, String> args) {
+                super.initialize(id, ac, a, args);
                 this.a = (CPAgent) a;
+                this.a.sender = new SendMediator(this.a, ac);
                 this.a.controller = ac;
                 this.manipulator = manipulators.get(a.getClass());
                 if (this.manipulator == null) {

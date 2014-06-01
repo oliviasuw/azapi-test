@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class Agent extends Agt0DSL {
 
-    static ThreadLocal<Agent> currentAgent = new ThreadLocal<Agent>();
+    static ThreadLocal<Agent> currentAgent = new ThreadLocal<>();
     private Internals internals;
 
     public Agent() {

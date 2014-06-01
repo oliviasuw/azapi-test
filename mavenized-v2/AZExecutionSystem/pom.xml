@@ -33,12 +33,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>AZCmmon</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>reflectasm</artifactId>
-                    <groupId>com.esotericsoftware.reflectasm</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.io7m.xom</groupId>
@@ -51,11 +45,6 @@
             <artifactId>junit</artifactId>
             <version>4.10</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.esotericsoftware.reflectasm</groupId>
-            <artifactId>reflectasm</artifactId>
-            <version>1.08</version>
         </dependency>
     </dependencies>
 </project>

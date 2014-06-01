@@ -158,7 +158,7 @@ public class Problem implements ImmutableProblem {
         if (domain.size() >= numberOfAgents) {
             this.singleDomain = singleDomain;
             this.domain = ImmutableSetOfIntegers.arrayOf(domain);
-            setNumberOfAgents(numagents);
+            setNumberOfAgents(numberOfAgents);
             this.type = type;
             this.constraints = type.newConstraintPackage(domain.size(), domain.stream().max((x, y) -> x.size() - y.size()).get().size());
         } else {

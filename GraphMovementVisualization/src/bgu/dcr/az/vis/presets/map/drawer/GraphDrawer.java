@@ -55,11 +55,6 @@ public class GraphDrawer extends GroupDrawer {
         GroupBoundingQuery boundingQuery = drawer.getQuery();
         double scale = drawer.getScale();
 
-        GroupScale groupScale = (GroupScale) drawer.getQuery().getMetaData(group, GroupScale.class);
-        if (groupScale != null) {
-            scale *= groupScale.getCurrentScale(scale, subgroup);
-        }
-
         CanvasLayer canvasLayer = (CanvasLayer) drawer.getQuery().getMetaData("GRAPH", CanvasLayer.class);
         Canvas canvas = canvasLayer.getCanvas();
 
@@ -71,7 +66,12 @@ public class GraphDrawer extends GroupDrawer {
 
         //print what im asking for
         if (subgroup.contains("EDGES")) {
-            Collection edges = boundingQuery.get(group, subgroup, drawer.getViewPortLocation().getX() - epsilonW * scale, drawer.getViewPortLocation().getX() + viewPortWidth + epsilonW * scale, drawer.getViewPortLocation().getY() + viewPortHeight + epsilonH * scale, drawer.getViewPortLocation().getY() - epsilonH * scale);
+            GroupScale groupScale = (GroupScale) drawer.getQuery().getMetaData(group, GroupScale.class);
+            double gscale = 1;
+            if (groupScale != null) {
+                gscale *= groupScale.getCurrentScale(scale, subgroup);
+            }
+            Collection edges = boundingQuery.get(group, subgroup, drawer.getViewPortLocation().getX() - epsilonW * scale * gscale, drawer.getViewPortLocation().getX() + viewPortWidth + epsilonW * scale *gscale, drawer.getViewPortLocation().getY() + viewPortHeight + epsilonH * scale *gscale, drawer.getViewPortLocation().getY() - epsilonH * scale *gscale);
             draw(canvas, graphData, edges, scale);
         }
 

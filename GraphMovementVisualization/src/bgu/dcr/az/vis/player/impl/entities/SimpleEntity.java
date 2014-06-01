@@ -9,6 +9,7 @@ import bgu.dcr.az.vis.player.api.Entity;
 import bgu.dcr.az.vis.player.api.Layer;
 import bgu.dcr.az.vis.player.api.VisualScene;
 import bgu.dcr.az.vis.tools.Location;
+import data.map.impl.wersdfawer.groupbounding.HasId;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -18,17 +19,15 @@ import javafx.beans.property.SimpleObjectProperty;
  *
  * @author Zovadi
  */
-public abstract class SimpleEntity implements Entity {
+public abstract class SimpleEntity implements Entity, HasId {
 
     private final long entityId;
-    private final Class<? extends Layer> layerClazz;
     private final ObjectProperty<Location> locationProperty;
     private final DoubleProperty rotationProperty;
     private final DoubleProperty scaleProperty;
 
-    public SimpleEntity(long entityId, Class<? extends Layer> layerClazz) {
+    public SimpleEntity(long entityId) {
         this.entityId = entityId;
-        this.layerClazz = layerClazz;
         locationProperty = new SimpleObjectProperty<>(new Location());
         rotationProperty = new SimpleDoubleProperty(0);
         scaleProperty = new SimpleDoubleProperty(1);
@@ -39,9 +38,6 @@ public abstract class SimpleEntity implements Entity {
         return entityId;
     }
     
-    public Class<? extends Layer> getLayerClass() {
-        return layerClazz;
-    }
 
     @Override
     public ObjectProperty<Location> locationProperty() {
@@ -81,6 +77,9 @@ public abstract class SimpleEntity implements Entity {
     public void setScale(double scale) {
         scaleProperty.set(scale);
     }
-
-    protected abstract void _draw(Layer layer);
+    
+    @Override
+    public String getId() {
+        return String.valueOf(this.getEntityId());
+    }
 }

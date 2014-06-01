@@ -34,7 +34,7 @@ class FrameProcessor extends AnimationTimer {
     private final DoubleBinding frameDurationInNano;
     private final SimplePlayer player;
 
-    private BooleanProperty d = new SimpleBooleanProperty(true);
+    private BooleanProperty finishedCurrFrame = new SimpleBooleanProperty(true);
 //    private boolean finishedCurrFrame = true;
 
     FrameProcessor(SimplePlayer player) {
@@ -60,8 +60,7 @@ class FrameProcessor extends AnimationTimer {
         }
 
         if (!isPaused && (currentFrame == null || frameProgress == 1)) {
-//            finishedCurrFrame = true;
-            d.set(true);
+            finishedCurrFrame.set(true);
         }
 
         measureFPS(l);
@@ -72,15 +71,11 @@ class FrameProcessor extends AnimationTimer {
             lastFps = fps;
             fps = 0;
             lastSecondStart = l;
-//            System.out.println("fps: " + lastFps);
         }
         fps++;
 
-        
         player.setFramesPerSeccond(lastFps);
-//        CanvasLayer cl = (CanvasLayer) player.getScene().getLayer(CanvasLayer.class);
-//
-//        cl.getCanvas().getGraphicsContext2D().strokeText("fps: " + lastFps, 14, 14);
+
     }
 
     /**
@@ -89,11 +84,10 @@ class FrameProcessor extends AnimationTimer {
      * @param frame
      */
     public void playNextFrame(Frame frame) {
-        d.set(false);
+        finishedCurrFrame.set(false);
         if (frame != null) {
             frame.initialize(player);
             currentFrame = frame;
-//            finishedCurrFrame = false;
             frameStartTime = System.nanoTime();
         }
     }
@@ -133,7 +127,7 @@ class FrameProcessor extends AnimationTimer {
     }
 
     public void addFrameFinishListener(ChangeListener<Boolean> listener) {
-        d.addListener(listener);
+        finishedCurrFrame.addListener(listener);
     }
 
 }

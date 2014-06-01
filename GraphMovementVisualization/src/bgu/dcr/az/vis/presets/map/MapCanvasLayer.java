@@ -22,9 +22,6 @@ public class MapCanvasLayer extends CanvasLayer {
     private GraphData graphData;
     private DrawerInterface drawer;
 
-//    private EdgeDrawer edgeDrawer;
-//    private PolygonDrawer polyDrawer;
-//    private SimplePolygonImageDrawer backGroundImageDrawer;
     /**
      * generates a new canvas layer map from the specified file path. the map is
      * represented by a jgrapht graph.
@@ -37,8 +34,6 @@ public class MapCanvasLayer extends CanvasLayer {
         this.graphData = graphData;
         this.drawer = drawer;
 
-//        graphDrawer = new GraphDrawer(boundingQuery);
-//        graphDrawer.drawGraph(getCanvas(), graphData, 1);
         getCanvas().setCacheHint(CacheHint.SPEED);
         getCanvas().setCache(true);
     }
@@ -49,7 +44,7 @@ public class MapCanvasLayer extends CanvasLayer {
 
     @Override
     public void refresh() {
-        drawer.draw();
+//        drawer.draw();
     }
 
 }

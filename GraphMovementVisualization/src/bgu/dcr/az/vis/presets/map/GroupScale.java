@@ -74,38 +74,12 @@ public abstract class GroupScale {
 
     public double getCurrentScale(double worldScale) {
         if (worldScale > minWorldScale && worldScale < maxWorldScale) {
-            return changeFactor * (1 / worldScale);
+            return changeFactor * (1.0 / worldScale);
         } else {
             return 1;
         }
     }
 
     public abstract double getCurrentScale(double worldScale, String subGroup);
-
-//    /**
-//     * a simple group scale, meaning that all subgroup in group have the same scale.
-//     */
-//    public class SimpleGroupScale extends GroupScale {
-//
-//        @Override
-//        public double getCurrentScale(double worldScale, String subGroup) {
-//            return super.getCurrentScale(worldScale);
-//        }
-//
-//    }
-//
-//    public class GraphGroupScale extends GroupScale {
-//
-//        @Override
-//        public double getCurrentScale(double worldScale, String subGroup) {
-//            if (subGroup.contains("EDGES")) {
-//                return super.getCurrentScale(worldScale);
-//            }
-//            else {
-//                return 1;
-//            }
-//        }
-//
-//    }
 
 }

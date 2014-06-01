@@ -78,18 +78,18 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                 return super.getCurrentScale(worldScale);
             }
         };
-//        GroupScale edgeZoom = new GroupScale(1, 1, 0, 10){
-//            @Override
-//            public double getCurrentScale(double worldScale, String subGroup) {
-//                if (subGroup.contains("EDGES")) {
-//                    return super.getCurrentScale(worldScale);
-//                } else {
-//                    return 1;
-//                }
-//            }  
-//        };
+        GroupScale edgeZoom = new GroupScale(1, 1, 0, 10){
+            @Override
+            public double getCurrentScale(double worldScale, String subGroup) {
+                if (subGroup.contains("EDGES")) {
+                    return super.getCurrentScale(worldScale);
+                } else {
+                    return 1;
+                }
+            }  
+        };
         boundingQuery.addMetaData("MOVING", GroupScale.class, carZoom);
-//        boundingQuery.addMetaData("GRAPH", GroupScale.class, edgeZoom);
+        boundingQuery.addMetaData("GRAPH", GroupScale.class, edgeZoom);
 
         registerLayer(MapCanvasLayer.class, back, back.getCanvas());
         registerLayer(CanvasLayer.class, front, front.getCanvas());
@@ -144,11 +144,8 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                 double mapWidth = mapSize.x;
                 double mapHeight = mapSize.y;
 
-//                System.out.println("BEFORE: " + pane.getPrefWidth() + " " + pane.getPrefHeight());
                 super.setContainerSize(mapWidth * scale, mapHeight * scale);
-//                System.out.println("AFTER: " + pane.getPrefWidth() + " " + pane.getPrefHeight());
 
-//                System.out.println("AFTER (s): " + pane.getWidth() + " " + pane.getHeight());
                 double windowWidth = getViewportBounds().getWidth();
                 double windownHeight = getViewportBounds().getHeight();
 
@@ -200,9 +197,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         Image greenCarImage = new Image(R.class.getResourceAsStream("car-green.jpg"));
         Image blueCarImage = new Image(R.class.getResourceAsStream("car-blue.jpg"));
         for (long i = 0; i < carNum; i++) {
-            DefinedSizeSpriteBasedEntity car = new DefinedSizeSpriteBasedEntity(i, CanvasLayer.class, (Math.random() > 0.5) ? greenCarImage : blueCarImage, DefinedSizeSpriteBasedEntity.SizeParameter.WIDTH, 1.7);
-            addEntity(i, car);
-
+            DefinedSizeSpriteBasedEntity car = new DefinedSizeSpriteBasedEntity(i, (Math.random() > 0.5) ? greenCarImage : blueCarImage, DefinedSizeSpriteBasedEntity.SizeParameter.WIDTH, 1.7);
             boundingQuery.addToGroup("MOVING", "CARS", 10, 10, car.getRealHeight(), car.getRealWidth(), car);
         }
 
@@ -271,7 +266,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 //                    newW = newW / newH * MAX_BUILDING_HEIGHT;
 //                    newH = MAX_BUILDING_HEIGHT;
 //                }
-                DefinedSizeSpriteBasedEntity entity = new DefinedSizeSpriteBasedEntity(i, MapCanvasLayer.class, buildingImage, newW, newH);
+                DefinedSizeSpriteBasedEntity entity = new DefinedSizeSpriteBasedEntity(i, buildingImage, newW, newH);
                 entity.setLocation(new Location(poly.getCenter().x, poly.getCenter().y));
                 boundingQuery.addToGroup("SPRITES", "building", poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), entity);
                 i++;

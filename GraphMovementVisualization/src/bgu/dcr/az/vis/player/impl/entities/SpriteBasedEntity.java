@@ -16,28 +16,25 @@ import javafx.scene.image.Image;
  *
  * @author Zovadi
  */
-public class SpriteBasedEntity extends CanvasLayeredEntity {
+public class SpriteBasedEntity extends SimpleEntity {
 
     private final Image image;
 
-    public SpriteBasedEntity(long entityId, Class<? extends Layer> layerClazz, String filepath) throws FileNotFoundException {
-        this(entityId, layerClazz, new FileInputStream(filepath));
+    public SpriteBasedEntity(long entityId, String filepath) throws FileNotFoundException {
+        this(entityId, new FileInputStream(filepath));
     }
 
-    public SpriteBasedEntity(long entityId, Class<? extends Layer> layerClazz, InputStream in) {
-        this(entityId, layerClazz, new Image(in));
+    public SpriteBasedEntity(long entityId, InputStream in) {
+        this(entityId, new Image(in));
     }
 
-    public SpriteBasedEntity(long entityId, Class<? extends Layer> layerClazz, Image image) {
-        super(entityId, layerClazz);
-
+    public SpriteBasedEntity(long entityId, Image image) {
+        super(entityId);
         this.image = image;
     }
 
-    @Override
-    protected final void _draw(GraphicsContext gc) {
-        gc.translate(-image.getWidth() / 2.0, -image.getHeight() / 2.0);
-        gc.drawImage(image, 0, 0, image.getWidth(), image.getHeight());
+    public Image getImage() {
+        return image;
     }
 
 }

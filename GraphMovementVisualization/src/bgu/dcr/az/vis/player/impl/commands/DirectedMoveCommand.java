@@ -27,14 +27,5 @@ public class DirectedMoveCommand extends MoveCommand {
         super._update(percentage);
     }
 
-//    @Override
-//    public Command subAction(double percentageFrom, double percentageTo) {
-//        double dx = to.getX() - from.getX();
-//        double dy = to.getY() - from.getY();
-//
-//        return new DirectedMoveAction(getEntityId(),
-//                new Location(from.getX() + dx * percentageFrom, from.getY() + dy * percentageFrom),
-//                new Location(from.getX() + dx * percentageTo, from.getY() + dy * percentageTo));
-//    }
 
 }

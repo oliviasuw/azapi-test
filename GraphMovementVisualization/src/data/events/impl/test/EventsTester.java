@@ -50,7 +50,7 @@ public class EventsTester {
         eventWriter = new EventWriter(kryo);
         eventReader = new EventReader(kryo);
         try {
-            input = new Input(new FileInputStream("file.bin"));
+            input = new Input(new FileInputStream("file (4).bin"));
 //            output = new Output(new FileOutputStream("file.bin"));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(EventsTester.class.getName()).log(Level.SEVERE, null, ex);

@@ -23,12 +23,12 @@ public class TestProgressCell extends ListCell<Test> {
     Label label = new Label("");
     ProgressBar progressRect = new ProgressBar();
     BorderPane content = new BorderPane();
-    
+
     DefaultExperimentProgress progress;
 
     public TestProgressCell(DefaultExperimentProgress progress) {
         this.progress = progress;
-        
+
         BorderPane.setMargin(progressRect, new Insets(2));
         BorderPane.setMargin(progressRect, new Insets(2, 0, 0, 0));
         BorderPane.setAlignment(label, Pos.BOTTOM_LEFT);
@@ -42,6 +42,12 @@ public class TestProgressCell extends ListCell<Test> {
         content.setCenter(label);
     }
 
+    public void update() {
+        if (getItem() != null) {
+            updateItem(getItem(), false);
+        }
+    }
+
     @Override
     public void updateItem(Test t, boolean empty) {
         super.updateItem(t, empty);
@@ -50,7 +56,6 @@ public class TestProgressCell extends ListCell<Test> {
         }
         label.textProperty().set("Test: " + t.getName());
 
-        
         if (progress.isTestFinished(t.getName())) {
             progressRect.setProgress(1);
         } else if (t.getName().equals(progress.getCurrentTestName())) {
@@ -58,9 +63,9 @@ public class TestProgressCell extends ListCell<Test> {
         } else {
             progressRect.setProgress(0);
         }
-        
+
         setGraphic(content);
-        
+
     }
 
 }

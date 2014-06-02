@@ -10,7 +10,9 @@ import bgu.dcr.az.conf.registery.Register;
 import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.execs.exps.ExecutionTree;
 import bgu.dcr.az.execs.exps.ExperimentProgressInspector;
+import static bgu.dcr.az.execs.exps.exe.Simulation.EXECUTION_INFO_DATA_TABLE;
 import bgu.dcr.az.execs.exps.prog.DefaultExperimentProgress;
+import bgu.dcr.az.execs.orm.api.EmbeddedDatabaseManager;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,6 +26,7 @@ import java.util.stream.IntStream;
 public abstract class Test extends ExecutionTree {
 
     private String name = "UNNAMED TEST";
+    private EmbeddedDatabaseManager dbm;
 
     /**
      * @propertyName name
@@ -48,8 +51,16 @@ public abstract class Test extends ExecutionTree {
         final InfoStream infoStream = infoStream();
 
         for (ExecutionTree e : this) {
-            e.installInto(this);
+            Simulation sim = (Simulation) e;
+            sim.installInto(this);
+            
+            //install statistic support
+            BaseStatisticFields info = sim.configuration().baseStatisticFields();
+            dbm.defineTable(EXECUTION_INFO_DATA_TABLE, info.getClass());
+            
+            //notify the new simulation
             infoStream.write(e, Simulation.class);
+            
             e.execute();
         }
     }
@@ -57,6 +68,7 @@ public abstract class Test extends ExecutionTree {
     @Override
     public final void installInto(ModuleContainer mc) {
         super.installInto(mc);
+        dbm = require(EmbeddedDatabaseManager.class);
         initialize((DefaultExperimentRoot) mc);
 
         if (mc.isInstalled(DefaultExperimentProgress.class)) {

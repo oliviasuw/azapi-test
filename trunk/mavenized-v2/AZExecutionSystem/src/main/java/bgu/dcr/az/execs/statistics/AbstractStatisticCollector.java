@@ -63,7 +63,7 @@ public abstract class AbstractStatisticCollector implements StatisticCollector, 
                     }
                     fields.append(", ").append(f.getName());
                 }
-                for (Field f : ReflectionUtils.allFields(sim.getInfo().getClass())) {
+                for (Field f : ReflectionUtils.allFields(sim.configuration().baseStatisticFields().getClass())) {
                     if (f.getName().equals("index")) {
                         continue;
                     }

@@ -20,8 +20,6 @@ import bgu.dcr.az.mui.ControllerRegistery;
 import bgu.dcr.az.mui.RegisterController;
 import bgu.dcr.az.mui.jfx.FXMLController;
 import bgu.dcr.az.mui.modules.StatusSyncer;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -32,7 +30,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 
 /**
  * FXML Controller class
@@ -121,7 +118,7 @@ public class StatusPage extends FXMLController {
     private void installProgressPane(DefaultExperimentProgress progress) {
         infoStream().listen(StatusSyncer.Sync.class, sync -> {
             progressBar.setProgress(progress.getExperimentProgress());
-            executionNumberLabel.setText("Execution " + progress.getCurrentExecutedExecutionNumeber() + " of " + progress.getNumberOfExecutions());
+            executionNumberLabel.setText("Execution " + (progress.getCurrentExecutedExecutionNumeber()+1) + " of " + progress.getNumberOfExecutions());
         });
     }
 

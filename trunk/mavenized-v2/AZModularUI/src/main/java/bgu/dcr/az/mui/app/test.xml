@@ -4,5 +4,9 @@
         <algorithm name="SBB"/>
         <dcop-unstructured n="5" d="5"/>
         <default-tester/>
+        
+        <cc-sc />
+        <nccc-sc />
+        <ncsc-sc />
     </cp-test>
 </experiment>

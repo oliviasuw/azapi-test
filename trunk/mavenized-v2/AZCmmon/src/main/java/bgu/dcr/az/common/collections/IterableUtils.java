@@ -38,7 +38,7 @@ public class IterableUtils {
     public static <T> Iterable<T> combine(Iterable<T> a, Iterable<T> b) {
         return () -> {
             Iterator<T> ia = a.iterator();
-            Iterator<T> ib = a.iterator();
+            Iterator<T> ib = b.iterator();
 
             return new Iterator<T>() {
 

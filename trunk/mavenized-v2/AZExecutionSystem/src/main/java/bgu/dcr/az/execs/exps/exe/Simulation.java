@@ -36,7 +36,6 @@ public class Simulation<T extends SimulationData, R> extends ExecutionTree {
     private final SimulationResult<R> result = new SimulationResult().toNotRunYetState();
     private ExecutionEnvironment env = ExecutionEnvironment.async;
     private final int executionNumber;
-    private BaseStatisticFields info;
     private final SimulationConfiguration conf;
     private InfoStreamWrapperProc istream;
 
@@ -137,14 +136,9 @@ public class Simulation<T extends SimulationData, R> extends ExecutionTree {
         return executionNumber;
     }
 
-    public BaseStatisticFields getInfo() {
-        return info;
-    }
-
     private void writeBaseStatisticsFields() {
         EmbeddedDatabaseManager db = require(EmbeddedDatabaseManager.class);
-        info = conf.baseStatisticFields();
-        db.defineTable(EXECUTION_INFO_DATA_TABLE, info.getClass());
+        BaseStatisticFields info = conf.baseStatisticFields();
         info.index = getSimulationNumber();
         db.insert(info);
     }

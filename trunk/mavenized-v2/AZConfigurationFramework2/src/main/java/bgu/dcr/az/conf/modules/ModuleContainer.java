@@ -55,10 +55,11 @@ public class ModuleContainer implements Module {
      * a nasty hack to allow the configuration framework to work with module
      * container - do not call this method yourself!
      *
+     * @UIVisibility false
      * @return
      */
     public Collection<Module> getAllModules() {
-        return new ModuleCollection();
+        return new ModuleCollectionHack();
     }
 
     /**
@@ -476,7 +477,7 @@ public class ModuleContainer implements Module {
         }
     }
 
-    private class ModuleCollection implements Collection<Module> {
+    private class ModuleCollectionHack implements Collection<Module> {
 
         @Override
         public int size() {
@@ -495,7 +496,7 @@ public class ModuleContainer implements Module {
 
         @Override
         public Iterator<Module> iterator() {
-            return supplied.values().stream().flatMap(v -> v.stream()).collect(Collectors.toSet()).iterator();
+            return Collections.EMPTY_LIST.iterator();
         }
 
         @Override

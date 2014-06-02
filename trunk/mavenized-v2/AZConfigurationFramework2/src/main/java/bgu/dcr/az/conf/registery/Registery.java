@@ -39,6 +39,8 @@ public class Registery {
             //load classes
             System.err.println("Scanning registery");
 
+            long time = System.currentTimeMillis();
+            
             Reflections ref = new Reflections(AUTOGEN_CONF_PACKEGE, new SubTypesScanner());
             Set services = ref.getSubTypesOf(RegistrationMarker.class);
             for (Object service : services) {
@@ -48,7 +50,8 @@ public class Registery {
                     Logger.getLogger(Registery.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            System.err.println("Done Scanning");
+            
+            System.err.println("Done Scanning [took: " + (System.currentTimeMillis() - time) + "ms]");
 
         }
 

@@ -21,33 +21,32 @@ import javafx.util.Duration;
  *
  * @author bennyl
  */
-public class StatusSyncer implements Module<RootController> {
+public class SyncPulse implements Module<RootController> {
 
     private int sps;
     private Timeline timer;
-    private ExperimentProgress progress;
+    private Sync s;
 
-    public StatusSyncer(int sps, ExperimentProgress progress) {
+    public SyncPulse(int sps) {
         this.sps = sps;
-        this.progress = progress;
     }
 
     public int getSyncsPerSecond() {
         return sps;
     }
 
-    public ExperimentProgress getProgress() {
-        return progress;
+    public void stop() {
+        s.last = true;
     }
 
     @Override
     public void installInto(RootController mc) {
-        Sync s = new Sync(progress);
+        s = new Sync();
         InfoStream is = mc.require(InfoStream.class);
 
         timer = new Timeline(new KeyFrame(Duration.millis(1000.0 / sps), a -> {
             is.write(s, Sync.class);
-            if (!progress.isExperimentRunning()) {
+            if (s.last) {
                 timer.stop();
             }
         }));
@@ -58,18 +57,10 @@ public class StatusSyncer implements Module<RootController> {
 
     public static class Sync {
 
-        private ExperimentProgress progress;
-
-        public Sync(ExperimentProgress progress) {
-            this.progress = progress;
-        }
+        boolean last = false;
 
         public boolean isLast() {
-            return !progress.isExperimentRunning();
-        }
-
-        public ExperimentProgress getProgress() {
-            return progress;
+            return last;
         }
 
     }

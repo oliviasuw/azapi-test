@@ -145,7 +145,7 @@ public class H2EmbeddedDatabaseManager implements EmbeddedDatabaseManager {
         }
 
         for (TableMetadata t : tables().values()) {
-            System.out.println("writing table " + t.name());
+//            System.out.println("writing table " + t.name());
             try (Statement sts = connection.createStatement();
                     ResultSet rs = sts.executeQuery("select * from " + t.name())) {
                 File ff = new File(folder.getAbsolutePath() + "/" + t.name() + ".csv");

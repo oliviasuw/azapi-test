@@ -16,10 +16,12 @@ public class ModuleUninstalled {
 
     private Module module;
     private ModuleContainer container;
+    private Class[] keysRemoved;
 
-    public ModuleUninstalled(Module module, ModuleContainer container) {
+    public ModuleUninstalled(Module module, ModuleContainer container, Class[] keysRemoved) {
         this.module = module;
         this.container = container;
+        this.keysRemoved = keysRemoved;
     }
 
     public ModuleContainer getContainer() {
@@ -28,6 +30,10 @@ public class ModuleUninstalled {
 
     public Module getModule() {
         return module;
+    }
+
+    public Class[] getKeysRemoved() {
+        return keysRemoved;
     }
 
 }

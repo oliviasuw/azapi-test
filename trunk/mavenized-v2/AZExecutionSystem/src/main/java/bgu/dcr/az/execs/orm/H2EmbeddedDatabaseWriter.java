@@ -83,7 +83,7 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
     private void execute(ExecuteCommand cmd) throws SQLException {
         if (cmd.parameters == null || cmd.parameters.length == 0) {
             try (Statement st = manager.getConnection().createStatement()) {
-                System.out.println("executing: \n" + cmd.sql);
+//                System.out.println("executing: \n" + cmd.sql);
                 st.execute(cmd.sql);
             }
         } else {
@@ -91,7 +91,7 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
                 for (int i = 0; i < cmd.parameters.length; i++) {
                     st.setObject(i + 1, cmd.parameters[i]);
                 }
-                System.out.println("executing: \n" + st.toString());
+//                System.out.println("executing: \n" + st.toString());
                 st.execute();
             }
         }
@@ -310,7 +310,7 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
             exe.append(", PRIMARY KEY (ID));");
 
             try (Statement st = connection.createStatement()) {
-                System.out.println("creating table: \n" + exe.toString());
+//                System.out.println("creating table: \n" + exe.toString());
                 st.executeUpdate(exe.toString());
             }
         }

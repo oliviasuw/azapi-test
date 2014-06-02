@@ -120,8 +120,6 @@
  
 	#status-page #content {-fx-background-color: -base-screen-color;}
  
-	/*#status-page #experiment-view-container {-fx-background-color: derive(-base-screen-color,-50%);}*/
- 
 	#status-page .list-view {-fx-background-color: -treeview-background;}
         
 	#status-page .list-view .label {

@@ -40,6 +40,7 @@ public class ModuleContainer implements Module {
     private ModuleContainer parent = null;
     private boolean eagerInitialization = false;
 
+    //new uninitialized modules will go into awaitingInitializationModules, when they are initialized they will go into the reverseLookup
     private Map<Module, ModuleInfo> reverseLookup = new IdentityHashMap<>();
     private Map<Module, ModuleInfo> awaitingInitializationModules = new IdentityHashMap<Module, ModuleInfo>();
 
@@ -369,13 +370,62 @@ public class ModuleContainer implements Module {
     }
 
     /**
+     * uninstall all the modules that was installed from the given module class
+     * (actual uninstalled modules can still be contained in this container if
+     * they are installed with a diffrent moduleKey)
+     *
+     * if this module container contains {@link InfoStream} then it will notify
+     * on the stream about this removal using the info-class:
+     * {@link ModuleUninstalled}
+     *
+     * note that this method is not recursive! so you cannot remove modules that
+     * installed in the parent using this method
+     *
+     * @param moduleClass
+     */
+    public void uninstallLocally(Class<? extends Module> moduleClass) {
+        List<Module> modules = supplied.remove(moduleClass);
+        Class[] moduleClassArray = {moduleClass};
+
+        if (modules != null) {
+            InfoStream i = get(InfoStream.class);
+            for (Module module : modules) {
+
+                //get how many times the module is registered (refcount)
+                ModuleInfo info = awaitingInitializationModules.get(module);
+                if (info == null) {
+                    info = reverseLookup.get(module);
+                }
+
+                //reduce refcount
+                info.registration.remove(moduleClass);
+
+                //if no more registeration - remove from lookup tables.
+                if (info.registration.isEmpty()) {
+                    awaitingInitializationModules.remove(module);
+                    reverseLookup.remove(module);
+                }
+
+                //notify
+                if (i != null) {
+                    i.writeIfListening(() -> new ModuleUninstalled(module, this, moduleClassArray), ModuleUninstalled.class);
+                }
+            }
+        }
+
+    }
+
+    /**
      * uninstall the given module from the module container, if this module
      * container contains {@link InfoStream} then he will notify on the stream
      * about this removal using the info-class: {@link ModuleUninstalled}
      *
+     * note that this method is not recursive! so you cannot remove modules that
+     * installed in the parent using this method
+     *
      * @param module
      */
-    public void uninstall(Module module) {
+    public void uninstallLocally(Module module) {
         if (awaitingInitializationModules.remove(module) != null) {
             return;
         }
@@ -389,8 +439,22 @@ public class ModuleContainer implements Module {
 
         InfoStream i = get(InfoStream.class);
         if (i != null) {
-            i.writeIfListening(() -> new ModuleUninstalled(module, this), ModuleUninstalled.class);
+            final Class[] registrationArray = info.registration.toArray(new Class[info.registration.size()]);
+            i.writeIfListening(() -> new ModuleUninstalled(module, this, registrationArray), ModuleUninstalled.class);
         }
+    }
+
+    /**
+     * same as calling: {@link #uninstallLocally(java.lang.Class)}{@code (type)}
+     * and then
+     * {@link #install(java.lang.Class, bgu.dcr.az.conf.modules.Module)}{@code (type, module)}
+     *
+     * @param type
+     * @param module
+     */
+    public void reinstallLocally(Class<? extends Module> type, Module module) {
+        uninstallLocally(type);
+        install(type, module);
     }
 
     /**

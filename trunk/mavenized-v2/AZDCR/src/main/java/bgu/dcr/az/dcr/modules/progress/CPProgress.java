@@ -56,7 +56,15 @@ public class CPProgress extends ExperimentProgressInspector {
         });
     }
 
-    public RTStat getRuntimeStatistic(String test, String algorithmInstance) {
+    public Iterable<String> tests() {
+        return statistics.keySet();
+    }
+
+    public Iterable<String> algorithmsIn(String test) {
+        return statistics.get(test).keySet();
+    }
+
+    public RTStat stat(String test, String algorithmInstance) {
         return statistics.get(test).get(algorithmInstance);
     }
 

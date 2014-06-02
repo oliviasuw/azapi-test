@@ -12,12 +12,12 @@ import bgu.dcr.az.conf.registery.Register;
  * @author User
  */
 @Register("assign")
-public class AlgorithemVariableAssignment {
+public class AlgorithmVariableAssignment {
 
     String propertyName;
     String value;
 
-    public AlgorithemVariableAssignment() {
+    public AlgorithmVariableAssignment() {
     }
 
     /**

@@ -32,7 +32,12 @@ public class DefaultCorrectnessTester extends CPCorrectnessTester {
         Assignment ass;
         final Problem globalProblem = exec.data().getProblem();
         Status stat;
-        final MACSolver solver = new MACSolver();
+
+        if (result.getSolution().getState() == CPSolution.State.SOLUTION && result.getSolution().getAssignment().keySet().size() != exec.configuration().numAgents()) {
+            result.toCrushState(new RuntimeException("All agents must have assignments in a solution state!"));
+            return;
+        }
+
         switch (exec.data().getProblem().type()) {
             case ADCOP:
             case DCOP:
@@ -42,6 +47,7 @@ public class DefaultCorrectnessTester extends CPCorrectnessTester {
                 }
                 break;
             case DCSP:
+                final MACSolver solver = new MACSolver();
                 stat = solver.solve(globalProblem);
                 switch (stat) {
                     case imposible:

@@ -10,7 +10,9 @@ import bgu.dcr.az.conf.registery.Register;
 import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.conf.modules.info.PipeInfoStream;
 import bgu.dcr.az.execs.exps.ExecutionTree;
+import bgu.dcr.az.execs.exps.ExperimentFailedException;
 import bgu.dcr.az.execs.exps.ExperimentProgressInspector;
+import bgu.dcr.az.execs.exps.ModularExperiment;
 import static bgu.dcr.az.execs.exps.exe.Simulation.EXECUTION_INFO_DATA_TABLE;
 import bgu.dcr.az.execs.exps.prog.DefaultExperimentProgress;
 import bgu.dcr.az.execs.orm.api.EmbeddedDatabaseManager;
@@ -52,7 +54,7 @@ public abstract class Test extends ExecutionTree {
     }
 
     @Override
-    public void execute() {
+    public void execute() throws ExperimentFailedException {
         final InfoStream infoStream = infoStream();
 
         for (ExecutionTree e : this) {
@@ -64,20 +66,26 @@ public abstract class Test extends ExecutionTree {
             dbm.defineTable(EXECUTION_INFO_DATA_TABLE, info.getClass());
 
             //notify the new simulation
-            infoStream.write(e, Simulation.class);
+            infoStream.write(sim, Simulation.class);
 
-            e.execute();
+            sim.execute();
+
+            SimulationResult.State state = sim.result().getState();
+
+            if (state != SimulationResult.State.SUCCESS && state != SimulationResult.State.LIMITED) {
+                throw new ExperimentFailedException(sim);
+            }
         }
     }
 
     @Override
-    public final void installInto(ModuleContainer mc) {
+    public final void installInto(ModuleContainer mc
+    ) {
         install(InfoStream.class, pipinf = new PipeInfoStream(mc.require(InfoStream.class)));
-        
+
         //TODO: should make _installInto instead with proper positioning
         super.installInto(mc);
-        
-        
+
         dbm = require(EmbeddedDatabaseManager.class);
         initialize((DefaultExperimentRoot) mc);
 

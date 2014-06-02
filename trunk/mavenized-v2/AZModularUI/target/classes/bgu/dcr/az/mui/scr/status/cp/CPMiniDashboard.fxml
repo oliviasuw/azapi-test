@@ -18,9 +18,6 @@
   </rowConstraints>
    <children>
       <TitledPane id="experimentViewContainer" animated="false" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="-1.0" prefWidth="-1.0" styleClass="section-pane" text="" GridPane.columnIndex="1">
-         <content>
-            <BorderPane fx:id="coreUsageChartContainer" prefHeight="200.0" prefWidth="200.0" styleClass="chart-container" />
-         </content>
          <graphic>
             <Label text="Core Usage per Algorithm">
                <graphic>
@@ -32,6 +29,16 @@
                </graphic>
             </Label>
          </graphic>
+         <content>
+            <BarChart fx:id="coresNumChart" legendSide="LEFT" legendVisible="false">
+              <xAxis>
+                <NumberAxis minorTickCount="1" side="BOTTOM" tickLength="1.0" tickUnit="1.0" />
+              </xAxis>
+              <yAxis>
+                <CategoryAxis side="LEFT" />
+              </yAxis>
+            </BarChart>
+         </content>
       </TitledPane>
       <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" styleClass="section-pane" text="">
          <graphic>
@@ -46,7 +53,7 @@
             </Label>
          </graphic>
          <content>
-            <PieChart fx:id="cputimeChart" />
+            <PieChart fx:id="cputimeChart" legendVisible="false" />
          </content>
       </TitledPane>
    </children>

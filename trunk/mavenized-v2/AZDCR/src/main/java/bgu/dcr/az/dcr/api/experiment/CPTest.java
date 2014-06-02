@@ -13,6 +13,7 @@ import bgu.dcr.az.dcr.api.problems.Problem;
 import bgu.dcr.az.dcr.modules.progress.CPProgress;
 import bgu.dcr.az.execs.api.statistics.StatisticCollector;
 import bgu.dcr.az.execs.exps.ExperimentProgressInspector;
+import bgu.dcr.az.execs.exps.exe.AdaptiveScheduler;
 import bgu.dcr.az.execs.exps.exe.ExecutionEnvironment;
 import bgu.dcr.az.execs.exps.exe.Looper;
 import bgu.dcr.az.execs.exps.exe.Simulation;
@@ -70,6 +71,8 @@ public class CPTest extends Test {
 
         AlgorithmDef adef = algorithms.get(index % algorithms.size());
 
+        require(AdaptiveScheduler.class).setGroup(adef);
+        
         CPData data = new CPData(new CPSolution(p), p, adef, getLooper().getRunningVariableName(), getLooper().getRunningVariableValue(iteration));
 
         BaseCPStatisticFields fields = new BaseCPStatisticFields();

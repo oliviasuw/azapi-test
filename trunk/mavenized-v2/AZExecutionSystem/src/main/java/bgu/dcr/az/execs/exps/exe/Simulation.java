@@ -108,7 +108,7 @@ public class Simulation<T extends SimulationData, R> extends ExecutionTree {
         try {
             writeBaseStatisticsFields();
             AdaptiveScheduler sched = require(AdaptiveScheduler.class);
-
+            
             ThreadSafeProcTable table = new ThreadSafeProcTable();
             table.add(istream);
 

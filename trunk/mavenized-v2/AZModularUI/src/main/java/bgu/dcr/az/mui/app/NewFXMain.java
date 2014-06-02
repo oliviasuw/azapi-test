@@ -8,7 +8,7 @@ package bgu.dcr.az.mui.app;
 import bgu.dcr.az.common.exceptions.UnexpectedException;
 import bgu.dcr.az.common.ui.FXUtils;
 import bgu.dcr.az.conf.api.ConfigurationException;
-import bgu.dcr.az.execs.exps.ExperimentProgress;
+import bgu.dcr.az.execs.exps.ExperimentFailedException;
 import bgu.dcr.az.execs.exps.ModularExperiment;
 import bgu.dcr.az.mui.RootController;
 import bgu.dcr.az.mui.modules.SyncPulse;
@@ -17,6 +17,7 @@ import java.io.IOException;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.controlsfx.dialog.Dialogs;
 
 /**
  *
@@ -32,7 +33,7 @@ public class NewFXMain extends Application {
             long time = System.currentTimeMillis();
             System.out.println("Reading experiment... ");
             ModularExperiment exp = ModularExperiment.createDefault(getClass().getResourceAsStream("test.xml"), true);
-            
+
             System.out.println("[" + (System.currentTimeMillis() - time) + "] initializing modules... ");
             time = System.currentTimeMillis();
             exp.initializeModules();
@@ -54,10 +55,17 @@ public class NewFXMain extends Application {
             primaryStage.setScene(scene);
             primaryStage.setMaximized(true);
             primaryStage.setOnCloseRequest(e -> System.exit(0));
-            
-            new Thread(exp::execute).start();
+
+            new Thread(() -> {
+                try {
+                    exp.execute();
+                } catch (ExperimentFailedException ex) {
+                    FXUtils.invokeInUI(()
+                            -> Dialogs.create().showException(ex));
+                }
+            }).start();
             primaryStage.show();
-            
+
         } catch (ConfigurationException ex) {
             throw new UnexpectedException(ex);
         }

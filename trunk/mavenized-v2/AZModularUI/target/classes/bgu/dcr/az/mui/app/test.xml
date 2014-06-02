@@ -1,6 +1,6 @@
 <experiment>
     
-    <cp-test name="COPs tests">
+<!--    <cp-test name="COPs tests">
         <for-loop run-var="p1" start="0.1" end="0.9" tick-size="0.1" repeat-count="100"/>
         <algorithm name="SBB"/>
         <algorithm name="ADOPT"/>
@@ -11,17 +11,17 @@
         <cc-sc />
         <nccc-sc />
         <ncsc-sc />
-    </cp-test>
+    </cp-test>-->
     
     <cp-test name="CSPs tests">
-        <for-loop run-var="p2" start="0.1" end="0.9" tick-size="0.1" repeat-count="100"/>
-        <algorithm name="SBT"/>
+        <for-loop run-var="p1" start="0.1" end="0.9" tick-size="0.1" repeat-count="100"/>
         <algorithm name="ABT"/>
-        <algorithm name="NESTED_ABT"/>
+<!--        <algorithm name="NESTED_ABT"/>
+        <algorithm name="SBT"/>
         <algorithm name="AFC"/>
-        <algorithm name="AFC-NG"/>
-        <dcsp-unstructured p1="0.63" n="10" d="10"/>
-        <default-tester/>
+        <algorithm name="AFC-NG"/>-->
+        <dcsp-unstructured p2="0.64" n="10" d="10"/>
+        <!--<default-tester/>-->
         
         <cc-sc />
         <nccc-sc />

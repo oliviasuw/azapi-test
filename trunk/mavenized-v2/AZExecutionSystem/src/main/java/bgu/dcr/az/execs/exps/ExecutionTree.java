@@ -56,7 +56,7 @@ public abstract class ExecutionTree extends ModuleContainer implements Iterable<
      * execute all the children on this execution tree and than perform the
      * execution that is needed to this node
      */
-    public abstract void execute();
+    public abstract void execute() throws ExperimentFailedException;
 
     /**
      * @return the amount of executions that are needed to run, note that this

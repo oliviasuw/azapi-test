@@ -6,6 +6,7 @@
 package bgu.dcr.az.mui.scr.status;
 
 import bgu.dcr.az.conf.api.ConfigurationException;
+import bgu.dcr.az.conf.modules.Module;
 import bgu.dcr.az.conf.ui.ConfigurationEditor;
 import bgu.dcr.az.conf.utils.ConfigurationUtils;
 import bgu.dcr.az.execs.api.statistics.StatisticCollector;
@@ -67,9 +68,9 @@ public class StatusPage extends FXMLController {
         DefaultExperimentProgress progress = require(ModularExperiment.class).get(DefaultExperimentProgress.class);
 
         installTestList(experimentRoot, progress);
+        installMinidash();
         installExperimentView();
         installProgressPane(progress);
-        installMinidash();
     }
 
     public static boolean accept(BaseController c) {
@@ -99,7 +100,7 @@ public class StatusPage extends FXMLController {
                 throw new NullPointerException("test cannot be null");
             } else {
                 loadExperimentView(newValue);
-                reinstallLocally(Test.class, newValue); //notify selection
+                infoStream().write(new SelectionChangedInfo(newValue));
             }
         });
 
@@ -134,6 +135,20 @@ public class StatusPage extends FXMLController {
                     .text("Cannot found mini-dashboard controller.")
                     .showWarning();
         }
+    }
+
+    public static class SelectionChangedInfo {
+
+        Test selection;
+
+        public SelectionChangedInfo(Test selection) {
+            this.selection = selection;
+        }
+
+        public Test getSelection() {
+            return selection;
+        }
+
     }
 
 }

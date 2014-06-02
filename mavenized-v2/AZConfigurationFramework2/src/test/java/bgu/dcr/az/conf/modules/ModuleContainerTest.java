@@ -59,38 +59,63 @@ public class ModuleContainerTest {
         assertTrue("two modules was loaded", lall.size() == 2);
         assertTrue("what we put we get", lall.containsAll(Arrays.asList(tm1, tm12)));
     }
-    
+
     @Test
-    public void testNoReplicationOfModulesToParent(){
+    public void testRequireAllIterator() {
+        ModuleContainer root = new ModuleContainer();
+        ModuleContainer mc = new ModuleContainer();
+        root.install(mc);
+        TestModule1 tm1 = new TestModuleExtending1();
+        TestModule2 tm2 = new TestModule2();
+        mc.install(tm1);
+        mc.install(tm2);
+        
+        root.initializeModules();
+
+        int sum = 0;
+        for (TestModule1 module : mc.requireAll(TestModule1.class)) {
+            sum++;
+            if (module != tm1) {
+                fail("iterator return unexpected item");
+            }
+        }
+        
+        if (sum > 1) {
+            fail("iterator return too much elements: " + sum);
+        }
+    }
+
+    @Test
+    public void testNoReplicationOfModulesToParent() {
         ModuleContainer root = new ModuleContainer();
         ModuleContainer child = new ModuleContainer();
-        
+
         root.install(ModuleContainer.class, child);
         child.install(TestModule1.class, new TestModule1());
-        
+
         assertTrue(IterableUtils.toList(root.requireAll(ModuleContainer.class)).size() == 1);
         assertTrue(IterableUtils.toList(child.requireAll(ModuleContainer.class)).isEmpty());
         assertTrue(0 == IterableUtils.toList(root.requireAll(TestModule1.class)).size());
         assertTrue(IterableUtils.toList(child.requireAll(TestModule1.class)).size() == 1);
     }
-    
+
     @Test
-    public void testLazyInitialization(){
+    public void testLazyInitialization() {
         ModuleContainer root = new ModuleContainer();
         TestModule1 tm1 = new TestModule1();
         root.install(tm1);
-        
+
         assertTrue(!tm1.isInitialized());
         root.initializeModules();
         assertTrue(tm1.isInitialized());
     }
-    
+
     @Test
-    public void testEagerInitialization(){
+    public void testEagerInitialization() {
         ModuleContainer root = new ModuleContainer(true);
         TestModule1 tm1 = new TestModule1();
         root.install(tm1);
-        
+
         assertTrue(tm1.isInitialized());
     }
 

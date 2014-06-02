@@ -69,6 +69,7 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
                 commitBatch();
             }
         } catch (InterruptedException | SQLException ex) {
+            ex.printStackTrace();
             try {
                 terminate();
             } catch (SQLException ex1) {

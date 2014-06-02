@@ -46,7 +46,8 @@ public class DefaultExperimentRoot extends ExecutionTree {
 
     @Override
     public void execute() {
-        for (Test t : requireAll(Test.class)) {
+        final Iterable<Test> tests = requireAll(Test.class);
+        for (Test t : tests) {
             infoStream().write(t, Test.class);
             t.execute();
         }

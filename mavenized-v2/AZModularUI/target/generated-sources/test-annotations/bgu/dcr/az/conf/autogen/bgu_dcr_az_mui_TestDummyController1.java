@@ -22,7 +22,7 @@ public class bgu_dcr_az_mui_TestDummyController1 implements ControllerManipulato
 
     @Override
     public boolean accept(BaseController container) {
-        return true;
+        return bgu.dcr.az.mui.TestDummyController1.accept(container);
     }
 
     @Override

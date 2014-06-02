@@ -7,7 +7,6 @@ package bgu.dcr.az.mui.modules;
 
 import bgu.dcr.az.conf.modules.Module;
 import bgu.dcr.az.conf.modules.info.InfoStream;
-import bgu.dcr.az.execs.exps.ExperimentProgress;
 import bgu.dcr.az.mui.RootController;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

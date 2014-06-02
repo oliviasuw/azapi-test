@@ -13,6 +13,7 @@ import bgu.dcr.az.conf.modules.ModuleContainer;
 import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.conf.modules.info.SimpleInfoStream;
 import bgu.dcr.az.execs.exps.exe.AdaptiveScheduler;
+import bgu.dcr.az.execs.exps.exe.SimulationResult;
 import bgu.dcr.az.execs.exps.prog.DefaultExperimentProgress;
 import bgu.dcr.az.execs.orm.api.EmbeddedDatabaseManager;
 import bgu.dcr.az.execs.orm.H2EmbeddedDatabaseManager;
@@ -46,14 +47,12 @@ public final class ModularExperiment extends ModuleContainer {
         install(exec);
     }
 
-    public void execute() {
+    public void execute() throws ExperimentFailedException {
         ExecutionTree ex = require(ExecutionTree.class);
         initializeModules(); //start the container if not already started
-        final ExperimentProgress experimentProgress = new ExperimentProgress(this);
 
         System.out.println("Experiment Started!");
         ex.execute();
-        experimentProgress.setRunning(false);
         System.out.println("Experiment completed!");
     }
 
@@ -63,7 +62,7 @@ public final class ModularExperiment extends ModuleContainer {
 
     @Override
     public void initializeModules() {
-        super.initializeModules(); 
+        super.initializeModules();
     }
 
     /**

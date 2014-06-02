@@ -10,6 +10,7 @@ import bgu.dcr.az.execs.exps.ExperimentProgressInspector;
 import bgu.dcr.az.execs.exps.prog.DefaultExperimentProgress;
 import bgu.dcr.az.conf.modules.ModuleContainer;
 import bgu.dcr.az.conf.registery.Register;
+import bgu.dcr.az.execs.exps.ExperimentFailedException;
 import java.util.Iterator;
 
 /**
@@ -45,7 +46,7 @@ public class DefaultExperimentRoot extends ExecutionTree {
     }
 
     @Override
-    public void execute() {
+    public void execute() throws ExperimentFailedException {
         final Iterable<Test> tests = requireAll(Test.class);
         for (Test t : tests) {
             infoStream().write(t, Test.class);

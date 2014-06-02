@@ -45,18 +45,6 @@ public class ForLooper implements Looper {
     }
 
     /**
-     * @propertyName run-var
-     * @return
-     */
-    public String getRunVar() {
-        return runVar;
-    }
-
-    public void setRunVar(String propertyName) {
-        this.runVar = propertyName;
-    }
-
-    /**
      * @propertyName start
      * @return
      */
@@ -167,12 +155,16 @@ public class ForLooper implements Looper {
     }
 
     /**
-     * @propertyName run-variable-name
+     * @propertyName run-var
      * @return
      */
     @Override
     public String getRunningVariableName() {
         return runVar;
+    }
+
+    public void setRunningVariableName(String propertyName) {
+        this.runVar = propertyName;
     }
 
     @Override

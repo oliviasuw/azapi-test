@@ -79,7 +79,7 @@ public class CPProgress extends ExperimentProgressInspector {
         }
 
         public double avgCoreUsage() {
-            return sumCoreUsageSamples / numCoreUsageSamples;
+            return numCoreUsageSamples == 0 ? 0 : sumCoreUsageSamples / numCoreUsageSamples;
         }
     }
 

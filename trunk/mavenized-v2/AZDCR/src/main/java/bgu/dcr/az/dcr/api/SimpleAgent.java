@@ -1,7 +1,7 @@
 package bgu.dcr.az.dcr.api;
 
-import bgu.dcr.az.dcr.api.CPAgent;
 import bgu.dcr.az.dcr.api.annotations.Algorithm;
+import bgu.dcr.az.dcr.api.problems.ImmutableProblem;
 
 /**
  * This class was replaced with {@code Agent}, it is still available for
@@ -11,5 +11,5 @@ import bgu.dcr.az.dcr.api.annotations.Algorithm;
  * @author bennyl
  */
 @Algorithm(".simple-agent")
-public abstract class SimpleAgent extends CPAgent {    
+public abstract class SimpleAgent extends CPAgent<ImmutableProblem> {    
 }

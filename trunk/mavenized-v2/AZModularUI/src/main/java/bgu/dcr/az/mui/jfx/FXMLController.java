@@ -20,7 +20,7 @@ public abstract class FXMLController extends Controller<Parent> {
     private Parent view;
 
     @Override
-    public Parent getView() {
+    public Parent _getView() {
         return view;
     }
 

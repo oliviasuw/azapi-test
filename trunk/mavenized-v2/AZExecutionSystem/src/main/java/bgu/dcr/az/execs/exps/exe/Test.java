@@ -8,14 +8,13 @@ package bgu.dcr.az.execs.exps.exe;
 import bgu.dcr.az.conf.modules.ModuleContainer;
 import bgu.dcr.az.conf.registery.Register;
 import bgu.dcr.az.conf.modules.info.InfoStream;
+import bgu.dcr.az.conf.modules.info.PipeInfoStream;
 import bgu.dcr.az.execs.exps.ExecutionTree;
 import bgu.dcr.az.execs.exps.ExperimentProgressInspector;
 import static bgu.dcr.az.execs.exps.exe.Simulation.EXECUTION_INFO_DATA_TABLE;
 import bgu.dcr.az.execs.exps.prog.DefaultExperimentProgress;
 import bgu.dcr.az.execs.orm.api.EmbeddedDatabaseManager;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
 /**
@@ -27,6 +26,7 @@ public abstract class Test extends ExecutionTree {
 
     private String name = "UNNAMED TEST";
     private EmbeddedDatabaseManager dbm;
+    private PipeInfoStream pipinf;
 
     /**
      * @propertyName name
@@ -42,6 +42,11 @@ public abstract class Test extends ExecutionTree {
     }
 
     @Override
+    public InfoStream infoStream() {
+        return pipinf;
+    }
+
+    @Override
     public int countExecutions() {
         return numChildren();
     }
@@ -53,21 +58,26 @@ public abstract class Test extends ExecutionTree {
         for (ExecutionTree e : this) {
             Simulation sim = (Simulation) e;
             sim.installInto(this);
-            
+
             //install statistic support
             BaseStatisticFields info = sim.configuration().baseStatisticFields();
             dbm.defineTable(EXECUTION_INFO_DATA_TABLE, info.getClass());
-            
+
             //notify the new simulation
             infoStream.write(e, Simulation.class);
-            
+
             e.execute();
         }
     }
 
     @Override
     public final void installInto(ModuleContainer mc) {
+        install(InfoStream.class, pipinf = new PipeInfoStream(mc.require(InfoStream.class)));
+        
+        //TODO: should make _installInto instead with proper positioning
         super.installInto(mc);
+        
+        
         dbm = require(EmbeddedDatabaseManager.class);
         initialize((DefaultExperimentRoot) mc);
 

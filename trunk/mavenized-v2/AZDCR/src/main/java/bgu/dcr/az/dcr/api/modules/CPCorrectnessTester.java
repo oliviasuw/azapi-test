@@ -22,6 +22,9 @@ public abstract class CPCorrectnessTester implements Module<CPTest> {
     @Override
     public void installInto(final CPTest test) {
         test.infoStream().listen(SimulationTerminationInfo.class, t -> {
+            if (t.getSimulation().parent() != test) {
+                throw new UnsupportedOperationException("bad initialization of correctness tester!");
+            }
             SimulationResult result = t.getExecutionResult();
             switch (result.getState()) {
                 case CRUSHED:

@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * function start() Exit point: the exit point is not accessed directly instead
  * you can call one of the finish*(*) functions or call panic
  *
+ * @param <P>
  */
 @Algorithm("BASE_CP_AGENT")
 public abstract class CPAgent<P extends ImmutableProblem> extends Agent {

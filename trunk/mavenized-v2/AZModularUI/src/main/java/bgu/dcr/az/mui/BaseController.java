@@ -82,7 +82,12 @@ public abstract class BaseController<V> extends ModuleContainer {
         super(true);
     }
 
-    public abstract V getView();
+    public final V getView(){
+        loadView();
+        return _getView();
+    }
+    
+    public abstract V _getView();
 
     /**
      * @return the tokens that are introduced by this container only - not take

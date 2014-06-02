@@ -42,7 +42,7 @@ public class TabPaneController extends Controller<TabPane> {
     }
 
     @Override
-    public TabPane getView() {
+    public TabPane _getView() {
         return view;
     }
 

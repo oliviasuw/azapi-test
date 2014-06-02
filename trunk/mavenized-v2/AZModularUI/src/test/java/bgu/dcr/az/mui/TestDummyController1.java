@@ -11,6 +11,9 @@ package bgu.dcr.az.mui;
  */
 @RegisterController("test.dummy1")
 public class TestDummyController1 extends TestDummyController {
-
+    
+    public static boolean accept(BaseController b){
+        return true;
+    }
 
 }

@@ -46,7 +46,9 @@
 /*+++++++++++++++++++++++ LIGHT TABS ++++++++++++++++++++++++*/
 .light-tabs {-light-tabs-border-color: rgb(150,150,150);}
  
-	.light-tabs * {
+	.light-tabs > *,
+        .light-tabs .tab-header-background, .light-tabs .tab-header-background > *,
+        .light-tabs .tab, .light-tabs .tab > * {
 		-fx-background-color: transparent;
 		-fx-text-fill: rgb(245,245,245);
 		-fx-border-width: 0;
@@ -110,41 +112,39 @@
 	#status-page #progress-pane .progress-bar .bar {-fx-background-color: #b4c9d7;}
  
 	#status-page #progress-pane .progress-bar .track {
-		/*-fx-border-width: 1;*/
-		/*-fx-border-color: rgb(180,180,180);*/
+		-fx-border-width: 1;
+		-fx-border-color: rgb(180,180,180);
 		-fx-background-color: rgb(100,100,100);
 		-fx-background-insets: 0, 1;
 	 }
  
 	#status-page #content {-fx-background-color: -base-screen-color;}
  
-	#status-page #experiment-view-container {-fx-background-color: derive(-base-screen-color,-50%);}
+	/*#status-page #experiment-view-container {-fx-background-color: derive(-base-screen-color,-50%);}*/
  
-	#status-page .list-view * {-fx-background-color: -treeview-background;}
- 
+	#status-page .list-view {-fx-background-color: -treeview-background;}
+        
 	#status-page .list-view .label {
 		-fx-text-fill: black;
-		-fx-padding: 10 4 4 4;
+		-fx-padding: 10 4 10 4;
 	 }
  
-	#status-page .list-cell:selected * {
+         #status-page .list-cell {
+             -fx-cell-size: 48;
+         }
+         
+        #status-page .list-cell .progress-indicator {
+            -fx-padding: 10 4 -7 4;
+        }
+         
+        #status-page .list-cell .progress-indicator .percentage{
+            visibility: collapse;
+            -fx-font-size: 0;
+            -fx-fill: null;
+        }
+         
+	#status-page .list-cell:selected  {
 		-fx-background-color: rgb(83,135,182);
 		-fx-text-fill: rgb(230,230,230);
 	 }
- 
-	#status-page .mini-progress-bar * {
-		-fx-border-color: -treeview-background;
-		-fx-border-width: 0 5 0 5;
-	 }
- 
-	#status-page .mini-progress-bar .track {
-		-fx-border-width: 0px;
-		-fx-background-color: rgb(200,200,200);
-	 }
- 
-	#status-page .mini-progress-bar .bar {
-		-fx-background-color: rgb(150,150,150);
-		-fx-background-insets: 0 0 0 0;
-	 }
- 
  

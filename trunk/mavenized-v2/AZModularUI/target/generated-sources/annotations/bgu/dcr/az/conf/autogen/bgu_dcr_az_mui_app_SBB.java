@@ -21,6 +21,9 @@ public class bgu_dcr_az_mui_app_SBB extends AbstractConfiguration implements Reg
     //store javadoc for each property
     
 
+    //store requested name for each attribute
+    
+
     //store configured class javadoc
     public static JavaDocInfo DOC = JavaDocParser.parse("");
 
@@ -36,7 +39,12 @@ public class bgu_dcr_az_mui_app_SBB extends AbstractConfiguration implements Reg
         Registery.get().register(bgu.dcr.az.mui.app.SBB.class, "ALGORITHM.SBB");
     }
 
+    protected bgu_dcr_az_mui_app_SBB(int i){
+        //do nothing on porpose!
+    }
+
     public bgu_dcr_az_mui_app_SBB() {
+        super();
         super.type = bgu.dcr.az.mui.app.SBB.class;
         super.javadoc = DOC;
         super.accessor = METHOD_ACCESSOR;

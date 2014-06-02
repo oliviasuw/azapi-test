@@ -7,12 +7,12 @@ package bgu.dcr.az.mui.scr.status;
 
 import bgu.dcr.az.execs.exps.exe.Test;
 import bgu.dcr.az.execs.exps.prog.DefaultExperimentProgress;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Text;
 
 /**
  *
@@ -21,24 +21,28 @@ import javafx.scene.layout.BorderPane;
 public class TestProgressCell extends ListCell<Test> {
 
     Label label = new Label("");
-    ProgressBar progressRect = new ProgressBar();
+//    ProgressBar progressRect = new ProgressBar();
     BorderPane content = new BorderPane();
+    ProgressIndicator progressIndicator;
 
     DefaultExperimentProgress progress;
 
     public TestProgressCell(DefaultExperimentProgress progress) {
         this.progress = progress;
+        progressIndicator = new ProgressIndicator();
 
-        BorderPane.setMargin(progressRect, new Insets(2));
-        BorderPane.setMargin(progressRect, new Insets(2, 0, 0, 0));
-        BorderPane.setAlignment(label, Pos.BOTTOM_LEFT);
-
-        progressRect.setMaxWidth(Integer.MAX_VALUE);
-        progressRect.setPrefHeight(3);
-        progressRect.setMinHeight(3);
-        progressRect.getStyleClass().add("mini-progress-bar");
-
-        content.setBottom(progressRect);
+//        BorderPane.setMargin(progressRect, new Insets(2));
+//        BorderPane.setMargin(progressRect, new Insets(2, 0, 0, 0));
+//        BorderPane.setAlignment(label, Pos.BOTTOM_LEFT);
+//
+//        progressRect.setMaxWidth(Integer.MAX_VALUE);
+//        progressRect.setPrefHeight(3);
+//        progressRect.setMinHeight(3);
+//        progressRect.getStyleClass().add("mini-progress-bar");
+//        content.setBottom(progressRect);
+        content.setBackground(Background.EMPTY);
+        content.setRight(progressIndicator);
+        progressIndicator.setVisible(true);
         content.setCenter(label);
     }
 
@@ -57,11 +61,11 @@ public class TestProgressCell extends ListCell<Test> {
         label.textProperty().set("Test: " + t.getName());
 
         if (progress.isTestFinished(t.getName())) {
-            progressRect.setProgress(1);
+            progressIndicator.setProgress(1);
         } else if (t.getName().equals(progress.getCurrentTestName())) {
-            progressRect.setProgress(progress.getCurrentTestProgress());
+            progressIndicator.setProgress(progress.getCurrentTestProgress());
         } else {
-            progressRect.setProgress(0);
+            progressIndicator.setProgress(0);
         }
 
         setGraphic(content);

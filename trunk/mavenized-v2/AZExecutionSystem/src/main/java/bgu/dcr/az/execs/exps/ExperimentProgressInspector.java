@@ -12,7 +12,7 @@ import bgu.dcr.az.conf.modules.ModuleContainer;
  *
  * @author bennyl
  */
-public abstract class ExperimentProgressEnhancer implements Module {
+public abstract class ExperimentProgressInspector implements Module {
 
     @Override
     public final void installInto(ModuleContainer mc) {

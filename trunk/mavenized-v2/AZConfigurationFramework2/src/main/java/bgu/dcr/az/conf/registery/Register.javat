@@ -10,10 +10,12 @@
     }
     
     super = lookupSuperClassWithAnnotation(regA);
+    instantiateSuper = true;
     if (super == null) {
         super = "AbstractConfiguration";
     } else {
         super = super.underscoredFQN;
+        instantiateSuper = false;
     }
 }
 
@@ -37,6 +39,9 @@ public class @{underscoredFQN} extends @{super} implements RegistrationMarker{
     
     //store javadoc for each property
     @foreach{p : properties}public static final JavaDocInfo @{p.name.toUpperCase()}_DOC = JavaDocParser.parse("@{p.javadoc}");@end{"\n    "}
+
+    //store requested name for each attribute
+    @foreach{p : properties}public static final String @{p.name.toUpperCase()}_REN = "@{propertyRequestedName(p)}";@end{"\n    "}
 
     //store configured class javadoc
     public static JavaDocInfo DOC = JavaDocParser.parse("@{javadoc}");
@@ -92,14 +97,19 @@ public class @{underscoredFQN} extends @{super} implements RegistrationMarker{
         Registery.get().register(@{getFQN()}.class, "@{getAnnotation("bgu.dcr.az.conf.registery.Register").value}");
     }
 
+    protected @{underscoredFQN}(int i){
+        //do nothing on porpose!
+    }
+
     public @{underscoredFQN}() {
+        @if{instantiateSuper}super();@else{}super(1);@end{}
         super.type = @{getFQN()}.class;
         super.javadoc = DOC;
         super.accessor = METHOD_ACCESSOR;
         super.cAccessor = CONSTRUCTOR_ACCESSOR;
 
         //insert all properties
-        @foreach{p : allProperties}properties.put("@{propertyRequestedName(p)}", new PropertyImpl("@{propertyRequestedName(p)}", this, @{p.name.toUpperCase()}_TYPE, @{p.name.toUpperCase()}_DOC, @{p.name.toUpperCase()}_GIDX, @{p.name.toUpperCase()}_SIDX));@end{"\n        "}
+        @foreach{p : allProperties}properties.put(@{p.name.toUpperCase()}_REN, new PropertyImpl("@{propertyRequestedName(p)}", this, @{p.name.toUpperCase()}_TYPE, @{p.name.toUpperCase()}_DOC, @{p.name.toUpperCase()}_GIDX, @{p.name.toUpperCase()}_SIDX));@end{"\n        "}
 
         @if{!lookupFieldsWithAnnotation("bgu.dcr.az.conf.api.Variable").isEmpty()}scanVariables();@end{}
     }

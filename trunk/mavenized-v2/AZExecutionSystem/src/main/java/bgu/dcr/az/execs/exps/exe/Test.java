@@ -9,7 +9,11 @@ import bgu.dcr.az.conf.modules.ModuleContainer;
 import bgu.dcr.az.conf.registery.Register;
 import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.execs.exps.ExecutionTree;
+import bgu.dcr.az.execs.exps.ExperimentProgressInspector;
+import bgu.dcr.az.execs.exps.prog.DefaultExperimentProgress;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
 /**
@@ -54,6 +58,20 @@ public abstract class Test extends ExecutionTree {
     public final void installInto(ModuleContainer mc) {
         super.installInto(mc);
         initialize((DefaultExperimentRoot) mc);
+
+        if (mc.isInstalled(DefaultExperimentProgress.class)) {
+            Class<? extends ExperimentProgressInspector>[] c = supplyProgressInspectors();
+            for (Class<? extends ExperimentProgressInspector> inspector : c) {
+                if (!isInstalled(inspector)) {
+                    try {
+                        parent().parent().install(inspector.newInstance());
+                    } catch (InstantiationException | IllegalAccessException ex) {
+                        System.err.println("cannot install progress inspector: " + inspector.getSimpleName());
+                    }
+                }
+            }
+        }
+
     }
 
     public abstract void initialize(DefaultExperimentRoot root);
@@ -64,6 +82,10 @@ public abstract class Test extends ExecutionTree {
     @Override
     public Iterator<ExecutionTree> iterator() {
         return (Iterator) IntStream.range(0, numChildren()).mapToObj(i -> child(i)).iterator();
+    }
+
+    protected Class<? extends ExperimentProgressInspector>[] supplyProgressInspectors() {
+        return new Class[0];
     }
 
 }

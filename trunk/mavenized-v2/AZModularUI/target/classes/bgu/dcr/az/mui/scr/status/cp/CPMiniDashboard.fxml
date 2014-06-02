@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<GridPane id="cp-mini-dash" prefHeight="218.0" prefWidth="643.0" styleClass="root" stylesheets="@../../AgentZero.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bgu.dcr.az.mui.scr.status.cp.CPMiniDashboard">
+  <columnConstraints>
+    <ColumnConstraints hgrow="NEVER" maxWidth="350.0" minWidth="350.0" prefWidth="350.0" />
+    <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <TitledPane id="experimentViewContainer" animated="false" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="-1.0" prefWidth="-1.0" styleClass="section-pane" text="" GridPane.columnIndex="1">
+         <content>
+            <BorderPane fx:id="coreUsageChartContainer" prefHeight="200.0" prefWidth="200.0" styleClass="chart-container" />
+         </content>
+         <graphic>
+            <Label text="Core Usage per Algorithm">
+               <graphic>
+                  <ImageView fitHeight="16.0" fitWidth="16.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../../../../../resources/img/processor.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Label>
+         </graphic>
+      </TitledPane>
+      <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" styleClass="section-pane" text="">
+         <content>
+            <BorderPane fx:id="cpuTimeChartContainer" prefHeight="200.0" prefWidth="200.0" styleClass="chart-container" />
+         </content>
+         <graphic>
+            <Label text="CPU Time per Algorithm">
+               <graphic>
+                  <ImageView fitHeight="16.0" fitWidth="16.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../../../../../resources/img/counter.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Label>
+         </graphic>
+      </TitledPane>
+   </children>
+</GridPane>

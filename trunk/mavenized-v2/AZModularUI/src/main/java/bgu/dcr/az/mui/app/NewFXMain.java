@@ -28,23 +28,24 @@ public class NewFXMain extends Application {
     public void start(Stage primaryStage) throws IOException {
         try {
             RootController root = new RootController();
-            
-            ModularExperiment exp = ModularExperiment.createDefault(getClass().getResourceAsStream("test.xml"));
+
+            ModularExperiment exp = ModularExperiment.createDefault(getClass().getResourceAsStream("test.xml"), true);
             ExperimentProgress progress = exp.execute();
-            
+
             root.install(ModularExperiment.class, exp);
             root.install(StatusSyncer.class, new StatusSyncer(5, progress));
-            
+
             MainPage p = root.findAndInstall("main");
-            
+
             root.loadView();
             Scene scene = new Scene(p.getView());
-            
+
             FXUtils.startCSSLiveReloader(p.getView(), "/home/bennyl/Desktop/MoreSpace/Projects/AgentZero/mavenized-v2/AZModularUI/src/main/java/bgu/dcr/az/mui/scr/AgentZero.css");
-            
+
             primaryStage.setTitle("Agent Zero Testing Session");
             primaryStage.setScene(scene);
             primaryStage.setMaximized(true);
+            primaryStage.setOnCloseRequest(e -> System.exit(0));
             primaryStage.show();
         } catch (ConfigurationException ex) {
             throw new UnexpectedException(ex);

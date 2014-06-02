@@ -6,7 +6,7 @@
 package bgu.dcr.az.execs.exps.prog;
 
 import bgu.dcr.az.conf.modules.info.InfoStream;
-import bgu.dcr.az.execs.exps.ExperimentProgressEnhancer;
+import bgu.dcr.az.execs.exps.ExperimentProgressInspector;
 import bgu.dcr.az.execs.exps.ModularExperiment;
 import bgu.dcr.az.execs.exps.exe.Simulation;
 import bgu.dcr.az.execs.exps.exe.Test;
@@ -18,7 +18,7 @@ import java.util.Set;
  *
  * @author bennyl
  */
-public class DefaultExperimentProgress extends ExperimentProgressEnhancer {
+public class DefaultExperimentProgress extends ExperimentProgressInspector {
 
     private int currentExecutedExecutionNumeber = -1;
     private double currentTestProgress = 0;
@@ -26,6 +26,7 @@ public class DefaultExperimentProgress extends ExperimentProgressEnhancer {
     private ModularExperiment experiment;
     private final Set<String> finishedTestNames = new HashSet<>();
     private String currentTestName = null;
+    private int numberOfTotalExecutions;
     private int numOfExecutionsInCurrentTest;
     private int numOfFinishedExecutionsInCurrentTest;
 
@@ -36,6 +37,8 @@ public class DefaultExperimentProgress extends ExperimentProgressEnhancer {
         InfoStream info = experiment.execution().infoStream();
         numOfExecutionsInCurrentTest = 0;
         numOfFinishedExecutionsInCurrentTest = 0;
+        numberOfTotalExecutions = experiment.execution().countExecutions();
+        
 
         info.listen(Simulation.class, sim -> {
             incCurrentExecutedExecutionNumber();
@@ -68,6 +71,10 @@ public class DefaultExperimentProgress extends ExperimentProgressEnhancer {
         }
         return (double) numOfFinishedExecutionsInCurrentTest / numOfExecutionsInCurrentTest;
     }
+    
+    public double getExperimentProgress(){
+        return (double) currentExecutedExecutionNumeber / numberOfTotalExecutions;
+    }
 
     public int getCurrentExecutedExecutionNumeber() {
         return currentExecutedExecutionNumeber;
@@ -86,7 +93,7 @@ public class DefaultExperimentProgress extends ExperimentProgressEnhancer {
     }
 
     public int getNumberOfExecutions() {
-        return experiment.execution().countExecutions();
+        return numberOfTotalExecutions;
     }
 
     public int getNumberOfTests() {

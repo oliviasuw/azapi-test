@@ -6,7 +6,7 @@
 package bgu.dcr.az.execs.exps.exe;
 
 import bgu.dcr.az.execs.exps.ExecutionTree;
-import bgu.dcr.az.execs.exps.ExperimentProgressEnhancer;
+import bgu.dcr.az.execs.exps.ExperimentProgressInspector;
 import bgu.dcr.az.execs.exps.prog.DefaultExperimentProgress;
 import bgu.dcr.az.conf.modules.ModuleContainer;
 import bgu.dcr.az.conf.registery.Register;
@@ -70,7 +70,7 @@ public class DefaultExperimentRoot extends ExecutionTree {
     @Override
     public void installInto(ModuleContainer mc) {
         super.installInto(mc);
-        install(ExperimentProgressEnhancer.class, new DefaultExperimentProgress());
+        install(ExperimentProgressInspector.class, new DefaultExperimentProgress());
     }
 
 }

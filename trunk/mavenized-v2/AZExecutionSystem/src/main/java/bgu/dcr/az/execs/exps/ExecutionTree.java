@@ -22,7 +22,7 @@ public abstract class ExecutionTree extends ModuleContainer implements Iterable<
 
     @Override
     public void install(Class<? extends Module> moduleKey, Module module) {
-        if (moduleKey == ExperimentProgressEnhancer.class && parent() != null) { //experiment progress enhancers should allways reside under the modular experiment itself.
+        if (moduleKey == ExperimentProgressInspector.class && parent() != null) { //experiment progress enhancers should allways reside under the modular experiment itself.
             parent().install(moduleKey, module);
         } else {
             super.install(moduleKey, module); 

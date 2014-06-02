@@ -10,7 +10,9 @@ import bgu.dcr.az.conf.registery.Register;
 import bgu.dcr.az.dcr.api.modules.CPCorrectnessTester;
 import bgu.dcr.az.dcr.api.modules.ProblemGenerator;
 import bgu.dcr.az.dcr.api.problems.Problem;
+import bgu.dcr.az.dcr.modules.progress.CPProgress;
 import bgu.dcr.az.execs.api.statistics.StatisticCollector;
+import bgu.dcr.az.execs.exps.ExperimentProgressInspector;
 import bgu.dcr.az.execs.exps.exe.ExecutionEnvironment;
 import bgu.dcr.az.execs.exps.exe.Looper;
 import bgu.dcr.az.execs.exps.exe.Simulation;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
  */
 @Register("cp-test")
 public class CPTest extends Test {
+
     private ProblemGenerator pgen;
 
     private ExecutionEnvironment env = ExecutionEnvironment.async;
@@ -54,7 +57,7 @@ public class CPTest extends Test {
         if (iteration == cachedLastProblemId) {
             p = cachedLastProblem.get();
         }
-        
+
         if (p == null) {
             p = new Problem();
             getLooper().configure(iteration, pgen);
@@ -64,9 +67,9 @@ public class CPTest extends Test {
         }
 
         p.resetCC_Count();
-        
+
         AlgorithmDef adef = algorithms.get(index % algorithms.size());
-        
+
         CPData data = new CPData(new CPSolution(p), p, adef, getLooper().getRunningVariableName(), getLooper().getRunningVariableValue(iteration));
 
         BaseCPStatisticFields fields = new BaseCPStatisticFields();
@@ -81,6 +84,11 @@ public class CPTest extends Test {
         conf.withBaseStatisticFields(fields);
 
         return new Simulation(index, data, conf, this);
+    }
+
+    @Override
+    protected Class<? extends ExperimentProgressInspector>[] supplyProgressInspectors() {
+        return new Class[]{CPProgress.class};
     }
 
     /**
@@ -162,7 +170,7 @@ public class CPTest extends Test {
     @Override
     public void initialize(DefaultExperimentRoot root) {
         pgen = require(ProblemGenerator.class);
-        if (getAlgorithms().isEmpty()){
+        if (getAlgorithms().isEmpty()) {
             Agt0DSL.panic("cannot run experiment without any algorithm defined. (please add one in test.xml file)");
         }
     }

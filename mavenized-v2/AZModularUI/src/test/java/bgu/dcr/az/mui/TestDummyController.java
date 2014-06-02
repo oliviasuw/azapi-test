@@ -15,7 +15,7 @@ public class TestDummyController extends Controller {
     int onLoadViewCalls = 0;
 
     @Override
-    public Object getView() {
+    public Object _getView() {
         return null;
     }
 

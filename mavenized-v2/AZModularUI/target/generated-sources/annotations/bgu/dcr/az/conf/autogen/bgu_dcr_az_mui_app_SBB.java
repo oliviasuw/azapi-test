@@ -36,7 +36,7 @@ public class bgu_dcr_az_mui_app_SBB extends AbstractConfiguration implements Reg
 
     //registration on class loading time
     static {
-        Registery.get().register(bgu.dcr.az.mui.app.SBB.class, "ALGORITHM.SBB");
+        Registery.get().register(bgu.dcr.az.mui.app.SBB.class, "ALGORITHM._SBB");
     }
 
     protected bgu_dcr_az_mui_app_SBB(int i){

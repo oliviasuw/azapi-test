@@ -92,10 +92,12 @@ public class ModuleContainer implements Module {
             try {
                 for (Iterator<Map.Entry<Module, ModuleInfo>> it = awaitingInitializationModules.entrySet().iterator(); it.hasNext();) {
                     Map.Entry<Module, ModuleInfo> e = it.next();
-
-                    initModule(e.getKey(), e.getValue());
-
+                    Module k = e.getKey();
+                    ModuleInfo v = e.getValue();
                     it.remove();
+
+                    initModule(k, v);
+
                 }
             } catch (ConcurrentModificationException ex) {
             }
@@ -514,6 +516,7 @@ public class ModuleContainer implements Module {
     @Override
     public void installInto(ModuleContainer mc) {
         parent = mc;
+        
         if (!eagerInitialization) {
             initializeModules();
         }

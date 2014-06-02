@@ -15,7 +15,7 @@
         super = "AbstractConfiguration";
     } else {
         super = super.underscoredFQN;
-        instantiateSuper = false;
+        instantiateSuper = false;    
     }
 }
 
@@ -58,6 +58,9 @@ public class @{underscoredFQN} extends @{super} implements RegistrationMarker{
         alreadyResolvedProperties = new java.util.HashSet();
         allProperties = new java.util.HashSet();
 
+
+        hasVars = false;
+
         while (super != null){
             for (prop : super.properties){
                 propUCase = prop.name.toUpperCase();
@@ -86,6 +89,7 @@ public class @{underscoredFQN} extends @{super} implements RegistrationMarker{
                 }
             }
 
+            hasVars = hasVars || !super.lookupFieldsWithAnnotation("bgu.dcr.az.conf.api.Variable").isEmpty();
             super = super.lookupSuperClassWithAnnotation(regA);
         }
         
@@ -111,7 +115,7 @@ public class @{underscoredFQN} extends @{super} implements RegistrationMarker{
         //insert all properties
         @foreach{p : allProperties}properties.put(@{p.name.toUpperCase()}_REN, new PropertyImpl("@{propertyRequestedName(p)}", this, @{p.name.toUpperCase()}_TYPE, @{p.name.toUpperCase()}_DOC, @{p.name.toUpperCase()}_GIDX, @{p.name.toUpperCase()}_SIDX));@end{"\n        "}
 
-        @if{!lookupFieldsWithAnnotation("bgu.dcr.az.conf.api.Variable").isEmpty()}scanVariables();@end{}
+        @if{hasVars}scanVariables();@end{}
     }
     
 }

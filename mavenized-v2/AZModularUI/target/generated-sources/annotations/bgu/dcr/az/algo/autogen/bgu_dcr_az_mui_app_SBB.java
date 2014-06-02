@@ -31,7 +31,7 @@ public class bgu_dcr_az_mui_app_SBB extends bgu_dcr_az_dcr_api_SimpleAgent{
 
     public bgu_dcr_az_mui_app_SBB(){
         super.configurationDelegate = new bgu.dcr.az.conf.autogen.bgu_dcr_az_mui_app_SBB();
-        super.algorithmName = "SBB";
+        super.algorithmName = "_SBB";
 
         super.handlers.add(HANDLECPA_CPA_HINFO);
         super.handlers.add(HANDLEBACKTRACK_BACKTRACK_HINFO);

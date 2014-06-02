@@ -8,7 +8,7 @@ import bgu.dcr.az.dcr.api.SimpleAgent;
 import bgu.dcr.az.dcr.api.annotations.Algorithm;
 import bgu.dcr.az.dcr.api.annotations.WhenReceived;
 
-@Algorithm("SBB")
+@Algorithm("_SBB")
 public class SBB extends SimpleAgent {
 
     Assignment cpa, best;

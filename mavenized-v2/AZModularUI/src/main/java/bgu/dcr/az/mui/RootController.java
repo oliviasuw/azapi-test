@@ -27,7 +27,7 @@ public class RootController extends BaseController<Void> {
     }
 
     @Override
-    public Void getView() {
+    public Void _getView() {
         throw new UnsupportedOperationException("Not supported - root controller does not contain a view");
     }
 

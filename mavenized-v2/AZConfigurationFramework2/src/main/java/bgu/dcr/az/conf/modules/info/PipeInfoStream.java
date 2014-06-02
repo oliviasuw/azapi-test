@@ -14,14 +14,18 @@ public class PipeInfoStream implements InfoStream {
     private SimpleInfoStream current;
     private InfoStream target = null;
 
-    public PipeInfoStream() {
+    public PipeInfoStream(InfoStream target) {
         current = new SimpleInfoStream();
+        this.target = target;
+    }
+
+    public PipeInfoStream() {
+        this(null);
     }
 
     public void setPipeTarget(InfoStream target) {
         this.target = target;
     }
-
 
     @Override
     public void write(Object data, Class... recepients) {

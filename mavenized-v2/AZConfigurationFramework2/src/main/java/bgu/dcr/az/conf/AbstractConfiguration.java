@@ -5,6 +5,7 @@
  */
 package bgu.dcr.az.conf;
 
+import bgu.dcr.az.common.reflections.ReflectionUtils;
 import bgu.dcr.az.conf.api.Configuration;
 import bgu.dcr.az.conf.api.ConfigurationException;
 import bgu.dcr.az.conf.api.JavaDocInfo;
@@ -68,7 +69,7 @@ public abstract class AbstractConfiguration implements Configuration {
     }
 
     protected void scanVariables() {
-        for (Field f : configuredType().getDeclaredFields()) {
+        for (Field f : ReflectionUtils.allFields(configuredType())) {
             f.setAccessible(true);
             final Variable ano = f.getAnnotation(Variable.class);
             if (ano != null) {
@@ -126,10 +127,9 @@ public abstract class AbstractConfiguration implements Configuration {
 //                    if (!(val instanceof Collection)) {
 //                        throw new UnsupportedOperationException("cannot configure property " + p.name() + " its value type is collection but value of type " + val.getClass().getCanonicalName() + " is given (" + val + ")");
 //                    }
-
                     Collection collection = (Collection) val;
                     //TypeInfo elementType = iprop.typeInfo().getGenericParameters().isEmpty() ? JavaTypeParser.OBJECT_TYPE : iprop.typeInfo().getGenericParameters().get(0);
-                    collection.clear(); 
+                    collection.clear();
                     collection.addAll(value.create(iprop.typeInfo()));
                 } else {
                     System.out.println("Ignoring configuration for " + p.name() + " since this property is readonly.");
@@ -149,7 +149,7 @@ public abstract class AbstractConfiguration implements Configuration {
         try {
             for (Property p : properties.values()) {
                 lastProp = p;
-                
+
                 if (p instanceof VariablePropertyImpl) {
                     VariablePropertyImpl vp = (VariablePropertyImpl) p;
                     propertyValue = vp.getField().get(o);

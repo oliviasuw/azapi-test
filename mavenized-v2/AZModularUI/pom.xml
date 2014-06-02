@@ -46,6 +46,11 @@
             <artifactId>controlsfx</artifactId>
             <version>8.0.6</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>AZDCRAlgorithms</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     
     <properties>

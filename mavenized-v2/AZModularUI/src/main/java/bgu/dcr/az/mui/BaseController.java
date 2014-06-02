@@ -178,8 +178,8 @@ public abstract class BaseController<V> extends ModuleContainer {
     }
 
     @Override
-    public void uninstall(Module module) {
-        super.uninstall(module);
+    public void uninstallLocally(Module module) {
+        super.uninstallLocally(module);
         if (module instanceof Controller) {
             ((Controller) module).onRemovedFromParent();
         }
@@ -187,7 +187,7 @@ public abstract class BaseController<V> extends ModuleContainer {
 
     public void uninstall() {
         if (parent() != null) {
-            parent().uninstall(this);
+            parent().uninstallLocally(this);
         }
     }
 

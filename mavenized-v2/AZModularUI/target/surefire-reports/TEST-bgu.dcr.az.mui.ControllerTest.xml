@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="4" failures="0" name="bgu.dcr.az.mui.ControllerTest" time="1.049" errors="0" skipped="0">
+<testsuite tests="4" failures="0" name="bgu.dcr.az.mui.ControllerTest" time="4.32" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-8-oracle/jre/lib/amd64"/>
@@ -14,7 +14,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.os.patch.level" value="unknown"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="user.dir" value="/media/bennyl/OS/MoreSpace/Projects/AgentZero/mavenized-v2/AZModularUI"/>
+    <property name="user.dir" value="/home/bennyl/Projects/agent-zero/mavenized-v2"/>
     <property name="java.runtime.version" value="1.8.0_05-b13"/>
     <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"/>
     <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-8-oracle/jre/lib/endorsed"/>
@@ -59,8 +59,8 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase classname="bgu.dcr.az.mui.ControllerTest" name="testManageControllers" time="0.373"/>
-  <testcase classname="bgu.dcr.az.mui.ControllerTest" name="testFindAndManageControllers" time="0.502"/>
-  <testcase classname="bgu.dcr.az.mui.ControllerTest" name="testFindAndManageAllControllers" time="0.014"/>
-  <testcase classname="bgu.dcr.az.mui.ControllerTest" name="testListenersRemovedWhenControllerRemoved" time="0.093"/>
+  <testcase classname="bgu.dcr.az.mui.ControllerTest" name="testFindAndManageControllers" time="0.262"/>
+  <testcase classname="bgu.dcr.az.mui.ControllerTest" name="testFindAndManageAllControllers" time="0.008"/>
+  <testcase classname="bgu.dcr.az.mui.ControllerTest" name="testListenersRemovedWhenControllerRemoved" time="0.055"/>
+  <testcase classname="bgu.dcr.az.mui.ControllerTest" name="testManageControllers" time="3.958"/>
 </testsuite>

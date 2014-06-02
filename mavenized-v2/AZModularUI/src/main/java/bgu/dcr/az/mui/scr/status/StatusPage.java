@@ -5,7 +5,6 @@
  */
 package bgu.dcr.az.mui.scr.status;
 
-import bgu.dcr.az.common.exceptions.UnexpectedException;
 import bgu.dcr.az.conf.api.ConfigurationException;
 import bgu.dcr.az.conf.ui.ConfigurationEditor;
 import bgu.dcr.az.conf.utils.ConfigurationUtils;
@@ -19,7 +18,7 @@ import bgu.dcr.az.mui.Controller;
 import bgu.dcr.az.mui.ControllerRegistery;
 import bgu.dcr.az.mui.RegisterController;
 import bgu.dcr.az.mui.jfx.FXMLController;
-import bgu.dcr.az.mui.modules.StatusSyncer;
+import bgu.dcr.az.mui.modules.SyncPulse;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -30,6 +29,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
+import org.controlsfx.control.Notifications;
+import org.controlsfx.dialog.Dialogs;
 
 /**
  * FXML Controller class
@@ -63,7 +64,7 @@ public class StatusPage extends FXMLController {
     protected void onLoadView() {
 
         ExecutionTree experimentRoot = require(ModularExperiment.class).execution();
-        DefaultExperimentProgress progress = require(StatusSyncer.class).getProgress().get(DefaultExperimentProgress.class);
+        DefaultExperimentProgress progress = require(ModularExperiment.class).get(DefaultExperimentProgress.class);
 
         installTestList(experimentRoot, progress);
         installExperimentView();
@@ -72,7 +73,7 @@ public class StatusPage extends FXMLController {
     }
 
     public static boolean accept(BaseController c) {
-        return c.isInstalled(StatusSyncer.class) && c.isInstalled(ModularExperiment.class);
+        return c.isInstalled(SyncPulse.class) && c.isInstalled(ModularExperiment.class);
     }
 
     private void installTestList(ExecutionTree root, DefaultExperimentProgress prog) {
@@ -82,7 +83,7 @@ public class StatusPage extends FXMLController {
             testsList.getItems().add((Test) test);
         }
 
-        infoStream().listen(StatusSyncer.Sync.class, sync -> {
+        infoStream().listen(SyncPulse.Sync.class, sync -> {
             testsList.lookupAll(".list-cell").stream().forEach(v -> ((TestProgressCell) v).update());
         });
     }
@@ -98,6 +99,7 @@ public class StatusPage extends FXMLController {
                 throw new NullPointerException("test cannot be null");
             } else {
                 loadExperimentView(newValue);
+                reinstallLocally(Test.class, newValue); //notify selection
             }
         });
 
@@ -111,14 +113,14 @@ public class StatusPage extends FXMLController {
             experimentView.setModel(ConfigurationUtils.load(newValue), true,
                     p -> p.parent() == null || !StatisticCollector.class.isAssignableFrom(p.parent().configuredType()));
         } catch (ClassNotFoundException | ConfigurationException ex) {
-            throw new UnexpectedException(ex);
+            Dialogs.create().showException(ex);
         }
     }
 
     private void installProgressPane(DefaultExperimentProgress progress) {
-        infoStream().listen(StatusSyncer.Sync.class, sync -> {
+        infoStream().listen(SyncPulse.Sync.class, sync -> {
             progressBar.setProgress(progress.getExperimentProgress());
-            executionNumberLabel.setText("Execution " + (progress.getCurrentExecutedExecutionNumeber()+1) + " of " + progress.getNumberOfExecutions());
+            executionNumberLabel.setText("Execution " + (progress.getCurrentExecutedExecutionNumeber() + 1) + " of " + progress.getNumberOfExecutions());
         });
     }
 
@@ -126,8 +128,11 @@ public class StatusPage extends FXMLController {
         Controller<Node> minidash = ControllerRegistery.get().createController("status.minidash", this);
         if (minidash != null) {
             miniDashContainer.setCenter(minidash.getView());
-        }else {
-            System.err.println("minidash not found...");
+        } else {
+            Notifications.create()
+                    .title("Status Loading Problem")
+                    .text("Cannot found mini-dashboard controller.")
+                    .showWarning();
         }
     }
 

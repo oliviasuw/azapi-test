@@ -11,7 +11,7 @@ import bgu.dcr.az.conf.api.ConfigurationException;
 import bgu.dcr.az.execs.exps.ExperimentProgress;
 import bgu.dcr.az.execs.exps.ModularExperiment;
 import bgu.dcr.az.mui.RootController;
-import bgu.dcr.az.mui.modules.StatusSyncer;
+import bgu.dcr.az.mui.modules.SyncPulse;
 import bgu.dcr.az.mui.scr.main.MainPage;
 import java.io.IOException;
 import javafx.application.Application;
@@ -29,16 +29,24 @@ public class NewFXMain extends Application {
         try {
             RootController root = new RootController();
 
+            long time = System.currentTimeMillis();
+            System.out.println("Reading experiment... ");
             ModularExperiment exp = ModularExperiment.createDefault(getClass().getResourceAsStream("test.xml"), true);
-            ExperimentProgress progress = exp.execute();
+            
+            System.out.println("[" + (System.currentTimeMillis() - time) + "] initializing modules... ");
+            time = System.currentTimeMillis();
+            exp.initializeModules();
 
+            System.out.println("[" + (System.currentTimeMillis() - time) + "] configuring UI... ");
+            time = System.currentTimeMillis();
             root.install(ModularExperiment.class, exp);
-            root.install(StatusSyncer.class, new StatusSyncer(5, progress));
+            root.install(SyncPulse.class, new SyncPulse(5));
 
             MainPage p = root.findAndInstall("main");
 
             root.loadView();
             Scene scene = new Scene(p.getView());
+            System.out.println("[" + (System.currentTimeMillis() - time) + "] Starting Experiment Execution... ");
 
             FXUtils.startCSSLiveReloader(p.getView(), "/home/bennyl/Desktop/MoreSpace/Projects/AgentZero/mavenized-v2/AZModularUI/src/main/java/bgu/dcr/az/mui/scr/AgentZero.css");
 
@@ -46,7 +54,10 @@ public class NewFXMain extends Application {
             primaryStage.setScene(scene);
             primaryStage.setMaximized(true);
             primaryStage.setOnCloseRequest(e -> System.exit(0));
+            
+            new Thread(exp::execute).start();
             primaryStage.show();
+            
         } catch (ConfigurationException ex) {
             throw new UnexpectedException(ex);
         }

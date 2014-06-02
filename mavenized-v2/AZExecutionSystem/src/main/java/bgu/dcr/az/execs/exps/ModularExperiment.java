@@ -32,7 +32,7 @@ import java.util.concurrent.Executors;
  */
 public final class ModularExperiment extends ModuleContainer {
 
-    ExecutorService pool;
+    private ExecutorService pool;
 
     public ModularExperiment(ExecutorService pool) {
         this.pool = pool;
@@ -46,23 +46,24 @@ public final class ModularExperiment extends ModuleContainer {
         install(exec);
     }
 
-    public ExperimentProgress execute() {
+    public void execute() {
         ExecutionTree ex = require(ExecutionTree.class);
-        initializeModules(); //start the container
+        initializeModules(); //start the container if not already started
         final ExperimentProgress experimentProgress = new ExperimentProgress(this);
 
-        pool.execute(() -> {
-            System.out.println("Experiment Started!");
-            ex.execute();
-            experimentProgress.setRunning(false);
-            System.out.println("Experiment completed!");
-        });
-
-        return experimentProgress;
+        System.out.println("Experiment Started!");
+        ex.execute();
+        experimentProgress.setRunning(false);
+        System.out.println("Experiment completed!");
     }
 
     public InfoStream getInfoStream() {
         return get(InfoStream.class);
+    }
+
+    @Override
+    public void initializeModules() {
+        super.initializeModules(); 
     }
 
     /**

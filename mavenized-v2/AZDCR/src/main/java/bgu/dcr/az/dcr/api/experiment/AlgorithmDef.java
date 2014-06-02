@@ -5,11 +5,9 @@
  */
 package bgu.dcr.az.dcr.api.experiment;
 
-import bgu.dcr.az.dcr.api.experiment.AlgorithemVariableAssignment;
 import bgu.dcr.az.conf.modules.Module;
 import bgu.dcr.az.conf.registery.Register;
 import bgu.dcr.az.conf.registery.Registery;
-import bgu.dcr.az.execs.sim.Agent;
 import bgu.dcr.az.execs.sim.Agt0DSL;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +20,7 @@ import java.util.List;
 public class AlgorithmDef implements Module {
 
     private String name;
-    private List<AlgorithemVariableAssignment> assignments = new LinkedList<>();
+    private List<AlgorithmVariableAssignment> assignments = new LinkedList<>();
 
     /**
      * @return the algorithm name
@@ -49,7 +47,7 @@ public class AlgorithmDef implements Module {
      * @propertyName assignments
      * @return
      */
-    public List<AlgorithemVariableAssignment> getAssignments() {
+    public List<AlgorithmVariableAssignment> getAssignments() {
         return assignments;
     }
 

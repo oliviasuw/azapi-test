@@ -118,5 +118,32 @@ public class ModuleContainerTest {
 
         assertTrue(tm1.isInitialized());
     }
+    
+    @Test 
+    public void testUnistallation(){
+        ModuleContainer root = new ModuleContainer();
+        ModuleContainer child1 = new ModuleContainer(true);
+        TestModule1 tm1 = new TestModule1();
+        TestModule1 tm1Root = new TestModule1();
+        TestModuleExtending1 tm11 = new TestModuleExtending1();
+        TestModule2 tm2 = new TestModule2();
+        
+        root.install(child1);
+        root.install(tm1Root);
+        child1.install(tm1);
+        child1.install(tm11);
+        child1.install(tm2);
+        
+        child1.uninstallLocally(TestModule1.class);
+        assertTrue(child1.isInstalled(tm11, TestModuleExtending1.class));
+        assertTrue(!child1.isInstalled(tm1, TestModule1.class));
+        assertTrue(!child1.isInstalled(tm1, TestModuleExtending1.class));
+        assertTrue(root.isInstalled(tm1Root, TestModule1.class));
+        
+        child1.uninstallLocally(tm2);
+        assertTrue(!child1.isInstalled(tm2, TestModule2.class));
+        
+        
+    }
 
 }

@@ -10,7 +10,7 @@ import bgu.dcr.az.dcr.api.experiment.CPData;
 import bgu.dcr.az.dcr.api.experiment.CPTest;
 import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.execs.exps.ExecutionTree;
-import bgu.dcr.az.execs.exps.ExperimentProgressEnhancer;
+import bgu.dcr.az.execs.exps.ExperimentProgressInspector;
 import bgu.dcr.az.execs.exps.ModularExperiment;
 import bgu.dcr.az.execs.exps.exe.AdaptiveScheduler;
 import bgu.dcr.az.execs.exps.exe.Simulation;
@@ -22,7 +22,7 @@ import java.util.Map;
  *
  * @author bennyl
  */
-public class DCRProgress extends ExperimentProgressEnhancer {
+public class CPProgress extends ExperimentProgressInspector {
 
     private Map<String, Map<String, RTStat>> statistics = new HashMap<>();
 

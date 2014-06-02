@@ -145,9 +145,11 @@ public abstract class AbstractConfiguration implements Configuration {
     public Configuration loadFrom(Object o) throws ConfigurationException {
         Object propertyValue = null;
 
+        Property lastProp = null;
         try {
             for (Property p : properties.values()) {
-
+                lastProp = p;
+                
                 if (p instanceof VariablePropertyImpl) {
                     VariablePropertyImpl vp = (VariablePropertyImpl) p;
                     propertyValue = vp.getField().get(o);
@@ -159,7 +161,7 @@ public abstract class AbstractConfiguration implements Configuration {
                 p.set(ConfigurationUtils.toPropertyValue(propertyValue));
             }
         } catch (Exception ex) {
-            throw new ConfigurationException("cannot configure property @{p.name}", ex);
+            throw new ConfigurationException("cannot configure property " + lastProp.name() + " in class: " + type.getSimpleName(), ex);
         }
 
         return this;

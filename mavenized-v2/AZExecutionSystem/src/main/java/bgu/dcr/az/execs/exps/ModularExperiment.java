@@ -52,6 +52,7 @@ public final class ModularExperiment extends ModuleContainer {
         final ExperimentProgress experimentProgress = new ExperimentProgress(this);
 
         pool.execute(() -> {
+            System.out.println("Experiment Started!");
             ex.execute();
             experimentProgress.setRunning(false);
             System.out.println("Experiment completed!");
@@ -78,14 +79,16 @@ public final class ModularExperiment extends ModuleContainer {
      * @param es
      * @return the newly constructed experiment
      */
-    public static ModularExperiment createDefault(ExecutorService es) {
+    public static ModularExperiment createDefault(ExecutorService es, boolean recordProgress) {
         H2EmbeddedDatabaseManager manager = new H2EmbeddedDatabaseManager();
         ModularExperiment result = new ModularExperiment(es);
 
         result.install(EmbeddedDatabaseManager.class, manager);
         result.install(InfoStream.class, new SimpleInfoStream());
         result.install(AdaptiveScheduler.class, new AdaptiveScheduler(es));
-        result.install(new DefaultExperimentProgress());
+        if (recordProgress) {
+            result.install(new DefaultExperimentProgress());
+        }
         return result;
     }
 
@@ -100,10 +103,10 @@ public final class ModularExperiment extends ModuleContainer {
      * @throws IOException
      * @throws ConfigurationException
      */
-    public static ModularExperiment createDefault(InputStream executionConfiguration, ExecutorService es) throws IOException, ConfigurationException {
+    public static ModularExperiment createDefault(InputStream executionConfiguration, ExecutorService es, boolean recordProgress) throws IOException, ConfigurationException {
         Configuration conf = ConfigurationUtils.read(executionConfiguration);
         ExecutionTree exec = conf.create();
-        ModularExperiment exper = createDefault(es);
+        ModularExperiment exper = createDefault(es, recordProgress);
 
         exper.setExecution(exec);
         return exper;
@@ -116,12 +119,14 @@ public final class ModularExperiment extends ModuleContainer {
      * {@link Executors#newCachedThreadPool()}
      *
      * @param executionConfiguration
+     * @param recordProgress if true - progress inspectors will be added to the
+     * experiment (mainly for UI tools)
      * @return
      * @throws IOException
      * @throws ConfigurationException
      */
-    public static ModularExperiment createDefault(InputStream executionConfiguration) throws IOException, ConfigurationException {
-        return createDefault(executionConfiguration, Executors.newCachedThreadPool());
+    public static ModularExperiment createDefault(InputStream executionConfiguration, boolean recordProgress) throws IOException, ConfigurationException {
+        return createDefault(executionConfiguration, Executors.newCachedThreadPool(), recordProgress);
     }
 
     @Override

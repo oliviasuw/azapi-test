@@ -18,11 +18,11 @@ public class ExperimentProgress {
         this.exp = exp;
     }
 
-    public <T extends ExperimentProgressEnhancer> T get(Class<T> type) {
+    public <T extends ExperimentProgressInspector> T get(Class<T> type) {
         return exp.require((Class<T>) type);
     }
 
-    public boolean has(Class<? extends ExperimentProgressEnhancer> type) {
+    public boolean has(Class<? extends ExperimentProgressInspector> type) {
         return exp.isInstalled(type);
     }
 

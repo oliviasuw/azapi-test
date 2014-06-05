@@ -18,6 +18,7 @@ import data.events.impl.EventWriter;
 import data.events.impl.MoveEvent;
 import data.events.impl.Tick;
 import data.events.impl.TickEvent;
+import data.events.impl.TurnEvent;
 import data.map.impl.wersdfawer.AZVisVertex;
 import data.map.impl.wersdfawer.GraphData;
 import java.io.FileInputStream;
@@ -45,6 +46,7 @@ public class EventsTester {
     public EventsTester(GraphData graphData) {
         this.graphData = graphData;
         kryo.register(MoveEvent.class);
+//        kryo.register(TurnEvent.class);
         kryo.register(TickEvent.class);
         kryo.register(SimulatorEvent.class);
         eventWriter = new EventWriter(kryo);
@@ -103,20 +105,19 @@ public class EventsTester {
                 String to = movee.getToNode();
                 double startPrecent = movee.getStartPrecent();
                 double endPrecent = movee.getEndPrecent();
-//                double endPrecent = ((tick.getTickNum() - movee.getStartTick() + 1.0) / (movee.getEndTick() - movee.getStartTick() + 1.0)) * 100.0;
-//                double startPrecent = ((tick.getTickNum() - movee.getStartTick()) / (movee.getEndTick() - movee.getStartTick() + 1.0)) * 100.0;
-                
                 Location startLocation = translateToLocation(from, to, startPrecent);
                 Location endLocation = translateToLocation(from, to, endPrecent);
                 frame.directedMove(who, startLocation, endLocation);
-
-                //this has to sit in player because it has to be live...
-//                String edgeName = from + " " + to;
-//                if (!graphData.hasEntity(edgeName)) {
-//                    graphData.addEntityToEdge(edgeName, who);
-//                }   
-                
-            }
+            } 
+//                else if (event instanceof TurnEvent) {
+//                TurnEvent turne = (TurnEvent) event;
+//                Integer who = turne.getId();
+//                String srcFrom = turne.getSourceFromNode();
+//                String srcTo = turne.getSourceToNode();
+//                String targetFrom = turne.getTargetFromNode();
+//                String targetTo = turne.getTargetToNode();
+//                frame.rotate(who, getAngle(srcFrom, srcTo), getAngle(targetFrom, targetTo));
+//            }
         }
         player.playNextFrame(frame);
     }
@@ -127,7 +128,13 @@ public class EventsTester {
         AZVisVertex sV = (AZVisVertex) graphData.getData(src);
         AZVisVertex tV = (AZVisVertex) graphData.getData(target);
 
-        return new Location(sV.getX() + (tV.getX() - sV.getX()) * precentage / 100.0, 
-                            sV.getY() + (tV.getY() - sV.getY()) * precentage / 100.0);
+        return new Location(sV.getX() + (tV.getX() - sV.getX()) * precentage / 100.0,
+                sV.getY() + (tV.getY() - sV.getY()) * precentage / 100.0);
+    }
+
+    private double getAngle(String src, String target) {
+        AZVisVertex sV = (AZVisVertex) graphData.getData(src);
+        AZVisVertex tV = (AZVisVertex) graphData.getData(target);
+        return (180 * Math.atan2(tV.getY() - sV.getY(), tV.getX() - sV.getX()) / Math.PI);
     }
 }

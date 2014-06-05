@@ -22,6 +22,7 @@ import data.map.impl.wersdfawer.Edge;
 import data.map.impl.wersdfawer.GraphData;
 import data.map.impl.wersdfawer.GraphPolygon;
 import data.map.impl.wersdfawer.GraphReader;
+import data.map.impl.wersdfawer.NewGraphReader;
 import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
 import java.awt.geom.Point2D;
 import java.util.Collection;
@@ -207,7 +208,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
     private void init(String mapFilePath) {
         graphData = new GraphReader().readGraph(mapFilePath);
-
+//        graphData = new NewGraphReader().readGraph(mapFilePath);
         images = new HashMap<>();
         images.put("university", new Image(R.class.getResourceAsStream("university.png")));
         images.put("school", new Image(R.class.getResourceAsStream("university.png")));

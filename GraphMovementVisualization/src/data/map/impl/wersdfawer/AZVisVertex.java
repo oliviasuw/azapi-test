@@ -3,22 +3,34 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package data.map.impl.wersdfawer;
+
+import data.map.impl.wersdfawer.groupbounding.HasId;
+import java.util.HashMap;
 
 /**
  *
  * @author Shl
  */
-public class AZVisVertex {
+public class AZVisVertex implements HasId {
+
     private double x;
     private double y;
     private String name;
+    private HashMap<String, String> tags;
 
     public AZVisVertex(String name, double x, double y) {
         this.x = x;
         this.y = y;
         this.name = name;
+        this.tags = new HashMap<>();
+    }
+
+    AZVisVertex(String name, double x, double y, HashMap<String, String> params) {
+        this.x = x;
+        this.y = y;
+        this.name = name;
+        this.tags = params;
     }
 
     public double getX() {
@@ -44,6 +56,18 @@ public class AZVisVertex {
     public void setName(String name) {
         this.name = name;
     }
-    
-    
+
+    public String getTagValue(String tagKey) {
+        return tags.get(tagKey);
+    }
+
+    public String addTag(String tagKey, String tagValue) {
+        return tags.put(tagKey, tagValue);
+    }
+
+    @Override
+    public String getId() {
+        return this.name;
+    }
+
 }

@@ -16,8 +16,6 @@ public class MoveEvent implements SimulatorEvent {
     private int id;
     private String fromNode;
     private String toNode;
-//    private int startTick;
-//    private int endTick;
     private double startPrecent;
     private double endPrecent;
 
@@ -32,15 +30,6 @@ public class MoveEvent implements SimulatorEvent {
         this.endPrecent = endPrecent;
     }
 
-    
-//    public MoveEvent(int id, String fromNode, String toNode, int startTick, int endTick) {
-//        this.id = id;
-//        this.fromNode = fromNode;
-//        this.toNode = toNode;
-//        this.startTick = startTick;
-//        this.endTick = endTick;
-//    }
-
     public int getId() {
         return id;
     }
@@ -52,14 +41,6 @@ public class MoveEvent implements SimulatorEvent {
     public String getToNode() {
         return toNode;
     }
-
-//    public int getStartTick() {
-//        return startTick;
-//    }
-//
-//    public int getEndTick() {
-//        return endTick;
-//    }
 
     public double getStartPrecent() {
         return startPrecent;

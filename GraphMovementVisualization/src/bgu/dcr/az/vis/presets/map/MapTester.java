@@ -44,7 +44,7 @@ public class MapTester extends Application {
 
         //change to beershevagraph.txt to get beersheva back
         //graph2_1.txt is telaviv
-        vs = new MapVisualScene(101, "graph2_1.txt", boundingQuery, drawer);
+        vs = new MapVisualScene(101, "beershevagraph.txt", boundingQuery, drawer);
 
         SimplePlayer player = new SimplePlayer(boundingQuery, drawer, 1000, 0);
 

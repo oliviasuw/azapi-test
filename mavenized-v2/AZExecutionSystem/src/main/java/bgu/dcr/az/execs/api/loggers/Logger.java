@@ -5,33 +5,37 @@
  */
 package bgu.dcr.az.execs.api.loggers;
 
-import bgu.dcr.az.execs.exps.exe.Simulation;
 import bgu.dcr.az.conf.modules.Module;
-import bgu.dcr.az.conf.modules.ModuleContainer;
+import bgu.dcr.az.execs.api.loggers.LogManager.LogRecord;
+import bgu.dcr.az.execs.exps.ModularExperiment;
+import bgu.dcr.az.execs.exps.exe.DefaultExperimentRoot;
+import bgu.dcr.az.execs.orm.api.Data;
 import bgu.dcr.az.execs.orm.api.DefinitionDatabase;
 import bgu.dcr.az.execs.orm.api.EmbeddedDatabaseManager;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  *
  * @author bennyl
  * @param <T>
  */
-public abstract class Logger<T extends Simulation> implements Module<T> {
+public abstract class Logger implements Module<LogManager> {
 
-    private ModuleContainer mc;
     private LogManager lman;
+    private DefaultExperimentRoot experiment;
+    private EmbeddedDatabaseManager db;
 
     @Override
-    public final void installInto(T mc) {
-        this.mc = mc;
-        lman = mc.require(LogManager.class);
-        EmbeddedDatabaseManager db = mc.require(EmbeddedDatabaseManager.class);
+    public final void installInto(LogManager lm) {
+        lman = lm;
+        experiment = lm.require(DefaultExperimentRoot.class);
+        db = lm.require(EmbeddedDatabaseManager.class);
         initialize(db.createDefinitionDatabase());
-        
     }
-
-    protected T execution() {
-        return (T) mc;
+    
+    protected DefaultExperimentRoot experiment() {
+        return experiment;
     }
 
     /**
@@ -43,6 +47,12 @@ public abstract class Logger<T extends Simulation> implements Module<T> {
     protected void commitLog(LogManager.LogRecord record) {
         lman.commit(this, record);
     }
+    
+    protected Data query(String sql) throws SQLException {
+        return db.query(sql, null);
+    }
+
+    public abstract List<LogRecord> getRecords(String test, int simulation) throws SQLException;
 
     public abstract void initialize(DefinitionDatabase database);
 

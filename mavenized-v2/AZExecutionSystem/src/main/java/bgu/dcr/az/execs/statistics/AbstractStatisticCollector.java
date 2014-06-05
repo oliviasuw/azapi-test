@@ -64,13 +64,13 @@ public abstract class AbstractStatisticCollector implements StatisticCollector, 
                     fields.append(", ").append(f.getName());
                 }
                 for (Field f : ReflectionUtils.allFields(sim.configuration().baseStatisticFields().getClass())) {
-                    if (f.getName().equals("index")) {
+                    if (f.getName().equals("simulation_index")) {
                         continue;
                     }
                     fields.append(", ").append(f.getName());
                 }
 
-                db.execute("CREATE OR REPLACE VIEW " + tableName + " AS SELECT executionIndex " + fields.toString() + " FROM RAW_" + tableName + " AS t, " + Simulation.EXECUTION_INFO_DATA_TABLE + " AS i WHERE t.executionIndex = i.index;");
+                db.execute("CREATE OR REPLACE VIEW " + tableName + " AS SELECT executionIndex " + fields.toString() + " FROM RAW_" + tableName + " AS t, " + Simulation.EXECUTION_INFO_DATA_TABLE + " AS i WHERE t.executionIndex = i.simulation_index;");
             }
         }
 

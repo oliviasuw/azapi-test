@@ -29,8 +29,8 @@ public class MultithreadedScheduler implements Scheduler {
     private boolean allowIdle = true;
     private volatile Core failingCore = null;
 
-    private Semaphore idleDetectionEnterenceLock = new Semaphore(0);
-    private AtomicInteger idleDetectionEnterenceCount = new AtomicInteger(0);
+    private final Semaphore idleDetectionEnterenceLock = new Semaphore(0);
+    private final AtomicInteger idleDetectionEnterenceCount = new AtomicInteger(0);
 
     //for debugging
     volatile int tick = 0;

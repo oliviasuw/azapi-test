@@ -38,7 +38,6 @@ public class DefaultExperimentProgress extends ExperimentProgressInspector {
         numOfExecutionsInCurrentTest = 0;
         numOfFinishedExecutionsInCurrentTest = 0;
         numberOfTotalExecutions = experiment.execution().countExecutions();
-        
 
         info.listen(Simulation.class, sim -> {
             incCurrentExecutedExecutionNumber();
@@ -71,8 +70,8 @@ public class DefaultExperimentProgress extends ExperimentProgressInspector {
         }
         return (double) numOfFinishedExecutionsInCurrentTest / numOfExecutionsInCurrentTest;
     }
-    
-    public double getExperimentProgress(){
+
+    public double getExperimentProgress() {
         return (double) currentExecutedExecutionNumeber / numberOfTotalExecutions;
     }
 
@@ -102,6 +101,10 @@ public class DefaultExperimentProgress extends ExperimentProgressInspector {
 
     public boolean isTestFinished(String testName) {
         return finishedTestNames.contains(testName);
+    }
+
+    public int getNumOfFinishedExecutionsInCurrentTest() {
+        return numOfFinishedExecutionsInCurrentTest;
     }
 
 }

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<experiment>
+<!--    <test seed="42" name="CSPs">
+        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p2" repeat-count="100">
+        </for-loop>
+    
+        <cc-sc/>
+        <msgc-sc/>
+        <nccc-sc/>
+        <ncsc-sc/>
+    
+        <dcsp-unstructured n="15" d="5" p1="0.3"/>        
+
+        <default-tester/>
+        <algorithm name="SBT"/>
+        <algorithm name="ABT"/>
+        <algorithm name="AFC"/>
+        <algorithm name="AFC-NG"/>
+        <algorithm name="CONC_BT"/>
+    </test>-->
+    
+    <test seed="42" name="COPs PEAV (Complex variables)">
+        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="10" />
+    
+        <cc-sc/>
+        <msgc-sc/>
+        <nccc-sc/>
+        <ncsc-sc/>
+        
+<!--        <complexify>
+            <peavify>-->
+            <!--<multi-varify vars-per-agent="2">-->
+                <dcop-connected n="4" d="3" max-cost="10"/>        
+            <!--</multi-varify>-->
+<!--            </peavify>
+        </complexify>-->
+        
+        <!--<default-tester/>-->
+        <algorithm name="SBB"/>
+        <algorithm name="ADOPT"/>
+        <!--<algorithm name="BNB_ADOPT"/>-->
+        <!--<algorithm name="CONC_FB"/>-->
+<!--        <algorithm name="SBB"/>
+        <algorithm name="ADOPT">
+            <assign var="reduce-messages" val="true"/>
+        </algorithm>-->
+    </test>
+
+<!--    <test seed="42" name="COPs PEAV (Virtual agents)">
+        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100" />
+    
+        <cc-sc/>
+        <msgc-sc/>
+        <nccc-sc/>
+        <ncsc-sc/>
+        
+        <peavify>
+            <multi-varify vars-per-agent="2">
+                <dcop-connected n="4" d="3" max-cost="10"/>        
+            </multi-varify>
+        </peavify>
+        
+        <default-tester/>
+        <algorithm name="SBB"/>
+        <algorithm name="ADOPT"/>
+        <algorithm name="BNB_ADOPT"/>
+        <algorithm name="CONC_FB"/>
+        <algorithm name="SBB"/>
+        <algorithm name="ADOPT">
+            <assign var="reduce-messages" val="true"/>
+        </algorithm>
+    </test>-->
+        
+<!--    <test seed="42" name="Local search" env="async">
+        <for-loop  start="0.1" end="0.9" tick-size="0.1" run-var="p1" repeat-count="100">
+        </for-loop>
+    
+        <cc-sc/>
+        <msgc-sc/>
+        <nccc-sc/>
+        <ncsc-sc/>
+    
+        <dcop-unstructured n="12" d="5" max-cost="100"/>
+        <algorithm name="CONC_FB2"/>
+        <algorithm name="CONC_FB"/>
+        <default-tester/>
+        <algorithm name="SBB"/>
+        <algorithm name="DSA-C"/>
+        
+        <algorithm name="MGM1"/>
+        <algorithm name="MGM"/>
+        
+        <algorithm name="MaxSum"/>
+        <algorithm name="MaxSumRandom1"/>
+        <algorithm name="BoundedMaxSum"/>
+        <algorithm name="MaxSumAD"/>
+        <algorithm name="MaxSumADVPR"/>
+        <algorithm name="MaxSumADVP"/>
+    </test>-->
+
+</experiment>

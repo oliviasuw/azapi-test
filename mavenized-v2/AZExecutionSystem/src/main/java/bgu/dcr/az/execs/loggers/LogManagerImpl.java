@@ -5,38 +5,34 @@
  */
 package bgu.dcr.az.execs.loggers;
 
+import bgu.dcr.az.conf.modules.ModuleContainer;
 import bgu.dcr.az.conf.registery.Register;
-import bgu.dcr.az.execs.exps.exe.ExecutionEnvironment;
 import bgu.dcr.az.execs.api.loggers.LogManager;
 import bgu.dcr.az.execs.api.loggers.Logger;
+import bgu.dcr.az.execs.exps.ModularExperiment;
 import bgu.dcr.az.execs.exps.exe.Simulation;
 import bgu.dcr.az.execs.statistics.NCSCStatisticCollector;
 import bgu.dcr.az.execs.orm.api.EmbeddedDatabaseManager;
-import bgu.dcr.az.execs.orm.RecordDescriptor;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  *
  * @author bennyl
  */
 @Register("log-manager")
-public class LogManagerImpl implements LogManager {
+public class LogManagerImpl extends LogManager {
 
-    public static final String LOG_MANAGEMENT_TABLE_NAME = "LOG_MANAGEMENT";
-
-    private final List<Logger> loggers = new ArrayList<>();
-    private Map<Logger, TimedLoggerEntry> logIndex;
+    private long sharedIndex;
     private EmbeddedDatabaseManager db = null;
-    private ExecutionEnvironment environment;
-    private NCSCStatisticCollector ncsc;
-    private Simulation exec;
-    
+    private Simulation currentSimulation;
+    private TimeRetriever timer;
+
+    private final ConcurrentLinkedQueue<LogRecord> lastSimulationRecords = new ConcurrentLinkedQueue<>();
 
     private boolean saveTimestaps = true;
+    private Iterable<Logger> loggers;
 
     public boolean getSaveTimestaps() {
         return saveTimestaps;
@@ -50,81 +46,79 @@ public class LogManagerImpl implements LogManager {
      * @propertyName loggers
      * @return
      */
-    public List<Logger> getLoggers() {
+    public Iterable<Logger> getLoggers() {
         return loggers;
     }
 
     @Override
-    public void installInto(Simulation ex) {
-        
-        this.exec = ex;
-        
-        if (saveTimestaps) {
-            environment = ex.getExecutionEnvironment();
-            if (ExecutionEnvironment.async.equals(environment)) {
-                ncsc = (NCSCStatisticCollector) ex.require(NCSCStatisticCollector.class);
-            }
+    public void installInto(ModuleContainer mc) {
+        if (!(mc instanceof ModularExperiment)) {
+            throw new UnsupportedOperationException("Progress Enhancers only support ModularExperiment containers!");
         }
-
+        super.installInto(mc);
+        
+        loggers = requireAll(Logger.class);
+        
+        
+        ModularExperiment ex = (ModularExperiment) mc;
+        
         if (db == null) {
             db = ex.require(EmbeddedDatabaseManager.class);
-            db.defineTable(LOG_MANAGEMENT_TABLE_NAME, new LogRecordDescriptor(loggers));
-
-            logIndex = new HashMap<>();
-
-            loggers.stream().forEach(l -> {
-                TimedLoggerEntry entry = new TimedLoggerEntry();
-                entry.value = new long[ex.configuration().numAgents()];
-                logIndex.put(l, entry);
-            });
         }
 
-    }
+        ex.execution().infoStream().listen(Simulation.class, s -> {
+//            lastSimulationRecords.clear();
 
-    @Override
-    public Collection<Logger> registered() {
-        return loggers;
-    }
+            currentSimulation = s;
 
-    @Override
-    public void register(Logger logger) {
-        if (db != null) {
-            throw new UnsupportedOperationException("Cannot register a logger after log manager initialization.");
-        }
-        loggers.add(logger);
+            switch (currentSimulation.getExecutionEnvironment()) {
+                case async:
+                    NCSCStatisticCollector ncsc = (NCSCStatisticCollector) currentSimulation.require(NCSCStatisticCollector.class);
+                    timer = aid -> ncsc.getCurrentNCSC(aid);
+                    break;
+                case sync:
+                    timer = aid -> {
+                        throw new UnsupportedOperationException("Not supported yet.");
+                    };
+                    break;
+                default:
+                    throw new AssertionError(currentSimulation.getExecutionEnvironment().name());
+            }
+        });
     }
 
     @Override
     public void commit(Logger logger, LogRecord record) {
-        TimedLoggerEntry entry = logIndex.get(logger);
-        record.index = entry.time++;
-        entry.value[record.aid] = record.index;
 
-        db.insert(record);
+        record.test = currentSimulation.configuration().baseStatisticFields().test;
+        record.simulation_index = currentSimulation.configuration().baseStatisticFields().simulation_index;
 
-        if (saveTimestaps) {
-            Object[] args = new Object[loggers.size() + 3];
-            args[0] = record.aid;
-            args[1] = getTime(record.aid);
-            args[2] = exec.getSimulationNumber();
+        record.sharedIndex = sharedIndex++;
+        record.time = timer.getTime(record.aid);
 
-            int i = 3;
-            for (Logger l : loggers) {
-                args[i++] = logIndex.get(l).value[record.aid];
-            }
-            db.insert(args, LogRecordDescriptor.class);
-        }
+//        db.insert(record);
+
+        lastSimulationRecords.add(record);
     }
 
-    private long getTime(int aid) {
-        switch (environment) {
-            case async:
-                return ncsc.getCurrentNCSC(aid);
-            case sync:
-                return 0;
-            default:
-                throw new AssertionError(environment.name());
+    @Override
+    public Iterable<LogRecord> getRecords(String test, int simulation) throws SQLException {
+        if (currentSimulation == null) {
+            return Collections.EMPTY_LIST;
         }
+
+//        if (currentSimulation.configuration().baseStatisticFields().test.equals(test)
+//                && simulation == currentSimulation.configuration().baseStatisticFields().simulation_index) {
+            return lastSimulationRecords;
+//        }
+
+//        LinkedList<LogRecord> result = new LinkedList<>();
+//
+//        for (Logger l : getLoggers()) {
+//            result.addAll(l.getRecords(test, simulation));
+//        }
+//
+//        return result;
     }
 
     @Override
@@ -132,47 +126,8 @@ public class LogManagerImpl implements LogManager {
         return "Log manager";
     }
 
-    private static class TimedLoggerEntry {
+    private static interface TimeRetriever {
 
-        long time;
-        long[] value;
-    }
-
-    private static class LogRecordDescriptor implements RecordDescriptor {
-
-        String[] columns;
-
-        public LogRecordDescriptor(Collection<Logger> loggers) {
-            columns = new String[3 + loggers.size()];
-
-            columns[0] = "aid";
-            columns[1] = "execution_time";
-            columns[2] = "execution_number";
-
-            int i = 3;
-            for (Logger l : loggers) {
-                columns[i++] = l.getClass().getSimpleName();
-            }
-        }
-
-        @Override
-        public String[] fields() {
-            return columns;
-        }
-
-        @Override
-        public Object get(int idx, Object from) {
-            return ((Object[]) from)[idx];
-        }
-
-        @Override
-        public Class type(int idx) {
-            return idx == 0 ? int.class : long.class;
-        }
-
-        @Override
-        public Object identifier() {
-            return LogRecordDescriptor.class;
-        }
+        long getTime(int aid);
     }
 }

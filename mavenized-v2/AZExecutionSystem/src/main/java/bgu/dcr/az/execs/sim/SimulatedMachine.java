@@ -12,12 +12,14 @@ import static bgu.dcr.az.execs.exps.exe.ExecutionEnvironment.sync;
 import bgu.dcr.az.execs.exps.exe.Simulation;
 import bgu.dcr.az.execs.exps.exe.SimulationConfiguration;
 import bgu.dcr.az.conf.modules.Module;
+import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.execs.lowlevel.AbstractProc;
 import bgu.dcr.az.execs.sim.nest.Continuation;
 import bgu.dcr.az.execs.sim.nest.ContinuationMediator;
 import bgu.dcr.az.execs.sim.net.AZIPMessage;
 import bgu.dcr.az.execs.sim.net.Message;
 import bgu.dcr.az.execs.sim.net.MessageRouter;
+import bgu.dcr.az.execs.statistics.info.MessageInfo;
 import com.esotericsoftware.reflectasm.ConstructorAccess;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,6 +50,7 @@ public class SimulatedMachine extends AbstractProc {
 
     private ExecutionEnvironment env;
     private int tick;
+    private InfoStream infos;
 
     public SimulatedMachine(int id, Simulation sim) {
         super(id);
@@ -60,6 +63,7 @@ public class SimulatedMachine extends AbstractProc {
 
     private void initialize(Simulation mc) {
         simulation = mc;
+        infos = mc.infoStream();
         final SimulationConfiguration configuration = mc.configuration();
         env = configuration.env();
 
@@ -223,11 +227,18 @@ public class SimulatedMachine extends AbstractProc {
         if (controlledAgents.containsKey(recepientAgent)) {
             mailbox.deliverMessage(new AZIPMessage(m.copy(), pid(), recepientAgent, senderContext));
         } else {
+            infos.writeIfListening(() -> new MessageInfo(m.getMessageId(), m.getSender(), m.getRecepient(), m.getName(), MessageInfo.OperationType.Sent), MessageInfo.class);
             router.route(m, recepientAgent, senderContext);
         }
     }
 
     public void receive(AZIPMessage message) {
+
+        infos.writeIfListening(() -> {
+            Message m = message.getData();
+            return new MessageInfo(m.getMessageId(), m.getSender(), m.getRecepient(), m.getName(), MessageInfo.OperationType.Received);
+        }, MessageInfo.class);
+
         mailbox.deliverMessage(message);
         if (env == ExecutionEnvironment.async) {
             wakeup(pid());

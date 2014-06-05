@@ -14,7 +14,7 @@
     </cp-test>-->
     
     <cp-test name="CSPs tests">
-        <for-loop run-var="p1" start="0.1" end="0.9" tick-size="0.1" repeat-count="100"/>
+        <for-loop run-var="p1" start="0.1" end="0.9" tick-size="0.1" repeat-count="10"/>
         <algorithm name="ABT"/>
 <!--        <algorithm name="NESTED_ABT"/>
         <algorithm name="SBT"/>

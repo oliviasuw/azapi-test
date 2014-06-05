@@ -32,11 +32,11 @@ public class AdaptiveScheduler implements Module {
     public static final Object GENERAL_GROUP_KEY = new Object();
 
     private MultithreadedScheduler sched;
-    private int maximumCores = Runtime.getRuntime().availableProcessors();
-    private int minimalSampleSize = 4;
-    private double factor = 0.75;
+    private final int maximumCores = Runtime.getRuntime().availableProcessors();
+    private final int minimalSampleSize = 4;
+    private final double factor = 0.75;
 
-    private Map<Object, Adaptation> adaptionMap = new HashMap<>();
+    private final Map<Object, Adaptation> adaptionMap = new HashMap<>();
     private Adaptation currentAdaption;
     private InfoStream istream;
 
@@ -69,7 +69,7 @@ public class AdaptiveScheduler implements Module {
         private int adaptedNumberOfCores;
         private double contentionExpAverage;
         private int executionNumner = 0;
-        private Object groupKey;
+        private final Object groupKey;
 
         public Adaptation(Object groupKey) {
             adaptedNumberOfCores = maximumCores;
@@ -106,8 +106,8 @@ public class AdaptiveScheduler implements Module {
 
     public static class CoreUsageInfo {
 
-        private Object group;
-        private int coreUsage;
+        private final Object group;
+        private final int coreUsage;
 
         public CoreUsageInfo(Object group, int coreUsage) {
             this.group = group;

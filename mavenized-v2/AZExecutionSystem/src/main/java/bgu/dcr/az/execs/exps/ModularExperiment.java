@@ -12,9 +12,13 @@ import bgu.dcr.az.conf.utils.ConfigurationUtils;
 import bgu.dcr.az.conf.modules.ModuleContainer;
 import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.conf.modules.info.SimpleInfoStream;
+import bgu.dcr.az.execs.api.loggers.LogManager;
 import bgu.dcr.az.execs.exps.exe.AdaptiveScheduler;
-import bgu.dcr.az.execs.exps.exe.SimulationResult;
+import bgu.dcr.az.execs.exps.exe.DefaultExperimentRoot;
 import bgu.dcr.az.execs.exps.prog.DefaultExperimentProgress;
+import bgu.dcr.az.execs.loggers.AgentPrintLogger;
+import bgu.dcr.az.execs.loggers.LogManagerImpl;
+import bgu.dcr.az.execs.loggers.MessageLogger;
 import bgu.dcr.az.execs.orm.api.EmbeddedDatabaseManager;
 import bgu.dcr.az.execs.orm.H2EmbeddedDatabaseManager;
 import java.io.IOException;
@@ -77,6 +81,7 @@ public final class ModularExperiment extends ModuleContainer {
      * </ul>
      *
      * @param es
+     * @param recordProgress
      * @return the newly constructed experiment
      */
     public static ModularExperiment createDefault(ExecutorService es, boolean recordProgress) {
@@ -86,6 +91,13 @@ public final class ModularExperiment extends ModuleContainer {
         result.install(EmbeddedDatabaseManager.class, manager);
         result.install(InfoStream.class, new SimpleInfoStream());
         result.install(AdaptiveScheduler.class, new AdaptiveScheduler(es));
+
+        //TODO: proper way to install log manager
+        LogManagerImpl log = new LogManagerImpl();
+        log.install(new AgentPrintLogger());
+        log.install(new MessageLogger());
+        result.install(LogManager.class, log);
+
         if (recordProgress) {
             result.install(new DefaultExperimentProgress());
         }
@@ -109,6 +121,7 @@ public final class ModularExperiment extends ModuleContainer {
         ModularExperiment exper = createDefault(es, recordProgress);
 
         exper.setExecution(exec);
+
         return exper;
     }
 

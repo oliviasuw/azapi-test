@@ -13,7 +13,7 @@ import bgu.dcr.az.execs.exps.ExecutionTree;
  *
  * @author User
  */
-public interface StatisticCollector extends Module<ExecutionTree> {
+public interface StatisticCollector extends Module<Test> {
 
     String getName();
 

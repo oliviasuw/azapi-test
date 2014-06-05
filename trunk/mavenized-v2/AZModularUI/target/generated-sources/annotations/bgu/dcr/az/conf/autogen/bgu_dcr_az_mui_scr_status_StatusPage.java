@@ -13,7 +13,7 @@ import bgu.dcr.az.conf.registery.RegistrationMarker;
 public class bgu_dcr_az_mui_scr_status_StatusPage implements ControllerManipulator, RegistrationMarker{
     
     //store configured class javadoc
-    public static JavaDocInfo DOC = JavaDocParser.parse("FXML Controller class\n\n @title Status");
+    public static JavaDocInfo DOC = JavaDocParser.parse("FXML Controller class\n\n @title Status\n @index 0000");
 
     //registration on class loading time
     static {

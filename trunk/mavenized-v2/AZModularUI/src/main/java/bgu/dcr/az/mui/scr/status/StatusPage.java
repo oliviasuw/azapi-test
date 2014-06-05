@@ -37,6 +37,7 @@ import org.controlsfx.dialog.Dialogs;
  * FXML Controller class
  *
  * @title Status
+ * @index 0000
  */
 @RegisterController("main.pages.status")
 public class StatusPage extends FXMLController {

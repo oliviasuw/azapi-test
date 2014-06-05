@@ -10,7 +10,7 @@ import bgu.dcr.az.execs.exps.ExperimentProgressInspector;
 import bgu.dcr.az.execs.exps.ModularExperiment;
 import bgu.dcr.az.execs.exps.exe.Simulation;
 import bgu.dcr.az.execs.exps.exe.Test;
-import bgu.dcr.az.execs.statistics.info.SimulationTerminationInfo;
+import bgu.dcr.az.execs.statistics.info.SimulationTermination;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,7 +44,7 @@ public class DefaultExperimentProgress extends ExperimentProgressInspector {
             incCurrentExecutedExecutionNumber();
         });
 
-        info.listen(SimulationTerminationInfo.class, sti -> {
+        info.listen(SimulationTermination.class, sti -> {
             numOfFinishedExecutionsInCurrentTest++;
         });
 

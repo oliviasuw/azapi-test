@@ -11,7 +11,7 @@ import bgu.dcr.az.dcr.api.experiment.CPSolution;
 import bgu.dcr.az.dcr.api.experiment.CPTest;
 import bgu.dcr.az.execs.exps.exe.SimulationResult;
 import bgu.dcr.az.execs.exps.exe.Simulation;
-import bgu.dcr.az.execs.statistics.info.SimulationTerminationInfo;
+import bgu.dcr.az.execs.statistics.info.SimulationTermination;
 
 /**
  *
@@ -21,7 +21,7 @@ public abstract class CPCorrectnessTester implements Module<CPTest> {
 
     @Override
     public void installInto(final CPTest test) {
-        test.infoStream().listen(SimulationTerminationInfo.class, t -> {
+        test.infoStream().listen(SimulationTermination.class, t -> {
             if (t.getSimulation().parent() != test) {
                 throw new UnsupportedOperationException("bad initialization of correctness tester!");
             }

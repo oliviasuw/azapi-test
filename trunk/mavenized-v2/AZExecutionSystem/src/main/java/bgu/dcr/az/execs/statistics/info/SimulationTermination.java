@@ -12,12 +12,12 @@ import bgu.dcr.az.execs.exps.exe.SimulationResult;
  *
  * @author User
  */
-public class SimulationTerminationInfo {
+public class SimulationTermination {
 
     private final SimulationResult executionResult;
     private final Simulation sim;
 
-    public SimulationTerminationInfo(SimulationResult executionResult, Simulation sim) {
+    public SimulationTermination(SimulationResult executionResult, Simulation sim) {
         this.executionResult = executionResult;
         this.sim = sim;
     }

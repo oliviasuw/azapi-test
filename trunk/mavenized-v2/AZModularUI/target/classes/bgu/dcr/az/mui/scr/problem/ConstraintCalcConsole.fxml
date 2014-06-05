@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane id="constraint-console" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" stylesheets="@../../azstyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bgu.dcr.az.mui.scr.problem.ConstraintCalcConsole">
+    <bottom>
+        <BorderPane id="command-prompt" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0">
+            <center>
+                <TextField id="inputTextField" fx:id="inputConsole" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" />
+            </center>
+            <left>
+                <Label text="?&gt;" />
+            </left>
+        </BorderPane>
+    </bottom>
+    <center>
+        <TextArea id="outputTextArea" fx:id="outputConsole" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="-1.0" text="CONSTRAINTS QUERY CONSOLE&#10;&#10;use &quot; i vs. j &quot; for watching the i vs. j constraint table (ex. &quot;1 vs. 2&quot;)&#10;use &quot; i=vi, j=vj, ...&quot; for watching the cost of the given assignment (ex. &quot;1=0,2=4,3=2&quot;)&#10;&#10;" wrapText="true" />
+    </center>
+</BorderPane>

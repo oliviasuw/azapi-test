@@ -36,5 +36,9 @@ public abstract class Controller<T> extends BaseController<T> {
             throw new UnsupportedOperationException("controllers can only reside inside other controllers");
         }
     }
+    
+    public ControllerAttributes attributes(){
+        return ControllerRegistery.get().getAttributes(this);
+    }
 
 }

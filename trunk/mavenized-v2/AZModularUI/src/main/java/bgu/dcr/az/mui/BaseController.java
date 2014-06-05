@@ -87,7 +87,7 @@ public abstract class BaseController<V> extends ModuleContainer {
         return _getView();
     }
     
-    public abstract V _getView();
+    protected abstract V _getView();
 
     /**
      * @return the tokens that are introduced by this container only - not take
@@ -223,7 +223,7 @@ public abstract class BaseController<V> extends ModuleContainer {
     /**
      * this method will be called each time before the view is shown
      */
-    protected void onShow() {
+    public void onShow() {
     }
 
     /**
@@ -231,7 +231,7 @@ public abstract class BaseController<V> extends ModuleContainer {
      * one of its parents) choose to switch to a different view that make this
      * view hidden
      */
-    protected void onHide() {
+    public void onHide() {
     }
 
     /**

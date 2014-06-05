@@ -11,7 +11,7 @@ import bgu.dcr.az.dcr.api.experiment.CPSolution;
 import bgu.dcr.az.dcr.api.experiment.CPTest;
 import bgu.dcr.az.execs.api.statistics.AdditionalLineChartProperties;
 import bgu.dcr.az.execs.exps.exe.Simulation;
-import bgu.dcr.az.execs.statistics.info.SimulationTerminationInfo;
+import bgu.dcr.az.execs.statistics.info.SimulationTermination;
 import bgu.dcr.az.execs.orm.api.DefinitionDatabase;
 import bgu.dcr.az.execs.orm.api.QueryDatabase;
 
@@ -40,12 +40,12 @@ public class CCStatisticCollector extends AbstractCPStatisticCollector {
     }
 
     @Override
-    protected void initialize(DefinitionDatabase database, final Simulation<CPData, CPSolution> ex) {
+    protected void initialize(DefinitionDatabase database, final Simulation<CPData, CPSolution> sim) {
         database.defineTable("CC", CCRecord.class);
 
-        ex.infoStream().listen(SimulationTerminationInfo.class, t -> {
+        sim.infoStream().listen(SimulationTermination.class, t -> {
             long cc = 0;
-            for (long c : ex.data().getProblem().getCC_Count()) {
+            for (long c : sim.data().getProblem().getCC_Count()) {
                 cc += c;
             }
 

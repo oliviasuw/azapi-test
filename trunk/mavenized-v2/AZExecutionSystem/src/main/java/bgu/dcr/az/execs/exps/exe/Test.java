@@ -12,7 +12,6 @@ import bgu.dcr.az.conf.modules.info.PipeInfoStream;
 import bgu.dcr.az.execs.exps.ExecutionTree;
 import bgu.dcr.az.execs.exps.ExperimentFailedException;
 import bgu.dcr.az.execs.exps.ExperimentProgressInspector;
-import bgu.dcr.az.execs.exps.ModularExperiment;
 import static bgu.dcr.az.execs.exps.exe.Simulation.EXECUTION_INFO_DATA_TABLE;
 import bgu.dcr.az.execs.exps.prog.DefaultExperimentProgress;
 import bgu.dcr.az.execs.orm.api.EmbeddedDatabaseManager;
@@ -59,7 +58,6 @@ public abstract class Test extends ExecutionTree {
 
         for (ExecutionTree e : this) {
             Simulation sim = (Simulation) e;
-            sim.installInto(this);
 
             //install statistic support
             BaseStatisticFields info = sim.configuration().baseStatisticFields();
@@ -70,11 +68,13 @@ public abstract class Test extends ExecutionTree {
 
             sim.execute();
 
-            SimulationResult.State state = sim.result().getState();
-
+            SimulationResult result = sim.result();
+            //check the state of the simulation result - if not successfull, break execution.
+            SimulationResult.State state = result.getState();
             if (state != SimulationResult.State.SUCCESS && state != SimulationResult.State.LIMITED) {
                 throw new ExperimentFailedException(sim);
             }
+
         }
     }
 

@@ -12,8 +12,7 @@ import bgu.dcr.az.conf.modules.ModuleContainer;
 import bgu.dcr.az.execs.lowlevel.TerminationReason;
 import bgu.dcr.az.execs.lowlevel.ThreadSafeProcTable;
 import bgu.dcr.az.execs.statistics.InfoStreamWrapperProc;
-import bgu.dcr.az.execs.statistics.info.ExecutionInitializationInfo;
-import bgu.dcr.az.execs.statistics.info.SimulationTerminationInfo;
+import bgu.dcr.az.execs.statistics.info.SimulationTermination;
 import bgu.dcr.az.execs.orm.api.EmbeddedDatabaseManager;
 import bgu.dcr.az.execs.sim.SimulatedMachine;
 import bgu.dcr.az.execs.sim.net.BaseMessageRouter;
@@ -49,7 +48,7 @@ public class Simulation<T extends SimulationData, R> extends ExecutionTree {
     @Override
     public final void installInto(ModuleContainer mc) {
         super.installInto(mc);
-        install(istream = new InfoStreamWrapperProc(parent().require(InfoStream.class), -1000));
+        install(InfoStream.class, istream = new InfoStreamWrapperProc(parent().require(InfoStream.class), -1000));
         install(MessageRouter.class, new BaseMessageRouter());
     }
 
@@ -95,8 +94,9 @@ public class Simulation<T extends SimulationData, R> extends ExecutionTree {
         return Collections.EMPTY_SET.iterator();
     }
 
+    @Override
     public InfoStream infoStream() {
-        return require(InfoStream.class);
+        return require(InfoStream.class);//istream;
     }
 
     public SimulationResult<R> result() {
@@ -113,7 +113,6 @@ public class Simulation<T extends SimulationData, R> extends ExecutionTree {
             table.add(istream);
 
             createMachines().forEach(table::add);
-            istream.writeNow(new ExecutionInitializationInfo());
             TerminationReason terminationResult = sched.schedule(table);
 
             if (terminationResult.isError()) {
@@ -122,9 +121,10 @@ public class Simulation<T extends SimulationData, R> extends ExecutionTree {
                 result.toSucceefulState((R) data().currentSolution());
             }
 
-            istream.writeNow(new SimulationTerminationInfo(result, this));
         } catch (InterruptedException ex) {
             throw new UncheckedInterruptedException(ex);
+        } finally {
+            istream.writeNow(new SimulationTermination(result, this));
         }
     }
 

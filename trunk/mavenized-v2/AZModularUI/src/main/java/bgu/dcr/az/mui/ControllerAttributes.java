@@ -38,7 +38,7 @@ public class ControllerAttributes implements Iterable<String> {
         return doc.first("title");
     }
 
-    public String attr(String name) {
+    public String get(String name) {
         return doc.first(name);
     }
 

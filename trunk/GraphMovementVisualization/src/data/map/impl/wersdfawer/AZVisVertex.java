@@ -64,6 +64,10 @@ public class AZVisVertex implements HasId {
     public String addTag(String tagKey, String tagValue) {
         return tags.put(tagKey, tagValue);
     }
+    
+    public HashMap<String, String> getTags() {
+        return tags;
+    }
 
     @Override
     public String getId() {

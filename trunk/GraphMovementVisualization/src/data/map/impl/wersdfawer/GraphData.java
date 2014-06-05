@@ -60,11 +60,11 @@ public class GraphData {
 
         //adding the edge type to the hashmap
         HashMap<String, String> edgeDataReal = (HashMap<String, String>) edgeData;
-        String firstTag = edgeDataReal.values().iterator().next();
-        if (tagToEdges.get(firstTag) == null) {
-            tagToEdges.put(firstTag, new LinkedList<>());
+        String highwayTag = edgeDataReal.get("highway");
+        if (tagToEdges.get(highwayTag) == null) {
+            tagToEdges.put(highwayTag, new LinkedList<>());
         }
-        tagToEdges.get(firstTag).add(name);
+        tagToEdges.get(highwayTag).add(name);
 
         AZVisVertex source = (AZVisVertex) this.getData(from);
 //        tagToEdges.get(firstTag).put((float) source.getY(), (float) source.getX(), name);

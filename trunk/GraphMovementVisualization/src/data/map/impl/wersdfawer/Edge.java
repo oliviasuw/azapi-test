@@ -8,6 +8,8 @@ package data.map.impl.wersdfawer;
 
 import data.map.impl.wersdfawer.groupbounding.HasId;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -15,7 +17,7 @@ import java.util.HashMap;
  */
 public class Edge implements HasId {
  
-    public HashMap<String, String> tags;
+    private HashMap<String, String> tags;
     private final String id;
 
     public Edge(String id) {
@@ -36,4 +38,8 @@ public class Edge implements HasId {
         return tags.put(tagKey, tagValue);
     }
     
+    public HashMap<String, String> getTags() {
+        return tags;
+    }
+
 }

@@ -70,16 +70,16 @@ public class NewGraphReader {
 
     private Collection<Double> parseVertex(Scanner lineBreaker, String nextToken) {
         LinkedList<Double> ints = new LinkedList<>();
-        while (lineBreaker.hasNext()) {
-            if (nextToken.charAt(0) == '[') {
-                nextToken = nextToken.substring(1);
-                while (!(nextToken.charAt(nextToken.length() - 1) == ']')) {
-                    ints.add(Double.parseDouble(nextToken));
-                    nextToken = lineBreaker.next();
-                }
-                ints.add(Double.parseDouble(nextToken.substring(0, nextToken.length() - 1)));
+//        while (lineBreaker.hasNext()) {
+        if (nextToken.charAt(0) == '[') {
+            nextToken = nextToken.substring(1);
+            while (!(nextToken.charAt(nextToken.length() - 1) == ']')) {
+                ints.add(Double.parseDouble(nextToken));
+                nextToken = lineBreaker.next();
             }
+            ints.add(Double.parseDouble(nextToken.substring(0, nextToken.length() - 1)));
         }
+//        }
         return ints;
     }
 
@@ -96,7 +96,9 @@ public class NewGraphReader {
                 }
                 if (nextToken != null) {
                     String[] split = nextToken.substring(0, nextToken.length() - 1).split("=");
-                    params.put(split[0], split[1]);
+                    if (split.length >= 2) {
+                        params.put(split[0], split[1]);
+                    }
                 }
             }
             if (lineBreaker.hasNext()) {

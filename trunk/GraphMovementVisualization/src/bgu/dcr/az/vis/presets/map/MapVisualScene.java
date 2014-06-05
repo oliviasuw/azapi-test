@@ -28,14 +28,22 @@ import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Observable;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.Vector;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import resources.img.R;
@@ -49,6 +57,8 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
     public static final double MIN_SCALE = 0.3;
     public static final double MAX_SCALE = 10;
 
+    public static final double TOOLTIP_RECT_WIDTH = 10;
+
     private static double DEFAULT_CONTAINER_WIDTH = 10000;
     private static double DEFAULT_CONTAINER_HEIGHT = 10000;
 
@@ -57,11 +67,21 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
     private SimpleDrawer drawer;
     private HashMap<String, Image> images;
 
+    private Tooltip tooltip = new Tooltip();
+    private Rectangle tooltipRect;
+
     public MapVisualScene(int carNum, String mapPath, GroupBoundingQuery query, SimpleDrawer drawer) {
         super(DEFAULT_CONTAINER_WIDTH, DEFAULT_CONTAINER_HEIGHT);
 
+        //set a tooltip to show entity data
         this.boundingQuery = query;
         this.drawer = drawer;
+        tooltipRect = new Rectangle(TOOLTIP_RECT_WIDTH, TOOLTIP_RECT_WIDTH, Color.RED);
+        pane.getChildren().add(tooltipRect);
+//        tooltipRect.toFront();
+        tooltip.maxWidth(50);
+        tooltip.maxHeight(50);
+        Tooltip.install(tooltipRect, tooltip);
 
         init(mapPath);
 
@@ -79,7 +99,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                 return super.getCurrentScale(worldScale);
             }
         };
-        GroupScale edgeZoom = new GroupScale(1, 1, 0, 10){
+        GroupScale edgeZoom = new GroupScale(1, 1, 0, 10) {
             @Override
             public double getCurrentScale(double worldScale, String subGroup) {
                 if (subGroup.contains("EDGES")) {
@@ -87,7 +107,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                 } else {
                     return 1;
                 }
-            }  
+            }
         };
         boundingQuery.addMetaData("MOVING", GroupScale.class, carZoom);
         boundingQuery.addMetaData("GRAPH", GroupScale.class, edgeZoom);
@@ -114,17 +134,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
             viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
                 @Override
                 public void changed(ObservableValue<? extends Bounds> observableValue, Bounds oldBounds, Bounds newBounds) {
-                    //viewport is the amout of meters that we are viewing from the map
-                    double viewPortWidth = newBounds.getWidth() / drawer.getScale();
-                    double viewPortHeight = newBounds.getHeight() / drawer.getScale();
-                    drawer.setViewPortWidth(viewPortWidth);
-                    drawer.setViewPortHeight(viewPortHeight);
-
-                    //refresh hvalue and vvalue - will invoke listeners
-                    hvalueProperty().set(hvalueProperty().getValue() + 0.0001);
-                    vvalueProperty().set(vvalueProperty().getValue() + 0.0001);
-                    hvalueProperty().set(hvalueProperty().getValue() - 0.0001);
-                    vvalueProperty().set(vvalueProperty().getValue() - 0.0001);
+                    handleResize(newBounds);
                 }
             });
 
@@ -132,67 +142,28 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
         //handle zoom
         addEventFilter(ScrollEvent.ANY, (ScrollEvent t) -> {
-            if (t.isControlDown()) {
-                double scale = drawer.getScale() + t.getDeltaY() / 500.0;
-                if (scale <= MIN_SCALE) {
-                    scale = MIN_SCALE;
-                } else if (scale >= MAX_SCALE) {
-                    scale = MAX_SCALE;
-                }
-                drawer.setScale(scale);
+            handleZoom(t, drawer, back);
+        });
 
-                Point2D.Double mapSize = back.getGraphData().getBounds();
-                double mapWidth = mapSize.x;
-                double mapHeight = mapSize.y;
-
-                super.setContainerSize(mapWidth * scale, mapHeight * scale);
-
-                double windowWidth = getViewportBounds().getWidth();
-                double windownHeight = getViewportBounds().getHeight();
-
-                //viewport is the amout of meters that we are viewing from the map
-                double viewPortWidth = windowWidth / scale;
-                double viewPortHeight = windownHeight / scale;
-                drawer.setViewPortWidth(viewPortWidth);
-                drawer.setViewPortHeight(viewPortHeight);
-
-                //refresh hvalue and vvalue - will invoke listeners
-                hvalueProperty().set(hvalueProperty().getValue() + 0.0001);
-                vvalueProperty().set(vvalueProperty().getValue() + 0.0001);
-                hvalueProperty().set(hvalueProperty().getValue() - 0.0001);
-                vvalueProperty().set(vvalueProperty().getValue() - 0.0001);
-
-                t.consume();
+        addEventFilter(MouseEvent.MOUSE_CLICKED, (MouseEvent event) -> {
+            Location viewPortLocation = drawer.getViewPortLocation();
+            double scale = drawer.getScale();
+            tooltipRect.translateXProperty().set(viewPortLocation.getX() * scale + event.getSceneX());
+            tooltipRect.translateYProperty().set(viewPortLocation.getY() * scale + event.getSceneY());
+            String text = getToolTipText(drawer, event);
+            tooltip.textProperty().set(text);
+            if (text.length() > 1) {
+                tooltip.textProperty().set(text);
+                tooltip.show(pane, event.getScreenX(), event.getScreenY());
             }
         });
 
         hvalueProperty().addListener((ov, n, xRatio) -> {
-            double dXRatio = xRatio.doubleValue();
-            double scale = drawer.getScale();
-
-            double windowWidth = getViewportBounds().getWidth();
-
-            Point2D.Double mapSize = back.getGraphData().getBounds();
-            double mapWidth = mapSize.x;
-            double viewportX = dXRatio * (mapWidth - windowWidth / scale);
-            double viewportY = drawer.getViewPortLocation().getY();
-
-            drawer.setViewPortLocation(viewportX, viewportY);
+            handleHvalue(xRatio, drawer, back);
         });
 
         vvalueProperty().addListener((ov, n, yRatio) -> {
-            double dYRatio = yRatio.doubleValue();
-            double scale = drawer.getScale();
-
-            double windowHeight = getViewportBounds().getHeight();
-
-            Point2D.Double mapSize = back.getGraphData().getBounds();
-            double mapHeight = mapSize.y;
-            double viewportY = dYRatio * (mapHeight - windowHeight / scale);
-            double viewportX = drawer.getViewPortLocation().getX();
-
-            drawer.setViewPortLocation(viewportX, viewportY);
-
+            handleVvalue(yRatio, drawer, back);
         });
 
         Image greenCarImage = new Image(R.class.getResourceAsStream("car-green.jpg"));
@@ -206,14 +177,135 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         setPrefHeight(600);
     }
 
+    private void handleResize(Bounds newBounds) {
+        //viewport is the amout of meters that we are viewing from the map
+        double viewPortWidth = newBounds.getWidth() / drawer.getScale();
+        double viewPortHeight = newBounds.getHeight() / drawer.getScale();
+        drawer.setViewPortWidth(viewPortWidth);
+        drawer.setViewPortHeight(viewPortHeight);
+
+        //refresh hvalue and vvalue - will invoke listeners
+        hvalueProperty().set(hvalueProperty().getValue() + 0.0001);
+        vvalueProperty().set(vvalueProperty().getValue() + 0.0001);
+        hvalueProperty().set(hvalueProperty().getValue() - 0.0001);
+        vvalueProperty().set(vvalueProperty().getValue() - 0.0001);
+    }
+
+    private void handleVvalue(Number yRatio, SimpleDrawer drawer, MapCanvasLayer back) {
+        double dYRatio = yRatio.doubleValue();
+        double scale = drawer.getScale();
+
+        double windowHeight = getViewportBounds().getHeight();
+
+        Point2D.Double mapSize = back.getGraphData().getBounds();
+        double mapHeight = mapSize.y;
+        double viewportY = dYRatio * (mapHeight - windowHeight / scale);
+        double viewportX = drawer.getViewPortLocation().getX();
+
+        drawer.setViewPortLocation(viewportX, viewportY);
+    }
+
+    private void handleHvalue(Number xRatio, SimpleDrawer drawer, MapCanvasLayer back) {
+        double dXRatio = xRatio.doubleValue();
+        double scale = drawer.getScale();
+
+        double windowWidth = getViewportBounds().getWidth();
+
+        Point2D.Double mapSize = back.getGraphData().getBounds();
+        double mapWidth = mapSize.x;
+        double viewportX = dXRatio * (mapWidth - windowWidth / scale);
+        double viewportY = drawer.getViewPortLocation().getY();
+
+        drawer.setViewPortLocation(viewportX, viewportY);
+    }
+
+    private void handleZoom(ScrollEvent t, SimpleDrawer drawer, MapCanvasLayer back) {
+        if (t.isControlDown()) {
+            double scale = drawer.getScale() + t.getDeltaY() / 500.0;
+            if (scale <= MIN_SCALE) {
+                scale = MIN_SCALE;
+            } else if (scale >= MAX_SCALE) {
+                scale = MAX_SCALE;
+            }
+            drawer.setScale(scale);
+
+            Point2D.Double mapSize = back.getGraphData().getBounds();
+            double mapWidth = mapSize.x;
+            double mapHeight = mapSize.y;
+
+            super.setContainerSize(mapWidth * scale, mapHeight * scale);
+
+            double windowWidth = getViewportBounds().getWidth();
+            double windownHeight = getViewportBounds().getHeight();
+
+            //viewport is the amout of meters that we are viewing from the map
+            double viewPortWidth = windowWidth / scale;
+            double viewPortHeight = windownHeight / scale;
+            drawer.setViewPortWidth(viewPortWidth);
+            drawer.setViewPortHeight(viewPortHeight);
+
+            //refresh hvalue and vvalue - will invoke listeners
+            hvalueProperty().set(hvalueProperty().getValue() + 0.0001);
+            vvalueProperty().set(vvalueProperty().getValue() + 0.0001);
+            hvalueProperty().set(hvalueProperty().getValue() - 0.0001);
+            vvalueProperty().set(vvalueProperty().getValue() - 0.0001);
+
+            t.consume();
+        }
+    }
+
+    private String getToolTipText(SimpleDrawer drawer, MouseEvent event) {
+        double scale = drawer.getScale();
+        double clickXmeter = event.getSceneX() / scale;
+        double clickYmeter = event.getSceneY() / scale;
+        Location viewPortLocation = drawer.getViewPortLocation();
+        double getX = viewPortLocation.getX() + clickXmeter;
+        double getY = viewPortLocation.getY() + clickYmeter;
+        double viewPortWidth = drawer.getViewPortWidth();
+        double viewPortHeight = drawer.getViewPortHeight();
+
+        Vector entities = (Vector) boundingQuery.get("GRAPH", getX - TOOLTIP_RECT_WIDTH / 2, getX + TOOLTIP_RECT_WIDTH / 2, getY + TOOLTIP_RECT_WIDTH / 2, getY - TOOLTIP_RECT_WIDTH / 2);
+        StringBuilder sb = new StringBuilder();
+        for (Object entity : entities) {
+            if (entity instanceof Edge) {
+                Edge edge = (Edge) entity;
+                sb.append("Edge " + edge.getId() + "\n");
+                for (Map.Entry<String, String> entry : edge.getTags().entrySet()) {
+                    sb.append(" " + entry.getKey() + ": " + entry.getValue() + "\n");
+                }
+            } else if (entity instanceof GraphPolygon) {
+                GraphPolygon polygon = (GraphPolygon) entity;
+                sb.append("Polygon " + (polygon).getId() + "\n");
+                for (Map.Entry<String, String> entry : polygon.getTags().entrySet()) {
+                    sb.append(" " + entry.getKey() + ": " + entry.getValue() + "\n");
+                }
+            } else if (entity instanceof AZVisVertex) {
+                AZVisVertex vert = (AZVisVertex) entity;
+                sb.append("Vertex " + (vert).getId() + "\n");
+                for (Map.Entry<String, String> entry : vert.getTags().entrySet()) {
+                    sb.append(" " + entry.getKey() + ": " + entry.getValue() + "\n");
+                }
+            }
+        }
+        return sb.toString();
+    }
+
     private void init(String mapFilePath) {
-        graphData = new GraphReader().readGraph(mapFilePath);
-//        graphData = new NewGraphReader().readGraph(mapFilePath);
+//        graphData = new GraphReader().readGraph(mapFilePath);
+        mapFilePath = "graph_try.txt";
+        graphData = new NewGraphReader().readGraph(mapFilePath);
         images = new HashMap<>();
         images.put("university", new Image(R.class.getResourceAsStream("university.png")));
         images.put("school", new Image(R.class.getResourceAsStream("university.png")));
         images.put("office", new Image(R.class.getResourceAsStream("office.png")));
         Image defaultImage = new Image(R.class.getResourceAsStream("building.png"));
+
+        //all nodes
+        boundingQuery.createGroup("GRAPH", "NODES", false);
+        for (String vertexName : graphData.getVertexSet()) {
+            AZVisVertex vertData = (AZVisVertex) graphData.getData(vertexName);
+            boundingQuery.addToGroup("GRAPH", "NODES", vertData.getX(), vertData.getY(), 0.1, 0.1, vertData);
+        }
 
         for (String edgeType : graphData.getTagToEdge().keySet()) {
             Collection<String> edges = graphData.getTagToEdge().get(edgeType);
@@ -246,7 +338,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
         int i = 0;
         for (GraphPolygon poly : polys) {
-            String key = poly.getParams().entrySet().iterator().next().getKey();
+            String key = poly.getTags().entrySet().iterator().next().getKey();
             if (boundingQuery.hasSubGroup("GRAPH", "POLYGONS." + key)) {
                 boundingQuery.addToGroup("GRAPH", "POLYGONS." + key, poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), poly);
             } else {
@@ -257,7 +349,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
             boolean buildingSpriteOn = false;
             if (key.equals("building") && buildingSpriteOn) {
                 double subScale = Math.sqrt(Math.abs(poly.getArea()));
-                Image buildingImage = images.get(poly.getParams().get("building"));
+                Image buildingImage = images.get(poly.getTags().get("building"));
                 if (buildingImage == null) {
                     buildingImage = defaultImage;
                 }

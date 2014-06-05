@@ -8,10 +8,9 @@ package data.map.impl.wersdfawer.groupbounding;
 
 /**
  *
- * @author Shl
+ * @author Shlomi
  */
 public interface HasId {
     
-    public String getId();
-    
+    public String getId();    
 }

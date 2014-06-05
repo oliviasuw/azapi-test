@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.Vector;
 
 /**
  *
@@ -72,6 +73,28 @@ public class GroupBoundingQuery implements GroupBoundingQueryInterface {
             return null;
         }
         return groups.get(group).get(subGroup).get(left, right, up, down);
+    }
+    
+    /**
+     * get from any subgroup in the specified group.
+     * @param group
+     * @param left
+     * @param right
+     * @param up
+     * @param down
+     * @return 
+     */
+    public Collection get(String group, double left, double right, double up, double down) {
+        if (!hasGroup(group)) {
+            return null;
+        }
+        Set<String> subs = getSubGroups(group);
+        Vector retVec = new Vector();
+        for (String subGroup : subs) {
+            Vector get = groups.get(group).get(subGroup).get(left, right, up, down);
+            retVec.addAll(get);
+        }
+        return retVec;
     }
 
     @Override

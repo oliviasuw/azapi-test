@@ -14,7 +14,7 @@ import bgu.dcr.az.execs.exps.ExperimentProgressInspector;
 import bgu.dcr.az.execs.exps.ModularExperiment;
 import bgu.dcr.az.execs.exps.exe.AdaptiveScheduler;
 import bgu.dcr.az.execs.exps.exe.Simulation;
-import bgu.dcr.az.execs.statistics.info.SimulationTerminationInfo;
+import bgu.dcr.az.execs.statistics.info.SimulationTermination;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +46,7 @@ public class CPProgress extends ExperimentProgressInspector {
             currentStat[0] = statistics.get(sim.parent().getName()).get(((CPData) sim.data()).getAlgorithm().getInstanceName());
         });
 
-        infos.listen(SimulationTerminationInfo.class, sti -> {
+        infos.listen(SimulationTermination.class, sti -> {
             currentStat[0].timeSpent += (System.currentTimeMillis() - time[0]);
         });
 

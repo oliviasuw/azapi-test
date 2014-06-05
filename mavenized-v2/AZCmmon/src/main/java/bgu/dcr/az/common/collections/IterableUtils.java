@@ -5,11 +5,14 @@
  */
 package bgu.dcr.az.common.collections;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  *
@@ -69,5 +72,17 @@ public class IterableUtils {
         HashSet ll = new HashSet();
         iall.forEach(ll::add);
         return ll;
+    }
+
+    public static <T> Stream<T> stream(Iterable<T> i) {
+        return StreamSupport.stream(i.spliterator(), false);
+    }
+
+    public static <T> Iterable<T> sorted(Iterable<T> i) {
+        return () -> stream(i).sorted().iterator();
+    }
+    
+    public static <T> Iterable<T> sorted(Iterable<T> i, Comparator<T> c) {
+        return () -> stream(i).sorted(c).iterator();
     }
 }

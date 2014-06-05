@@ -515,8 +515,11 @@ public class ModuleContainer implements Module {
 
     @Override
     public void installInto(ModuleContainer mc) {
+        if (parent != null) {
+            throw new UnsupportedOperationException("module container can be installed only inside one other module container (cannot be shared module)");
+        }
         parent = mc;
-        
+
         if (!eagerInitialization) {
             initializeModules();
         }

@@ -11,7 +11,7 @@ import bgu.dcr.az.dcr.api.experiment.CPSolution;
 import bgu.dcr.az.dcr.api.experiment.CPTest;
 import bgu.dcr.az.execs.api.statistics.AdditionalLineChartProperties;
 import bgu.dcr.az.execs.exps.exe.Simulation;
-import bgu.dcr.az.execs.statistics.info.SimulationTerminationInfo;
+import bgu.dcr.az.execs.statistics.info.SimulationTermination;
 import bgu.dcr.az.execs.orm.api.DefinitionDatabase;
 import bgu.dcr.az.execs.orm.api.QueryDatabase;
 import com.google.common.primitives.Longs;
@@ -57,7 +57,7 @@ public class NCCCStatisticCollector extends AbstractCPStatisticCollector {
             }
         });
 
-        ex.infoStream().listen(SimulationTerminationInfo.class, t -> {
+        ex.infoStream().listen(SimulationTermination.class, t -> {
             long[] ccCount = ex.data().getProblem().getCC_Count();
             for (int i = 0; i < ccCount.length; i++) {
                 currentNccc[i] += (ccCount[i] - lastCCs[i]);

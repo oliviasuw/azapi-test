@@ -6,13 +6,14 @@
 package bgu.dcr.az.mui.jfx;
 
 import bgu.dcr.az.common.collections.IterableUtils;
-import bgu.dcr.az.conf.modules.Module;
 import bgu.dcr.az.mui.Controller;
 import bgu.dcr.az.mui.ControllerAttributes;
 import bgu.dcr.az.mui.ControllerRegistery;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -59,8 +60,8 @@ public class TabPaneController extends Controller<TabPane> {
 
         List<Controller> managed = IterableUtils.toList(installedControllers(), new ArrayList());
         Collections.sort(managed, (a, b) -> {
-            String pa = ControllerRegistery.get().getAttributes(a).attr("tabIndex");
-            String pb = ControllerRegistery.get().getAttributes(b).attr("tabIndex");
+            String pa = a.attributes().get("index");
+            String pb = b.attributes().get("index");
 
             if (pa == null) {
                 return 1;
@@ -82,9 +83,19 @@ public class TabPaneController extends Controller<TabPane> {
             Tab t = new Tab(title);
             g.loadView();
             t.setContent((Node) g.getView());
+            t.setUserData(g);
 
             view.getTabs().add(t);
         }
+
+        view.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) -> {
+            if (oldValue != null) {
+                ((Controller) oldValue.getUserData()).onHide();
+            }
+            if (newValue != null) {
+                ((Controller) newValue.getUserData()).onShow();
+            }
+        });
     }
 
 }

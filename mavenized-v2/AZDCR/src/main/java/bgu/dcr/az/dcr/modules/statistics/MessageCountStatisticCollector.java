@@ -12,7 +12,7 @@ import bgu.dcr.az.dcr.api.experiment.CPSolution;
 import bgu.dcr.az.dcr.api.experiment.CPTest;
 import bgu.dcr.az.execs.api.statistics.AdditionalBarChartProperties;
 import bgu.dcr.az.execs.exps.exe.Simulation;
-import bgu.dcr.az.execs.statistics.info.SimulationTerminationInfo;
+import bgu.dcr.az.execs.statistics.info.SimulationTermination;
 import bgu.dcr.az.execs.orm.api.DefinitionDatabase;
 import bgu.dcr.az.execs.orm.api.QueryDatabase;
 
@@ -64,7 +64,7 @@ public class MessageCountStatisticCollector extends AbstractCPStatisticCollector
     protected void initialize(DefinitionDatabase database, Simulation<CPData, CPSolution> ex) {
         database.defineTable("MESSAGE_COUNT", MessagesRecord.class);
 
-        ex.infoStream().listen(SimulationTerminationInfo.class, t -> {
+        ex.infoStream().listen(SimulationTermination.class, t -> {
             final long[] messagec = ex.getMessageRouter().getMessageReceivedCountPerAgent();
             for (int i = 0; i < messagec.length; i++) {
                 write(new MessagesRecord(i, messagec[i]));

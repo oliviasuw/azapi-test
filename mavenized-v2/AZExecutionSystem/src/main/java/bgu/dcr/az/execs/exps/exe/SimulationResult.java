@@ -115,10 +115,6 @@ public class SimulationResult<SOLUTION_TYPE> implements DeepCopyable {
                     @Override
                     public String toString(SimulationResult er) {
                         StringBuilderWriter w = new StringBuilderWriter(new StringBuilder());
-//                        if (er.crushReason != null) {
-//                            er.crushReason.printStackTrace(new PrintWriter(w));
-//                        }
-//                        return "The Execution crushed with the exception: " + (er.crushReason != null ? w.toString() : "no-exception");
                         return "The Execution crushed: " + (er.crushReason != null
                         ? er.crushReason.getMessage() + " (" + er.crushReason.getClass().getSimpleName() + ")"
                         : "no-exception");

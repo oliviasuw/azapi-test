@@ -32,8 +32,9 @@ public class DefaultCorrectnessTester extends CPCorrectnessTester {
         Assignment ass;
         final Problem globalProblem = exec.data().getProblem();
         Status stat;
+        final int assignedAgents = result.getSolution().getAssignment().keySet().size();
 
-        if (result.getSolution().getState() == CPSolution.State.SOLUTION && result.getSolution().getAssignment().keySet().size() != exec.configuration().numAgents()) {
+        if (result.getSolution().getState() == CPSolution.State.SOLUTION && assignedAgents != exec.configuration().numAgents()) {
             result.toCrushState(new RuntimeException("All agents must have assignments in a solution state!"));
             return;
         }

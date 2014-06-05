@@ -1,14 +1,37 @@
+
  
 /*+++++++++++++++++++++++ BASE THEME ++++++++++++++++++++++++*/
 .root {
 	-base-screen-color: rgb(120,120,120);
+	-button-color: rgb(180,180,180);
 	-treeview-background: rgb(222,227,233);
 	-treeview-selected-cell-color: rgb(83,135,182);
 	-treeview-selected-cell-fgcolor: rgb(230,230,230);
 	-fx-background-color: -base-screen-color;
  }
  
-/*------------ PROGRESS BAR ------------*/
+/*------------ BUTTONS ------------*/
+.button {
+	-fx-background-color: -button-color;
+	-fx-background-insets: 3 3 4 3;
+	-fx-background-radius: 0.25em; /* 3px */
+	-fx-padding: 8 12 8 12;
+	-fx-cursor: hand;
+ }
+ 
+.toggle-button {
+    -fx-text-fill: -fx-light-text-color;
+    -fx-background-color: derive(-button-color, -60%), derive(-button-color, -45%); 
+
+	-fx-padding: 4 6 4 6;
+	-fx-background-insets: 0, 1;
+	-fx-cursor: hand;
+ }
+
+ .toggle-button:selected {
+ 	-fx-background-color: derive(-button-color, -60%), -treeview-selected-cell-color;
+ }
+ 
 /*------------ SPLIT PANE  -------------*/
 .split-pane .split-pane-divider {
 	-fx-cursor: move;
@@ -43,6 +66,85 @@
 	-fx-text-fill: -treeview-selected-cell-fgcolor;
  }
  
+/*+++++++++++++++++++++++ MISC CLASSES ++++++++++++++++++++++++*/
+.no-padding {-fx-padding: 0;}
+ 
+/* +++++++++++++++++++++ TABLES ++++++++++++++++++++++++++++ */
+.table-view.no-headers .column-header {
+	visibility: collapse;
+	-fx-scale-y: 0;
+ }
+ 
+.table-view.no-headers .column-header-background {
+	visibility: hidden;
+	-fx-padding: -1em;
+ }
+ 
+.table-view.dark {
+	-dark-label-color: rgb(220,220,220);
+	-dark-header-color: rgb(80,80,80);
+	-fx-background-insets: 0;
+	-fx-table-cell-border-color: -dark-header-color;
+	-fx-background-color: rgb(34,35,34);
+ }
+ 
+	.table-view.dark .table-row-cell {
+		-fx-background-color: -az-dark-table-cell-even-color;
+		-fx-text-fill: -dark-label-color;
+	 }
+ 
+		.table-view.dark .table-row-cell:odd {-fx-background-color: -az-dark-table-cell-odd-color;}
+ 
+		.table-view.dark .table-row-cell .text {-fx-fill: -dark-label-color;}
+ 
+	.table-view.dark .column-header {
+		-fx-background-color: -dark-header-color;
+		-fx-padding: 0;
+	 }
+ 
+	.table-view.dark.headers-grid .column-header {-fx-border-color: derive(-dark-header-color, -10%);}
+ 
+	.table-view.dark.section-header .column-header {
+		-fx-background-color: derive(-dark-header-color, -45%);
+		-fx-padding: 0;
+	 }
+ 
+		.table-view.dark.section-header .column-header .text {-fx-fill: #c0cfe6;}
+ 
+	/* This is shown when the table has no rows and/or no columns. */
+.table-view.dark .placeholder .label {
+		-fx-text-fill: white;
+		-fx-fill: white;
+	 }
+ 
+	/* The column header row is made up of a number of column-header, one for each
+   TableColumn, and a 'filler' area that extends from the right-most column
+   to the edge of the tableview, or up to the 'column control' button. */
+.table-view.dark .filler {-fx-background-color: -az-dark-table-header;}
+ 
+	.table-view.dark.section-header .filler {-fx-background-color: -az-section-header-color;}
+ 
+/* ++++++++++++++++++++++ BUTTON BAR ++++++++++++++++++++++++ */
+.button-bar {
+	-fx-spacing: 0;
+	-fx-padding: 4;
+ }
+ 
+	.button-bar .button {
+		-fx-padding: 3 5 3 5;
+		-fx-background-color: transparent;
+		-fx-text-fill: white;
+		-fx-border-color: derive(-base-screen-color, 20%), derive(-base-screen-color,10%);
+		-fx-border-width: 0 2 0 0, 0 1 0 0;
+		-fx-cursor: hand;
+	 }
+ 
+		.button-bar .button:hover {
+			-fx-background-color: -treeview-selected-cell-color;
+			-fx-background-radius: 0;
+			-fx-background-insets: 0 0 0 0;
+		 }
+ 
 /*+++++++++++++++++++++++ LIGHT TABS ++++++++++++++++++++++++*/
 .light-tabs {-light-tabs-border-color: rgb(150,150,150);}
  
@@ -66,7 +168,14 @@
 		-fx-border-color: -light-tabs-border-color;
 	 }
  
+		.light-tabs .tab * {
+			-fx-text-fill: rgb(200,200,200);
+			-fx-font-weight: bold;
+		 }
+ 
 		.light-tabs .tab:selected {-fx-background-color: #3366ff;}
+ 
+			.light-tabs .tab:selected * {-fx-text-fill: rgb(240,230,200);}
  
 /* ++++++++++++++++++ SECTIONS ++++++++++++++++++++ */
 .section-header.label {
@@ -92,6 +201,22 @@
 		-fx-background-insets: 0;
 		-fx-border-width: 0;
 	 }
+
+/* ++++++++++++++++++ MULTI - TOOLBAR CONTROLLER ++++++++++++++++++++ */
+
+.toolbar-multiview .toolbar-holder, .toolbar-multiview .toolbar-holder .tool-bar {
+	-fx-background-color: rgb(55,55,55);
+}
+
+/* ++++++++++++++++++ NO DATA PANEL ++++++++++++++++++++ */
+
+.no-data-pane .label{
+	-fx-text-fill: rgb(220,220,220);
+}
+
+.no-data-pane .image-view {
+	-fx-padding: 10;
+}
  
 /* ++++++++++++++++++ MAIN PAGE ++++++++++++++++++++ */
 #main-page {
@@ -121,28 +246,147 @@
 	#status-page #content {-fx-background-color: -base-screen-color;}
  
 	#status-page .list-view {-fx-background-color: -treeview-background;}
-        
-	#status-page .list-view .label {
-		-fx-text-fill: black;
-		-fx-padding: 10 4 10 4;
+ 
+		#status-page .list-view .label {
+			-fx-text-fill: black;
+			-fx-padding: 10 4 10 4;
+		 }
+ 
+	#status-page .list-cell {-fx-cell-size: 48;}
+ 
+		#status-page .list-cell .progress-indicator {-fx-padding: 10 4 -7 4;}
+ 
+			#status-page .list-cell .progress-indicator .percentage {
+				visibility: collapse;
+				-fx-font-size: 0;
+				-fx-fill: null;
+			 }
+ 
+		#status-page .list-cell:selected {
+			-fx-background-color: rgb(83,135,182);
+			-fx-text-fill: rgb(230,230,230);
+		 }
+ 
+/* +++++++++++++++++++ BASE STAT PAGE ++++++++++++++++++++++ */
+#base-stat-page {
+	-visualization-color: rgb(30,30,30);
+	-base-screen-color: rgb(70,70,70);
+	-fx-padding: 5;
+ }
+ 
+	#base-stat-page #first-section .title {-fx-background-radius: 6 6 0 0;}
+ 
+	#base-stat-page #last-section .content {
+		-fx-background-radius: 0 0 6 6;
+		-fx-background-color: rgb(50,50,50);
 	 }
  
-         #status-page .list-cell {
-             -fx-cell-size: 48;
-         }
-         
-        #status-page .list-cell .progress-indicator {
-            -fx-padding: 10 4 -7 4;
-        }
-         
-        #status-page .list-cell .progress-indicator .percentage{
-            visibility: collapse;
-            -fx-font-size: 0;
-            -fx-fill: null;
-        }
-         
-	#status-page .list-cell:selected  {
-		-fx-background-color: rgb(83,135,182);
-		-fx-text-fill: rgb(230,230,230);
+	/*the little circles*/
+#base-stat-page .step-indicator-circle {
+		-fx-fill: rgb(80,80,80);
+		-fx-stroke: rgb(240,240,240);
 	 }
+ 
+	#base-stat-page .section-container .no-data {-fx-background-color: rgb(50,50,50);}
+ 
+	#base-stat-page .vis-viewer {
+		-fx-background-color: -visualization-color;
+		-fx-background-insets: 0 0 0 5;
+		-fx-background-radius: 6;
+		-fx-padding: 8;
+	 }
+ 
+		#base-stat-page .vis-viewer .chart-title {-fx-text-fill: white;}
+ 
+		#base-stat-page .vis-viewer .chart-legend {
+			-fx-background-color: transparent;
+			-fx-padding: 0;
+		 }
+ 
+		#base-stat-page .vis-viewer  .chart-legend-item {-fx-text-fill: black;}
+ 
+		#base-stat-page .vis-viewer .chart-pie {
+			-fx-background-insets: 0;
+			-fx-border-color: rgb(200,200,200);
+			-fx-text-fill: white;
+		 }
+ 
+		#base-stat-page .vis-viewer  .chart-pie-label {-fx-fill: white;}
+ 
+		#base-stat-page .vis-viewer  .axis {-fx-tick-label-fill: rgb(200,200,200);}
+ 
+		#base-stat-page .vis-viewer .axis-label {-fx-text-fill: white;}
+ 
+		#base-stat-page .vis-viewer .axis-tick-mark {-fx-stroke: rgb(200,200,200);}
+ 
+		#base-stat-page .vis-viewer  .axis-minor-tick-mark {-fx-stroke: rgb(200,200,200);}
+ 
+		#base-stat-page .vis-viewer .chart-legend .label {
+			-fx-text-fill: rgb(200,200,200);
+			-fx-font-weight: bold;
+		 }
+ 
+/* +++++++++++++++++++++++++ PROBLEM VIEW ++++++++++++++++++++++++++++ */
+#problem-view {
+	-pv-border-color: rgb(120,120,120);
+	-fx-border-color: -pv-border-color;
+	-fx-border-width: 4;
+ }
+ 
+	#problem-view .split-pane-divider {
+		-fx-background-color: -pv-border-color;
+		-fx-padding: 2;
+	 }
+ 
+	#problem-view .toolbar * {-fx-background-color: -pv-border-color;}
+ 
+	#problem-view .toolbar .label {-fx-text-fill: rgb(240,240,240);}
+ 
+	#problem-view .toolbar .hyperlink {-fx-text-fill: #eee13b;}
+ 
+	#problem-view #constraint-matrix-container {
+		-pv-background: rgb(240, 240, 240);
+		-fx-background-color: -pv-background;
+	 }
+ 
+	#problem-view .data-cell {
+		-fx-border-color: rgb(101,101,101);
+		-fx-background-color: rgb(120,120,120);
+		-fx-text-fill: white;
+		-fx-font-weight: bold;
+		-fx-border-width: 1;
+	 }
+ 
+		#problem-view .data-cell.zero {-fx-background-color: rgb(143,143,143);}
+ 
+	#problem-view .header-cell {
+		-fx-border-color: rgb(101,101,101);
+		-fx-background-color: rgb(139,164,193);
+		-fx-text-fill: white;
+		-fx-font-weight: bold;
+		-fx-border-width: 1;
+	 }
+ 
+	#problem-view #constraint-matrix {-fx-background-color: -pv-background;}
+ 
+		#problem-view #constraint-matrix .table-row-cell {-fx-background-color: -pv-background;}
+ 
+	#problem-view #constraint-console #outputTextArea {-fx-text-fill: rgb(160, 230, 30);}
+ 
+	#problem-view #constraint-console .text-area .content {-fx-background-color: rgb(51,51,51);}
+ 
+	#problem-view #command-prompt {
+		-fx-background-color: -pv-border-color;
+		-fx-border-color: -pv-border-color;
+		-fx-border-width: 5 1 0 1;
+	 }
+ 
+		#problem-view #command-prompt > * {
+			-fx-padding: 3;
+			-fx-border-radius: 0;
+			-fx-background-radius: 0;
+			-fx-border-insets: 0;
+		 }
+ 
+		#problem-view #command-prompt * {-fx-background-color: rgb(220,220,220);}
  

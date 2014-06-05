@@ -71,10 +71,9 @@ public abstract class IterativeCSPSolver {
     }
 
     protected void assign(int var, int val) {
-
         assignments.put(var, val);
     }
-
+    
     /**
      * @param var
      * @return if no such assignent return -1 else return the assignment

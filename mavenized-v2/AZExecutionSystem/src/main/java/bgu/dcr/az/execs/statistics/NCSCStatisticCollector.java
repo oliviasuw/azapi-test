@@ -10,7 +10,7 @@ import bgu.dcr.az.execs.api.statistics.AdditionalLineChartProperties;
 import bgu.dcr.az.execs.exps.exe.Simulation;
 import bgu.dcr.az.execs.exps.exe.Test;
 import bgu.dcr.az.execs.statistics.AbstractStatisticCollector.StatisticRecord;
-import bgu.dcr.az.execs.statistics.info.SimulationTerminationInfo;
+import bgu.dcr.az.execs.statistics.info.SimulationTermination;
 import bgu.dcr.az.execs.statistics.info.MessageInfo;
 import static bgu.dcr.az.execs.statistics.info.MessageInfo.OperationType.Received;
 import static bgu.dcr.az.execs.statistics.info.MessageInfo.OperationType.Sent;
@@ -54,7 +54,7 @@ public class NCSCStatisticCollector extends AbstractStatisticCollector {
             }
         });
 
-        ex.infoStream().listen(SimulationTerminationInfo.class, t -> {
+        ex.infoStream().listen(SimulationTermination.class, t -> {
             write(new NCSCRecord(Longs.max(currentNcsc)));
         });
     }

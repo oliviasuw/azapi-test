@@ -18,7 +18,7 @@ import bgu.dcr.az.execs.exps.exe.ExecutionEnvironment;
 import bgu.dcr.az.execs.exps.exe.Looper;
 import bgu.dcr.az.execs.exps.exe.Simulation;
 import bgu.dcr.az.execs.exps.exe.SimulationConfiguration;
-import bgu.dcr.az.execs.exps.exe.BaseStatisticFields;
+import bgu.dcr.az.execs.exps.exe.BaseDBFields;
 import bgu.dcr.az.execs.exps.exe.DefaultExperimentRoot;
 import bgu.dcr.az.execs.exps.exe.Test;
 import bgu.dcr.az.execs.sim.Agt0DSL;
@@ -178,11 +178,10 @@ public class CPTest extends Test {
         }
     }
 
-    public static class BaseCPStatisticFields extends BaseStatisticFields {
+    public static class BaseCPStatisticFields extends BaseDBFields {
 
         public String algorithm_instance;
         public double rvar;
-        public String test;
     }
 
 }

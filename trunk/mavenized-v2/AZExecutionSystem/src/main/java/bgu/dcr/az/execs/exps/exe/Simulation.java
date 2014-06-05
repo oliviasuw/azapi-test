@@ -9,6 +9,7 @@ import bgu.dcr.az.common.exceptions.UncheckedInterruptedException;
 import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.execs.exps.ExecutionTree;
 import bgu.dcr.az.conf.modules.ModuleContainer;
+import bgu.dcr.az.conf.registery.Register;
 import bgu.dcr.az.execs.lowlevel.TerminationReason;
 import bgu.dcr.az.execs.lowlevel.ThreadSafeProcTable;
 import bgu.dcr.az.execs.statistics.InfoStreamWrapperProc;
@@ -108,7 +109,7 @@ public class Simulation<T extends SimulationData, R> extends ExecutionTree {
         try {
             writeBaseStatisticsFields();
             AdaptiveScheduler sched = require(AdaptiveScheduler.class);
-            
+
             ThreadSafeProcTable table = new ThreadSafeProcTable();
             table.add(istream);
 
@@ -138,18 +139,14 @@ public class Simulation<T extends SimulationData, R> extends ExecutionTree {
 
     private void writeBaseStatisticsFields() {
         EmbeddedDatabaseManager db = require(EmbeddedDatabaseManager.class);
-        BaseStatisticFields info = conf.baseStatisticFields();
-        info.index = getSimulationNumber();
+        BaseDBFields info = conf.baseStatisticFields();
+        info.simulation_index = getSimulationNumber();
         db.insert(info);
     }
 
     private Iterable<SimulatedMachine> createMachines() {
         return () -> { //some lazy ass iterable :)
-            return IntStream.range(0, configuration().numMachines()).mapToObj(i -> {
-                SimulatedMachine sim = new SimulatedMachine(i, this);
-                return sim;
-                
-            }).iterator();
+            return IntStream.range(0, configuration().numMachines()).mapToObj(i -> new SimulatedMachine(i, this)).iterator();
         };
     }
 

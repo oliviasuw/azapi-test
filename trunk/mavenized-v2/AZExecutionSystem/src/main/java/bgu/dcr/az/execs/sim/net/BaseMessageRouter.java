@@ -5,10 +5,12 @@
  */
 package bgu.dcr.az.execs.sim.net;
 
+import bgu.dcr.az.conf.modules.info.InfoStream;
 import bgu.dcr.az.execs.exceptions.InitializationException;
 import bgu.dcr.az.execs.exps.exe.Simulation;
 import bgu.dcr.az.execs.sim.AgentContext;
 import bgu.dcr.az.execs.sim.SimulatedMachine;
+import bgu.dcr.az.execs.statistics.info.MessageInfo;
 
 /**
  *
@@ -30,7 +32,6 @@ public class BaseMessageRouter implements MessageRouter {
     public void installInto(Simulation ex) throws InitializationException {
         routingTable = new SimulatedMachine[ex.configuration().numMachines()];
         messageCounts = new long[routingTable.length];
-        
     }
 
     @Override

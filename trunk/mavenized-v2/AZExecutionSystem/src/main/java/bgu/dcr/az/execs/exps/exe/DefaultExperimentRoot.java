@@ -10,7 +10,11 @@ import bgu.dcr.az.execs.exps.ExperimentProgressInspector;
 import bgu.dcr.az.execs.exps.prog.DefaultExperimentProgress;
 import bgu.dcr.az.conf.modules.ModuleContainer;
 import bgu.dcr.az.conf.registery.Register;
+import bgu.dcr.az.execs.api.loggers.LogManager;
 import bgu.dcr.az.execs.exps.ExperimentFailedException;
+import bgu.dcr.az.execs.loggers.AgentPrintLogger;
+import bgu.dcr.az.execs.loggers.LogManagerImpl;
+import bgu.dcr.az.execs.loggers.MessageLogger;
 import java.util.Iterator;
 
 /**

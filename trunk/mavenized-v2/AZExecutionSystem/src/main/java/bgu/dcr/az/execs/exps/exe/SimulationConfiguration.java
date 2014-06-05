@@ -29,7 +29,7 @@ public interface SimulationConfiguration {
 
     Map<String, String> agentInitializationArgs(int id);
 
-    BaseStatisticFields baseStatisticFields();
+    BaseDBFields baseStatisticFields();
     
     public static Builder builder() {
         return new Builder();
@@ -45,7 +45,7 @@ public interface SimulationConfiguration {
         private ExecutionEnvironment env = ExecutionEnvironment.async;
         private Map<Integer, Map<String, String>> agentsInitializationArgs = null;
         private Map<String, String> allAgentsInitializationArgs = null;
-        private BaseStatisticFields record;
+        private BaseDBFields record;
 
         @Override
         public int numMachines() {
@@ -154,13 +154,13 @@ public interface SimulationConfiguration {
             return env(env);
         }
 
-        public Builder withBaseStatisticFields(BaseStatisticFields record){
+        public Builder withBaseStatisticFields(BaseDBFields record){
             this.record = record;
             return this;
         }
         
         @Override
-        public BaseStatisticFields baseStatisticFields() {
+        public BaseDBFields baseStatisticFields() {
             return record;
         }
 

@@ -5,10 +5,9 @@
  */
 package bgu.dcr.az.execs.api.loggers;
 
-import bgu.dcr.az.execs.exps.exe.Simulation;
-import bgu.dcr.az.conf.modules.Module;
-import bgu.dcr.az.execs.orm.api.DBRecord;
-import java.util.Collection;
+import bgu.dcr.az.conf.modules.ModuleContainer;
+import bgu.dcr.az.execs.exps.exe.BaseDBFields;
+import java.sql.SQLException;
 
 /**
  * represents an entity that responsible for all log related operations for a
@@ -16,19 +15,7 @@ import java.util.Collection;
  *
  * @author bennyl
  */
-public interface LogManager extends Module<Simulation> {
-
-    /**
-     * @return all registered loggers (for a given experiment)
-     */
-    Collection<Logger> registered();
-
-    /**
-     * register a new logger for current experiment
-     *
-     * @param logger
-     */
-    void register(Logger logger);
+public abstract class LogManager extends ModuleContainer {
 
     /**
      * saves the latest changes of the experiment (at given time for a given
@@ -37,11 +24,15 @@ public interface LogManager extends Module<Simulation> {
      * @param logger
      * @param record
      */
-    void commit(Logger logger, LogRecord record);
-
-    public static class LogRecord implements DBRecord {
-
-        public long index;
+    public abstract void commit(Logger logger, LogRecord record);
+    
+    public abstract Iterable<LogRecord> getRecords(String test, int simulation) throws SQLException ;
+    
+    public static abstract class LogRecord extends BaseDBFields {
+        
         public int aid;
+        public long time;
+        public long sharedIndex;
+        
     }
 }

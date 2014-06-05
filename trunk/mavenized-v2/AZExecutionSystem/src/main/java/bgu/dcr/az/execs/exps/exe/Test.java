@@ -60,7 +60,7 @@ public abstract class Test extends ExecutionTree {
             Simulation sim = (Simulation) e;
 
             //install statistic support
-            BaseStatisticFields info = sim.configuration().baseStatisticFields();
+            BaseDBFields info = sim.configuration().baseStatisticFields();
             dbm.defineTable(EXECUTION_INFO_DATA_TABLE, info.getClass());
 
             //notify the new simulation

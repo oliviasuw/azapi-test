@@ -6,18 +6,15 @@
 package bgu.dcr.az.execs.orm;
 
 import bgu.dcr.az.common.reflections.ReflectionUtils;
-import bgu.dcr.az.execs.orm.api.DBRecord;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
@@ -44,6 +41,7 @@ public class H2EmbeddedDatabaseWriter implements Runnable {
 
     @Override
     public void run() {
+        Thread.currentThread().setName("DB Writer");
         try {
             LinkedList batch = new LinkedList();
             while (true) {

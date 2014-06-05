@@ -32,7 +32,7 @@ public class GraphPolygon implements HasId{
         return nodes;
     }
 
-    public HashMap<String, String> getParams() {
+    public HashMap<String, String> getTags() {
         return params;
     }
 

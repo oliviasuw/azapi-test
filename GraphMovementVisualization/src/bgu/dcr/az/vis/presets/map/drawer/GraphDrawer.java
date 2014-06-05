@@ -71,7 +71,7 @@ public class GraphDrawer extends GroupDrawer {
             if (groupScale != null) {
                 gscale *= groupScale.getCurrentScale(scale, subgroup);
             }
-            Collection edges = boundingQuery.get(group, subgroup, drawer.getViewPortLocation().getX() - epsilonW * scale * gscale, drawer.getViewPortLocation().getX() + viewPortWidth + epsilonW * scale *gscale, drawer.getViewPortLocation().getY() + viewPortHeight + epsilonH * scale *gscale, drawer.getViewPortLocation().getY() - epsilonH * scale *gscale);
+            Collection edges = boundingQuery.get(group, subgroup, drawer.getViewPortLocation().getX() - epsilonW * scale * gscale, drawer.getViewPortLocation().getX() + viewPortWidth + epsilonW * scale * gscale, drawer.getViewPortLocation().getY() + viewPortHeight + epsilonH * scale * gscale, drawer.getViewPortLocation().getY() - epsilonH * scale * gscale);
             draw(canvas, graphData, edges, scale);
         }
 
@@ -95,7 +95,8 @@ public class GraphDrawer extends GroupDrawer {
 
         if (edges.size() > 0) {
             //temporary hack (Edge)
-            String name = ((Edge) edges.iterator().next()).getId();
+            Edge edge = (Edge) edges.iterator().next();
+            String name = (edge).getId();
             HashMap<String, String> edgeData = (HashMap<String, String>) graphData.getData(name);
             EdgeStroke edgeStroke = edgeMeta.getStroke(edgeData.get(edgeMeta.ROAD_KEY()));
             if (edgeStroke == null) {
@@ -165,7 +166,7 @@ public class GraphDrawer extends GroupDrawer {
         AZVisVertex source = (AZVisVertex) graphData.getData(node);
 
         //if want to extend to more params per polygon, need to change this
-        Map.Entry<String, String> entry = polygon.getParams().entrySet().iterator().next();
+        Map.Entry<String, String> entry = polygon.getTags().entrySet().iterator().next();
 
         StringPair keyVal = new StringPair(entry.getKey(), entry.getValue());
         Paint get = metaData.getKeyTocolors().get(keyVal);

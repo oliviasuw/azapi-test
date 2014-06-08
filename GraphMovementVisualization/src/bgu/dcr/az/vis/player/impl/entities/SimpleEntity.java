@@ -21,12 +21,12 @@ import javafx.beans.property.SimpleObjectProperty;
  */
 public abstract class SimpleEntity implements Entity, HasId {
 
-    private final long entityId;
+    private final String entityId;
     private final ObjectProperty<Location> locationProperty;
     private final DoubleProperty rotationProperty;
     private final DoubleProperty scaleProperty;
 
-    public SimpleEntity(long entityId) {
+    public SimpleEntity(String entityId) {
         this.entityId = entityId;
         locationProperty = new SimpleObjectProperty<>(new Location());
         rotationProperty = new SimpleDoubleProperty(0);
@@ -34,7 +34,7 @@ public abstract class SimpleEntity implements Entity, HasId {
     }
 
     @Override
-    public long getEntityId() {
+    public String getEntityId() {
         return entityId;
     }
     

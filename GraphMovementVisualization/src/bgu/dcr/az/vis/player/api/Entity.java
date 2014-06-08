@@ -18,7 +18,7 @@ import javafx.beans.property.ObjectProperty;
  */
 public interface Entity {
     
-    long getEntityId();
+    String getEntityId();
     
     ObjectProperty<Location> locationProperty();
     

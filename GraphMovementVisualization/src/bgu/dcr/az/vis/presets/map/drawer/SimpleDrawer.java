@@ -8,13 +8,8 @@ package bgu.dcr.az.vis.presets.map.drawer;
 import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import bgu.dcr.az.vis.tools.Location;
 import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.ColorAdjust;
-import javafx.scene.effect.Effect;
 import javafx.scene.paint.Color;
 
 /**
@@ -23,8 +18,8 @@ import javafx.scene.paint.Color;
  */
 public class SimpleDrawer implements DrawerInterface {
 
-    private GroupBoundingQuery boundingQuery;
-    private Location location;
+    private final GroupBoundingQuery boundingQuery;
+    private final Location location;
     private double scale = 1;
     private double viewPortWidth;
     private double viewPortHeight;
@@ -107,10 +102,14 @@ public class SimpleDrawer implements DrawerInterface {
         return viewPortHeight;
     }
 
+    /**
+     * translates a given view port by a given delta (in pixels)
+     * @param dx
+     * @param dy 
+     */
     public void moveViewPort(double dx, double dy) {
         location.xProperty().set(location.xProperty().get() + dx);
         location.yProperty().set(location.yProperty().get() + dy);
-
     }
 
 }

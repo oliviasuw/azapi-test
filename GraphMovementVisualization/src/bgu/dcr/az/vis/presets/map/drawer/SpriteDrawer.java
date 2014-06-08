@@ -8,6 +8,7 @@ package bgu.dcr.az.vis.presets.map.drawer;
 import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import bgu.dcr.az.vis.player.impl.entities.DefinedSizeSpriteBasedEntity;
 import bgu.dcr.az.vis.presets.map.GroupScale;
+import bgu.dcr.az.vis.tools.Convertor;
 import bgu.dcr.az.vis.tools.Location;
 import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
 import java.util.Comparator;
@@ -43,7 +44,13 @@ public class SpriteDrawer extends GroupDrawer {
 
         double epsilonH = boundingQuery.getEpsilon(group, subgroup)[1];
         double epsilonW = boundingQuery.getEpsilon(group, subgroup)[0];
-        Vector entities = (Vector) boundingQuery.get(group, subgroup, viewPortLocation.getX() - epsilonW * scale, viewPortLocation.getX() + viewPortWidth + epsilonW * scale, viewPortLocation.getY() + viewPortHeight + epsilonH * scale, viewPortLocation.getY() - epsilonH * scale);
+        double wXs = Convertor.viewToWorld(viewPortLocation.getX(), scale) - epsilonW;
+        double wXt = Convertor.viewToWorld(viewPortLocation.getX() + viewPortWidth, scale) + epsilonW;
+        double wYs = Convertor.viewToWorld(viewPortLocation.getY(), scale) - epsilonH;
+        double wYt = Convertor.viewToWorld(viewPortLocation.getY() + viewPortHeight, scale) + epsilonH;
+        
+        Vector entities = (Vector) boundingQuery.get(group, subgroup, wXs, wXt, wYs, wYt);
+        
         if (!boundingQuery.isMoveable(group, subgroup)) {
             entities.sort(new Comparator() {
 
@@ -79,7 +86,7 @@ public class SpriteDrawer extends GroupDrawer {
 //            }
 
             gc.save();
-            gc.translate((cX - tx) * scale, (cY - ty) * scale);
+            gc.translate(Convertor.worldToView(cX, scale) - tx, Convertor.worldToView(cY, scale) - ty);
             gc.translate( -(newW / 2.0), -(newH / 2.0));
             gc.rotate(entity.getRotation());
 //            gc.rotate(canvasLayer.getRotation());

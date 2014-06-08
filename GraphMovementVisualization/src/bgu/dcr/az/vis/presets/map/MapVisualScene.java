@@ -16,6 +16,7 @@ import bgu.dcr.az.vis.presets.map.drawer.GroupDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.PolygonMetaData;
 import bgu.dcr.az.vis.presets.map.drawer.SimpleDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.SpriteDrawer;
+import bgu.dcr.az.vis.tools.Convertor;
 import bgu.dcr.az.vis.tools.Location;
 import data.map.impl.wersdfawer.AZVisVertex;
 import data.map.impl.wersdfawer.Edge;
@@ -146,16 +147,18 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         });
 
         addEventFilter(MouseEvent.MOUSE_CLICKED, (MouseEvent event) -> {
+//            if (event.isSecondaryButtonDown()) {
             Location viewPortLocation = drawer.getViewPortLocation();
             double scale = drawer.getScale();
-            tooltipRect.translateXProperty().set(viewPortLocation.getX() * scale + event.getSceneX());
-            tooltipRect.translateYProperty().set(viewPortLocation.getY() * scale + event.getSceneY());
+            tooltipRect.translateXProperty().set(viewPortLocation.getX() + event.getSceneX());
+            tooltipRect.translateYProperty().set(viewPortLocation.getY() + event.getSceneY());
             String text = getToolTipText(drawer, event);
             tooltip.textProperty().set(text);
             if (text.length() > 1) {
                 tooltip.textProperty().set(text);
-                tooltip.show(pane, event.getScreenX(), event.getScreenY());
+//                tooltip.show(pane, event.getScreenX(), event.getScreenY());
             }
+//            }
         });
 
         hvalueProperty().addListener((ov, n, xRatio) -> {
@@ -179,41 +182,26 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
     private void handleResize(Bounds newBounds) {
         //viewport is the amout of meters that we are viewing from the map
-        double viewPortWidth = newBounds.getWidth() / drawer.getScale();
-        double viewPortHeight = newBounds.getHeight() / drawer.getScale();
-        drawer.setViewPortWidth(viewPortWidth);
-        drawer.setViewPortHeight(viewPortHeight);
+        drawer.setViewPortWidth(newBounds.getWidth());
+        drawer.setViewPortHeight(newBounds.getHeight());
+        refresh();
+    }
 
+    private void refresh() {
         //refresh hvalue and vvalue - will invoke listeners
         hvalueProperty().set(hvalueProperty().getValue() + 0.0001);
-        vvalueProperty().set(vvalueProperty().getValue() + 0.0001);
         hvalueProperty().set(hvalueProperty().getValue() - 0.0001);
-        vvalueProperty().set(vvalueProperty().getValue() - 0.0001);
     }
 
     private void handleVvalue(Number yRatio, SimpleDrawer drawer, MapCanvasLayer back) {
-        double dYRatio = yRatio.doubleValue();
-        double scale = drawer.getScale();
-
-        double windowHeight = getViewportBounds().getHeight();
-
-        Point2D.Double mapSize = back.getGraphData().getBounds();
-        double mapHeight = mapSize.y;
-        double viewportY = dYRatio * (mapHeight - windowHeight / scale);
+        double viewportY = yRatio.doubleValue() * (getContainerSize()[1] - getViewportBounds().getHeight());
         double viewportX = drawer.getViewPortLocation().getX();
-
+        
         drawer.setViewPortLocation(viewportX, viewportY);
     }
 
     private void handleHvalue(Number xRatio, SimpleDrawer drawer, MapCanvasLayer back) {
-        double dXRatio = xRatio.doubleValue();
-        double scale = drawer.getScale();
-
-        double windowWidth = getViewportBounds().getWidth();
-
-        Point2D.Double mapSize = back.getGraphData().getBounds();
-        double mapWidth = mapSize.x;
-        double viewportX = dXRatio * (mapWidth - windowWidth / scale);
+        double viewportX = xRatio.doubleValue() * (getContainerSize()[0] - getViewportBounds().getWidth());
         double viewportY = drawer.getViewPortLocation().getY();
 
         drawer.setViewPortLocation(viewportX, viewportY);
@@ -221,34 +209,23 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
     private void handleZoom(ScrollEvent t, SimpleDrawer drawer, MapCanvasLayer back) {
         if (t.isControlDown()) {
+
             double scale = drawer.getScale() + t.getDeltaY() / 500.0;
             if (scale <= MIN_SCALE) {
                 scale = MIN_SCALE;
             } else if (scale >= MAX_SCALE) {
                 scale = MAX_SCALE;
             }
+
             drawer.setScale(scale);
 
             Point2D.Double mapSize = back.getGraphData().getBounds();
-            double mapWidth = mapSize.x;
-            double mapHeight = mapSize.y;
 
-            super.setContainerSize(mapWidth * scale, mapHeight * scale);
+            super.setContainerSize(Convertor.worldToView(mapSize.x, scale), Convertor.worldToView(mapSize.y, scale));
 
-            double windowWidth = getViewportBounds().getWidth();
-            double windownHeight = getViewportBounds().getHeight();
-
-            //viewport is the amout of meters that we are viewing from the map
-            double viewPortWidth = windowWidth / scale;
-            double viewPortHeight = windownHeight / scale;
-            drawer.setViewPortWidth(viewPortWidth);
-            drawer.setViewPortHeight(viewPortHeight);
-
-            //refresh hvalue and vvalue - will invoke listeners
-            hvalueProperty().set(hvalueProperty().getValue() + 0.0001);
-            vvalueProperty().set(vvalueProperty().getValue() + 0.0001);
-            hvalueProperty().set(hvalueProperty().getValue() - 0.0001);
-            vvalueProperty().set(vvalueProperty().getValue() - 0.0001);
+            drawer.setViewPortWidth(getViewportBounds().getWidth());
+            drawer.setViewPortHeight(getViewportBounds().getHeight());
+            refresh();
 
             t.consume();
         }
@@ -256,15 +233,15 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
     private String getToolTipText(SimpleDrawer drawer, MouseEvent event) {
         double scale = drawer.getScale();
-        double clickXmeter = event.getSceneX() / scale;
-        double clickYmeter = event.getSceneY() / scale;
+        double clickX = event.getSceneX();
+        double clickY = event.getSceneY();
         Location viewPortLocation = drawer.getViewPortLocation();
-        double getX = viewPortLocation.getX() + clickXmeter;
-        double getY = viewPortLocation.getY() + clickYmeter;
+        double getX = Convertor.viewToWorld(viewPortLocation.getX() + clickX, scale);
+        double getY = Convertor.viewToWorld(viewPortLocation.getY() + clickY, scale);
         double viewPortWidth = drawer.getViewPortWidth();
         double viewPortHeight = drawer.getViewPortHeight();
 
-        Vector entities = (Vector) boundingQuery.get("GRAPH", getX - TOOLTIP_RECT_WIDTH / 2, getX + TOOLTIP_RECT_WIDTH / 2, getY + TOOLTIP_RECT_WIDTH / 2, getY - TOOLTIP_RECT_WIDTH / 2);
+        Vector entities = (Vector) boundingQuery.get("GRAPH", getX - TOOLTIP_RECT_WIDTH / 2, getX + TOOLTIP_RECT_WIDTH / 2, getY - TOOLTIP_RECT_WIDTH / 2, getY + TOOLTIP_RECT_WIDTH / 2);
         StringBuilder sb = new StringBuilder();
         for (Object entity : entities) {
             if (entity instanceof Edge) {
@@ -291,9 +268,9 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
     }
 
     private void init(String mapFilePath) {
-//        graphData = new GraphReader().readGraph(mapFilePath);
-        mapFilePath = "graph_try.txt";
-        graphData = new NewGraphReader().readGraph(mapFilePath);
+        graphData = new GraphReader().readGraph(mapFilePath);
+//        mapFilePath = "graph_try.txt";
+//        graphData = new NewGraphReader().readGraph(mapFilePath);
         images = new HashMap<>();
         images.put("university", new Image(R.class.getResourceAsStream("university.png")));
         images.put("school", new Image(R.class.getResourceAsStream("university.png")));

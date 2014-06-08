@@ -48,7 +48,7 @@ public class BoundingGroup {
     }
 
     public Vector get(double left, double right, double up, double down) {
-        return this.objects.get((float) up, (float) left, (float) down, (float) right);
+        return this.objects.get((float) down, (float) left, (float) up, (float) right);
     }
     
     public Object remove(double x, double y, Object obj) {

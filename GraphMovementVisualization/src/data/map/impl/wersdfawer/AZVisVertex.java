@@ -64,7 +64,7 @@ public class AZVisVertex implements HasId {
     public String addTag(String tagKey, String tagValue) {
         return tags.put(tagKey, tagValue);
     }
-    
+
     public HashMap<String, String> getTags() {
         return tags;
     }
@@ -73,5 +73,12 @@ public class AZVisVertex implements HasId {
     public String getId() {
         return this.name;
     }
+
+//    @Override
+//    public boolean isHit(double x, double y) {
+//        double dx = this.x - x;
+//        double dy = this.y - y;
+//        return dx * dx + dy * dy < HIT_ERROR;
+//    }
 
 }

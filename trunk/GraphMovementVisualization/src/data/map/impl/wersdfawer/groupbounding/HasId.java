@@ -12,5 +12,9 @@ package data.map.impl.wersdfawer.groupbounding;
  */
 public interface HasId {
     
+    static final double HIT_ERROR = 100;
+    
     public String getId();    
+    
+//    public boolean isHit(double x, double y);
 }

@@ -20,15 +20,15 @@ public class SpriteBasedEntity extends SimpleEntity {
 
     private final Image image;
 
-    public SpriteBasedEntity(long entityId, String filepath) throws FileNotFoundException {
+    public SpriteBasedEntity(String entityId, String filepath) throws FileNotFoundException {
         this(entityId, new FileInputStream(filepath));
     }
 
-    public SpriteBasedEntity(long entityId, InputStream in) {
+    public SpriteBasedEntity(String entityId, InputStream in) {
         this(entityId, new Image(in));
     }
 
-    public SpriteBasedEntity(long entityId, Image image) {
+    public SpriteBasedEntity(String entityId, Image image) {
         super(entityId);
         this.image = image;
     }

@@ -29,6 +29,9 @@ public abstract class GroupDrawer implements GroupDrawerInterface {
 
     @Override
     public void draw(String group) {
+        if (group.equals("SPRITES")) {
+            System.out.println("");
+        }
         Location newLocation = drawer.getViewPortLocation();
         double newScale = drawer.getScale();
         GroupBoundingQuery boundingQuery = drawer.getQuery();

@@ -31,25 +31,25 @@ public class DefinedSizeSpriteBasedEntity extends SpriteBasedEntity {
         WIDTH, HEIGHT;
     }
 
-    public DefinedSizeSpriteBasedEntity(long entityId, String filepath, double realWidth, double realHeight) throws FileNotFoundException {
+    public DefinedSizeSpriteBasedEntity(String entityId, String filepath, double realWidth, double realHeight) throws FileNotFoundException {
         this(entityId, new FileInputStream(filepath), realWidth, realHeight);
     }
 
-    public DefinedSizeSpriteBasedEntity(long entityId, InputStream in, double realWidth, double realHeight) {
+    public DefinedSizeSpriteBasedEntity(String entityId, InputStream in, double realWidth, double realHeight) {
         this(entityId, new Image(in), realWidth, realHeight);
     }
 
-    public DefinedSizeSpriteBasedEntity(long entityId, Image image, double realWidth, double realHeight) {
+    public DefinedSizeSpriteBasedEntity(String entityId, Image image, double realWidth, double realHeight) {
         super(entityId, image);
         this.realWidth = realWidth;
         this.realHeight = realHeight;
     }
 
-    public DefinedSizeSpriteBasedEntity(long entityId, Class<? extends Layer> layerClazz, String filepath, SizeParameter type, double param) throws FileNotFoundException {
+    public DefinedSizeSpriteBasedEntity(String entityId, Class<? extends Layer> layerClazz, String filepath, SizeParameter type, double param) throws FileNotFoundException {
         this(entityId, layerClazz, new FileInputStream(filepath), type, param);
     }
 
-    public DefinedSizeSpriteBasedEntity(long entityId, Class<? extends Layer> layerClazz, InputStream in, SizeParameter type, double param) {
+    public DefinedSizeSpriteBasedEntity(String entityId, Class<? extends Layer> layerClazz, InputStream in, SizeParameter type, double param) {
         this(entityId, new Image(in), type, param);
     }
 
@@ -60,7 +60,7 @@ public class DefinedSizeSpriteBasedEntity extends SpriteBasedEntity {
      * @param type
      * @param param 
      */
-    public DefinedSizeSpriteBasedEntity(long entityId, Image image, SizeParameter type, double param) {
+    public DefinedSizeSpriteBasedEntity(String entityId, Image image, SizeParameter type, double param) {
         super(entityId, image);
         if (type == SizeParameter.HEIGHT) {
             this.realHeight = param;

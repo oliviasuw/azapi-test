@@ -18,6 +18,7 @@ import bgu.dcr.az.vis.presets.map.drawer.SimpleDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.SpriteDrawer;
 import bgu.dcr.az.vis.tools.Convertor;
 import bgu.dcr.az.vis.tools.Location;
+import bgu.dcr.az.vis.tools.StringPair;
 import data.map.impl.wersdfawer.AZVisVertex;
 import data.map.impl.wersdfawer.Edge;
 import data.map.impl.wersdfawer.GraphData;
@@ -66,7 +67,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
     private GraphData graphData;
     private GroupBoundingQuery boundingQuery;
     private SimpleDrawer drawer;
-    private HashMap<String, Image> images;
+    private HashMap<StringPair, Image> images;
 
     private Tooltip tooltip = new Tooltip();
     private Rectangle tooltipRect;
@@ -100,7 +101,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                 return super.getCurrentScale(worldScale);
             }
         };
-        GroupScale edgeZoom = new GroupScale(1, 1, 0, 10) {
+        GroupScale sameSizeZoom = new GroupScale(1, 1, 0, 10) {
             @Override
             public double getCurrentScale(double worldScale, String subGroup) {
                 if (subGroup.contains("EDGES")) {
@@ -111,7 +112,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
             }
         };
         boundingQuery.addMetaData("MOVING", GroupScale.class, carZoom);
-        boundingQuery.addMetaData("GRAPH", GroupScale.class, edgeZoom);
+        boundingQuery.addMetaData("GRAPH", GroupScale.class, sameSizeZoom);
 
         registerLayer(MapCanvasLayer.class, back, back.getCanvas());
         registerLayer(CanvasLayer.class, front, front.getCanvas());
@@ -156,7 +157,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
             tooltip.textProperty().set(text);
             if (text.length() > 1) {
                 tooltip.textProperty().set(text);
-//                tooltip.show(pane, event.getScreenX(), event.getScreenY());
+                tooltip.show(pane, event.getScreenX(), event.getScreenY());
             }
 //            }
         });
@@ -172,7 +173,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         Image greenCarImage = new Image(R.class.getResourceAsStream("car-green.jpg"));
         Image blueCarImage = new Image(R.class.getResourceAsStream("car-blue.jpg"));
         for (long i = 0; i < carNum; i++) {
-            DefinedSizeSpriteBasedEntity car = new DefinedSizeSpriteBasedEntity(i, (Math.random() > 0.5) ? greenCarImage : blueCarImage, DefinedSizeSpriteBasedEntity.SizeParameter.WIDTH, 1.7);
+            DefinedSizeSpriteBasedEntity car = new DefinedSizeSpriteBasedEntity("" + i, (Math.random() > 0.5) ? greenCarImage : blueCarImage, DefinedSizeSpriteBasedEntity.SizeParameter.WIDTH, 1.7);
             boundingQuery.addToGroup("MOVING", "CARS", 10, 10, car.getRealHeight(), car.getRealWidth(), car);
         }
 
@@ -196,7 +197,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
     private void handleVvalue(Number yRatio, SimpleDrawer drawer, MapCanvasLayer back) {
         double viewportY = yRatio.doubleValue() * (getContainerSize()[1] - getViewportBounds().getHeight());
         double viewportX = drawer.getViewPortLocation().getX();
-        
+
         drawer.setViewPortLocation(viewportX, viewportY);
     }
 
@@ -268,20 +269,48 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
     }
 
     private void init(String mapFilePath) {
-        graphData = new GraphReader().readGraph(mapFilePath);
-//        mapFilePath = "graph_try.txt";
-//        graphData = new NewGraphReader().readGraph(mapFilePath);
+//        graphData = new GraphReader().readGraph(mapFilePath);
+        mapFilePath = "graph_try.txt";
+        graphData = new NewGraphReader().readGraph(mapFilePath);
         images = new HashMap<>();
-        images.put("university", new Image(R.class.getResourceAsStream("university.png")));
-        images.put("school", new Image(R.class.getResourceAsStream("university.png")));
-        images.put("office", new Image(R.class.getResourceAsStream("office.png")));
+        images.put(new StringPair("building", "university"), new Image(R.class.getResourceAsStream("university.png")));
+        images.put(new StringPair("building", "school"), new Image(R.class.getResourceAsStream("university.png")));
+        images.put(new StringPair("building", "office"), new Image(R.class.getResourceAsStream("office.png")));
+        images.put(new StringPair("highway", "traffic_signals"), new Image(R.class.getResourceAsStream("icons/traffic_signals.png")));
+        images.put(new StringPair("amenity", "school"), new Image(R.class.getResourceAsStream("university.png")));
+        images.put(new StringPair("amenity", "bank"), new Image(R.class.getResourceAsStream("icons/bank.png")));
+        images.put(new StringPair("amenity", "atm"), new Image(R.class.getResourceAsStream("icons/bank.png")));
+        images.put(new StringPair("amenity", "fuel"), new Image(R.class.getResourceAsStream("icons/fuel.png")));
+        images.put(new StringPair("amenity", "parking"), new Image(R.class.getResourceAsStream("icons/parking.png")));
+        images.put(new StringPair("amenity", "supermarket"), new Image(R.class.getResourceAsStream("icons/supermarket.png")));
+        images.put(new StringPair("amenity", "hospital"), new Image(R.class.getResourceAsStream("icons/hospital.png")));
+        images.put(new StringPair("amenity", "taxi"), new Image(R.class.getResourceAsStream("icons/taxi.png")));
+        images.put(new StringPair("amenity", "telephone"), new Image(R.class.getResourceAsStream("icons/telephone.png")));
+        images.put(new StringPair("amenity", "restaurant"), new Image(R.class.getResourceAsStream("icons/restaurant.png")));
+
         Image defaultImage = new Image(R.class.getResourceAsStream("building.png"));
 
-        //all nodes
         boundingQuery.createGroup("GRAPH", "NODES", false);
+        boundingQuery.createGroup("SPRITES", "building", false);
+        boundingQuery.createGroup("SPRITES", "icons", false);
+
+        //insert all nodes and take care of special nodes that create icon sprites
+        String[] iconsInterestKeys = {"amenity", "highway"};
         for (String vertexName : graphData.getVertexSet()) {
             AZVisVertex vertData = (AZVisVertex) graphData.getData(vertexName);
             boundingQuery.addToGroup("GRAPH", "NODES", vertData.getX(), vertData.getY(), 0.1, 0.1, vertData);
+            //special tagged node should be drawn
+            for (String key : iconsInterestKeys) {
+                String tagValue = vertData.getTagValue(key);
+                if (tagValue != null) {
+                    Image img = images.get(new StringPair(key, tagValue));
+                    if (img != null) {
+                        DefinedSizeSpriteBasedEntity entity = new DefinedSizeSpriteBasedEntity("icon" + vertData.getId(), img, 10, 10);
+                        entity.setLocation(new Location(vertData.getX(), vertData.getY()));
+                        boundingQuery.addToGroup("SPRITES", "icons", vertData.getX(), vertData.getY(), 10, 10, entity);
+                    }
+                }
+            }
         }
 
         for (String edgeType : graphData.getTagToEdge().keySet()) {
@@ -307,7 +336,6 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
             }
         }
         LinkedList<GraphPolygon> polys = graphData.getPolygons();
-        boundingQuery.createGroup("SPRITES", "building", false);
         boundingQuery.createGroup("GRAPH", "POLYGONS.leisure", false);
         boundingQuery.createGroup("GRAPH", "POLYGONS.landuse", false);
         boundingQuery.createGroup("GRAPH", "POLYGONS.building", false);
@@ -336,7 +364,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 //                    newW = newW / newH * MAX_BUILDING_HEIGHT;
 //                    newH = MAX_BUILDING_HEIGHT;
 //                }
-                DefinedSizeSpriteBasedEntity entity = new DefinedSizeSpriteBasedEntity(i, buildingImage, newW, newH);
+                DefinedSizeSpriteBasedEntity entity = new DefinedSizeSpriteBasedEntity("" + i, buildingImage, newW, newH);
                 entity.setLocation(new Location(poly.getCenter().x, poly.getCenter().y));
                 boundingQuery.addToGroup("SPRITES", "building", poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), entity);
                 i++;

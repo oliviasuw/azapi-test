@@ -46,7 +46,7 @@ public class MapTester extends Application {
         //"graph_manhattan.txt"
         //"graph_tlv.txt"
         //"graph_b7.txt"
-        vs = new MapVisualScene(101, "graph_tlv.txt", boundingQuery, drawer);
+        vs = new MapVisualScene(1000, "graph_tlv.txt", boundingQuery, drawer);
 
         SimplePlayer player = new SimplePlayer(boundingQuery, drawer, 1000, 0);
 

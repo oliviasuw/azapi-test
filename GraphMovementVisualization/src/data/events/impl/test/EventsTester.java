@@ -109,15 +109,6 @@ public class EventsTester {
                 Location endLocation = translateToLocation(from, to, endPrecent);
                 frame.directedMove(who, startLocation, endLocation);
             } 
-//                else if (event instanceof TurnEvent) {
-//                TurnEvent turne = (TurnEvent) event;
-//                Integer who = turne.getId();
-//                String srcFrom = turne.getSourceFromNode();
-//                String srcTo = turne.getSourceToNode();
-//                String targetFrom = turne.getTargetFromNode();
-//                String targetTo = turne.getTargetToNode();
-//                frame.rotate(who, getAngle(srcFrom, srcTo), getAngle(targetFrom, targetTo));
-//            }
         }
         player.playNextFrame(frame);
     }

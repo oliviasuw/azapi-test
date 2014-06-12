@@ -34,7 +34,7 @@ public class SimpleDrawer implements DrawerInterface {
 
         for (String group : boundingQuery.getGroups()) {
             GroupDrawer drawer = (GroupDrawer) boundingQuery.getMetaData(group, GroupDrawer.class);
-            if (drawer != null && drawer.toDraw(group)) {
+            if (drawer != null && drawer.isDrawable(group)) {
                 if (group.equals("GRAPH") || group.equals("MOVING")) {
 //                    System.out.printf("locationX:%f, locationY:%f, scale:%f, width:%f, height:%f\n", this.location.getX(), this.location.getY(), this.scale, this.viewPortWidth, this.viewPortHeight );
                     CanvasLayer canvasLayer = (CanvasLayer) boundingQuery.getMetaData(group, CanvasLayer.class);
@@ -104,8 +104,9 @@ public class SimpleDrawer implements DrawerInterface {
 
     /**
      * translates a given view port by a given delta (in pixels)
+     *
      * @param dx
-     * @param dy 
+     * @param dy
      */
     public void moveViewPort(double dx, double dy) {
         location.xProperty().set(location.xProperty().get() + dx);

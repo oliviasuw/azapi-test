@@ -10,8 +10,6 @@ import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import bgu.dcr.az.vis.presets.map.drawer.DrawerInterface;
 import data.map.impl.wersdfawer.GraphData;
 import javafx.scene.CacheHint;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 /**
  *
@@ -34,8 +32,8 @@ public class MapCanvasLayer extends CanvasLayer {
         this.graphData = graphData;
         this.drawer = drawer;
 
-        getCanvas().setCacheHint(CacheHint.SPEED);
-        getCanvas().setCache(true);
+//        getCanvas().setCacheHint(CacheHint.SPEED);
+//        getCanvas().setCache(true);
     }
 
     public GraphData getGraphData() {

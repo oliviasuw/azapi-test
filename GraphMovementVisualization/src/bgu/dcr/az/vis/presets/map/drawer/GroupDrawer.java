@@ -29,9 +29,6 @@ public abstract class GroupDrawer implements GroupDrawerInterface {
 
     @Override
     public void draw(String group) {
-        if (group.equals("SPRITES")) {
-            System.out.println("");
-        }
         Location newLocation = drawer.getViewPortLocation();
         double newScale = drawer.getScale();
         GroupBoundingQuery boundingQuery = drawer.getQuery();
@@ -51,7 +48,7 @@ public abstract class GroupDrawer implements GroupDrawerInterface {
 
     //should this drawer draw the group.
     //this exists only to solve the clear-rect problem...
-    public boolean toDraw(String group) {
+    public boolean isDrawable(String group) {
         Location newLocation = drawer.getViewPortLocation();
         double newScale = drawer.getScale();
         boolean moveable = drawer.getQuery().isMoveable(group);

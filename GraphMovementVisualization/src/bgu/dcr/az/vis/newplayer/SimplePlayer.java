@@ -7,12 +7,8 @@ package bgu.dcr.az.vis.newplayer;
 
 import bgu.dcr.az.vis.player.api.Frame;
 import bgu.dcr.az.vis.player.api.Player;
-import bgu.dcr.az.vis.player.api.VisualScene;
-import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import bgu.dcr.az.vis.presets.map.drawer.DrawerInterface;
 import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
-import javafx.animation.AnimationTimer;
-import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -25,11 +21,11 @@ import javafx.beans.value.ChangeListener;
  */
 public class SimplePlayer implements Player {
 
-    private GroupBoundingQuery query;
-    private DrawerInterface drawer;
+    private final GroupBoundingQuery query;
+    private final DrawerInterface drawer;
     private FrameProcessor frameProcessor;
-    private SimpleDoubleProperty millisPerFrame;
-    private SimpleIntegerProperty fps;
+    private final SimpleDoubleProperty millisPerFrame;
+    private final SimpleIntegerProperty fps;
 
     public SimplePlayer(GroupBoundingQuery query, DrawerInterface drawer, double millisPerFrame, int fps) {
         this.query = query;

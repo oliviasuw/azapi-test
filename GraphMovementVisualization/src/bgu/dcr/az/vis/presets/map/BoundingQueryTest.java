@@ -5,15 +5,10 @@
  */
 package bgu.dcr.az.vis.presets.map;
 
-import bgu.dcr.az.vis.player.impl.entities.DefinedSizeSpriteBasedEntity;
-import bgu.dcr.az.vis.player.impl.entities.SimpleEntity;
 import com.bbn.openmap.util.quadtree.QuadTree;
-import static data.map.impl.wersdfawer.GraphData.QUAD_TREE_BOUNDS;
 import java.awt.Point;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Random;
-import static javafx.application.Application.launch;
 
 /**
  *

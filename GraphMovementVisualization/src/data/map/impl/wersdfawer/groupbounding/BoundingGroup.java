@@ -5,11 +5,8 @@
  */
 package data.map.impl.wersdfawer.groupbounding;
 
-import bgu.dcr.az.vis.player.api.Layer;
 import com.bbn.openmap.util.quadtree.QuadTree;
 import static data.map.impl.wersdfawer.GraphData.QUAD_TREE_BOUNDS;
-import data.map.impl.wersdfawer.GraphPolygon;
-import java.util.Collection;
 import java.util.Vector;
 
 /**

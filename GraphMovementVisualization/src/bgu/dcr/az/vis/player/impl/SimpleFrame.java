@@ -10,9 +10,7 @@ import bgu.dcr.az.vis.player.api.Frame;
 import bgu.dcr.az.vis.player.api.Player;
 import bgu.dcr.az.vis.player.impl.commands.MoveCommand;
 import bgu.dcr.az.vis.player.impl.entities.DefinedSizeSpriteBasedEntity;
-import bgu.dcr.az.vis.player.impl.entities.SimpleEntity;
 import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
-import data.map.impl.wersdfawer.groupbounding.HasId;
 import java.util.ArrayList;
 
 /**

@@ -33,7 +33,13 @@ public class EventReader {
         int tickNum = -1;
         try {
             if (input.available() != 0) {
-                Object readObject = kryo.readClassAndObject(input);
+                Object readObject = null;
+                try {
+                 readObject = kryo.readClassAndObject(input);
+                }
+                catch (Exception e) {
+                    System.out.println("");
+                }
                 int lastPosition = input.position();
                 if (readObject instanceof TickEvent) {
                     tickNum = ((TickEvent)readObject).getNumber();

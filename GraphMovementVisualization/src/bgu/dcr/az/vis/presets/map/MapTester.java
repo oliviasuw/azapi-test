@@ -7,15 +7,12 @@ package bgu.dcr.az.vis.presets.map;
 
 import bgu.dcr.az.vis.controls.ui.PlayerControls;
 import bgu.dcr.az.vis.newplayer.SimplePlayer;
-import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import bgu.dcr.az.vis.presets.map.drawer.FPSDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.GroupDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.SimpleDrawer;
-import data.events.api.SimulatorEvent;
 import data.events.impl.Tick;
 import data.events.impl.test.EventsTester;
 import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
-import java.util.Collection;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -44,12 +41,17 @@ public class MapTester extends Application {
 
         //change to beershevagraph.txt to get beersheva back
         //graph2_1.txt is telaviv
-        vs = new MapVisualScene(101, "beershevagraph.txt", boundingQuery, drawer);
+        //graph_b7.txt is new b7
+        //"graph_try.txt";
+        //"graph_manhattan.txt"
+        //"graph_tlv.txt"
+        //"graph_b7.txt"
+        vs = new MapVisualScene(101, "graph_tlv.txt", boundingQuery, drawer);
 
         SimplePlayer player = new SimplePlayer(boundingQuery, drawer, 1000, 0);
 
-        boundingQuery.addMetaData("*FPS*", GroupDrawer.class, new FPSDrawer(drawer,player));
-        
+        boundingQuery.addMetaData("*FPS*", GroupDrawer.class, new FPSDrawer(drawer, player));
+
         FramesGenerator fg = new FramesGenerator(player);
 
         BorderPane bp = new BorderPane();
@@ -57,7 +59,7 @@ public class MapTester extends Application {
         bp.setBottom(new PlayerControls(player));
 
         Scene scene = new Scene(bp);
-        
+
         stage.setScene(scene);
         stage.show();
         stage.addEventFilter(WindowEvent.WINDOW_HIDING, e -> fg.cancel());
@@ -86,12 +88,9 @@ public class MapTester extends Application {
         }
 
         @Override
-        public void run() {
-            Tick tick = eventTester.read();
-//            Collection<SimulatorEvent> read = tick.getEvents();
-            if (!isStopped) {
-                eventTester.AddNewMovesFromTick(tick, player);
-            }
+        public void run() {            
+            
+            //adds a change listener to know when to play the next tick.
             player.addFrameFinishListener(new ChangeListener<Boolean>() {
 
                 @Override
@@ -102,6 +101,12 @@ public class MapTester extends Application {
                     }
                 }
             });
+            
+            //plays the first tick
+            Tick tick = eventTester.read();
+            if (!isStopped) {
+                eventTester.AddNewMovesFromTick(tick, player);
+            }
 
         }
 

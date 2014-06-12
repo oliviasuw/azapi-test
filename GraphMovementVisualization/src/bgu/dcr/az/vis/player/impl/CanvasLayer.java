@@ -33,9 +33,6 @@ public class CanvasLayer extends SimpleLayer {
     
     @Override
     public void refresh() {
-//        GraphicsContext gc = canvas.getGraphicsContext2D();
-//        gc.setFill(BACKGROUND_COLOR);
-//        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
 }

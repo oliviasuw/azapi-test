@@ -7,7 +7,6 @@ package bgu.dcr.az.vis.presets.map.drawer;
 
 import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import bgu.dcr.az.vis.presets.map.GroupScale;
-import bgu.dcr.az.vis.tools.Convertor;
 import bgu.dcr.az.vis.tools.Location;
 import bgu.dcr.az.vis.tools.StringPair;
 import data.map.impl.wersdfawer.AZVisVertex;
@@ -46,39 +45,35 @@ public class GraphDrawer extends GroupDrawer {
     @Override
     public void _draw(String group, String subgroup) {
 
+//        System.out.println("drawing graph");
+        
         GroupBoundingQuery boundingQuery = drawer.getQuery();
         double scale = drawer.getScale();
 
         CanvasLayer canvasLayer = (CanvasLayer) drawer.getQuery().getMetaData("GRAPH", CanvasLayer.class);
         Canvas canvas = canvasLayer.getCanvas();
 
-        double viewPortWidth = drawer.getViewPortWidth();
-        double viewPortHeight = drawer.getViewPortHeight();
-
-        double epsilonH = boundingQuery.getEpsilon(group, subgroup)[1];
-        double epsilonW = boundingQuery.getEpsilon(group, subgroup)[0];
-
-        double wXs = Convertor.viewToWorld(drawer.getViewPortLocation().getX(), scale) - epsilonW;
-        double wXt = Convertor.viewToWorld(drawer.getViewPortLocation().getX() + viewPortWidth, scale) + epsilonW;
-        double wYs = Convertor.viewToWorld(drawer.getViewPortLocation().getY(), scale) - epsilonH;
-        double wYt = Convertor.viewToWorld(drawer.getViewPortLocation().getY() + viewPortHeight, scale) + epsilonH;
-
         //print what im asking for
         if (subgroup.contains("EDGES")) {
+            
+//            boolean isCaching = canvas.isCache();
+//            canvas.setCache(false);
+            
             GroupScale groupScale = (GroupScale) drawer.getQuery().getMetaData(group, GroupScale.class);
             double gscale = 1;
             if (groupScale != null) {
                 gscale *= groupScale.getCurrentScale(scale, subgroup);
             }
 
-            Collection edges = boundingQuery.get(group, subgroup, wXs, wXt, wYs, wYt);
+            Collection edges = boundingQuery.getCurrentFrameEntities(group, subgroup, drawer);
 
             draw(canvas, graphData, edges, scale);
+//            canvas.setCache(isCaching);
         }
 
         if (subgroup.contains("POLYGONS")) {
-            Collection polys = boundingQuery.get(group, subgroup, wXs, wXt, wYs, wYt);
-            polys.forEach((polygon) -> draw(canvas, graphData, (GraphPolygon) polygon, scale));
+            Collection polys = boundingQuery.getCurrentFrameEntities(group, subgroup, drawer);
+            polys.forEach((polygon) -> draw(canvas, graphData, (GraphPolygon) polygon));
         }
 
     }
@@ -115,18 +110,17 @@ public class GraphDrawer extends GroupDrawer {
 
             gc.setStroke(Color.BLACK);
             gc.setLineWidth(edgeStroke.getLanes() * pixelLaneWidth * scale);
-            strokeEdges(gc, edges, graphData, tx, scale, ty);
+            strokeEdges(gc, edges, graphData);
 
             gc.setLineWidth(edgeStroke.getLanes() * (pixelLaneWidth * 0.8) * scale);
             gc.setStroke(edgeStroke.getPaint());
-            strokeEdges(gc, edges, graphData, tx, scale, ty);
+            strokeEdges(gc, edges, graphData);
 
             gc.restore();
 
         }
     }
-
-    private void strokeEdges(GraphicsContext gc, Collection edges, GraphData graphData, double tx, double scale, double ty) {
+    private void strokeEdges(GraphicsContext gc, Collection edges, GraphData graphData) {
         gc.beginPath();
         for (Object edgeObj : edges) {
 //                String edgeName = (String) edgeObj;
@@ -142,22 +136,25 @@ public class GraphDrawer extends GroupDrawer {
                 System.out.println("problem with drawing! cant find some node.");
                 continue;
             }
-            gc.moveTo(Convertor.worldToView(source.getX(), scale) - tx, Convertor.worldToView(source.getY(), scale) - ty);
-            gc.lineTo(Convertor.worldToView(target.getX(), scale) - tx, Convertor.worldToView(target.getY(), scale) - ty);
+            Location frameFrom = drawer.worldToFrame(source.getX(), source.getY());
+            Location frameTo = drawer.worldToFrame(target.getX(), target.getY());
+            gc.moveTo(frameFrom.getX(), frameFrom.getY());
+            gc.lineTo(frameTo.getX(), frameTo.getY());
         }
+        
         gc.stroke();
     }
-
-    private void draw(Canvas canvas, GraphData graphData, GraphPolygon polygon, double scale) {
-
+    
+    private double [] xs;
+    private double [] ys;
+    
+    private void draw(Canvas canvas, GraphData graphData, GraphPolygon polygon) {
+        
         PolygonMetaData metaData = (PolygonMetaData) drawer.getQuery().getMetaData("GRAPH", PolygonMetaData.class);
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
-//        double tx = canvas.getTranslateX();
-//        double ty = canvas.getTranslateY();
-        double tx = drawer.getViewPortLocation().getX();
-        double ty = drawer.getViewPortLocation().getY();
         gc.save();
+        
         Iterator<String> it = polygon.getNodes().iterator();
         String node = it.next();
         AZVisVertex source = (AZVisVertex) graphData.getData(node);
@@ -176,19 +173,38 @@ public class GraphDrawer extends GroupDrawer {
         } else {
             gc.setStroke(Color.RED);
         }
+        
+//        int size = polygon.getNodes().size();
+//        
+//        if (xs == null || xs.length < size) {
+//            xs = new double[size];
+//            ys = new double[size];
+//        }
+        
         gc.setFill(get);
         gc.setLineWidth(gc.getLineWidth() * 2);
+        
         gc.beginPath();
-
-        gc.moveTo(Convertor.worldToView(source.getX(), scale) - tx, Convertor.worldToView(source.getY(), scale) - ty);
+        Location frameLoc = drawer.worldToFrame(source.getX(), source.getY());
+        gc.moveTo(frameLoc.getX(), frameLoc.getY());
         while (it.hasNext()) {
             node = it.next();
             source = (AZVisVertex) graphData.getData(node);
-            gc.lineTo(Convertor.worldToView(source.getX(), scale) - tx, Convertor.worldToView(source.getY(), scale) - ty);
+            frameLoc = drawer.worldToFrame(source.getX(), source.getY());
+            gc.lineTo(frameLoc.getX(), frameLoc.getY());
         }
         gc.closePath();
         gc.stroke();
         gc.fill();
+        
+//        int i = 0;        
+//        for (String n : polygon.getNodes()) {
+//            source = (AZVisVertex) graphData.getData(node);
+//            Location frameLoc = drawer.worldToFrame(source.getX(), source.getY());
+//            xs[i] = frameLoc.getX();
+//            ys[i] = frameLoc.getY();
+//            i++;
+//        }
 //        gc.fillPolygon(xs, ys, polygon.getNodes().size());
 
         gc.restore();

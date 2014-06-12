@@ -52,12 +52,14 @@ public class EventsTester {
         eventWriter = new EventWriter(kryo);
         eventReader = new EventReader(kryo);
         try {
-            input = new Input(new FileInputStream("file (4).bin"));
-//            output = new Output(new FileOutputStream("file.bin"));
+            output = new Output(new FileOutputStream("file.bin"));
+            MyEventWriter myEV = new MyEventWriter(graphData, eventWriter);
+            myEV.writeTicksAndEvents(output);
+            input = new Input(new FileInputStream("file.bin"));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(EventsTester.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
     }
 
     public void write() {
@@ -69,27 +71,29 @@ public class EventsTester {
     }
 
     private void writeTicksAndEvents(Output output) throws KryoException {
-//        int spritesNum = 1;
-//        String currEdge = "427182875 1775801775";
-//        String nextEdge = "";
-//        Random rand = new Random(System.currentTimeMillis());
-//        for (int edges = 0; edges < 1000; edges++) {
-//            Set<String> outgoing = graphData.getEdgesOf(currEdge.split(" ")[1]);
-//            Object[] setArray = outgoing.toArray();
-//            nextEdge = (String) setArray[rand.nextInt(outgoing.size())];
-//            for (int i = 0; i <= 10; i = i + 5) {
-//                eventWriter.writeTick(output, i);
-//                int percentage = (int) (((double) i / 10) * 100);
-//                for (int j = 0; j < spritesNum; j++) {
-//                    if (Math.random() > 0) {
+        int spritesNum = 100;
+        String currEdge = "1107293662 1107288392";
+        String nextEdge = "";
+        Random rand = new Random(System.currentTimeMillis());
+        for (int edges = 0; edges < 1000; edges++) {
+            Set<String> outgoing = graphData.getEdgesOf(currEdge.split(" ")[1]);
+            Object[] setArray = outgoing.toArray();
+            nextEdge = (String) setArray[rand.nextInt(outgoing.size())];
+            for (int i = 0; i < 10; i = i + 5) {
+                eventWriter.writeTick(output, i);
+                int percentage = (int) (((double) i / 10) * 100);
+                int nextPer = (int) (((double) (i+5) / 10) * 100);
+                for (int j = 0; j < spritesNum; j++) {
+                    if (Math.random() > 0) {
 //                        System.out.println(currEdge);
-//                        eventWriter.writeEvent(output, new MoveEvent(j, currEdge, percentage));
-//                    }
-//                }
-//            }
-//            currEdge = nextEdge;
-//        }
-//        output.close();
+                        String[] split = currEdge.split(" ");
+                        eventWriter.writeEvent(output, new MoveEvent(j, split[0], split[1], percentage, nextPer));
+                    }
+                }
+            }
+            currEdge = nextEdge;
+        }
+        output.close();
     }
 
     public void AddNewMovesFromTick(Tick tick, SimplePlayer player) {

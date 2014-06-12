@@ -5,7 +5,6 @@
  */
 package bgu.dcr.az.vis.player.impl.commands;
 
-import bgu.dcr.az.vis.player.api.Command;
 import bgu.dcr.az.vis.tools.Location;
 import bgu.dcr.az.vis.tools.easing.DoubleEasingVariable;
 import bgu.dcr.az.vis.tools.easing.EasingVariableDoubleBased;
@@ -19,8 +18,8 @@ public class MoveCommand extends SingleEntityCommand {
 
     private DoubleEasingVariable xEasingVar;
     private DoubleEasingVariable yEasingVar;
-    protected final Location from;
-    protected final Location to;
+    private final Location from;
+    private final Location to;
 
     public MoveCommand(long entityId, Location from, Location to) {
         super(entityId);

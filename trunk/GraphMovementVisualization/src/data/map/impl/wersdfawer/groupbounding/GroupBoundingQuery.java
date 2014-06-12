@@ -5,8 +5,8 @@
  */
 package data.map.impl.wersdfawer.groupbounding;
 
-import bgu.dcr.az.vis.player.impl.entities.DefinedSizeSpriteBasedEntity;
-import com.bbn.openmap.util.quadtree.QuadTree;
+import bgu.dcr.az.vis.presets.map.drawer.DrawerInterface;
+import bgu.dcr.az.vis.tools.Location;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -74,15 +74,16 @@ public class GroupBoundingQuery implements GroupBoundingQueryInterface {
         }
         return groups.get(group).get(subGroup).get(left, right, up, down);
     }
-    
+
     /**
      * get from any subgroup in the specified group.
+     *
      * @param group
      * @param left
      * @param right
      * @param up
      * @param down
-     * @return 
+     * @return
      */
     public Collection get(String group, double left, double right, double up, double down) {
         if (!hasGroup(group)) {
@@ -232,4 +233,12 @@ public class GroupBoundingQuery implements GroupBoundingQueryInterface {
         }
     }
 
+    public Collection getCurrentFrameEntities(String group, String subgroup, DrawerInterface drawer) {
+        double epsilonH = getEpsilon(group, subgroup)[1];
+        double epsilonW = getEpsilon(group, subgroup)[0];
+        Location wordS = drawer.viewToWorld(drawer.getViewPortLocation().getX(), drawer.getViewPortLocation().getY());
+        Location wordT = drawer.viewToWorld(drawer.getViewPortLocation().getX() + drawer.getViewPortWidth(), drawer.getViewPortLocation().getY() + drawer.getViewPortHeight());
+
+        return get(group, subgroup, wordS.getX() - epsilonW, wordT.getX() + epsilonW, wordS.getY() - epsilonH, wordT.getY() + epsilonH);
+    }
 }

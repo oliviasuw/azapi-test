@@ -6,8 +6,6 @@
 package bgu.dcr.az.vis.newplayer;
 
 import bgu.dcr.az.vis.player.api.Frame;
-import bgu.dcr.az.vis.player.api.Player;
-import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import javafx.animation.AnimationTimer;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.BooleanProperty;
@@ -34,7 +32,7 @@ class FrameProcessor extends AnimationTimer {
     private final DoubleBinding frameDurationInNano;
     private final SimplePlayer player;
 
-    private BooleanProperty finishedCurrFrame = new SimpleBooleanProperty(true);
+    private final BooleanProperty finishedCurrFrame = new SimpleBooleanProperty(true);
 //    private boolean finishedCurrFrame = true;
 
     FrameProcessor(SimplePlayer player) {

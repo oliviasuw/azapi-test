@@ -5,18 +5,15 @@
  */
 package bgu.dcr.az.vis.presets.map;
 
-import bgu.dcr.az.vis.presets.map.drawer.FPSDrawer;
 import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import bgu.dcr.az.vis.player.impl.SimpleScrollableVisualScene;
 import bgu.dcr.az.vis.player.impl.entities.DefinedSizeSpriteBasedEntity;
-import bgu.dcr.az.vis.player.impl.entities.SpriteBasedEntity;
 import bgu.dcr.az.vis.presets.map.drawer.EdgesMetaData;
 import bgu.dcr.az.vis.presets.map.drawer.GraphDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.GroupDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.PolygonMetaData;
 import bgu.dcr.az.vis.presets.map.drawer.SimpleDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.SpriteDrawer;
-import bgu.dcr.az.vis.tools.Convertor;
 import bgu.dcr.az.vis.tools.Location;
 import bgu.dcr.az.vis.tools.StringPair;
 import data.map.impl.wersdfawer.AZVisVertex;
@@ -31,13 +28,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Vector;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Tooltip;
@@ -59,7 +51,8 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
     public static final double MIN_SCALE = 0.3;
     public static final double MAX_SCALE = 10;
 
-    public static final double TOOLTIP_RECT_WIDTH = 10;
+    public static final double TOOLTIP_RECT_WIDTH = 2;
+    public static final double TOOLTIP_RECT_SENCE = 10;
 
     private static double DEFAULT_CONTAINER_WIDTH = 10000;
     private static double DEFAULT_CONTAINER_HEIGHT = 10000;
@@ -80,7 +73,6 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         this.drawer = drawer;
         tooltipRect = new Rectangle(TOOLTIP_RECT_WIDTH, TOOLTIP_RECT_WIDTH, Color.RED);
         pane.getChildren().add(tooltipRect);
-//        tooltipRect.toFront();
         tooltip.maxWidth(50);
         tooltip.maxHeight(50);
         Tooltip.install(tooltipRect, tooltip);
@@ -89,6 +81,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
         CanvasLayer front = new CanvasLayer(this);
         MapCanvasLayer back = new MapCanvasLayer(this, graphData, drawer);
+
         boundingQuery.addMetaData("GRAPH", CanvasLayer.class, back);
         boundingQuery.addMetaData("SPRITES", CanvasLayer.class, back);
         boundingQuery.addMetaData("*FPS*", CanvasLayer.class, front);
@@ -101,7 +94,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                 return super.getCurrentScale(worldScale);
             }
         };
-        GroupScale sameSizeZoom = new GroupScale(1, 1, 0, 10) {
+        GroupScale edgesZoom = new GroupScale(1, 1, 0, 5) {
             @Override
             public double getCurrentScale(double worldScale, String subGroup) {
                 if (subGroup.contains("EDGES")) {
@@ -112,10 +105,12 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
             }
         };
         boundingQuery.addMetaData("MOVING", GroupScale.class, carZoom);
-        boundingQuery.addMetaData("GRAPH", GroupScale.class, sameSizeZoom);
+        boundingQuery.addMetaData("GRAPH", GroupScale.class, edgesZoom);
 
         registerLayer(MapCanvasLayer.class, back, back.getCanvas());
         registerLayer(CanvasLayer.class, front, front.getCanvas());
+
+        tooltipRect.toFront();
 
         Point2D.Double bounds = back.getGraphData().getBounds();
         super.setContainerSize(bounds.x, bounds.y);
@@ -147,20 +142,39 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
             handleZoom(t, drawer, back);
         });
 
-        addEventFilter(MouseEvent.MOUSE_CLICKED, (MouseEvent event) -> {
-//            if (event.isSecondaryButtonDown()) {
+        addEventFilter(MouseEvent.MOUSE_MOVED, me -> {
             Location viewPortLocation = drawer.getViewPortLocation();
-            double scale = drawer.getScale();
-            tooltipRect.translateXProperty().set(viewPortLocation.getX() + event.getSceneX());
-            tooltipRect.translateYProperty().set(viewPortLocation.getY() + event.getSceneY());
-            String text = getToolTipText(drawer, event);
-            tooltip.textProperty().set(text);
-            if (text.length() > 1) {
-                tooltip.textProperty().set(text);
-                tooltip.show(pane, event.getScreenX(), event.getScreenY());
-            }
-//            }
+
+            tooltipRect.translateXProperty().set(viewPortLocation.getX() + me.getSceneX() - TOOLTIP_RECT_WIDTH / 2);
+            tooltipRect.translateYProperty().set(viewPortLocation.getY() + me.getSceneY() - TOOLTIP_RECT_WIDTH / 2);
         });
+
+        tooltipRect.addEventFilter(MouseEvent.MOUSE_ENTERED, me -> {
+            String text = getToolTipText(drawer, me);
+            if (!text.trim().isEmpty()) {
+                tooltip.textProperty().set(text);
+                tooltip.show(pane, me.getScreenX(), me.getScreenY());
+            }
+        });
+
+        tooltip.addEventFilter(MouseEvent.MOUSE_EXITED, me -> {
+            tooltip.hide();
+        });
+
+//        addEventFilter(MouseEvent.MOUSE_CLICKED, (MouseEvent event) -> {
+////            if (event.isSecondaryButtonDown()) {
+//            Location viewPortLocation = drawer.getViewPortLocation();
+//            double scale = drawer.getScale();
+//            tooltipRect.translateXProperty().set(viewPortLocation.getX() + event.getSceneX() - TOOLTIP_RECT_WIDTH / 2);
+//            tooltipRect.translateYProperty().set(viewPortLocation.getY() + event.getSceneY() - TOOLTIP_RECT_WIDTH / 2);
+//            String text = getToolTipText(drawer, event);
+//            tooltip.textProperty().set(text);
+//            if (text.length() > 1) {
+//                tooltip.textProperty().set(text);
+////                tooltip.show(pane, event.getScreenX(), event.getScreenY());
+//            }
+////            }
+//        });
 
         hvalueProperty().addListener((ov, n, xRatio) -> {
             handleHvalue(xRatio, drawer, back);
@@ -221,8 +235,9 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
             drawer.setScale(scale);
 
             Point2D.Double mapSize = back.getGraphData().getBounds();
+            Location viewL = drawer.worldToView(mapSize.x, mapSize.y);
 
-            super.setContainerSize(Convertor.worldToView(mapSize.x, scale), Convertor.worldToView(mapSize.y, scale));
+            super.setContainerSize(viewL.getX(), viewL.getY());
 
             drawer.setViewPortWidth(getViewportBounds().getWidth());
             drawer.setViewPortHeight(getViewportBounds().getHeight());
@@ -233,35 +248,30 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
     }
 
     private String getToolTipText(SimpleDrawer drawer, MouseEvent event) {
-        double scale = drawer.getScale();
         double clickX = event.getSceneX();
         double clickY = event.getSceneY();
-        Location viewPortLocation = drawer.getViewPortLocation();
-        double getX = Convertor.viewToWorld(viewPortLocation.getX() + clickX, scale);
-        double getY = Convertor.viewToWorld(viewPortLocation.getY() + clickY, scale);
-        double viewPortWidth = drawer.getViewPortWidth();
-        double viewPortHeight = drawer.getViewPortHeight();
+        Location worldL = drawer.frameToWorld(clickX, clickY);
 
-        Vector entities = (Vector) boundingQuery.get("GRAPH", getX - TOOLTIP_RECT_WIDTH / 2, getX + TOOLTIP_RECT_WIDTH / 2, getY - TOOLTIP_RECT_WIDTH / 2, getY + TOOLTIP_RECT_WIDTH / 2);
+        Collection entities = boundingQuery.get("GRAPH", worldL.getX() - TOOLTIP_RECT_SENCE / 2, worldL.getX() + TOOLTIP_RECT_SENCE / 2, worldL.getY() - TOOLTIP_RECT_SENCE / 2, worldL.getY() + TOOLTIP_RECT_SENCE / 2);
         StringBuilder sb = new StringBuilder();
         for (Object entity : entities) {
             if (entity instanceof Edge) {
                 Edge edge = (Edge) entity;
-                sb.append("Edge " + edge.getId() + "\n");
+                sb.append("Edge ").append(edge.getId()).append("\n");
                 for (Map.Entry<String, String> entry : edge.getTags().entrySet()) {
-                    sb.append(" " + entry.getKey() + ": " + entry.getValue() + "\n");
+                    sb.append(" ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
                 }
             } else if (entity instanceof GraphPolygon) {
                 GraphPolygon polygon = (GraphPolygon) entity;
-                sb.append("Polygon " + (polygon).getId() + "\n");
+                sb.append("Polygon ").append((polygon).getId()).append("\n");
                 for (Map.Entry<String, String> entry : polygon.getTags().entrySet()) {
-                    sb.append(" " + entry.getKey() + ": " + entry.getValue() + "\n");
+                    sb.append(" ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
                 }
             } else if (entity instanceof AZVisVertex) {
                 AZVisVertex vert = (AZVisVertex) entity;
-                sb.append("Vertex " + (vert).getId() + "\n");
+                sb.append("Vertex ").append((vert).getId()).append("\n");
                 for (Map.Entry<String, String> entry : vert.getTags().entrySet()) {
-                    sb.append(" " + entry.getKey() + ": " + entry.getValue() + "\n");
+                    sb.append(" ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
                 }
             }
         }
@@ -270,7 +280,8 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
     private void init(String mapFilePath) {
 //        graphData = new GraphReader().readGraph(mapFilePath);
-        mapFilePath = "graph_try.txt";
+//        mapFilePath = "graph_try.txt";
+//        mapFilePath = "graph_manhattan.txt";
         graphData = new NewGraphReader().readGraph(mapFilePath);
         images = new HashMap<>();
         images.put(new StringPair("building", "university"), new Image(R.class.getResourceAsStream("university.png")));
@@ -360,10 +371,6 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                 }
                 double newW = subScale;
                 double newH = (buildingImage.getHeight() / buildingImage.getWidth()) * newW;
-//                if (newH > MAX_BUILDING_HEIGHT) {
-//                    newW = newW / newH * MAX_BUILDING_HEIGHT;
-//                    newH = MAX_BUILDING_HEIGHT;
-//                }
                 DefinedSizeSpriteBasedEntity entity = new DefinedSizeSpriteBasedEntity("" + i, buildingImage, newW, newH);
                 entity.setLocation(new Location(poly.getCenter().x, poly.getCenter().y));
                 boundingQuery.addToGroup("SPRITES", "building", poly.getCenter().x, poly.getCenter().y, poly.getWidth(), poly.getHeight(), entity);

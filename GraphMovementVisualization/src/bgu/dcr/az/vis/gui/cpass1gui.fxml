@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.collections.*?>
+<?import java.lang.*?>
+
+<GridPane fx:controller="bgu.dcr.az.vis.gui.VisGuiController"
+          xmlns:fx="http://javafx.com/fxml" alignment="CENTER_LEFT" hgap="10" vgap="10"
+          styleClass="root">
+    <padding>
+        <Insets top="25" right="25" bottom="10" left="25"/>
+    </padding>
+
+
+    <Text id="welcome-text" text="ABTS" 
+          GridPane.columnIndex="0" GridPane.rowIndex="0"
+          GridPane.columnSpan="1"/>
+ 
+    <Label text="Load Map:"
+           GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+ 
+<!--    <ComboBox fx:id="mapCombo" prefHeight="21.0" prefWidth="70.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="Tel-Aviv" />
+                <String fx:value="Beer-Sheva" />
+                <String fx:value="Manhatten" />
+            </FXCollections>
+        </items>
+    </ComboBox>-->
+    
+    <HBox spacing="10" alignment="bottom_left" 
+          GridPane.columnIndex="1" GridPane.rowIndex="2">
+        <Button fx:id="browseButton" text="Browse..."     
+                onAction="#handleBrowseButtonAction"/>
+    </HBox>
+ 
+    <Label text="Agents"
+           GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+ 
+    <TextField fx:id="agents" 
+               GridPane.columnIndex="0" GridPane.rowIndex="4" prefWidth="70.0"/>
+    
+    <Label text="Ticks"
+           GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+ 
+    <TextField fx:id="ticks" 
+               GridPane.columnIndex="1" GridPane.rowIndex="4" prefWidth="70.0"/>
+    
+    <Label text="Electric%"
+           GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+ 
+    <TextField fx:id="electric" 
+               GridPane.columnIndex="0" GridPane.rowIndex="6" prefWidth="70.0"/><!--
+    
+    <Label text="p2"
+           GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+ 
+    <TextField fx:id="p2" 
+               GridPane.columnIndex="1" GridPane.rowIndex="6" prefWidth="70.0"/>
+    
+    <Label text="Seed"
+           GridPane.columnIndex="2" GridPane.rowIndex="5"/>
+ 
+    <TextField fx:id="seed" 
+               GridPane.columnIndex="2" GridPane.rowIndex="6" prefWidth="70.0"/>-->
+    
+    <HBox spacing="10" alignment="bottom_right" 
+          GridPane.columnIndex="2" GridPane.rowIndex="8">
+        <Button fx:id="runButton" text="Run!"     
+                onAction="#handleRunButtonAction"/>
+    </HBox>
+    
+    <Label text="Preset Map:"
+           GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    
+    <ComboBox fx:id="mapCombo" prefHeight="21.0" prefWidth="70.0" GridPane.columnIndex="1" GridPane.rowIndex="1" onAction="#handleGraphChoice">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="Tel-Aviv" />
+                <String fx:value="Beer-Sheva" />
+                <String fx:value="Manhatten" />
+            </FXCollections>
+        </items>
+    </ComboBox>   
+    
+    <HBox spacing="10" alignment="bottom_left" 
+          GridPane.columnIndex="0" GridPane.rowIndex="8">
+        <Button fx:id="closeButton" text="Exit"     
+                onAction="#handleCloseButtonAction"/>
+    </HBox>
+
+    <Text fx:id="actiontarget"
+          GridPane.columnIndex="3" GridPane.rowIndex="9"/>
+    
+    <stylesheets>
+        <URL value="@cpass1gui.css" />
+    </stylesheets>
+
+</GridPane>

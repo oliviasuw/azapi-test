@@ -8,6 +8,7 @@ package bgu.dcr.az.vis.presets.map;
 import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import bgu.dcr.az.vis.player.impl.SimpleScrollableVisualScene;
 import bgu.dcr.az.vis.player.impl.entities.DefinedSizeSpriteBasedEntity;
+import bgu.dcr.az.vis.presets.map.drawer.DynamicColorDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.EdgesMetaData;
 import bgu.dcr.az.vis.presets.map.drawer.GraphDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.GroupDrawer;
@@ -28,6 +29,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Random;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Bounds;
@@ -87,6 +89,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         boundingQuery.addMetaData("*FPS*", CanvasLayer.class, front);
 
         boundingQuery.addMetaData("MOVING", CanvasLayer.class, front);
+        boundingQuery.addMetaData("DYNAMIC_COLORED", CanvasLayer.class, front);
 
         GroupScale carZoom = new GroupScale() {
             @Override
@@ -184,10 +187,16 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
             handleVvalue(yRatio, drawer, back);
         });
 
-        Image greenCarImage = new Image(R.class.getResourceAsStream("car-green.jpg"));
-        Image blueCarImage = new Image(R.class.getResourceAsStream("car-blue.jpg"));
+        
+        String[] colors = new String[]{"green","blue","red","yellow"};
+        Image[] carImages = new Image[colors.length];
+        Random rand = new Random();
+        for (int i=0; i<colors.length; i++) {
+            carImages[i] = new Image(R.class.getResourceAsStream("car-"+colors[i]+".jpg"));
+        }
         for (long i = 0; i < carNum; i++) {
-            DefinedSizeSpriteBasedEntity car = new DefinedSizeSpriteBasedEntity("" + i, (Math.random() > 0.5) ? greenCarImage : blueCarImage, DefinedSizeSpriteBasedEntity.SizeParameter.WIDTH, 1.7);
+            final int randIndex = rand.nextInt(carImages.length);
+            DefinedSizeSpriteBasedEntity car = new DefinedSizeSpriteBasedEntity("" + i, carImages[randIndex], DefinedSizeSpriteBasedEntity.SizeParameter.WIDTH, 1.7);
             boundingQuery.addToGroup("MOVING", "CARS", 10, 10, car.getRealHeight(), car.getRealWidth(), car);
         }
 
@@ -283,27 +292,17 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 //        mapFilePath = "graph_try.txt";
 //        mapFilePath = "graph_manhattan.txt";
         graphData = new NewGraphReader().readGraph(mapFilePath);
-        images = new HashMap<>();
-        images.put(new StringPair("building", "university"), new Image(R.class.getResourceAsStream("university.png")));
-        images.put(new StringPair("building", "school"), new Image(R.class.getResourceAsStream("university.png")));
-        images.put(new StringPair("building", "office"), new Image(R.class.getResourceAsStream("office.png")));
-        images.put(new StringPair("highway", "traffic_signals"), new Image(R.class.getResourceAsStream("icons/traffic_signals.png")));
-        images.put(new StringPair("amenity", "school"), new Image(R.class.getResourceAsStream("university.png")));
-        images.put(new StringPair("amenity", "bank"), new Image(R.class.getResourceAsStream("icons/bank.png")));
-        images.put(new StringPair("amenity", "atm"), new Image(R.class.getResourceAsStream("icons/bank.png")));
-        images.put(new StringPair("amenity", "fuel"), new Image(R.class.getResourceAsStream("icons/fuel.png")));
-        images.put(new StringPair("amenity", "parking"), new Image(R.class.getResourceAsStream("icons/parking.png")));
-        images.put(new StringPair("amenity", "supermarket"), new Image(R.class.getResourceAsStream("icons/supermarket.png")));
-        images.put(new StringPair("amenity", "hospital"), new Image(R.class.getResourceAsStream("icons/hospital.png")));
-        images.put(new StringPair("amenity", "taxi"), new Image(R.class.getResourceAsStream("icons/taxi.png")));
-        images.put(new StringPair("amenity", "telephone"), new Image(R.class.getResourceAsStream("icons/telephone.png")));
-        images.put(new StringPair("amenity", "restaurant"), new Image(R.class.getResourceAsStream("icons/restaurant.png")));
+        initIconImages();
 
         Image defaultImage = new Image(R.class.getResourceAsStream("building.png"));
 
         boundingQuery.createGroup("GRAPH", "NODES", false);
         boundingQuery.createGroup("SPRITES", "building", false);
         boundingQuery.createGroup("SPRITES", "icons", false);
+        
+        boundingQuery.createGroup("DYNAMIC_COLORED", "EDGES", true);        
+        boundingQuery.addMetaData("DYNAMIC_COLORED", GroupDrawer.class, new DynamicColorDrawer(graphData, drawer));
+
 
         //insert all nodes and take care of special nodes that create icon sprites
         String[] iconsInterestKeys = {"amenity", "highway"};
@@ -387,6 +386,25 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
         boundingQuery.createGroup("MOVING", "CARS", true);
         boundingQuery.addMetaData("MOVING", GroupDrawer.class, spriteDrawer);
+    
+    }
+
+    private void initIconImages() {
+        images = new HashMap<>();
+        images.put(new StringPair("building", "university"), new Image(R.class.getResourceAsStream("university.png")));
+        images.put(new StringPair("building", "school"), new Image(R.class.getResourceAsStream("university.png")));
+        images.put(new StringPair("building", "office"), new Image(R.class.getResourceAsStream("office.png")));
+        images.put(new StringPair("highway", "traffic_signals"), new Image(R.class.getResourceAsStream("icons/traffic_signals.png")));
+        images.put(new StringPair("amenity", "school"), new Image(R.class.getResourceAsStream("university.png")));
+        images.put(new StringPair("amenity", "bank"), new Image(R.class.getResourceAsStream("icons/bank.png")));
+        images.put(new StringPair("amenity", "atm"), new Image(R.class.getResourceAsStream("icons/bank.png")));
+        images.put(new StringPair("amenity", "fuel"), new Image(R.class.getResourceAsStream("icons/fuel.png")));
+        images.put(new StringPair("amenity", "parking"), new Image(R.class.getResourceAsStream("icons/parking.png")));
+        images.put(new StringPair("amenity", "supermarket"), new Image(R.class.getResourceAsStream("icons/supermarket.png")));
+        images.put(new StringPair("amenity", "hospital"), new Image(R.class.getResourceAsStream("icons/hospital.png")));
+        images.put(new StringPair("amenity", "taxi"), new Image(R.class.getResourceAsStream("icons/taxi.png")));
+        images.put(new StringPair("amenity", "telephone"), new Image(R.class.getResourceAsStream("icons/telephone.png")));
+        images.put(new StringPair("amenity", "restaurant"), new Image(R.class.getResourceAsStream("icons/restaurant.png")));
     }
 
 }

@@ -49,13 +49,13 @@ public class EventsTester {
 //        kryo.register(TurnEvent.class);
         kryo.register(TickEvent.class);
         kryo.register(SimulatorEvent.class);
-        eventWriter = new EventWriter(kryo);
+//        eventWriter = new EventWriter(kryo);
         eventReader = new EventReader(kryo);
         try {
             output = new Output(new FileOutputStream("file.bin"));
-            MyEventWriter myEV = new MyEventWriter(graphData, eventWriter);
-            myEV.writeTicksAndEvents(output);
-            input = new Input(new FileInputStream("file.bin"));
+//            MyEventWriter myEV = new MyEventWriter(graphData, eventWriter);
+//            myEV.writeTicksAndEvents(output);
+            input = new Input(new FileInputStream("file_200_10000.bin"));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(EventsTester.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -112,6 +112,14 @@ public class EventsTester {
                 Location startLocation = translateToLocation(from, to, startPrecent);
                 Location endLocation = translateToLocation(from, to, endPrecent);
                 frame.directedMove(who, startLocation, endLocation);
+                
+                if (startPrecent == 0) {
+                    
+                }
+                if (endPrecent == 100) {
+                    
+                }
+                
             } 
         }
         player.playNextFrame(frame);

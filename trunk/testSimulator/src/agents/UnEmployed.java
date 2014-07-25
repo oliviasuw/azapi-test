@@ -27,7 +27,7 @@ import services.Service;
  */
 public class UnEmployed extends Agent {
 
-    private int startTick = -1; //temp. variable - holds the tick which we started traveling the current segment
+    private int startTick = -1; //temp. variable - holds the consume which we started traveling the current segment
 
     public UnEmployed(HashMap<Class<? extends Service>, Service> s, HashMap<Class<? extends Data>, Data> d) {
         super(s, d);

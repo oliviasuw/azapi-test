@@ -9,6 +9,7 @@ package attributes.car;
 import agents.Agent;
 import attributes.Behavior;
 import data.CarData;
+import data.TankData;
 import eventWriter.MoveEvent;
 import services.ClockService;
 import services.RoadService;
@@ -21,6 +22,7 @@ import testsimulator.TestSimulator;
 public class DriveSegment extends Behavior {
     
     private final CarData carData;
+    private final TankData tankData;
     private final RoadService roadService;
     private final ClockService clockService;
     
@@ -28,6 +30,7 @@ public class DriveSegment extends Behavior {
         super(a);
         try{
             this.carData = a.getData(CarData.class);
+            this.tankData = a.getData(TankData.class);
             this.roadService = a.getService(RoadService.class);
             this.clockService = a.getService(ClockService.class);
         } catch(UnsupportedOperationException e){
@@ -37,12 +40,16 @@ public class DriveSegment extends Behavior {
 
     @Override
     public void behave(String currState) {
-        double percentage = roadService.getPercantage(id);
-//        int tick = clockService.getTicks();
-//        System.out.println(String.format("Tick[%d]:: driving road segment ... %f --> %f", tick, percentage, Math.min(percentage + this.carData.getSpeed(), roadService.getPositionOfNextCar(id))));
+        double percentage = roadService.getPercantage(id), tmp = percentage;
+//        int consume = clockService.getTicks();
+//        System.out.println(String.format("Tick[%d]:: driving road segment ... %f --> %f", consume, percentage, Math.min(percentage + this.carData.getSpeed(), roadService.getPositionOfNextCar(id))));
         
         //try to proceed, considering the cars ahead.
         percentage = Math.min(percentage + this.carData.getSpeed(), roadService.getPositionOfNextCar(id));
+        double edgeLen = this.roadService.getEdgeLength(carData.getCurrSource(), carData.getCurrDestination());
+        
+        double distance = (percentage - tmp)/100.0*edgeLen;
+        this.tankData.consume(distance);
         
         MoveEvent moveEvent = new MoveEvent(id, carData.getCurrSource(), carData.getCurrDestination(), roadService.getPercantage(id), percentage);
 //        if(carData.getCurrSource() == null || carData.getCurrDestination() == null)

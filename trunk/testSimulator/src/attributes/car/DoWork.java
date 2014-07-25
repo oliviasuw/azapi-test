@@ -51,13 +51,13 @@ public class DoWork extends Behavior {
             this.carData.currPath = roadService.getPath(this.carData.getDestination(), this.humanData.getHomeAddr());
             debug("preparing to go home ...");
             
-            this.carData.setDrivingDirection(CarData.Direction.Home);
             if(this.carData.isParkingAtPL())
                 this.roadService.exitFromPL(id, this.carData.getDestination());
             this.carData.setParkingAtPL(false);
             
             this.carData.setSource(this.carData.getDestination());
             this.carData.setDestination(this.humanData.getHomeAddr());
+            this.carData.setDrivingDirection(CarData.Direction.Home);
         }
     }
     

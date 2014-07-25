@@ -12,6 +12,7 @@ import attributes.car.PrepareToGo;
 import attributes.car.DriveSegment;
 import attributes.car.StartSegment;
 import attributes.car.DoWork;
+import attributes.car.RefillTank;
 import attributes.car.SpendTime;
 import data.CarData;
 import data.Data;
@@ -44,9 +45,9 @@ public class Employee extends Agent {
             // need to add a copy constructor.. for now, the user is not allowed
             // to pre-define the agent's attributes.
             // this.dataMap.put(CarData.class, d.get(CarData.class));
-            this.dataMap.put(TankData.class, new TankData(true));
+            this.dataMap.put(TankData.class, new TankData(false));
         } else {
-            this.dataMap.put(TankData.class, new TankData(true));
+            this.dataMap.put(TankData.class, new TankData(false));
         }
         
         if (d.get(CarData.class) != null) {
@@ -87,8 +88,10 @@ public class Employee extends Agent {
         State drive = new State("drive");
         State work = new State("work");
         State spendTime = new State("spendTime");
+        State emergency = new State("emergency");
 
         //add behaviors to each state
+        emergency.add(new RefillTank(this));
         change.add(new ChangeRoad(this));
         home.add(new PrepareToGo(this));
         work.add(new DoWork(this));
@@ -96,13 +99,15 @@ public class Employee extends Agent {
         spendTime.add(new SpendTime(this));
 
         //update the states-table with the newly created ones.
-        addStates(change, home, drive, work, spendTime);
+        addStates(change, home, drive, work, spendTime, emergency);
     }
 
     @Override
     protected void changeState() {
         RoadService rService;
         ClockService clock;
+        
+        TankData tankData;
         WorkerData wData;
         CarData cData;
         HumanData hData;
@@ -158,12 +163,18 @@ public class Employee extends Agent {
                 if (cData.currPath.isEmpty()) //reached destination
                 {
                     currState = concludeNextState();
-                    System.out.println("reached destination, next:" + currState);
+                    System.out.println("reached destination, next state:" + currState);
                 } else if (rService.getPercantage(id) == 0) { //managed to enter new segment
                     currState = "drive";
                 }
                 break;
-
+                
+            case ("emergency"):
+                tankData = getData(TankData.class);
+                if(tankData.isFull()){
+                    currState = "changeRoad";
+                }
+                break;
             default:
                 throw new UnsupportedOperationException(String.format("undefined state - %s", currState));
         }
@@ -184,6 +195,7 @@ public class Employee extends Agent {
             case Home: return "home";
             case Work: return "work";
             case Spend: return "spendTime";
+            case Emergency: return "emergency";
             default: throw new UnsupportedOperationException("Where the hell are you driving to??");
         }
     }

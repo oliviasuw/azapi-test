@@ -8,6 +8,7 @@ package attributes.car;
 import agents.Agent;
 import attributes.Behavior;
 import data.CarData;
+import data.TankData;
 import java.util.ArrayDeque;
 import services.ClockService;
 import services.RoadService;
@@ -19,6 +20,7 @@ import services.RoadService;
 public class ChangeRoad extends Behavior {
 
     private final CarData carData;
+    private final TankData tankData;
     private final RoadService roadService;
     private final ClockService clockService;
 
@@ -26,6 +28,7 @@ public class ChangeRoad extends Behavior {
         super(a);
         try {
             this.carData = a.getData(CarData.class);
+            this.tankData = a.getData(TankData.class);
             this.roadService = a.getService(RoadService.class);
             this.clockService = a.getService(ClockService.class);
         } catch (UnsupportedOperationException e) {
@@ -37,20 +40,24 @@ public class ChangeRoad extends Behavior {
     public void behave(String currState) {
         ArrayDeque<String> path = this.carData.currPath;
         String from = path.pop();
-        
+
         if (from.equals(this.carData.getDestination())) { //reached path destination (either workplace or home)
             debug("Reached destination. ");
 //            System.out.println("exit");
             roadService.exitSegment(this.id);
         } else {
-            if (canEnterToNextSegment(from, path)) { //can enter the next segment
+            boolean emergencyFound = false;
+            if (tankData.isCritical() && carData.getDrivingDirection() != CarData.Direction.Emergency) {                
+                emergencyFound = goRecharge(from);
+            }
+            if (!emergencyFound && canEnterToNextSegment(from, path)) { //can enter the next segment
                 debug("\nentering new segment... " + path.size() + " more to go!\n");
-                
+
                 if (!from.equals(this.carData.getSource())) { //didn't just started driving (i.e, been in a previous segment)
 //                    System.out.println("remove");
                     roadService.exitSegment(this.id);
                 }
-                
+
 //                System.out.println("enter (" + from + " , " + path.peek() + ")");
                 roadService.enterSegment(this.id, from, path.peek());
                 this.carData.setCurrEdge(from, path.peek());
@@ -61,5 +68,29 @@ public class ChangeRoad extends Behavior {
 
     private boolean canEnterToNextSegment(String from, ArrayDeque<String> path) {
         return roadService.segmentNotFull(from, path.peek());
+    }
+
+    /**
+     * Need to recharge now, re-route for a close parking-lot/fuel-station.
+     * @param newSRC 
+     */
+    private boolean goRecharge(String newSRC) {
+        String dest;
+        if ((dest = this.roadService.findClosePL(id, newSRC, newSRC)) != null) {
+            this.carData.cacheData();
+            
+            this.carData.setDrivingDirection(CarData.Direction.Emergency);
+
+            this.carData.setParkingAtPL(true);
+            System.out.println("going recharge NOW ...");
+        
+            this.carData.currPath = roadService.getPath(newSRC, dest);
+            this.carData.setSource(newSRC);
+            this.carData.setDestination(dest);
+            return true;
+        }
+        else
+            return false;
+        
     }
 }

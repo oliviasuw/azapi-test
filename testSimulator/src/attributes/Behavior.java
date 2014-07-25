@@ -27,7 +27,7 @@ public abstract class Behavior {
      */
     public abstract void behave(String currState);
     
-    public static void debug(String s){
+    public static void debug(Object s){
         if(Utility.SIMULATOR_DEBUG)
             System.out.println(s);
     }

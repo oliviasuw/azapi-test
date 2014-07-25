@@ -14,7 +14,7 @@ import java.util.ArrayDeque;
  */
 public class CarData extends Data{
     
-    public enum Direction {Work, Home, Spend, None};
+    public enum Direction {Work, Home, Spend, Emergency, None};
     
     private Direction drivingDirection;
     
@@ -94,10 +94,10 @@ public class CarData extends Data{
         this.speed = speed;
     }
     
-    public void cacheData(String dest, Direction dir, boolean park){
-        this.cache_destination = dest;
-        this.cache_drivingDirection = dir;
-        this.cache_parkingAtPL = park;
+    public void cacheData(){
+        this.cache_destination = this.destination;
+        this.cache_drivingDirection = this.drivingDirection;
+        this.cache_parkingAtPL = this.parkingAtPL;
     }
     
     public void loadData(){

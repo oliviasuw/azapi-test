@@ -25,12 +25,12 @@ public class Utility {
      * Holds the number of agents and ticks that will be simulated.
      */
     public static final int SIMULATOR_AGENTS = 1;
-    public static final int SIMULATOR_TICKS = 6500;
+    public static final int SIMULATOR_TICKS = 17000;
     
     /**
      * Print debug messages along the simulator.
      */
-    public static final boolean SIMULATOR_DEBUG = false;
+    public static final boolean SIMULATOR_DEBUG = true;
 
     /**
      * Holds the length of a car (in order to avoid collisions. (UNINITIALIZED).
@@ -93,10 +93,19 @@ public class Utility {
     /**
      * Consumption ratios: fuel (liter/meters) and electricity (watt/meters).
      */
-    public static double FUEL_CONSUMPTION_RATIO;
     public static double ELECTRICITY_CONSUMPTION_RATIO;
+    public static double FUEL_CONSUMPTION_RATIO = 0.1;
+    
+    /**
+     * Battery recharge-rate and Fuel-tank filling-rate.
+     */
     public static double ELECTRICITY_RECHARGE_RATE;
-    public static double FUEL_RECHARGE_RATE;
+    public static double FUEL_RECHARGE_RATE = 50;
+    
+    /**
+     * Fuel tank capacity.
+     */
+    private static double FUEL_TANK_CAPACITY = 50000;
 
     /**
      * Calculate the car's speed on the current road-segment. (UNINITIALIZED)
@@ -222,6 +231,6 @@ public class Utility {
     }
 
     public static double generateCapacity(boolean electric) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Utility.FUEL_TANK_CAPACITY;
     }
 }

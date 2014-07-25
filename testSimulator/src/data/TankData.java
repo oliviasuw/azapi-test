@@ -5,6 +5,7 @@
  */
 package data;
 
+import attributes.Behavior;
 import data.CarData.Direction;
 import statistics.Utility;
 
@@ -12,15 +13,11 @@ import statistics.Utility;
  *
  * @author Eran
  */
-public class TankData extends Data{
+public class TankData extends Data {
 
     private boolean electric;
     private final double capacity;
     private double currAmount;
-    
-    private Direction cache_drivingDirection;
-    private boolean cache_parkingAtPL;
-    private String cache_dest;
 
     public TankData(boolean electric) {
         this.capacity = Utility.generateCapacity(electric);
@@ -36,7 +33,13 @@ public class TankData extends Data{
         return currAmount;
     }
 
-    public void tick(double distance) {
+    /**
+     * Decrease the amount of fuel/power of the tank according to the distance
+     * traveled.
+     *
+     * @param distance
+     */
+    public void consume(double distance) {
         double factor;
 
         if (this.electric) {
@@ -46,10 +49,10 @@ public class TankData extends Data{
         }
 
         this.currAmount -= factor * distance;
-
         if (this.currAmount < 0) {
             this.currAmount = 0;
         }
+        Behavior.debug(String.format("Agent:: %f%% power left.", 100.0 * (this.currAmount / this.capacity)));
     }
 
     /**
@@ -58,7 +61,7 @@ public class TankData extends Data{
      *
      * @return
      */
-    public boolean refill() {
+    public void refill() {
         double factor;
 
         if (this.electric) {
@@ -69,20 +72,26 @@ public class TankData extends Data{
 
         this.currAmount += factor;
 
-        if (this.currAmount < this.capacity) {
-            return false;
-        } else {
+        if (this.currAmount > this.capacity) {
             this.currAmount = this.capacity;
-            return true;
         }
     }
 
     /**
      * Check if need to recharge tank.
-     * @return 
+     *
+     * @return
      */
     public boolean isCritical() {
         return (this.currAmount / this.capacity) < Utility.TANK_CRITICAL;
+    }
+
+    /**
+     * Check if the tank is full.
+     * @return 
+     */
+    public boolean isFull() {
+        return this.currAmount == this.capacity;
     }
 
 }

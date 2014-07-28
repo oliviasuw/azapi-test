@@ -120,6 +120,7 @@ public class GraphDrawer extends GroupDrawer {
 
         }
     }
+    
     private void strokeEdges(GraphicsContext gc, Collection edges, GraphData graphData) {
         gc.beginPath();
         for (Object edgeObj : edges) {

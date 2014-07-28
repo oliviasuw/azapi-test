@@ -9,6 +9,7 @@ package data.map.impl.wersdfawer;
 import data.map.impl.wersdfawer.groupbounding.HasId;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -41,9 +42,33 @@ public class Edge implements HasId {
     public HashMap<String, String> getTags() {
         return tags;
     }
+    
+    
 
 //    @Override
 //    public boolean isHit(double x, double y) {
 //        
 //    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 43 * hash + Objects.hashCode(this.id);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Edge other = (Edge) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        return true;
+    }
 }

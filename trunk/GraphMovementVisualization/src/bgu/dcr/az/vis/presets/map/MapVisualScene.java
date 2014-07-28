@@ -109,6 +109,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         };
         boundingQuery.addMetaData("MOVING", GroupScale.class, carZoom);
         boundingQuery.addMetaData("GRAPH", GroupScale.class, edgesZoom);
+        boundingQuery.addMetaData("DYNAMIC_COLORED", GroupScale.class, edgesZoom);
 
         registerLayer(MapCanvasLayer.class, back, back.getCanvas());
         registerLayer(CanvasLayer.class, front, front.getCanvas());
@@ -178,7 +179,6 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 //            }
 ////            }
 //        });
-
         hvalueProperty().addListener((ov, n, xRatio) -> {
             handleHvalue(xRatio, drawer, back);
         });
@@ -187,12 +187,11 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
             handleVvalue(yRatio, drawer, back);
         });
 
-        
-        String[] colors = new String[]{"green","blue","red","yellow"};
+        String[] colors = new String[]{"green", "blue", "red", "yellow"};
         Image[] carImages = new Image[colors.length];
         Random rand = new Random();
-        for (int i=0; i<colors.length; i++) {
-            carImages[i] = new Image(R.class.getResourceAsStream("car-"+colors[i]+".jpg"));
+        for (int i = 0; i < colors.length; i++) {
+            carImages[i] = new Image(R.class.getResourceAsStream("car-" + colors[i] + ".jpg"));
         }
         for (long i = 0; i < carNum; i++) {
             final int randIndex = rand.nextInt(carImages.length);
@@ -299,10 +298,9 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         boundingQuery.createGroup("GRAPH", "NODES", false);
         boundingQuery.createGroup("SPRITES", "building", false);
         boundingQuery.createGroup("SPRITES", "icons", false);
-        
-        boundingQuery.createGroup("DYNAMIC_COLORED", "EDGES", true);        
-        boundingQuery.addMetaData("DYNAMIC_COLORED", GroupDrawer.class, new DynamicColorDrawer(graphData, drawer));
 
+        boundingQuery.createGroup("DYNAMIC_COLORED", "EDGES", true);
+        boundingQuery.addMetaData("DYNAMIC_COLORED", GroupDrawer.class, new DynamicColorDrawer(graphData, drawer));
 
         //insert all nodes and take care of special nodes that create icon sprites
         String[] iconsInterestKeys = {"amenity", "highway"};
@@ -386,7 +384,7 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
         boundingQuery.createGroup("MOVING", "CARS", true);
         boundingQuery.addMetaData("MOVING", GroupDrawer.class, spriteDrawer);
-    
+
     }
 
     private void initIconImages() {

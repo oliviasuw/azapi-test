@@ -20,7 +20,9 @@ import data.events.impl.Tick;
 import data.events.impl.TickEvent;
 import data.events.impl.TurnEvent;
 import data.map.impl.wersdfawer.AZVisVertex;
+import data.map.impl.wersdfawer.Edge;
 import data.map.impl.wersdfawer.GraphData;
+import data.map.impl.wersdfawer.groupbounding.GroupBoundingQuery;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -42,6 +44,7 @@ public class EventsTester {
     private GraphData graphData;
     private Input input;
     private Output output;
+    private int THRESHOLD = 0;
 
     public EventsTester(GraphData graphData) {
         this.graphData = graphData;
@@ -59,7 +62,7 @@ public class EventsTester {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(EventsTester.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 
     public void write() {
@@ -82,7 +85,7 @@ public class EventsTester {
             for (int i = 0; i < 10; i = i + 5) {
                 eventWriter.writeTick(output, i);
                 int percentage = (int) (((double) i / 10) * 100);
-                int nextPer = (int) (((double) (i+5) / 10) * 100);
+                int nextPer = (int) (((double) (i + 5) / 10) * 100);
                 for (int j = 0; j < spritesNum; j++) {
                     if (Math.random() > 0) {
 //                        System.out.println(currEdge);
@@ -96,7 +99,7 @@ public class EventsTester {
         output.close();
     }
 
-    public void AddNewMovesFromTick(Tick tick, SimplePlayer player) {
+    public void AddNewMovesFromTick(Tick tick, SimplePlayer player, GroupBoundingQuery boundingQuery) {
 
         Collection<SimulatorEvent> events = tick.getEvents();
         Set<String> edgeSet = graphData.getEdgeSet();
@@ -112,17 +115,80 @@ public class EventsTester {
                 Location startLocation = translateToLocation(from, to, startPrecent);
                 Location endLocation = translateToLocation(from, to, endPrecent);
                 frame.directedMove(who, startLocation, endLocation);
-                
-                if (startPrecent == 0) {
-                    
-                }
-                if (endPrecent == 100) {
-                    
-                }
-                
-            } 
+
+                maintainDynamicColoring(from, to, startPrecent, who, boundingQuery, endPrecent);
+
+            }
         }
         player.playNextFrame(frame);
+    }
+
+    /**
+     * this method maintains the dyanmic coloring, makes sure that entities are
+     * added and removed to their current edges, and from a certain threshold,
+     * added to the dynamic coloring group.
+     *
+     * @param from
+     * @param to
+     * @param startPrecent
+     * @param who
+     * @param boundingQuery
+     * @param endPrecent
+     */
+    private void maintainDynamicColoring(String from, String to, double startPrecent, Integer who, GroupBoundingQuery boundingQuery, double endPrecent) {
+        String edge = from + " " + to;
+        if (!graphData.getEdgeSet().contains(edge)) {
+            String[] split = edge.split(" ");
+            edge = split[1] + " " + split[0];
+        }
+        AZVisVertex sV = (AZVisVertex) graphData.getData(edge.split(" ")[0]);
+        AZVisVertex tV = (AZVisVertex) graphData.getData(edge.split(" ")[1]);
+
+        Edge temp = (Edge) boundingQuery.getById(edge + " dynamic");
+        if (temp == null) {
+            temp = new Edge(edge + " dynamic");
+        }
+
+        //what happens if start=0 and end=100 at the same time???
+        if (startPrecent == 0) {
+            String oldEdge = graphData.removeEdgeEntity(who.toString());
+            Edge oldTemp = null;
+            if (oldEdge != null) {
+//                String[] split = oldEdge.split(" ");
+//                oldEdge = split[0] + " " + split[1];
+                oldTemp = (Edge) boundingQuery.getById(oldEdge + " dynamic");
+            }
+            
+            if (oldTemp != null) {
+                int numEdges = graphData.getEdgeEntities(oldEdge).size();
+                if (numEdges <= THRESHOLD) {
+                    System.out.println("removed: " + oldEdge);
+                    Object removed = boundingQuery.remove("DYNAMIC_COLORED", "EDGES", sV.getX(), sV.getY(), oldTemp);
+                }
+            }
+
+            graphData.addEntityToEdge(edge, who.toString());
+            int numEdges = graphData.getEdgeEntities(edge).size();
+            if (numEdges == THRESHOLD+1) {
+                boundingQuery.addToGroup("DYNAMIC_COLORED", "EDGES", sV.getX(), sV.getY(), Math.abs(sV.getX() - tV.getX()), Math.abs(sV.getY() - tV.getY()), temp);
+                System.out.println("added: " + edge);
+            }
+
+        }
+        if (endPrecent == 100) {
+//            String edge = graphData.removeEdgeEntity(who.toString());
+//            int numEdges = graphData.getEdgeEntities(edge).size();
+//            if (numEdges <= THRESHOLD) {
+//                System.out.println("removed: " + edge);
+//                //@TODO
+////                bug is here! removed is null
+//                if (temp.getId().equals("2006016740 2006016807 dynamic")) {
+//                    System.out.println("");
+//                }
+//                Object removed = boundingQuery.remove("DYNAMIC_COLORED", "EDGES", sV.getX(), sV.getY(), temp);
+//                System.out.println(removed);
+//            }
+        }
     }
 
     private Location translateToLocation(String src, String target, Double precentage) {

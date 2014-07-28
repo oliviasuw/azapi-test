@@ -5,6 +5,7 @@
  */
 package data.map.impl.wersdfawer;
 
+import data.map.impl.wersdfawer.groupbounding.HasId;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,8 +28,10 @@ public class GraphData {
     //saves edges according to what will become their path descriptors
     private HashMap<String, Collection<String>> tagToEdges = new HashMap();
 
-    private HashMap<String, Set<Object>> edgeToEntities = new HashMap<String, Set<Object>>();
+    private HashMap<String, Set<String>> edgeToEntities = new HashMap<String, Set<String>>();
+    private HashMap<String, String> entityIdToEdge = new HashMap<String, String>();
 
+    
     private LinkedList<GraphPolygon> polygons = new LinkedList<>();
 
     private double maxPolygonWidth = Double.MIN_VALUE;
@@ -148,7 +151,7 @@ public class GraphData {
         return maxEdgeHeight;
     }
 
-    public boolean addEntityToEdge(String edge, Object entity) {
+    public boolean addEntityToEdge(String edge, String entityId) {
         if (!graph.edgeSet().contains(edge)) {
             String[] split = edge.split(" ");
             edge = split[1] + " " + split[0];
@@ -157,15 +160,16 @@ public class GraphData {
                 return false;
             }
         }
-        Set<Object> get = edgeToEntities.get(edge);
+        Set<String> get = edgeToEntities.get(edge);
         if (get == null) {
             get = new HashSet<>();
             edgeToEntities.put(edge, get);
         }
-        return get.add(entity);
+        entityIdToEdge.put(entityId, edge);
+        return get.add(entityId);
     }
 
-    public boolean removeEdgeEntity(String edge, Object entity) {
+    public boolean removeEdgeEntity(String edge, String entityId) {
         if (!graph.edgeSet().contains(edge)) {
             String[] split = edge.split(" ");
             edge = split[1] + " " + split[0];
@@ -173,14 +177,27 @@ public class GraphData {
                 System.out.println("cant get entities! edgeset doesnt contain edge " + edge);
             }
         }
-        Set<Object> get = edgeToEntities.get(edge);
+        Set<String> get = edgeToEntities.get(edge);
         if (get != null) {
-            return get.remove(entity);
+            return get.remove(entityId);
         }
         return false;
     }
+    
+    /**
+     * removes the entity from its current edge
+     * @param entityId
+     * @return the if of the edge where the entity used to be, null if not found.
+     */
+    public String removeEdgeEntity(String entityId) {
+        String edge = entityIdToEdge.remove(entityId);
+        if (edge != null) {
+            removeEdgeEntity(edge, entityId);
+        }
+        return edge;
+     }
 
-    public Set<Object> getEdgeEntities(String edge) {
+    public Set<String> getEdgeEntities(String edge) {
         if (!graph.edgeSet().contains(edge)) {
             String[] split = edge.split(" ");
             edge = split[1] + " " + split[0];
@@ -199,7 +216,7 @@ public class GraphData {
                 System.out.println("cant check if has entity! edgeset doesnt contain edge " + edge);
             }
         }
-        Set<Object> get = edgeToEntities.get(edge);
+        Set<String> get = edgeToEntities.get(edge);
         if (get != null) {
             return get.contains(edge);
         }

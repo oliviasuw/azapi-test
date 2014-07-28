@@ -35,7 +35,7 @@ public class SimpleDrawer implements DrawerInterface {
         for (String group : boundingQuery.getGroups()) {
             GroupDrawer drawer = (GroupDrawer) boundingQuery.getMetaData(group, GroupDrawer.class);
             if (drawer != null && drawer.isDrawable(group)) {
-                if (group.equals("GRAPH") || group.equals("MOVING")) {
+                if (group.equals("GRAPH") || group.equals("DYNAMIC_COLORED")) {
 //                    System.out.printf("locationX:%f, locationY:%f, scale:%f, width:%f, height:%f\n", this.location.getX(), this.location.getY(), this.scale, this.viewPortWidth, this.viewPortHeight );
                     CanvasLayer canvasLayer = (CanvasLayer) boundingQuery.getMetaData(group, CanvasLayer.class);
                     Canvas canvas = canvasLayer.getCanvas();

@@ -52,7 +52,7 @@ public class MapTester extends Application {
 
         boundingQuery.addMetaData("*FPS*", GroupDrawer.class, new FPSDrawer(drawer, player));
 
-        FramesGenerator fg = new FramesGenerator(player);
+        FramesGenerator fg = new FramesGenerator(player, boundingQuery);
 
         BorderPane bp = new BorderPane();
         bp.setCenter(vs);
@@ -78,9 +78,11 @@ public class MapTester extends Application {
         private boolean isStopped = false;
         private final EventsTester eventTester;
         private SimplePlayer player;
+        private final GroupBoundingQuery boundingQuery;
 
-        public FramesGenerator(SimplePlayer player) {
+        public FramesGenerator(SimplePlayer player, GroupBoundingQuery boundingQuery) {
             this.player = player;
+            this.boundingQuery = boundingQuery;
             MapCanvasLayer layer = (MapCanvasLayer) vs.getLayer(MapCanvasLayer.class);
             eventTester = new EventsTester(layer.getGraphData());
 //            eventTester.write();
@@ -97,7 +99,7 @@ public class MapTester extends Application {
                 public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
                     if (t1 && !isStopped) {
                         Tick tick = eventTester.read();
-                        eventTester.AddNewMovesFromTick(tick, player);
+                        eventTester.AddNewMovesFromTick(tick, player, boundingQuery);
                     }
                 }
             });
@@ -105,7 +107,7 @@ public class MapTester extends Application {
             //plays the first tick
             Tick tick = eventTester.read();
             if (!isStopped) {
-                eventTester.AddNewMovesFromTick(tick, player);
+                eventTester.AddNewMovesFromTick(tick, player, boundingQuery);
             }
 
         }

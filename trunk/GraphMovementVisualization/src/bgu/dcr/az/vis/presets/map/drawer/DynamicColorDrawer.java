@@ -8,6 +8,7 @@ package bgu.dcr.az.vis.presets.map.drawer;
 import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import bgu.dcr.az.vis.presets.map.GroupScale;
 import bgu.dcr.az.vis.tools.Location;
+import data.events.impl.test.EventsTester;
 import data.map.impl.wersdfawer.AZVisVertex;
 import data.map.impl.wersdfawer.Edge;
 import data.map.impl.wersdfawer.GraphData;
@@ -26,10 +27,10 @@ import javafx.scene.paint.Color;
 public class DynamicColorDrawer extends GroupDrawer {
 
     private final GraphData graphData;
-    int baseR = 240;
-    int baseG = 66;
-    int baseB = 74;
-    double multiplier = 0.2;
+    private int baseH = 239;
+    private int baseS = 215;
+    private int baseB = 210;
+    static public double multiplier = 5;
 
     public DynamicColorDrawer(GraphData graphData, DrawerInterface drawer) {
         super(drawer);
@@ -85,9 +86,12 @@ public class DynamicColorDrawer extends GroupDrawer {
             double ty = drawer.getViewPortLocation().getY();
             gc.setLineWidth(edgeStroke.getLanes() * (pixelLaneWidth * 0.8) * scale);
             int entityNum = graphData.getEdgeEntities(name).size();
-//            double mult = Math.pow(multiplier,entityNum);
-//            gc.setStroke(Color.color((int)(baseR*mult*baseR), (int)(baseG*mult*baseG), (int)(baseB*mult*baseB)));
-            gc.setStroke(Color.color(baseR,baseG,baseB));
+            double brightness = (baseB - (multiplier*(entityNum - EventsTester.THRESHOLD)))/240.0;
+            if (brightness < 0.15) {
+                brightness = 0.15;
+            }
+            gc.setStroke(Color.hsb(((double)baseH/240.0)*360,baseS/240.0, brightness));
+
             AZVisVertex source = null;
             AZVisVertex target = null;
             try {

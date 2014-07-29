@@ -35,6 +35,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
@@ -68,10 +69,18 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
 
     private Tooltip tooltip = new Tooltip();
     private Rectangle tooltipRect;
+    private final Stage chartStage;
+    private final ScrollPane chartScrollPane;
 
     public MapVisualScene(int carNum, String mapPath, GroupBoundingQuery query, SimpleDrawer drawer) {
         super(DEFAULT_CONTAINER_WIDTH, DEFAULT_CONTAINER_HEIGHT);
 
+        
+        chartStage = new Stage();
+        chartScrollPane = new ScrollPane();
+        chartStage.setScene(new Scene(chartScrollPane, 500, 500));
+        
+        
         //set a tooltip to show entity data
         this.boundingQuery = query;
         this.drawer = drawer;
@@ -418,9 +427,8 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
     }
 
     private void showParkingLotGraph(ParkingLotEntity parkingLotEntity) {
-        Stage stage = new Stage();
-        stage.setScene(new Scene(parkingLotEntity.getChart(), 500, 500));
-        stage.show();
+        chartScrollPane.setContent(parkingLotEntity.getChart());
+        chartStage.show();
     }
 
 }

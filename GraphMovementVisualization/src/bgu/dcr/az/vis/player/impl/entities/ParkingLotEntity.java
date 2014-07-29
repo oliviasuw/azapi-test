@@ -33,7 +33,7 @@ public class ParkingLotEntity implements HasId{
     public ParkingLotEntity(AZVisVertex graphNode) {
         this.graphNode = graphNode;
         bc.setTitle("Charge Data for ParkingLot ID " + graphNode.getId() );
-        xAxis.setLabel("ChargeLevel %");
+        xAxis.setLabel("%ChargeLevel");
         yAxis.setLabel("Quantity");
     }
 
@@ -58,8 +58,8 @@ public class ParkingLotEntity implements HasId{
 
         for (int i = 0; i < eData.length; i++) {
             String name = "" + i*10 + "-" + (i+1)*10 ;
-            eSeries.getData().add(new XYChart.Data(eData[i], name));
-            fSeries.getData().add(new XYChart.Data(fData[i], name));
+            eSeries.getData().add(new XYChart.Data(name,eData[i]));
+            fSeries.getData().add(new XYChart.Data(name,fData[i]));
         }
         bc.getData().addAll(eSeries, fSeries);
         return bc;

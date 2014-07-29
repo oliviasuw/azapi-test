@@ -61,7 +61,7 @@ public class EventsTester {
             output = new Output(new FileOutputStream("file.bin"));
 //            MyEventWriter myEV = new MyEventWriter(graphData, eventWriter);
 //            myEV.writeTicksAndEvents(output);
-            input = new Input(new FileInputStream("file_1000a_1000t.bin"));
+            input = new Input(new FileInputStream("file_1a_2000t.bin"));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(EventsTester.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -170,7 +170,6 @@ public class EventsTester {
             if (oldTemp != null) {
                 int numEdges = graphData.getEdgeEntities(oldEdge).size();
                 if (numEdges <= THRESHOLD) {
-                    System.out.println("removed: " + oldEdge);
                     Object removed = boundingQuery.remove("DYNAMIC_COLORED", "EDGES", sV.getX(), sV.getY(), oldTemp);
                 }
             }
@@ -179,7 +178,6 @@ public class EventsTester {
             int numEdges = graphData.getEdgeEntities(edge).size();
             if (numEdges == THRESHOLD+1) {
                 boundingQuery.addToGroup("DYNAMIC_COLORED", "EDGES", sV.getX(), sV.getY(), Math.abs(sV.getX() - tV.getX()), Math.abs(sV.getY() - tV.getY()), temp);
-                System.out.println("added: " + edge);
             }
         }
 

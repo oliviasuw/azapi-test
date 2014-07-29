@@ -8,6 +8,7 @@ package bgu.dcr.az.vis.presets.map;
 import bgu.dcr.az.vis.player.impl.CanvasLayer;
 import bgu.dcr.az.vis.player.impl.SimpleScrollableVisualScene;
 import bgu.dcr.az.vis.player.impl.entities.DefinedSizeSpriteBasedEntity;
+import bgu.dcr.az.vis.player.impl.entities.ParkingLotEntity;
 import bgu.dcr.az.vis.presets.map.drawer.DynamicColorDrawer;
 import bgu.dcr.az.vis.presets.map.drawer.EdgesMetaData;
 import bgu.dcr.az.vis.presets.map.drawer.GraphDrawer;
@@ -40,6 +41,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import resources.img.R;
@@ -165,20 +167,24 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
             tooltip.hide();
         });
 
-//        addEventFilter(MouseEvent.MOUSE_CLICKED, (MouseEvent event) -> {
-////            if (event.isSecondaryButtonDown()) {
-//            Location viewPortLocation = drawer.getViewPortLocation();
-//            double scale = drawer.getScale();
-//            tooltipRect.translateXProperty().set(viewPortLocation.getX() + event.getSceneX() - TOOLTIP_RECT_WIDTH / 2);
-//            tooltipRect.translateYProperty().set(viewPortLocation.getY() + event.getSceneY() - TOOLTIP_RECT_WIDTH / 2);
-//            String text = getToolTipText(drawer, event);
-//            tooltip.textProperty().set(text);
-//            if (text.length() > 1) {
-//                tooltip.textProperty().set(text);
-////                tooltip.show(pane, event.getScreenX(), event.getScreenY());
+        //handle charge graph for parkinglot
+        addEventFilter(MouseEvent.MOUSE_CLICKED, (MouseEvent event) -> {
+//            if (event.isSecondaryButtonDown()) {
+            double scale = drawer.getScale();
+            double clickX = event.getSceneX();
+            double clickY = event.getSceneY();
+            Location worldL = drawer.frameToWorld(clickX, clickY);
+            Collection entities = boundingQuery.get("CHARTS", worldL.getX() - TOOLTIP_RECT_SENCE, worldL.getX() + TOOLTIP_RECT_SENCE, worldL.getY() - TOOLTIP_RECT_SENCE, worldL.getY() + TOOLTIP_RECT_SENCE);
+            for (Object entity : entities) {
+                if (entity instanceof ParkingLotEntity) {
+                    showParkingLotGraph((ParkingLotEntity) entity);
+                }
+
+            }
+
 //            }
-////            }
-//        });
+        });
+
         hvalueProperty().addListener((ov, n, xRatio) -> {
             handleHvalue(xRatio, drawer, back);
         });
@@ -302,6 +308,8 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         boundingQuery.createGroup("DYNAMIC_COLORED", "EDGES", true);
         boundingQuery.addMetaData("DYNAMIC_COLORED", GroupDrawer.class, new DynamicColorDrawer(graphData, drawer));
 
+        boundingQuery.createGroup("CHARTS", "PARKING", false);
+
         //insert all nodes and take care of special nodes that create icon sprites
         String[] iconsInterestKeys = {"amenity", "highway"};
         for (String vertexName : graphData.getVertexSet()) {
@@ -317,6 +325,10 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
                         entity.setLocation(new Location(vertData.getX(), vertData.getY()));
                         boundingQuery.addToGroup("SPRITES", "icons", vertData.getX(), vertData.getY(), 10, 10, entity);
                     }
+
+                    //parking tags have special treatment for chart creation
+                    ParkingLotEntity parkingLot = new ParkingLotEntity(vertData);
+                    boundingQuery.addToGroup("CHARTS", "PARKING", vertData.getX(), vertData.getY(), 10, 10, parkingLot);
                 }
             }
         }
@@ -403,6 +415,12 @@ public class MapVisualScene extends SimpleScrollableVisualScene {
         images.put(new StringPair("amenity", "taxi"), new Image(R.class.getResourceAsStream("icons/taxi.png")));
         images.put(new StringPair("amenity", "telephone"), new Image(R.class.getResourceAsStream("icons/telephone.png")));
         images.put(new StringPair("amenity", "restaurant"), new Image(R.class.getResourceAsStream("icons/restaurant.png")));
+    }
+
+    private void showParkingLotGraph(ParkingLotEntity parkingLotEntity) {
+        Stage stage = new Stage();
+        stage.setScene(new Scene(parkingLotEntity.getChart(), 500, 500));
+        stage.show();
     }
 
 }

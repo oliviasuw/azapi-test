@@ -7,6 +7,7 @@ package data.events.impl.test;
 
 import bgu.dcr.az.vis.newplayer.SimplePlayer;
 import bgu.dcr.az.vis.player.impl.BasicOperationsFrame;
+import bgu.dcr.az.vis.player.impl.entities.ParkingLotEntity;
 import bgu.dcr.az.vis.tools.Location;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoException;
@@ -16,9 +17,9 @@ import data.events.api.SimulatorEvent;
 import data.events.impl.EventReader;
 import data.events.impl.EventWriter;
 import data.events.impl.MoveEvent;
+import data.events.impl.ParkingEvent;
 import data.events.impl.Tick;
 import data.events.impl.TickEvent;
-import data.events.impl.TurnEvent;
 import data.map.impl.wersdfawer.AZVisVertex;
 import data.map.impl.wersdfawer.Edge;
 import data.map.impl.wersdfawer.GraphData;
@@ -44,7 +45,7 @@ public class EventsTester {
     private GraphData graphData;
     private Input input;
     private Output output;
-    private int THRESHOLD = 0;
+    public static int THRESHOLD = 2;
 
     public EventsTester(GraphData graphData) {
         this.graphData = graphData;
@@ -52,13 +53,15 @@ public class EventsTester {
 //        kryo.register(TurnEvent.class);
         kryo.register(TickEvent.class);
         kryo.register(SimulatorEvent.class);
+        kryo.register(ParkingEvent.class);
+        
 //        eventWriter = new EventWriter(kryo);
         eventReader = new EventReader(kryo);
         try {
             output = new Output(new FileOutputStream("file.bin"));
 //            MyEventWriter myEV = new MyEventWriter(graphData, eventWriter);
 //            myEV.writeTicksAndEvents(output);
-            input = new Input(new FileInputStream("file_200_10000.bin"));
+            input = new Input(new FileInputStream("file_1000a_1000t.bin"));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(EventsTester.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -115,9 +118,14 @@ public class EventsTester {
                 Location startLocation = translateToLocation(from, to, startPrecent);
                 Location endLocation = translateToLocation(from, to, endPrecent);
                 frame.directedMove(who, startLocation, endLocation);
-
                 maintainDynamicColoring(from, to, startPrecent, who, boundingQuery, endPrecent);
-
+            }
+            if (event instanceof ParkingEvent) {
+                ParkingEvent parke = (ParkingEvent) event;
+                ParkingLotEntity ple = (ParkingLotEntity)boundingQuery.getById("parking" + parke.getParkNodeId());
+                if (ple != null && parke.getInOut() == ParkingEvent.InOut.IN) {
+                    ple.addToData(parke.getPrecentage(), parke.getCarType());
+                }
             }
         }
         player.playNextFrame(frame);
@@ -173,22 +181,8 @@ public class EventsTester {
                 boundingQuery.addToGroup("DYNAMIC_COLORED", "EDGES", sV.getX(), sV.getY(), Math.abs(sV.getX() - tV.getX()), Math.abs(sV.getY() - tV.getY()), temp);
                 System.out.println("added: " + edge);
             }
+        }
 
-        }
-        if (endPrecent == 100) {
-//            String edge = graphData.removeEdgeEntity(who.toString());
-//            int numEdges = graphData.getEdgeEntities(edge).size();
-//            if (numEdges <= THRESHOLD) {
-//                System.out.println("removed: " + edge);
-//                //@TODO
-////                bug is here! removed is null
-//                if (temp.getId().equals("2006016740 2006016807 dynamic")) {
-//                    System.out.println("");
-//                }
-//                Object removed = boundingQuery.remove("DYNAMIC_COLORED", "EDGES", sV.getX(), sV.getY(), temp);
-//                System.out.println(removed);
-//            }
-        }
     }
 
     private Location translateToLocation(String src, String target, Double precentage) {

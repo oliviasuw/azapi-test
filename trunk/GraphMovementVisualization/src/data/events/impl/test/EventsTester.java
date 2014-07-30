@@ -18,6 +18,8 @@ import data.events.impl.EventReader;
 import data.events.impl.EventWriter;
 import data.events.impl.MoveEvent;
 import data.events.impl.ParkingEvent;
+import data.events.impl.ParkingEvent.CarType;
+import data.events.impl.ParkingEvent.InOut;
 import data.events.impl.Tick;
 import data.events.impl.TickEvent;
 import data.map.impl.wersdfawer.AZVisVertex;
@@ -54,6 +56,8 @@ public class EventsTester {
         kryo.register(TickEvent.class);
         kryo.register(SimulatorEvent.class);
         kryo.register(ParkingEvent.class);
+        kryo.register(InOut.class);
+        kryo.register(CarType.class);
         
 //        eventWriter = new EventWriter(kryo);
         eventReader = new EventReader(kryo);
@@ -126,7 +130,7 @@ public class EventsTester {
                 if (ple != null && parke.getInOut() == ParkingEvent.InOut.IN) {
                     ple.addToData(parke.getPrecentage(), parke.getCarType());
                 }
-            }
+            } 
         }
         player.playNextFrame(frame);
     }

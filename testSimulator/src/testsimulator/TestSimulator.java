@@ -9,11 +9,15 @@ package testsimulator;
 import agents.*;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
-import data.Data;
-import eventWriter.EventWriter;
-import eventWriter.MoveEvent;
-import eventWriter.SimulatorEvent;
-import eventWriter.TickEvent;
+import agentData.Data;
+import data.events.api.SimulatorEvent;
+import data.events.impl.EventWriter;
+import data.events.impl.MoveEvent;
+import data.events.impl.ParkingEvent;
+import data.events.impl.ParkingEvent.CarType;
+import data.events.impl.ParkingEvent.InOut;
+
+import data.events.impl.TickEvent;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -70,7 +74,7 @@ public class TestSimulator {
         double printPulse = 0.1, p = 0;
         for (int i = 0; i < Utility.SIMULATOR_TICKS; i++) {
             eventWriter.writeTick(output, i);
-            
+            System.out.println("TICK " + i);
             
             for (Agent agent : agents) {
                 agent.run();
@@ -94,6 +98,9 @@ public class TestSimulator {
         kryo.register(MoveEvent.class);
         kryo.register(TickEvent.class);
         kryo.register(SimulatorEvent.class);
+        kryo.register(ParkingEvent.class);
+        kryo.register(InOut.class);
+        kryo.register(CarType.class);
         eventWriter = new EventWriter(kryo);
     }
 }

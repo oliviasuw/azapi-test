@@ -8,7 +8,7 @@ package attributes.car;
 
 import agents.Agent;
 import attributes.Behavior;
-import data.CarData;
+import agentData.CarData;
 import java.util.HashMap;
 import services.RoadService;
 import statistics.Utility;

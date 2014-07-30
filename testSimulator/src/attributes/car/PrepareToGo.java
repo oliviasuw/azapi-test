@@ -5,10 +5,12 @@
  */
 package attributes.car;
 
+import agentData.HumanData;
+import agentData.WorkerData;
+import agentData.CarData;
 import agents.Agent;
 import agents.Employee;
 import attributes.Behavior;
-import data.*;
 import services.Clock;
 import services.ClockService;
 import services.RoadService;
@@ -60,7 +62,7 @@ public class PrepareToGo extends Behavior {
                     this.humanData.refreshSpendTime();
                     destination = tmp;
                     this.carData.setParkingAtPL(true);
-                    debug("prepare to go to spend some time ...");
+                    debug(String.format("prepare to go to spend some time ... %s --> %s", source, destination));
                     break;
                 }
             }
@@ -68,7 +70,7 @@ public class PrepareToGo extends Behavior {
 
         if (shouldGoToWork()) {
             working = true;
-            debug("prepare to go to work ...");
+            debug(String.format("prepare to go to work ... %s --> %s", source, destination));
             this.carData.setDrivingDirection(CarData.Direction.Work);
             destination = this.workerData.getWorkAddr();
             

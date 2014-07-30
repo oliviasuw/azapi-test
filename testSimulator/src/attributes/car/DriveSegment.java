@@ -8,9 +8,9 @@ package attributes.car;
 
 import agents.Agent;
 import attributes.Behavior;
-import data.CarData;
-import data.TankData;
-import eventWriter.MoveEvent;
+import agentData.CarData;
+import agentData.TankData;
+import data.events.impl.MoveEvent;
 import services.ClockService;
 import services.RoadService;
 import testsimulator.TestSimulator;
@@ -53,7 +53,7 @@ public class DriveSegment extends Behavior {
         
         MoveEvent moveEvent = new MoveEvent(id, carData.getCurrSource(), carData.getCurrDestination(), roadService.getPercantage(id), percentage);
 //        if(carData.getCurrSource() == null || carData.getCurrDestination() == null)
-//            System.out.printf("EVENT[%d]:: (%s, %s, %f, %f)\n",id, carData.getCurrSource(), carData.getCurrDestination(), roadService.getPercantage(id), percentage);
+        System.out.printf("EVENT[%d]:: (%s, %s, %f, %f)\n",id, carData.getCurrSource(), carData.getCurrDestination(), roadService.getPercantage(id), percentage);
         TestSimulator.eventWriter.writeEvent(TestSimulator.output, moveEvent);
         roadService.setPercantage(id, percentage);
     }

@@ -8,8 +8,9 @@ package attributes.car;
 import agents.Agent;
 import attributes.Behavior;
 import static attributes.Behavior.debug;
-import data.CarData;
-import data.HumanData;
+import agentData.CarData;
+import agentData.HumanData;
+import agentData.TankData;
 import services.Clock;
 import services.ClockService;
 import services.RoadService;
@@ -22,6 +23,7 @@ public class SpendTime extends Behavior {
 
     private final CarData carData;
     private final HumanData humanData;
+    private final TankData tankData;
     private final RoadService roadService;
     private final ClockService clockService;
 
@@ -29,6 +31,7 @@ public class SpendTime extends Behavior {
         super(a);
         try {
             this.carData = a.getData(CarData.class);
+            this.tankData = a.getData(TankData.class);
             this.humanData = a.getData(HumanData.class);
             this.roadService = a.getService(RoadService.class);
             this.clockService = a.getService(ClockService.class);
@@ -48,11 +51,13 @@ public class SpendTime extends Behavior {
         if(humanData.totalSpendTime.compare(spentHours) == 0){    
             debug("Done having fun!");
             this.carData.currPath = roadService.getPath(this.carData.getDestination(), this.humanData.getHomeAddr());
-            debug("preparing to go home ...");
+            debug(String.format("preparing to go home ... %s --> %s",this.carData.getDestination(), this.humanData.getHomeAddr()));
             
             this.carData.setDrivingDirection(CarData.Direction.Home);
-            if(this.carData.isParkingAtPL())
-                this.roadService.exitFromPL(id, this.carData.getDestination());
+            if(this.carData.isParkingAtPL()){
+                double percentage = tankData.getCurrAmount() / tankData.getCapacity();
+                this.roadService.exitFromPL(id, this.carData.getDestination(), percentage, tankData.isElectric());
+            }
             this.carData.setParkingAtPL(false);
             
             this.carData.setSource(this.carData.getDestination());

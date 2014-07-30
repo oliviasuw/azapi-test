@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package data;
+package agentData;
 
 import services.Clock;
 import statistics.Utility;

@@ -8,9 +8,10 @@ package attributes.car;
 
 import agents.Agent;
 import attributes.Behavior;
-import data.CarData;
-import data.HumanData;
-import data.WorkerData;
+import agentData.CarData;
+import agentData.HumanData;
+import agentData.TankData;
+import agentData.WorkerData;
 import services.Clock;
 import services.RoadService;
 
@@ -23,11 +24,13 @@ public class DoWork extends Behavior {
     private final HumanData humanData;
     private final WorkerData workerData;
     private final CarData carData;
+    private final TankData tankData;
     private final RoadService roadService;
     
     public DoWork(Agent a) {
         super(a);
         try{
+            this.tankData = a.getData(TankData.class);
             this.workerData = a.getData(WorkerData.class);
             this.humanData = a.getData(HumanData.class);
             this.carData = a.getData(CarData.class);
@@ -49,10 +52,12 @@ public class DoWork extends Behavior {
         if(workerData.getHoursDone().compare(workingHours) == 0){    
             debug("Done Working!");
             this.carData.currPath = roadService.getPath(this.carData.getDestination(), this.humanData.getHomeAddr());
-            debug("preparing to go home ...");
+            debug(String.format("preparing to go home ... %s --> %s",this.carData.getDestination(), this.humanData.getHomeAddr()));
             
-            if(this.carData.isParkingAtPL())
-                this.roadService.exitFromPL(id, this.carData.getDestination());
+            if(this.carData.isParkingAtPL()){
+                double percentage = tankData.getCurrAmount() / tankData.getCapacity();
+                this.roadService.exitFromPL(id, this.carData.getDestination(), percentage, tankData.isElectric());
+            }
             this.carData.setParkingAtPL(false);
             
             this.carData.setSource(this.carData.getDestination());

@@ -25,7 +25,7 @@ public class Utility {
      * Holds the number of agents and ticks that will be simulated.
      */
     public static final int SIMULATOR_AGENTS = 1;
-    public static final int SIMULATOR_TICKS = 17000;
+    public static final int SIMULATOR_TICKS = 2000;
     
     /**
      * Print debug messages along the simulator.
@@ -48,7 +48,7 @@ public class Utility {
     public static final double PROB_SICK = 0.08;
 
     /**
-     * The probability of a worker to be sick in a given day. (UNINITIALIZED).
+     * The employment ratio. (UNINITIALIZED).
      */
     public static final double PROB_EMPLOYMENT_RATIO = 1;
 
@@ -61,14 +61,14 @@ public class Utility {
      * Used to assign random capacities (in a pre-defined range) to parking
      * lots. (UNINITIALIZED).
      */
-    public static final int LOT_MIN_CAPACITY = 25;
-    public static final int LOT_MAX_CAPACITY = 225;
+    public static final int LOT_MIN_CAPACITY = 1125;
+    public static final int LOT_MAX_CAPACITY = 1225;
 
     /**
      * For some vertex v, defines the radius (meters) of search for a parking
      * lot close to v.
      */
-    public static final double LOT_SEARCH_RADIUS = 250;
+    public static final double RADIUS_SEARCH = 250;
 
     /**
      * Defines the accuracy of the tagging process of parking lots. Each vertex
@@ -76,7 +76,7 @@ public class Utility {
      * "parking_lot" tag is considered a parking lot. Of course, the smaller the
      * radius, the more accurate it will become.
      */
-    public static final double LOT_TAGGING_RADIUS = 7.5;
+    public static final double RADIUS_TAGGING = 7.5;
     
     /**
      * Sleeping hours of a man. (UNINITIALIZED).
@@ -93,19 +93,20 @@ public class Utility {
     /**
      * Consumption ratios: fuel (liter/meters) and electricity (watt/meters).
      */
-    public static double ELECTRICITY_CONSUMPTION_RATIO;
+    public static double ELECTRICITY_CONSUMPTION_RATIO = 0.1;
     public static double FUEL_CONSUMPTION_RATIO = 0.1;
     
     /**
      * Battery recharge-rate and Fuel-tank filling-rate.
      */
-    public static double ELECTRICITY_RECHARGE_RATE;
+    public static double ELECTRICITY_RECHARGE_RATE = 50;
     public static double FUEL_RECHARGE_RATE = 50;
     
     /**
-     * Fuel tank capacity.
+     * Fuel/Electricity tank capacity.
      */
-    private static double FUEL_TANK_CAPACITY = 50000;
+    private static double TANK_CAPACITY_FUEL = 50000;
+    private static double TANK_CAPACITY_ELECTRICITY = 50000;
 
     /**
      * Calculate the car's speed on the current road-segment. (UNINITIALIZED)
@@ -231,6 +232,9 @@ public class Utility {
     }
 
     public static double generateCapacity(boolean electric) {
-        return Utility.FUEL_TANK_CAPACITY;
+        if(electric)
+            return Utility.TANK_CAPACITY_ELECTRICITY;
+        else
+            return Utility.TANK_CAPACITY_FUEL;
     }
 }

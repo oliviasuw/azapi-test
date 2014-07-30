@@ -9,10 +9,10 @@ package attributes.car;
 import agents.Agent;
 import attributes.Behavior;
 import static attributes.Behavior.debug;
-import data.CarData;
-import data.HumanData;
-import data.TankData;
-import data.WorkerData;
+import agentData.CarData;
+import agentData.HumanData;
+import agentData.TankData;
+import agentData.WorkerData;
 import services.Clock;
 import services.RoadService;
 
@@ -39,19 +39,22 @@ public class RefillTank extends Behavior {
 
     @Override
     public void behave(String currState) {
-        debug("charging ..");
+        debug((this.tankData.isElectric())? "charging .." : "filling tank ..");
         tankData.refill();
         
         if(tankData.isFull()){    
-            debug("Done charging!");
+            debug("Tank full!");
             String currPos = carData.getDestination();
             
             this.carData.loadData();
             
             this.carData.currPath = roadService.getPath(currPos, this.carData.getDestination());
-            debug("Continue daily routine ..." + this.carData.getDrivingDirection());
-            this.roadService.exitFromPL(id, currPos);
+            if(!this.tankData.isElectric()){
+                double percentage = tankData.getCurrAmount() / tankData.getCapacity();
+                this.roadService.exitFromPL(id, currPos, percentage, tankData.isElectric());
+            }
             this.carData.setSource(currPos);
+            debug("Continue daily routine ..." + this.carData.getDrivingDirection());
         }
     }
     

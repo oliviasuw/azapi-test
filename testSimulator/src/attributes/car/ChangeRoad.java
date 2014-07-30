@@ -7,11 +7,13 @@ package attributes.car;
 
 import agents.Agent;
 import attributes.Behavior;
-import data.CarData;
-import data.TankData;
+import agentData.CarData;
+import agentData.TankData;
+import data.events.impl.ParkingEvent;
 import java.util.ArrayDeque;
 import services.ClockService;
 import services.RoadService;
+import testsimulator.TestSimulator;
 
 /**
  *
@@ -45,6 +47,17 @@ public class ChangeRoad extends Behavior {
             debug("Reached destination. ");
 //            System.out.println("exit");
             roadService.exitSegment(this.id);
+            
+            if(this.carData.isParkingAtPL()){
+                double percentage = tankData.getCurrAmount() / tankData.getCapacity();
+                ParkingEvent.CarType carType = (tankData.isElectric())? ParkingEvent.CarType.ELECTRIC: ParkingEvent.CarType.FUEL;
+                String pl = this.roadService.getAssociatedPL(this.carData.getDestination());
+                if(pl == null || carType == null )
+                    System.out.println("HERE!!");
+                ParkingEvent parkEvent = new ParkingEvent(id, pl, percentage,ParkingEvent.InOut.IN, carType);
+                TestSimulator.eventWriter.writeEvent(TestSimulator.output, parkEvent);
+//                System.out.println(String.format("Sending ParkEvent:: Enter (%d, %s, %f, %s, %s)"));
+            }
         } else {
             boolean emergencyFound = false;
             if (tankData.isCritical() && carData.getDrivingDirection() != CarData.Direction.Emergency) {                
@@ -54,11 +67,9 @@ public class ChangeRoad extends Behavior {
                 debug("\nentering new segment... " + path.size() + " more to go!\n");
 
                 if (!from.equals(this.carData.getSource())) { //didn't just started driving (i.e, been in a previous segment)
-//                    System.out.println("remove");
                     roadService.exitSegment(this.id);
                 }
 
-//                System.out.println("enter (" + from + " , " + path.peek() + ")");
                 roadService.enterSegment(this.id, from, path.peek());
                 this.carData.setCurrEdge(from, path.peek());
             }
@@ -76,12 +87,18 @@ public class ChangeRoad extends Behavior {
      */
     private boolean goRecharge(String newSRC) {
         String dest;
-        if ((dest = this.roadService.findClosePL(id, newSRC, newSRC)) != null) {
+        if(this.tankData.isElectric())
+            dest = this.roadService.findClosePL(id, newSRC, newSRC);
+        else
+            dest = this.roadService.findCloseFS(id, newSRC, newSRC);
+        
+        if (dest != null) {
             this.carData.cacheData();
             
             this.carData.setDrivingDirection(CarData.Direction.Emergency);
-
-            this.carData.setParkingAtPL(true);
+            
+            if(this.tankData.isElectric())
+                this.carData.setParkingAtPL(true);
             System.out.println("going recharge NOW ...");
         
             this.carData.currPath = roadService.getPath(newSRC, dest);

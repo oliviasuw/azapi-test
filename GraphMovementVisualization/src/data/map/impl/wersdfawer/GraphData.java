@@ -58,7 +58,7 @@ public class GraphData {
         try {
             graph.addEdge(from, to, name);
         } catch (Exception e) {
-            System.out.println("");
+            System.out.println("Exception adding edge:" + name);
         }
 
         //adding the edge type to the hashmap

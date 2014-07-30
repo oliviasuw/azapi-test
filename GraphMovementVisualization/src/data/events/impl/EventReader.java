@@ -35,14 +35,15 @@ public class EventReader {
             if (input.available() != 0) {
                 Object readObject = null;
                 try {
-                 readObject = kryo.readClassAndObject(input);
-                }
-                catch (Exception e) {
-                    System.out.println("");
+                    readObject = kryo.readClassAndObject(input);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    System.out.println("Exception (readClassAndObject - reading next tick.");
+                    e.printStackTrace(System.out);
                 }
                 int lastPosition = input.position();
                 if (readObject instanceof TickEvent) {
-                    tickNum = ((TickEvent)readObject).getNumber();
+                    tickNum = ((TickEvent) readObject).getNumber();
                     readObject = kryo.readClassAndObject(input);
                     while (!(readObject instanceof TickEvent)) {
                         Object event = readObject;

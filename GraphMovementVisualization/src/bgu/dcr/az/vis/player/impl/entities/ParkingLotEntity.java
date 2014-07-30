@@ -24,9 +24,9 @@ import javafx.scene.chart.XYChart;
 public class ParkingLotEntity implements HasId{
 
     private AZVisVertex graphNode;
-    private NumberAxis xAxis = new NumberAxis();
-    private CategoryAxis yAxis = new CategoryAxis();
-    private BarChart<Number, String> bc = new BarChart<>(xAxis, yAxis);
+    private CategoryAxis xAxis = new CategoryAxis();
+    private NumberAxis yAxis = new NumberAxis();
+    private BarChart<String, Number> bc = new BarChart<>(xAxis, yAxis);
     private int[] eData = new int[10];
     private int[] fData = new int[10];
 
@@ -49,12 +49,12 @@ public class ParkingLotEntity implements HasId{
         }
     }
 
-    public BarChart<Number, String> getChart() {
+    public BarChart<String, Number> getChart() {
         bc.getData().clear();
         XYChart.Series eSeries = new XYChart.Series();
         eSeries.setName("Electric");
         XYChart.Series fSeries = new XYChart.Series();
-        eSeries.setName("Fuel");
+        fSeries.setName("Fuel");
 
         for (int i = 0; i < eData.length; i++) {
             String name = "" + i*10 + "-" + (i+1)*10 ;

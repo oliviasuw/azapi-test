@@ -14,20 +14,25 @@ import java.util.HashSet;
  */
 class ParkingLot<T>{
     private HashSet<T> set;
-    private final int max;
+    private final int capacity;
 
     public ParkingLot(int max) {
         this.set = new HashSet<>();
-        this.max = max;
+        this.capacity = max;
     }
     
-    public boolean addCar(T car){
-        if(set.size() < max){
-            this.set.add(car);
-            return true;
-        }
-        else
-            return false;
+    public void addCar(T car){
+//        if(set.size() < capacity){
+//            this.set.add(car);
+//            return true;
+//        }
+//        else
+//            return false;
+        this.set.add(car);
+    }
+    
+    public boolean notFull(){
+        return set.size() < capacity;
     }
     
     public void removeCar(T car){

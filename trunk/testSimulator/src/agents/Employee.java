@@ -14,11 +14,11 @@ import attributes.car.StartSegment;
 import attributes.car.DoWork;
 import attributes.car.RefillTank;
 import attributes.car.SpendTime;
-import data.CarData;
-import data.Data;
-import data.HumanData;
-import data.TankData;
-import data.WorkerData;
+import agentData.CarData;
+import agentData.Data;
+import agentData.HumanData;
+import agentData.TankData;
+import agentData.WorkerData;
 import java.util.HashMap;
 import services.Clock;
 import services.ClockService;
@@ -163,7 +163,7 @@ public class Employee extends Agent {
                 if (cData.currPath.isEmpty()) //reached destination
                 {
                     currState = concludeNextState();
-                    System.out.println("reached destination, next state:" + currState);
+                    Behavior.debug("reached destination, next state:" + currState);
                 } else if (rService.getPercantage(id) == 0) { //managed to enter new segment
                     currState = "drive";
                 }

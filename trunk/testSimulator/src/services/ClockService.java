@@ -18,7 +18,7 @@ public class ClockService implements Service{
     @Override
     public void init() {
         this.ticks = 0;
-        this.clock = new Clock();
+        this.clock = new Clock(6,0,0);
     }
 
     @Override

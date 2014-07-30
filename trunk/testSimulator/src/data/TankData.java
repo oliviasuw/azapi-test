@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package data;
+package agentData;
 
 import attributes.Behavior;
-import data.CarData.Direction;
+import agentData.CarData.Direction;
 import statistics.Utility;
 
 /**
@@ -52,7 +52,7 @@ public class TankData extends Data {
         if (this.currAmount < 0) {
             this.currAmount = 0;
         }
-        Behavior.debug(String.format("Agent:: %f%% power left.", 100.0 * (this.currAmount / this.capacity)));
+        Behavior.debug(String.format("Agent:: %f%% tank left.", 100.0 * (this.currAmount / this.capacity)));
     }
 
     /**
@@ -92,6 +92,14 @@ public class TankData extends Data {
      */
     public boolean isFull() {
         return this.currAmount == this.capacity;
+    }
+    
+    /**
+     * Check if the tank is based on electricity or fuel.
+     * @return 
+     */
+    public boolean isElectric(){
+        return this.electric;
     }
 
 }

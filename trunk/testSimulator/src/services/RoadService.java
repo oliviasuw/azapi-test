@@ -5,6 +5,7 @@
  */
 package services;
 
+import data.events.impl.ParkingEvent;
 import graphData.Graph;
 import java.util.ArrayDeque;
 import graphData.GraphData;
@@ -14,6 +15,7 @@ import services.searchAlgoritms.PathGenerator;
 import services.searchAlgoritms.Dijkstra;
 import services.searchAlgoritms.RandomDFS;
 import statistics.Utility;
+import testsimulator.TestSimulator;
 
 /**
  *
@@ -21,18 +23,17 @@ import statistics.Utility;
  */
 public class RoadService implements Service {
 
-    private static final String tag_hangout = "amenity";
-    private static final String[] hangout = {"cafe", "restaurant", "fast_food", "pub", "bycicle_rental"};
-
-    private static final String tag_shops = "shop";
-    private static final String[] shops = {"cinema", "hairdresser", "supermarket", "clothes", "kiosk", "convenience", "bakery", "laundry"};
-
     private final Graph graph;
     private final PathGenerator pGen;
     private HashMap<String, TrafficLight> trafficLights;
-    private HashMap<String, HashSet<String>> nearbyParkingLots; //associates a collection of nearby parking lots with a vertex  
+
+    private HashMap<String, HashSet<String>> nearbyParkingLots; //associates a vertex with a collection of nearby parking lots.  
     private HashMap<String, String> taggedToPL; //maps each tagged PL to the actual PL it belongs to.
     private HashMap<String, ParkingLot<Integer>> parkingLots; //maps each actual PL ID to an PL instance.
+
+    private HashMap<String, HashSet<String>> nearbyFuelStations; //associates a vertex with a collection of nearby fuel-stations.
+    private HashMap<String, String> taggedToFS; //maps each taggeed FS to the actual FS it belongs to.
+
     private String[] entertainment;
 
     public RoadService() {
@@ -48,13 +49,16 @@ public class RoadService implements Service {
         this.trafficLights = new HashMap<>();
         this.parkingLots = new HashMap<>();
         this.taggedToPL = new HashMap<>();
+        this.taggedToFS = new HashMap<>();
         this.nearbyParkingLots = new HashMap<>();
+        this.nearbyFuelStations = new HashMap<>();
     }
 
     @Override
     public void init() {
         initPointsOfInterest();
         initTrafficLights();
+        System.out.print(" ");
     }
 
     @Override
@@ -77,30 +81,41 @@ public class RoadService implements Service {
      * Initialize parking-lots, shops, restaurants, etc.
      */
     private void initPointsOfInterest() {
-        HashSet<String> init = new HashSet<>();
+        HashSet<String> initPL = new HashSet<>();
+        HashSet<String> initFS = new HashSet<>();
         HashSet<String> entertain = new HashSet<>();
         int c = 0;
         //get initial group of parking lots.
         for (String v : this.graph.getEntireVertexSet()) {
             if (taggedAsPL(v)) {
-                init.add(v);
-                taggedToPL.put(v, v);
+                initPL.add(v);
+//                taggedToPL.put(v, v);
                 parkingLots.put(v, new ParkingLot<>(Utility.calculateLotCapacity()));
             } else if (taggedAsEntertainment(v)) {
                 entertain.add(v);
+            } else if (taggedAsFS(v)) {
+                initFS.add(v);
+                taggedToFS.put(v, v);
             }
         }
-        
+
         this.entertainment = new String[entertain.size()];
         entertain.toArray(this.entertainment);
-        
-        //tag other vertices as parking-lots according to the tagging radius.
+
+        //tag other vertices as parking-lots/fuel-stations according to the tagging radius.
         for (String v : this.graph.getConnectedVertexSet()) {
-            for (String u : init) {
+            for (String u : initPL) {
                 boolean not_tagged = !taggedAsPL(v);
-                boolean inside_tagging_radius = this.graph.distance(v, u) < Utility.LOT_TAGGING_RADIUS;
+                boolean inside_tagging_radius = this.graph.distance(v, u) < Utility.RADIUS_TAGGING;
                 if (not_tagged && inside_tagging_radius) {
                     taggedToPL.put(v, u);
+                }
+            }
+            for (String u : initFS) {
+                boolean not_tagged = !taggedAsFS(v);
+                boolean inside_tagging_radius = this.graph.distance(v, u) < Utility.RADIUS_TAGGING;
+                if (not_tagged && inside_tagging_radius) {
+                    taggedToFS.put(v, u);
                 }
             }
         }
@@ -108,12 +123,32 @@ public class RoadService implements Service {
         //attach a collection of nearby parking-lots to each vertex in the graph.
         for (String v : this.graph.getEntireVertexSet()) {
             for (String lot : taggedToPL.keySet()) {
-                if (this.graph.distance(lot, v) <= Utility.LOT_SEARCH_RADIUS) {
+                if (this.graph.distance(lot, v) <= Utility.RADIUS_SEARCH) {
                     nearbyParkingLots.putIfAbsent(v, new HashSet<>());
                     nearbyParkingLots.get(v).add(lot);
                 }
             }
+            for (String fuel : taggedToFS.keySet()) {
+                if (this.graph.distance(fuel, v) <= Utility.RADIUS_SEARCH) {
+                    nearbyFuelStations.putIfAbsent(v, new HashSet<>());
+                    nearbyFuelStations.get(v).add(fuel);
+                }
+            }
         }
+    }
+
+    public boolean taggedAs(String v, String tag, String[] values) {
+        String v_tagValue = this.graph.getVertexAttributes(v).get(tag);
+        if (v_tagValue == null) {
+            return false;
+        } else {
+            for (String value : values) {
+                if (value.equals(v_tagValue)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -123,43 +158,43 @@ public class RoadService implements Service {
      * @return
      */
     public boolean taggedAsPL(String v) {
-        boolean tag_parking = "parking".equals(this.graph.getVertexAttributes(v).get("amenity"));
-        boolean tag_parking_entrance = "parking_entrance".equals(this.graph.getVertexAttributes(v).get("amenity"));
-        return tag_parking || tag_parking_entrance;
+        String tag_pl = "amenity";
+        String[] values_pl = new String[]{"parking", "parking_entrance"};
+
+        return taggedAs(v, tag_pl, values_pl);
+    }
+
+    /**
+     * Check if v is tagged as a fuel-station.
+     *
+     * @param v
+     * @return
+     */
+    public boolean taggedAsFS(String v) {
+        String tag_fs = "amenity";
+        String[] values_fs = {"fuel"};
+
+        return taggedAs(v, tag_fs, values_fs);
+    }
+
+    public boolean taggedAsHangout(String v) {
+        String tag_hangout = "amenity";
+        String[] values_hangout = {"cafe", "restaurant", "fast_food", "pub", "bycicle_rental"};
+
+        return taggedAs(v, tag_hangout, values_hangout);
+    }
+
+    public boolean taggedAsShop(String v) {
+        String tag_shops = "shop";
+        String[] values_shops = {"cinema", "hairdresser", "supermarket", "clothes", "kiosk", "convenience", "bakery", "laundry"};
+
+        return taggedAs(v, tag_shops, values_shops);
     }
 
     public boolean taggedAsEntertainment(String v) {
         return taggedAsShop(v) || taggedAsHangout(v);
     }
 
-    public boolean taggedAsHangout(String v) {
-        HashMap<String, String> tags = this.graph.getVertexAttributes(v);
-        if (tags.get(tag_hangout) == null) {
-            return false;
-        } else {
-            for (String tag : hangout) {
-                if (tag.equals(tags.get(tag_hangout))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public boolean taggedAsShop(String v){
-        HashMap<String, String> tags = this.graph.getVertexAttributes(v);
-        if (tags.get(tag_shops) == null) {
-            return false;
-        } else {
-            for (String tag : shops) {
-                if (tag.equals(tags.get(tag_shops))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
     /**
      * generate a path between the two given vertices
      *
@@ -274,7 +309,9 @@ public class RoadService implements Service {
 
         do {
             vs[0] = this.graph.getRandomVertex();
-            vs[1] = this.graph.getRandomVertex();
+            Object[] arr = this.taggedToPL.keySet().toArray();
+//            vs[1] = this.graph.getRandomVertex();
+            vs[1] = (String)arr[Utility.rand.nextInt(arr.length)];
             homeToWork = this.pGen.generate(vs[0], vs[1]);
             workToHome = this.pGen.generate(vs[1], vs[0]);
             if (this.graph.sameVertex(vs[0], vs[1]) || homeToWork.isEmpty() || workToHome.isEmpty()) {
@@ -338,8 +375,33 @@ public class RoadService implements Service {
                 continue;
             }
             String actualPL_name = this.taggedToPL.get(taggedPL);
-            if (parkingLots.get(actualPL_name).addCar(carID)) {
+            if (parkingLots.get(actualPL_name).notFull()) {
 //                System.out.println("FOUND PL!!");
+                parkingLots.get(actualPL_name).addCar(carID);
+//                ParkingEvent moveEvent = new ParkingEvent(carID, actualPL_name, );
+//                TestSimulator.eventWriter.writeEvent(TestSimulator.output, moveEvent);
+                return taggedPL;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find a fuel-station nearby the destination, return null if nothing was
+     * found.
+     *
+     * @param carID
+     * @param src
+     * @param dest
+     * @return
+     */
+    public String findCloseFS(int carID, String src, String dest) {
+        if (this.nearbyFuelStations.get(dest) == null) {
+            return null;
+        }
+
+        for (String taggedPL : this.nearbyFuelStations.get(dest)) {
+            if (accessible(src, taggedPL)) {
                 return taggedPL;
             }
         }
@@ -355,10 +417,19 @@ public class RoadService implements Service {
      *
      * @param carID
      * @param taggedPL
+     * @param percentage
      */
-    public void exitFromPL(int carID, String taggedPL) {
+    public void exitFromPL(int carID, String taggedPL, double percentage, boolean electric) {
         String actualPL_name = this.taggedToPL.get(taggedPL);
         parkingLots.get(actualPL_name).removeCar(carID);
+        
+//        double percentage = tankData.getCurrAmount() / tankData.getCapacity();
+        ParkingEvent.CarType carType = (electric)? ParkingEvent.CarType.ELECTRIC: ParkingEvent.CarType.FUEL;
+        ParkingEvent parkEvent = new ParkingEvent(carID, actualPL_name, percentage,ParkingEvent.InOut.OUT, carType);
+        if(actualPL_name == null || carType == null )
+            System.out.println("HERE!!");
+        TestSimulator.eventWriter.writeEvent(TestSimulator.output, parkEvent);
+        System.out.println("Sending ParkEvent:: Exit");
     }
 
     /**
@@ -386,5 +457,9 @@ public class RoadService implements Service {
     public String getRandomHotSpot() {
         int indx = Utility.rand.nextInt(this.entertainment.length);
         return this.entertainment[indx];
+    }
+
+    public String getAssociatedPL(String taggedPL) {
+        return this.taggedToPL.get(taggedPL);
     }
 }

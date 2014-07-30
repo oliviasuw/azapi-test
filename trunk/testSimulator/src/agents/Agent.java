@@ -7,7 +7,7 @@
 package agents;
 
 import attributes.State;
-import data.Data;
+import agentData.Data;
 import java.util.HashMap;
 import services.Service;
 

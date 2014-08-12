@@ -127,7 +127,7 @@ public class KAryTreeConstraintPackage extends AbstractConstraintPackage {
         Map<Integer, Node> childrens;
 
         public Node() {
-            this.childrens = new HashMap<Integer, Node>();
+            this.childrens = new HashMap<>();
         }
 
         public void add(KAryConstraint constraint, boolean replace) {

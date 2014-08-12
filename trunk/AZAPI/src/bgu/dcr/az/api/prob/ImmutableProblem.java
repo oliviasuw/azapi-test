@@ -14,7 +14,7 @@ import java.util.Set;
  * @author bennyl
  */
 public interface ImmutableProblem {
-    
+
     /**
      * @return the problem type.
      */
@@ -36,17 +36,22 @@ public interface ImmutableProblem {
      * @param val1
      * @return the cost of assigning var1=val1
      */
-    int getConstraintCost(int var1, int val1);
+    default int getConstraintCost(int var1, int val1) {
+        return getConstraintCost(var1, val1, var1, val1);
+    }
 
     /**
-     * return the cost of the k-ary constraint represented by the given assignment
+     * return the cost of the k-ary constraint represented by the given
+     * assignment
+     *
      * @param ass
-     * @return 
+     * @return
      */
     int getConstraintCost(Assignment ass);
-    
+
     /**
      * return the domain of the given variable
+     *
      * @param var
      * @return
      */
@@ -54,6 +59,7 @@ public interface ImmutableProblem {
 
     /**
      * return the domain size of the variable var
+     *
      * @param var
      * @return
      */
@@ -82,22 +88,25 @@ public interface ImmutableProblem {
      * @param val2
      * @return true if var1=val1 consistent with var2=val2
      */
-    boolean isConsistent(int var1, int val1, int var2, int val2);
+    default boolean isConsistent(int var1, int val1, int var2, int val2) {
+        return getConstraintCost(var1, val1, var2, val2) == 0;
+    }
 
-    
     /**
      * @param var1
      * @param var2
-     * @return true if there is a constraint between var1 and var2
-     * operation cost: o(d^2)cc
+     * @return true if there is a constraint between var1 and var2 operation
+     * cost: o(d^2)cc
      */
     boolean isConstrained(int var1, int var2);
-    
+
     /**
-     * return the cost of the given assignment (taking into consideration all the constraints that apply to it)
+     * return the cost of the given assignment (taking into consideration all
+     * the constraints that apply to it)
+     *
      * @param a
-     * @return 
+     * @return
      */
     int calculateCost(Assignment a);
-    
+
 }

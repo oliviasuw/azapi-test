@@ -19,6 +19,6 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Variable {
     String name();
-    String description();
+    String description() default ""; 
     String defaultValue();
 }

@@ -33,6 +33,21 @@ public class BinaryMapConstraintPackage extends AbstractConstraintPackage {
         return i * numvars + j;
     }
 
+    public boolean hasConstraint(int owner, int var1, int var2) {
+        if (owner == var2) {
+            int t = var1;
+            var1 = var2;
+            var2 = t;
+        }
+
+        if (owner != var1) {
+            Agt0DSL.panic("Binary Problem cannot support constraint owners that are not part of the constraints, if you need such a feature use the K-Ary version.");
+        }
+
+        int id = calcId(var1, var2);
+        return map[id] != null;
+    }
+
     @Override
     public void setConstraintCost(int owner, int var1, int val1, int var2, int val2, int cost) {
 
@@ -56,6 +71,25 @@ public class BinaryMapConstraintPackage extends AbstractConstraintPackage {
 
         createMap(id);
         ((int[][]) map[id])[val1][val2] = cost;
+    }
+
+    public void replaceConstraintMap(int owner, int var1, int var2, int[][] constraintMap) {
+        if (owner == var2) {
+            int t = var1;
+            var1 = var2;
+            var2 = t;
+        }
+
+        if (owner != var1) {
+            Agt0DSL.panic("Binary Problem cannot support constraint owners that are not part of the constraints, if you need such a feature use the K-Ary version.");
+        }
+
+        int id = calcId(var1, var2);
+        if (var1 != var2) {
+            addNeighbor(var1, var2);
+        }
+
+        map[id] = constraintMap;
     }
 
     private void createMap(int id) {
